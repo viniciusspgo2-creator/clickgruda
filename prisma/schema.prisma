@@ -1,0 +1,147 @@
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "rhel-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String      @id @default(cuid())
+  name         String
+  email        String      @unique
+  password     String
+  role         String      @default("USER") // USER | ADMIN
+  hasAccess    Boolean     @default(false)
+  isDemo       Boolean     @default(false) // conta demo: navega no portal com artes embaçadas, sem download
+  accessSource String? // PURCHASE | ADMIN_GRANT
+  status       String      @default("ACTIVE") // ACTIVE | PENDING_MANUAL (pré-aprovado, aguardando liberação do PIX manual)
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+  favorites    Favorite[]
+  downloads    Download[]
+  payments     Payment[]
+  suggestions  ThemeSuggestion[]
+  shareLinks   ShareLink[]
+}
+
+model Category {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  emoji     String   @default("🎨")
+  icon      String   @default("") // nome do ícone na biblioteca padronizada (lucide)
+  createdAt DateTime @default(now())
+  arts      Art[]
+}
+
+model Tag {
+  id        String    @id @default(cuid())
+  name      String    @unique
+  createdAt DateTime  @default(now())
+  arts      ArtTag[]
+}
+
+model SeasonalEvent {
+  id        String   @id @default(cuid())
+  name      String
+  emoji     String   @default("🎉")
+  month     Int
+  day       Int
+  createdAt DateTime @default(now())
+  arts      Art[]
+}
+
+model Art {
+  id              String         @id @default(cuid())
+  title           String
+  imageUrl        String // URL pública da PRÉVIA (WebP leve) — é o que aparece no site
+  originalKey     String? // chave do PNG ORIGINAL no R2 (privado) — nunca enviada ao navegador
+  isLaunch        Boolean        @default(false)
+  downloadsCount  Int            @default(0)
+  categoryId      String?
+  category        Category?      @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  seasonalEventId String?
+  seasonalEvent   SeasonalEvent? @relation(fields: [seasonalEventId], references: [id], onDelete: SetNull)
+  tags            ArtTag[]
+  favorites       Favorite[]
+  downloads       Download[]
+  createdAt       DateTime       @default(now())
+}
+
+model ArtTag {
+  artId String
+  art   Art    @relation(fields: [artId], references: [id], onDelete: Cascade)
+  tagId String
+  tag   Tag    @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([artId, tagId])
+}
+
+model Favorite {
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  artId     String
+  art       Art      @relation(fields: [artId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@id([userId, artId])
+}
+
+model Download {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  artId     String
+  art       Art      @relation(fields: [artId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+}
+
+model Payment {
+  id            String    @id @default(cuid())
+  userId        String
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  provider      String // MERCADOPAGO | ASAAS | DEMO
+  method        String    @default("PIX")
+  amountCents   Int
+  status        String    @default("PENDING") // PENDING | APPROVED | EXPIRED | FAILED
+  externalId    String?
+  qrCodePayload String?
+  qrCodeImage   String?
+  createdAt     DateTime  @default(now())
+  approvedAt    DateTime?
+}
+
+model Setting {
+  key   String @id
+  value String
+}
+
+model ThemeSuggestion {
+  id        String   @id @default(cuid())
+  message   String
+  name      String   @default("")
+  contact   String   @default("") // whatsapp ou e-mail (opcional)
+  status    String   @default("NEW") // NEW | SEEN | DONE
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  createdAt DateTime @default(now())
+}
+
+/**
+ * ShareLink — link temporário que o assinante gera para o CLIENTE DELE
+ * navegar no catálogo de artes (somente visualização) e escolher uma arte.
+ * O cliente responde via WhatsApp do próprio assinante.
+ */
+model ShareLink {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  whatsapp  String   @default("") // WhatsApp de contato do assinante (recebe a escolha do cliente)
+  active    Boolean  @default(true)
+  views     Int      @default(0)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+}

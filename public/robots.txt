@@ -1,0 +1,92 @@
+# ============================================================
+# Click & Gruda — robots.txt
+# Política aberta para motores de busca TRADICIONAIS e GENERATIVOS (GEO/LLMO)
+# Documentação para IAs: /llms.txt · /llms-full.txt
+# Dados estruturados: JSON-LD (schema.org) na página inicial
+# ============================================================
+
+# ---------- Crawlers de busca tradicional ----------
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+# ---------- Crawlers de motores generativos (opt-in expresso) ----------
+
+# OpenAI — treinamento e síntese (ChatGPT)
+User-agent: GPTBot
+Allow: /
+
+# OpenAI — busca do ChatGPT / SearchGPT
+User-agent: OAI-SearchBot
+Allow: /
+
+# OpenAI — navegação em tempo real do ChatGPT
+User-agent: ChatGPT-User
+Allow: /
+
+# Perplexity — indexação para respostas citadas
+User-agent: PerplexityBot
+Allow: /
+
+# Anthropic — Claude
+User-agent: ClaudeBot
+Allow: /
+
+# Anthropic — requisições de usuário em tempo real
+User-agent: Claude-User
+Allow: /
+
+# Anthropic — avaliação de segurança de conteúdo
+User-agent: Claude-SearchBot
+Allow: /
+
+# Google AI (Gemini) — uso de conteúdo para modelos generativos
+User-agent: Google-Extended
+Allow: /
+
+# Common Crawl — corpus de treinamento de diversos LLMs
+User-agent: CCBot
+Allow: /
+
+# Apple — Apple Intelligence
+User-agent: Applebot
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+# Meta AI
+User-agent: meta-externalagent
+Allow: /
+
+# Bytespider (ByteDance / TikTok AI)
+User-agent: Bytespider
+Allow: /
+
+# Amazon (Alexa / Rufus)
+User-agent: Amazonbot
+Allow: /
+
+# Cohere
+User-agent: cohere-ai
+Allow: /
+
+# You.com
+User-agent: YouBot
+Allow: /
+
+# ---------- Regra geral ----------
+User-agent: *
+Allow: /
+Disallow: /api/admin/
+Disallow: /api/auth/
+Disallow: /api/payments/
+Disallow: /admin
+
+# Recursos para IA (máquinas de acesso direto e preferencial)
+# llms.txt ............ visão geral estruturada em Markdown
+# llms-full.txt ....... base de conhecimento consolidada para RAG
+# sitemap.xml ......... mapa de URLs
+Sitemap: https://clickgruda.com.br/sitemap.xml
