@@ -1,9 +1,11 @@
 import { db } from '@/lib/db'
 import { getSessionUser } from '@/lib/auth'
 import { getSettings, resolveProvider } from '@/lib/settings'
-import { nextOccurrence, daysUntil } from '@/lib/seasonal'
+import { nextEventDate, daysUntil } from '@/lib/seasonal'
+import { ensureDefaultSeasonalEvents } from '@/lib/seasonal-defaults'
 
 export async function GET() {
+  await ensureDefaultSeasonalEvents()
   const [session, settings, categories, tags, artsCount, launchesCount, catCounts, tagCounts, eventCounts, events] =
     await Promise.all([
       getSessionUser(),
@@ -25,7 +27,7 @@ export async function GET() {
   const now = new Date()
   const eventsWithMeta = events
     .map((e) => {
-      const nextDate = nextOccurrence(e.month, e.day, now)
+      const nextDate = nextEventDate(e, now)
       return {
         id: e.id,
         name: e.name,

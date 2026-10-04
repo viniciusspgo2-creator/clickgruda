@@ -1,5 +1,6 @@
 export type ArtItem = {
   id: string
+  code: number
   title: string
   imageUrl: string
   isLaunch: boolean

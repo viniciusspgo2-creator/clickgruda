@@ -43,6 +43,7 @@ export async function GET(_req: Request, { params }: { params: Promise<{ token: 
     },
     arts: arts.map((a) => ({
       id: a.id,
+      code: a.code,
       title: a.title,
       imageUrl: a.imageUrl,
       isLaunch: a.isLaunch,

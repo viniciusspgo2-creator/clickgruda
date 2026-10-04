@@ -1,5 +1,6 @@
 import { db } from '@/lib/db'
 import { getSessionUser, jsonError } from '@/lib/auth'
+import { formatArtCode } from '@/lib/art-code'
 import { readLocalFile, extToMime, slugify, getR2Config, presignOriginalGet } from '@/lib/storage'
 
 export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
@@ -19,7 +20,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
     db.art.update({ where: { id }, data: { downloadsCount: { increment: 1 } } }),
   ])
 
-  const filename = `click-gruda-${slugify(art.title) || 'arte'}`
+  const filename = `${formatArtCode(art.code)}-${slugify(art.title) || 'arte'}`
 
   /* Original em alta (PNG) guardado no R2 privado: devolve uma URL assinada de curta duração. */
   if (art.originalKey) {

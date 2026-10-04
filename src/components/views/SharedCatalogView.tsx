@@ -18,10 +18,12 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { useStore } from '@/lib/store'
 import { getCategoryIcon } from '@/lib/category-icons'
 import { WHATSAPP } from '@/lib/site'
+import { formatArtCode } from '@/lib/art-code'
 import { cn } from '@/lib/utils'
 
 type SharedArt = {
   id: string
+  code: number
   title: string
   imageUrl: string
   isLaunch: boolean
@@ -89,6 +91,7 @@ export function SharedCatalogView() {
       list = list.filter(
         (a) =>
           a.title.toLowerCase().includes(search) ||
+          formatArtCode(a.code).toLowerCase().includes(search) ||
           (a.category?.name || '').toLowerCase().includes(search) ||
           a.tags.some((t) => t.name.toLowerCase().includes(search))
       )
@@ -141,13 +144,29 @@ export function SharedCatalogView() {
     minute: '2-digit',
   })
 
+  /**
+   * Mensagem do cliente para o sublimador. Vai com CÓDIGO + título + categoria +
+   * link direto para a arte no portal do sublimador — assim ele acha a arte
+   * em 1 toque, sem depender só do nome.
+   */
   const choiceUrl = (art: SharedArt) => {
     const owner = (catalog.ownerWhatsapp || '').replace(/\D/g, '')
     const phone = owner || WHATSAPP.number
-    const text = owner
-      ? `Olá! Escolhi a arte "${art.title}" do seu catálogo de artes ✨ Pode me passar mais detalhes?`
-      : `Olá! Recebi um catálogo de artes da Click & Gruda e escolhi a arte "${art.title}" ✨ Pode me passar mais detalhes?`
-    return `https://wa.me/${phone}?text=${encodeURIComponent(text)}`
+    const code = formatArtCode(art.code)
+    const origin = typeof window !== 'undefined' ? window.location.origin : ''
+    const lines = [
+      owner
+        ? 'Olá! Escolhi uma arte do seu catálogo ✨'
+        : 'Olá! Recebi um catálogo de artes da Click & Gruda e escolhi uma arte ✨',
+      '',
+      `🔢 Código: ${code}`,
+      `🎨 Arte: ${art.title}`,
+      ...(art.category ? [`📂 Categoria: ${art.category.name}`] : []),
+      ...(origin ? ['', `🔎 Abrir a arte: ${origin}/?arte=${art.code}`] : []),
+      '',
+      'Pode me passar mais detalhes?',
+    ]
+    return `https://wa.me/${phone}?text=${encodeURIComponent(lines.join('\n'))}`
   }
 
   return (
@@ -179,7 +198,7 @@ export function SharedCatalogView() {
           </h1>
           <p className="mt-1.5 max-w-2xl text-sm leading-relaxed text-zinc-500">
             Toque em &quot;<strong className="text-zinc-700">Quero esta arte</strong>&quot; para avisar{' '}
-            {catalog.ownerName.split(' ')[0]} pelo WhatsApp — a mensagem já vai prontinha com o nome da arte.
+            {catalog.ownerName.split(' ')[0]} pelo WhatsApp — a mensagem já vai prontinha com o código e o nome da arte.
           </p>
         </motion.div>
 
@@ -190,7 +209,7 @@ export function SharedCatalogView() {
             <input
               value={q}
               onChange={(e) => setInput(e.target.value)}
-              placeholder="Buscar arte, tema ou categoria..."
+              placeholder="Buscar por nome, tema, categoria ou código..."
               className="h-10 w-full rounded-xl border border-zinc-200 bg-white pl-9 pr-3 text-sm shadow-sm outline-none transition-all focus:border-orange-400 focus:ring-2 focus:ring-orange-200"
             />
           </div>
@@ -270,7 +289,12 @@ export function SharedCatalogView() {
                     )}
                   </div>
                   <div className="p-3.5">
-                    <h3 className="truncate text-sm font-black text-zinc-900">{art.title}</h3>
+                    <div className="flex items-center justify-between gap-2">
+                      <h3 className="truncate text-sm font-black text-zinc-900">{art.title}</h3>
+                      <span className="shrink-0 rounded-md bg-zinc-100 px-1.5 py-0.5 font-mono text-[10px] font-bold tracking-wide text-zinc-500">
+                        {formatArtCode(art.code)}
+                      </span>
+                    </div>
                     {art.category && (
                       <p className="mt-0.5 flex items-center gap-1.5 text-xs font-semibold text-zinc-400">
                         <span className="flex h-4 w-4 items-center justify-center">

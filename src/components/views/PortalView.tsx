@@ -35,6 +35,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
 import { Skeleton } from '@/components/ui/skeleton'
 import { Logo } from '@/components/shared/Logo'
 import { ArtCard } from '@/components/shared/ArtCard'
+import { ChipScroller } from '@/components/shared/ChipScroller'
 import { ShareCatalogSection } from '@/components/portal/ShareCatalogSection'
 import { ThemeSuggestionDialog } from '@/components/portal/ThemeSuggestionDialog'
 import { getCategoryIcon } from '@/lib/category-icons'
@@ -271,7 +272,7 @@ export function PortalView() {
             <Input
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
-              placeholder="Buscar arte, tag ou categoria..."
+              placeholder="Buscar por nome, tag, categoria ou código (CG-0042)..."
               className="h-10 rounded-xl border-zinc-200 bg-white pl-9 pr-9 text-sm focus-visible:ring-orange-500"
             />
             {searchInput && (
@@ -469,12 +470,13 @@ export function PortalView() {
               )}
             </div>
 
-            {/* Event chips */}
-            <div className="no-scrollbar relative mt-6 flex gap-2 overflow-x-auto pb-1">
+            {/* Event chips — setas + arrastar + deslizar; centraliza a data ativa */}
+            <ChipScroller className="relative mt-6" activeKey={seasonalEventId || 'all'}>
               <button
+                data-active={!seasonalEventId}
                 onClick={() => setFilter({ seasonalEventId: null })}
                 className={cn(
-                  'shrink-0 rounded-full px-3.5 py-1.5 text-xs font-bold transition-colors',
+                  'shrink-0 select-none rounded-full px-3.5 py-1.5 text-xs font-bold transition-colors',
                   !seasonalEventId ? 'bg-orange-500 text-white shadow-md shadow-orange-600/30' : 'bg-zinc-900 text-zinc-400 hover:text-white'
                 )}
               >
@@ -483,9 +485,10 @@ export function PortalView() {
               {catalogQ.data.events.map((e) => (
                 <button
                   key={e.id}
+                  data-active={seasonalEventId === e.id}
                   onClick={() => setFilter({ seasonalEventId: e.id })}
                   className={cn(
-                    'flex shrink-0 items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-bold transition-colors',
+                    'flex shrink-0 select-none items-center gap-1.5 whitespace-nowrap rounded-full px-3.5 py-1.5 text-xs font-bold transition-colors',
                     seasonalEventId === e.id
                       ? 'bg-orange-500 text-white shadow-md shadow-orange-600/30'
                       : 'bg-zinc-900 text-zinc-400 hover:text-white'
@@ -497,7 +500,7 @@ export function PortalView() {
                   </span>
                 </button>
               ))}
-            </div>
+            </ChipScroller>
           </motion.div>
         </div>
       )}

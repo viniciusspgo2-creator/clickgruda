@@ -5,6 +5,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { useStore, type View } from '@/lib/store'
 import { track } from '@/lib/analytics'
+import { formatArtCode } from '@/lib/art-code'
 import { LandingView } from '@/components/views/LandingView'
 import { AuthView } from '@/components/views/AuthView'
 import { CheckoutView } from '@/components/views/CheckoutView'
@@ -52,6 +53,17 @@ export function AppShell() {
       return
     }
 
+    // Link direto da arte (?arte=42) — vem na mensagem do WhatsApp do cliente.
+    // Abre o portal já buscando pelo código da arte.
+    let arteParam: number | null = null
+    try {
+      const raw = new URLSearchParams(window.location.search).get('arte')
+      const n = raw ? parseInt(raw, 10) : NaN
+      arteParam = Number.isFinite(n) && n > 0 ? n : null
+    } catch {
+      arteParam = null
+    }
+
     let cancelled = false
     ;(async () => {
       try {
@@ -59,6 +71,16 @@ export function AppShell() {
         const data = await res.json()
         if (cancelled) return
         setUser(data.user || null)
+        if (arteParam) {
+          useStore.getState().setFilter({ tab: 'todas', q: formatArtCode(arteParam), seasonalEventId: null })
+          if (data.user?.hasAccess) {
+            setView('portal')
+          } else {
+            useStore.getState().setAuthMode('login')
+            setView(data.user ? 'landing' : 'auth')
+          }
+          return
+        }
         let stored: string | null = null
         try {
           stored = sessionStorage.getItem('cg_view')

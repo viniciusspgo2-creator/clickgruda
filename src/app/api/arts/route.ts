@@ -1,5 +1,6 @@
 import { getSessionUser, jsonError } from '@/lib/auth'
 import { listArtsForUser, userDownloadOrder } from '@/lib/arts'
+import { formatArtCode, parseArtCode } from '@/lib/art-code'
 
 function csv(param: string | null): string[] {
   if (!param) return []
@@ -33,8 +34,11 @@ export async function GET(req: Request) {
   if (tagIds.length) arts = arts.filter((a) => a.tags.some((t) => tagIds.includes(t.id)))
 
   if (q) {
+    const codeQ = parseArtCode(q)
     arts = arts.filter(
       (a) =>
+        (codeQ !== null && a.code === codeQ) ||
+        formatArtCode(a.code).toLowerCase().includes(q) ||
         a.title.toLowerCase().includes(q) ||
         (a.category?.name || '').toLowerCase().includes(q) ||
         (a.seasonalEvent?.name || '').toLowerCase().includes(q) ||

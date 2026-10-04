@@ -5,6 +5,7 @@ import { BadgeCheck, CalendarHeart, Check, Download, EyeOff, Flame, Heart, Loade
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import type { ArtItem } from '@/lib/types'
+import { formatArtCode } from '@/lib/art-code'
 
 type DownloadState = 'idle' | 'loading' | 'done'
 
@@ -138,6 +139,12 @@ export function ArtCard({ art, locked = false, demo = false, downloadState = 'id
                 {art.category.emoji} {art.category.name}
               </span>
             )}
+            <span
+              title="Código da arte — use na busca para achar rápido"
+              className="rounded-md bg-zinc-900 px-1.5 py-0.5 font-mono text-[10px] font-bold tracking-wide text-orange-300"
+            >
+              {formatArtCode(art.code)}
+            </span>
             {art.tags.slice(0, 3).map((t) => (
               <span key={t.id} className="rounded-full bg-zinc-100 px-2 py-0.5 text-[10px] font-medium text-zinc-500">
                 #{t.name}

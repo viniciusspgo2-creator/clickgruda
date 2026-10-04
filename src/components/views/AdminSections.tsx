@@ -2,7 +2,7 @@
 
 import { useMemo, useRef, useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { CalendarHeart, Check, Cloud, CreditCard, Eye, Image as ImageIcon, Lightbulb, Loader2, Pencil, Plus, QrCode, RotateCcw, Save, Search, Smile, Tag as TagIcon, Trash2, Upload, X } from 'lucide-react'
+import { CalendarHeart, Check, Images, Cloud, CreditCard, Eye, Image as ImageIcon, Lightbulb, Loader2, Pencil, Plus, QrCode, RotateCcw, Save, Search, Smile, Tag as TagIcon, Trash2, Upload, X } from 'lucide-react'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -14,6 +14,9 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog'
 import { CATEGORY_ICONS, getCategoryIcon } from '@/lib/category-icons'
+import { uploadArtFile } from '@/lib/art-upload'
+import { formatArtCode } from '@/lib/art-code'
+import { BulkUploadDialog } from '@/components/admin/BulkUploadDialog'
 import type { ArtItem } from '@/lib/types'
 import { cn } from '@/lib/utils'
 
@@ -61,17 +64,17 @@ function IconPicker({
           <span className="truncate text-xs">{current ? 'Trocar' : placeholder}</span>
         </Button>
       </PopoverTrigger>
-      <PopoverContent align="start" className="w-80 rounded-2xl p-3">
+      <PopoverContent align="start" className="w-[min(92vw,26rem)] rounded-2xl p-3">
         <div className="relative">
           <Search className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-zinc-400" />
           <Input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Buscar ícone... (café, coração, festa)"
+            placeholder={`Buscar entre ${CATEGORY_ICONS.length} ícones... (café, festa, médica)`}
             className="h-9 rounded-xl border-zinc-200 pl-8 text-sm"
           />
         </div>
-        <div className="mt-2.5 grid max-h-64 grid-cols-6 gap-1.5 overflow-y-auto pr-1">
+        <div className="mt-2.5 grid max-h-72 grid-cols-7 gap-1.5 overflow-y-auto pr-1 sm:grid-cols-8">
           {filtered.map((icon) => {
             const selected = value === icon.name
             return (
@@ -97,7 +100,7 @@ function IconPicker({
             )
           })}
           {filtered.length === 0 && (
-            <p className="col-span-6 py-6 text-center text-xs text-zinc-400">Nenhum ícone encontrado.</p>
+            <p className="col-span-full py-6 text-center text-xs text-zinc-400">Nenhum ícone encontrado. Tente outra palavra (ex: festa, comida, animal).</p>
           )}
         </div>
       </PopoverContent>
@@ -130,6 +133,7 @@ const emptyForm: ArtFormState = {
 export function AdminArtsSection() {
   const queryClient = useQueryClient()
   const [formOpen, setFormOpen] = useState(false)
+  const [bulkOpen, setBulkOpen] = useState(false)
   const [form, setForm] = useState<ArtFormState>(emptyForm)
   const [tagInput, setTagInput] = useState('')
   const [uploading, setUploading] = useState(false)
@@ -160,85 +164,14 @@ export function AdminArtsSection() {
     setFormOpen(true)
   }
 
-  /** Gera a prévia WebP (máx. 1000px de largura) no próprio navegador. */
-  const makePreview = (file: File): Promise<Blob> =>
-    new Promise((resolve, reject) => {
-      const img = new Image()
-      const objUrl = URL.createObjectURL(file)
-      img.onload = () => {
-        const maxW = 1000
-        const scale = Math.min(1, maxW / img.width)
-        const canvas = document.createElement('canvas')
-        canvas.width = Math.round(img.width * scale)
-        canvas.height = Math.round(img.height * scale)
-        const ctx = canvas.getContext('2d')
-        if (!ctx) return reject(new Error('canvas'))
-        ctx.drawImage(img, 0, 0, canvas.width, canvas.height)
-        URL.revokeObjectURL(objUrl)
-        canvas.toBlob((blob) => (blob ? resolve(blob) : reject(new Error('webp'))), 'image/webp', 0.72)
-      }
-      img.onerror = () => reject(new Error('img'))
-      img.src = objUrl
-    })
-
   const uploadFile = async (file: File) => {
     setUploading(true)
     try {
-      const ext = (file.name.split('.').pop() || 'png').toLowerCase()
-      const signRes = await fetch('/api/admin/upload/sign', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ originalExt: ext }),
-      })
-      const sign = await signRes.json()
-      if (!signRes.ok) {
-        toast.error(sign.error || 'Erro ao preparar o upload.')
-        return
-      }
-
-      if (sign.r2) {
-        /* R2: PNG original -> bucket privado | WebP leve -> bucket público (prévia). Direto do navegador. */
-        const preview = await makePreview(file)
-        let o: Response
-        let p: Response
-        try {
-          ;[o, p] = await Promise.all([
-            fetch(sign.originalPutUrl, { method: 'PUT', headers: { 'Content-Type': sign.originalType }, body: file }),
-            fetch(sign.previewPutUrl, { method: 'PUT', headers: { 'Content-Type': 'image/webp' }, body: preview }),
-          ])
-        } catch {
-          // fetch só "lança" quando o navegador bloqueia: na prática, CORS do bucket
-          toast.error('O navegador bloqueou o envio ao R2 (CORS). Configure o CORS nos DOIS buckets permitindo este site.')
-          return
-        }
-        if (!o.ok || !p.ok) {
-          const bad = !o.ok ? o : p
-          const detail = await bad.text().catch(() => '')
-          const code = /<Code>([^<]+)<\/Code>/.exec(detail)?.[1]
-          toast.error(
-            `R2 recusou o envio (${bad.status}${code ? ` · ${code}` : ''}) — ${!o.ok ? 'bucket dos originais' : 'bucket das prévias'}. Confira chaves, nomes dos buckets e permissões do token.`
-          )
-          return
-        }
-        setForm((f) => ({ ...f, imageUrl: sign.previewUrl, originalKey: sign.originalKey }))
-        toast.success('Original salvo no R2 (privado) e prévia WebP gerada!')
-        return
-      }
-
-      /* Sem R2 (desenvolvimento local): upload simples pelo servidor. */
-      const fd = new FormData()
-      fd.append('file', file)
-      const res = await fetch('/api/admin/upload', { method: 'POST', body: fd })
-      const data = await res.json()
-      if (!res.ok) {
-        toast.error(data.error || 'Erro no upload.')
-        return
-      }
-      setForm((f) => ({ ...f, imageUrl: data.url, originalKey: undefined }))
-      toast.success('Imagem enviada!')
+      const r = await uploadArtFile(file)
+      setForm((f) => ({ ...f, imageUrl: r.imageUrl, originalKey: r.originalKey }))
+      toast.success(r.r2 ? 'Original salvo no R2 (privado) e prévia WebP gerada!' : 'Imagem enviada!')
     } catch (err) {
-      const msg = err instanceof Error ? err.message : ''
-      toast.error(msg === 'img' ? 'Não consegui ler essa imagem. Use PNG, JPG ou WEBP válidos.' : 'Falha no upload.')
+      toast.error(err instanceof Error ? err.message : 'Falha no upload.')
     } finally {
       setUploading(false)
     }
@@ -292,7 +225,10 @@ export function AdminArtsSection() {
     onError: () => toast.error('Erro ao excluir arte.'),
   })
 
-  const arts = (artsQ.data?.arts || []).filter((a) => a.title.toLowerCase().includes(search.toLowerCase()))
+  const arts = (artsQ.data?.arts || []).filter((a) => {
+    const q = search.toLowerCase().trim()
+    return !q || a.title.toLowerCase().includes(q) || formatArtCode(a.code).toLowerCase().includes(q) || String(a.code) === q
+  })
 
   return (
     <div className="space-y-4">
@@ -300,13 +236,33 @@ export function AdminArtsSection() {
         <Input
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          placeholder="Buscar arte por título..."
+          placeholder="Buscar por título ou código (CG-0042)..."
           className="h-10 max-w-sm rounded-xl border-zinc-200 bg-white"
         />
-        <Button onClick={openNew} className="h-10 rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 font-black shadow-md shadow-orange-500/25">
-          <Plus className="mr-1.5 h-4 w-4" /> Nova arte
-        </Button>
+        <div className="flex flex-wrap gap-2">
+          <Button onClick={() => setBulkOpen(true)} variant="outline" className="h-10 rounded-xl border-orange-300 font-black text-orange-600 hover:bg-orange-50">
+            <Images className="mr-1.5 h-4 w-4" /> Enviar várias (até 20)
+          </Button>
+          <Button onClick={openNew} className="h-10 rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 font-black shadow-md shadow-orange-500/25">
+            <Plus className="mr-1.5 h-4 w-4" /> Nova arte
+          </Button>
+        </div>
       </div>
+
+      <BulkUploadDialog
+        open={bulkOpen}
+        onOpenChange={setBulkOpen}
+        categories={catQ.data?.categories || []}
+        events={evtQ.data?.events || []}
+        knownTags={(tagsQ.data?.tags || []).map((t) => t.name)}
+        onPublished={() => {
+          queryClient.invalidateQueries({ queryKey: ['admin-arts'] })
+          queryClient.invalidateQueries({ queryKey: ['admin-tags'] })
+          queryClient.invalidateQueries({ queryKey: ['arts'] })
+          queryClient.invalidateQueries({ queryKey: ['admin-stats'] })
+          queryClient.invalidateQueries({ queryKey: ['catalog'] })
+        }}
+      />
 
       <div className="overflow-hidden rounded-2xl border border-zinc-200 bg-white">
         <div className="divide-y divide-zinc-100">
@@ -319,6 +275,7 @@ export function AdminArtsSection() {
               </div>
               <div className="min-w-0 flex-1">
                 <p className="flex items-center gap-2 truncate text-sm font-bold text-zinc-900">
+                  <span className="shrink-0 rounded-md bg-zinc-900 px-1.5 py-0.5 font-mono text-[10px] font-bold text-orange-300">{formatArtCode(art.code)}</span>
                   {art.title}
                   {art.isLaunch && <Badge className="bg-orange-100 text-[9px] font-black uppercase text-orange-600">Novo</Badge>}
                   {art.seasonalEvent && <Badge variant="outline" className="text-[9px] font-black text-zinc-500">{art.seasonalEvent.emoji} {art.seasonalEvent.name}</Badge>}
@@ -752,7 +709,7 @@ export function AdminSeasonalSection() {
   const [emoji, setEmoji] = useState('')
   const [date, setDate] = useState('')
 
-  const evtQ = useQuery<{ events: { id: string; name: string; emoji: string; month: number; day: number; artCount: number; daysLeft: number }[] }>({
+  const evtQ = useQuery<{ events: { id: string; name: string; emoji: string; month: number; day: number; rule?: string | null; nextDate: string; artCount: number; daysLeft: number }[] }>({
     queryKey: ['admin-seasonal'],
     queryFn: async () => (await fetch('/api/admin/seasonal')).json(),
   })
@@ -795,6 +752,25 @@ export function AdminSeasonalSection() {
     onError: (e: Error) => toast.error(e.message || 'Erro ao salvar. Verifique a data.'),
   })
 
+  const addDefaults = useMutation({
+    mutationFn: async () => {
+      const res = await fetch('/api/admin/seasonal', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'add-defaults' }),
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error)
+      return data as { created: number }
+    },
+    onSuccess: (d) => {
+      queryClient.invalidateQueries({ queryKey: ['admin-seasonal'] })
+      queryClient.invalidateQueries({ queryKey: ['catalog'] })
+      toast.success(d.created ? `${d.created} data(s) comemorativa(s) adicionada(s)!` : 'Todas as datas principais já estão cadastradas.')
+    },
+    onError: () => toast.error('Erro ao adicionar as datas.'),
+  })
+
   const remove = useMutation({
     mutationFn: async (id: string) => {
       const res = await fetch(`/api/admin/seasonal/${id}`, { method: 'DELETE' })
@@ -813,9 +789,20 @@ export function AdminSeasonalSection() {
     <div className="space-y-5">
       <div className="flex items-center justify-between">
         <p className="text-sm text-zinc-500">As datas aparecem na aba SAZONAL do portal, com contagem regressiva para a próxima.</p>
-        <Button onClick={openNew} className="h-10 shrink-0 rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 font-black shadow-md shadow-orange-500/25">
-          <Plus className="mr-1.5 h-4 w-4" /> Nova data
-        </Button>
+        <div className="flex shrink-0 flex-wrap gap-2">
+          <Button
+            variant="outline"
+            disabled={addDefaults.isPending}
+            onClick={() => addDefaults.mutate()}
+            className="h-10 rounded-xl border-orange-300 font-black text-orange-600 hover:bg-orange-50"
+          >
+            {addDefaults.isPending ? <Loader2 className="mr-1.5 h-4 w-4 animate-spin" /> : <CalendarHeart className="mr-1.5 h-4 w-4" />}
+            Adicionar datas principais
+          </Button>
+          <Button onClick={openNew} className="h-10 rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 font-black shadow-md shadow-orange-500/25">
+            <Plus className="mr-1.5 h-4 w-4" /> Nova data
+          </Button>
+        </div>
       </div>
 
       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
@@ -825,7 +812,7 @@ export function AdminSeasonalSection() {
             <div className="min-w-0 flex-1">
               <p className="truncate text-sm font-black text-zinc-900">{e.name}</p>
               <p className="text-xs text-zinc-400">
-                {String(e.day).padStart(2, '0')}/{String(e.month).padStart(2, '0')} · {e.artCount} artes · em {e.daysLeft} dias
+                {new Date(e.nextDate).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })}{e.rule ? ' (data móvel)' : ''} · {e.artCount} artes · em {e.daysLeft} dias
               </p>
             </div>
             <div className="flex shrink-0 gap-1 opacity-0 transition-opacity group-hover:opacity-100">

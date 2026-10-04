@@ -2,6 +2,7 @@ import { db } from '@/lib/db'
 
 export type ArtDTO = {
   id: string
+  code: number
   title: string
   imageUrl: string
   isLaunch: boolean
@@ -33,6 +34,7 @@ export async function listArtsForUser(userId: string | null): Promise<ArtDTO[]> 
 
   return arts.map((a) => ({
     id: a.id,
+    code: a.code,
     title: a.title,
     imageUrl: a.imageUrl,
     isLaunch: a.isLaunch,

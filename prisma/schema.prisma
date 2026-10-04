@@ -49,12 +49,14 @@ model SeasonalEvent {
   emoji     String   @default("🎉")
   month     Int
   day       Int
+  rule      String?  // data móvel: MOTHERS_DAY | FATHERS_DAY | EASTER | CARNIVAL | BLACK_FRIDAY (null = data fixa mês/dia)
   createdAt DateTime @default(now())
   arts      Art[]
 }
 
 model Art {
   id              String         @id @default(cuid())
+  code            Int            @default(autoincrement()) // código curto da arte (CG-0001) — o sublimador acha a arte por ele (a sequence já garante que não repete)
   title           String
   imageUrl        String // URL pública da PRÉVIA (WebP leve) — é o que aparece no site
   originalKey     String? // chave do PNG ORIGINAL no R2 (privado) — nunca enviada ao navegador
@@ -68,6 +70,8 @@ model Art {
   favorites       Favorite[]
   downloads       Download[]
   createdAt       DateTime       @default(now())
+
+  @@index([code])
 }
 
 model ArtTag {
