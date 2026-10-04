@@ -199,12 +199,25 @@ export function AdminArtsSection() {
       if (sign.r2) {
         /* R2: PNG original -> bucket privado | WebP leve -> bucket público (prévia). Direto do navegador. */
         const preview = await makePreview(file)
-        const [o, p] = await Promise.all([
-          fetch(sign.originalPutUrl, { method: 'PUT', headers: { 'Content-Type': sign.originalType }, body: file }),
-          fetch(sign.previewPutUrl, { method: 'PUT', headers: { 'Content-Type': 'image/webp' }, body: preview }),
-        ])
+        let o: Response
+        let p: Response
+        try {
+          ;[o, p] = await Promise.all([
+            fetch(sign.originalPutUrl, { method: 'PUT', headers: { 'Content-Type': sign.originalType }, body: file }),
+            fetch(sign.previewPutUrl, { method: 'PUT', headers: { 'Content-Type': 'image/webp' }, body: preview }),
+          ])
+        } catch {
+          // fetch só "lança" quando o navegador bloqueia: na prática, CORS do bucket
+          toast.error('O navegador bloqueou o envio ao R2 (CORS). Configure o CORS nos DOIS buckets permitindo este site.')
+          return
+        }
         if (!o.ok || !p.ok) {
-          toast.error('Falha ao enviar para o R2. Confira as chaves e o CORS do bucket.')
+          const bad = !o.ok ? o : p
+          const detail = await bad.text().catch(() => '')
+          const code = /<Code>([^<]+)<\/Code>/.exec(detail)?.[1]
+          toast.error(
+            `R2 recusou o envio (${bad.status}${code ? ` · ${code}` : ''}) — ${!o.ok ? 'bucket dos originais' : 'bucket das prévias'}. Confira chaves, nomes dos buckets e permissões do token.`
+          )
           return
         }
         setForm((f) => ({ ...f, imageUrl: sign.previewUrl, originalKey: sign.originalKey }))
@@ -223,8 +236,9 @@ export function AdminArtsSection() {
       }
       setForm((f) => ({ ...f, imageUrl: data.url, originalKey: undefined }))
       toast.success('Imagem enviada!')
-    } catch {
-      toast.error('Falha no upload.')
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : ''
+      toast.error(msg === 'img' ? 'Não consegui ler essa imagem. Use PNG, JPG ou WEBP válidos.' : 'Falha no upload.')
     } finally {
       setUploading(false)
     }

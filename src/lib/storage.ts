@@ -52,6 +52,10 @@ export async function makeR2Client(cfg: R2Config) {
     region: 'auto',
     endpoint: cfg.endpoint,
     credentials: { accessKeyId: cfg.accessKeyId, secretAccessKey: cfg.secretAccessKey },
+    // SDKs recentes embutem um checksum CRC32 (valor de arquivo vazio) na URL assinada
+    // e o upload do navegador passa a falhar no R2. "WHEN_REQUIRED" desliga isso.
+    requestChecksumCalculation: 'WHEN_REQUIRED',
+    responseChecksumValidation: 'WHEN_REQUIRED',
   })
 }
 
@@ -104,6 +108,8 @@ export async function putImage(buffer: Buffer, ext: string): Promise<string> {
         accessKeyId: s.r2_access_key_id,
         secretAccessKey: s.r2_secret_access_key,
       },
+      requestChecksumCalculation: 'WHEN_REQUIRED',
+      responseChecksumValidation: 'WHEN_REQUIRED',
     })
     await client.send(
       new PutObjectCommand({
