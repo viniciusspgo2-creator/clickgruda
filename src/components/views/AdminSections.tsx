@@ -241,7 +241,7 @@ export function AdminArtsSection() {
         />
         <div className="flex flex-wrap gap-2">
           <Button onClick={() => setBulkOpen(true)} variant="outline" className="h-10 rounded-xl border-orange-300 font-black text-orange-600 hover:bg-orange-50">
-            <Images className="mr-1.5 h-4 w-4" /> Enviar várias (até 20)
+            <Images className="mr-1.5 h-4 w-4" /> Enviar várias (até 100)
           </Button>
           <Button onClick={openNew} className="h-10 rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 font-black shadow-md shadow-orange-500/25">
             <Plus className="mr-1.5 h-4 w-4" /> Nova arte

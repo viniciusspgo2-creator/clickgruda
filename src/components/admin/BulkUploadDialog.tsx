@@ -13,7 +13,7 @@ import { getCategoryIcon } from '@/lib/category-icons'
 import { ALLOWED_ART_EXT, MAX_ART_SIZE, uploadArtFile } from '@/lib/art-upload'
 import { cn } from '@/lib/utils'
 
-export const BULK_MAX = 20
+export const BULK_MAX = 100
 
 type Category = { id: string; name: string; emoji: string; icon: string }
 type EventOpt = { id: string; name: string; emoji: string }
@@ -302,7 +302,7 @@ export function BulkUploadDialog({
                 >
                   <div className="flex flex-col gap-3 sm:flex-row">
                     <div className="relative aspect-[21/9.5] w-full shrink-0 overflow-hidden rounded-xl border border-zinc-200 bg-zinc-50 sm:w-52">
-                      <img src={it.previewUrl} alt={`Prévia ${idx + 1}`} className="h-full w-full object-contain p-1" />
+                      <img src={it.previewUrl} alt={`Prévia ${idx + 1}`} loading="lazy" decoding="async" className="h-full w-full object-contain p-1" />
                       <span className="absolute left-1.5 top-1.5 rounded-md bg-zinc-900/85 px-1.5 py-0.5 text-[10px] font-black text-white">#{idx + 1}</span>
                       {it.status === 'working' && (
                         <span className="absolute inset-0 flex items-center justify-center bg-white/70">
