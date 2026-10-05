@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useInfiniteQuery, type InfiniteData } from '@tanstack/react-query'
 import { motion } from 'framer-motion'
 import {
@@ -14,6 +14,7 @@ import {
   Sparkles,
 } from 'lucide-react'
 import { Logo } from '@/components/shared/Logo'
+import { LoadMoreFooter } from '@/components/shared/LoadMoreFooter'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useStore } from '@/lib/store'
 import { getCategoryIcon } from '@/lib/category-icons'
@@ -106,20 +107,7 @@ export function SharedCatalogView() {
     return out
   }, [catalogQ.data])
 
-  const sentinelRef = useRef<HTMLDivElement>(null)
   const { hasNextPage, isFetchingNextPage, fetchNextPage } = catalogQ
-  useEffect(() => {
-    const el = sentinelRef.current
-    if (!el || !hasNextPage) return
-    const io = new IntersectionObserver(
-      (entries) => {
-        if (entries[0]?.isIntersecting && !isFetchingNextPage) fetchNextPage()
-      },
-      { rootMargin: '500px 0px' }
-    )
-    io.observe(el)
-    return () => io.disconnect()
-  }, [hasNextPage, isFetchingNextPage, fetchNextPage, arts.length])
 
   if (!token) {
     return (
@@ -346,20 +334,15 @@ export function SharedCatalogView() {
         )}
 
         {arts.length > 0 && (
-          <div ref={sentinelRef} className="flex justify-center py-8">
-            {isFetchingNextPage ? (
-              <span className="flex items-center gap-2 text-sm font-semibold text-zinc-400">
-                <Loader2 className="h-4 w-4 animate-spin text-orange-500" /> Carregando mais artes...
-              </span>
-            ) : hasNextPage ? (
-              <button
-                onClick={() => fetchNextPage()}
-                className="rounded-xl border border-zinc-200 bg-white px-4 py-2 text-sm font-bold text-zinc-600 hover:text-orange-600"
-              >
-                Carregar mais artes
-              </button>
-            ) : null}
-          </div>
+          <LoadMoreFooter
+            loaded={arts.length}
+            total={total}
+            pagesLoaded={catalogQ.data?.pages.length ?? 0}
+            hasNextPage={!!hasNextPage}
+            isFetchingNextPage={isFetchingNextPage}
+            fetchNextPage={fetchNextPage}
+            resetKey={JSON.stringify([search, categoryId])}
+          />
         )}
       </main>
 

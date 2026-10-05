@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient, type InfiniteData } from '@tanstack/react-query'
 import { AnimatePresence, motion } from 'framer-motion'
 import {
@@ -44,6 +44,7 @@ import { ThemeSuggestionDialog } from '@/components/portal/ThemeSuggestionDialog
 import { CatalogoDigitalNews } from '@/components/portal/CatalogoDigitalNews'
 import { BackupStrip } from '@/components/portal/BackupStrip'
 import { WaitlistDialog } from '@/components/portal/WaitlistDialog'
+import { LoadMoreFooter } from '@/components/shared/LoadMoreFooter'
 import { ZipDownloadDialog } from '@/components/portal/ZipDownloadDialog'
 import { DailyLimitDialog } from '@/components/portal/DailyLimitDialog'
 import { WHATSAPP, WHATSAPP_MESSAGES } from '@/lib/site'
@@ -294,21 +295,7 @@ export function PortalView() {
   }, [artsQ.data])
   const total = artsQ.data?.pages[0]?.total ?? 0
 
-  // Sentinela: quando chega perto do fim da lista, carrega a próxima página
-  const sentinelRef = useRef<HTMLDivElement>(null)
   const { hasNextPage, isFetchingNextPage, fetchNextPage } = artsQ
-  useEffect(() => {
-    const el = sentinelRef.current
-    if (!el || !hasNextPage) return
-    const io = new IntersectionObserver(
-      (entries) => {
-        if (entries[0]?.isIntersecting && !isFetchingNextPage) fetchNextPage()
-      },
-      { rootMargin: '600px 0px' }
-    )
-    io.observe(el)
-    return () => io.disconnect()
-  }, [hasNextPage, isFetchingNextPage, fetchNextPage, arts.length])
 
   if (!user || !user.hasAccess) return null
 
@@ -719,23 +706,17 @@ export function PortalView() {
           </motion.div>
         )}
 
-        {/* Rolagem infinita */}
+        {/* Rolagem híbrida: carrega sozinho até um limite, depois "Carregar mais" */}
         {tab !== 'compartilhar' && arts.length > 0 && (
-          <div ref={sentinelRef} className="flex flex-col items-center gap-2 py-8">
-            {isFetchingNextPage ? (
-              <span className="flex items-center gap-2 text-sm font-semibold text-zinc-400">
-                <Loader2 className="h-4 w-4 animate-spin text-orange-500" /> Carregando mais artes...
-              </span>
-            ) : hasNextPage ? (
-              <Button variant="outline" onClick={() => fetchNextPage()} className="rounded-xl border-zinc-200 font-bold text-zinc-600">
-                Carregar mais artes
-              </Button>
-            ) : (
-              <span className="text-xs font-semibold text-zinc-300">
-                Você viu todas as {total} {total === 1 ? 'arte' : 'artes'} ✨
-              </span>
-            )}
-          </div>
+          <LoadMoreFooter
+            loaded={arts.length}
+            total={total}
+            pagesLoaded={artsQ.data?.pages.length ?? 0}
+            hasNextPage={!!hasNextPage}
+            isFetchingNextPage={isFetchingNextPage}
+            fetchNextPage={fetchNextPage}
+            resetKey={JSON.stringify([tab, q, categoryIds, tagIds, sort, seasonalEventId])}
+          />
         )}
 
         {/* Sugerir uma nova arte — chamada em destaque */}
