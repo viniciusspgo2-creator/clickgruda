@@ -1,7 +1,7 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { useInfiniteQuery, useMutation, useQuery, useQueryClient, type InfiniteData } from '@tanstack/react-query'
 import { AnimatePresence, motion } from 'framer-motion'
 import {
   CalendarHeart,
@@ -13,6 +13,7 @@ import {
   Heart,
   LayoutGrid,
   Lightbulb,
+  Loader2,
   LogOut,
   Menu,
   MessageCircle,
@@ -42,6 +43,9 @@ import { ShareCatalogSection } from '@/components/portal/ShareCatalogSection'
 import { ThemeSuggestionDialog } from '@/components/portal/ThemeSuggestionDialog'
 import { CatalogoDigitalNews } from '@/components/portal/CatalogoDigitalNews'
 import { BackupStrip } from '@/components/portal/BackupStrip'
+import { WaitlistDialog } from '@/components/portal/WaitlistDialog'
+import { ZipDownloadDialog } from '@/components/portal/ZipDownloadDialog'
+import { DailyLimitDialog } from '@/components/portal/DailyLimitDialog'
 import { WHATSAPP, WHATSAPP_MESSAGES } from '@/lib/site'
 import { getCategoryIcon } from '@/lib/category-icons'
 import { useStore, type PortalTab } from '@/lib/store'
@@ -50,6 +54,7 @@ import { cn } from '@/lib/utils'
 import { track } from '@/lib/analytics'
 
 type DownloadStates = Record<string, 'idle' | 'loading' | 'done'>
+type ArtsPage = { arts: ArtItem[]; total: number; page: number; pageSize: number; hasMore: boolean }
 
 const TABS: { id: PortalTab; label: string; icon: React.ElementType }[] = [
   { id: 'todas', label: 'Todas', icon: LayoutGrid },
@@ -98,12 +103,43 @@ export function PortalView() {
   const [searchInput, setSearchInput] = useState(q)
   const [downloadStates, setDownloadStates] = useState<DownloadStates>({})
   const [suggestionOpen, setSuggestionOpen] = useState(false)
+  const [waitlistOpen, setWaitlistOpen] = useState(false)
+  const [zipOpen, setZipOpen] = useState(false)
+  const [limitDialog, setLimitDialog] = useState<number | null>(null)
 
   // Debounce search
   useEffect(() => {
     const t = setTimeout(() => setFilter({ q: searchInput }), 300)
     return () => clearTimeout(t)
   }, [searchInput, setFilter])
+
+  // Vigia da sessão: se este aparelho foi desconectado (limite de dispositivos), volta para o login
+  useEffect(() => {
+    if (!user || user.role === 'ADMIN') return
+    let stopped = false
+    const check = async () => {
+      try {
+        const res = await fetch('/api/auth/me', { cache: 'no-store' })
+        const data = await res.json()
+        if (stopped) return
+        if (!data.user && data.reason === 'SESSION_REVOKED') {
+          toast.info('Sua conta foi aberta em outro aparelho e este foi desconectado. Entre novamente para continuar.')
+          setUser(null)
+          setView('auth')
+        }
+      } catch {
+        /* sem rede: tenta de novo no próximo ciclo */
+      }
+    }
+    const timer = setInterval(check, 120_000)
+    const onVisible = () => document.visibilityState === 'visible' && check()
+    document.addEventListener('visibilitychange', onVisible)
+    return () => {
+      stopped = true
+      clearInterval(timer)
+      document.removeEventListener('visibilitychange', onVisible)
+    }
+  }, [user, setUser, setView])
 
   // Guards (skip redirect if the active view already changed — e.g. during exit animation)
   useEffect(() => {
@@ -123,9 +159,18 @@ export function PortalView() {
   if (tagIds.length) params.set('tags', tagIds.join(','))
   if (tab === 'sazonal' && seasonalEventId) params.set('event', seasonalEventId)
 
-  const artsQ = useQuery<{ arts: ArtItem[]; total: number }>({
+  // Paginação no servidor + rolagem infinita (o acervo pode ter milhares de artes)
+  const artsQ = useInfiniteQuery<ArtsPage, Error, InfiniteData<ArtsPage, number>, unknown[], number>({
     queryKey: ['arts', tab, q, categoryIds, tagIds, sort, seasonalEventId],
-    queryFn: async () => (await fetch(`/api/arts?${params.toString()}`)).json(),
+    initialPageParam: 1,
+    queryFn: async ({ pageParam }) => {
+      const p = new URLSearchParams(params)
+      p.set('page', String(pageParam))
+      const res = await fetch(`/api/arts?${p.toString()}`)
+      if (!res.ok) throw new Error('Falha ao carregar as artes')
+      return res.json()
+    },
+    getNextPageParam: (last) => (last.hasMore ? last.page + 1 : undefined),
     enabled: !!user?.hasAccess && tab !== 'compartilhar',
   })
 
@@ -151,11 +196,14 @@ export function PortalView() {
       return res.json() as Promise<{ favorited: boolean }>
     },
     onMutate: async (artId: string) => {
-      queryClient.setQueriesData<{ arts: ArtItem[] }>({ queryKey: ['arts'] }, (old) =>
+      queryClient.setQueriesData<InfiniteData<ArtsPage, number>>({ queryKey: ['arts'] }, (old) =>
         old
           ? {
               ...old,
-              arts: old.arts.map((a) => (a.id === artId ? { ...a, favorited: !a.favorited } : a)),
+              pages: old.pages.map((pg) => ({
+                ...pg,
+                arts: pg.arts.map((a) => (a.id === artId ? { ...a, favorited: !a.favorited } : a)),
+              })),
             }
           : old
       )
@@ -198,7 +246,8 @@ export function PortalView() {
       const res = await fetch(`/api/arts/${art.id}/download`)
       if (!res.ok) {
         const data = await res.json().catch(() => ({}))
-        toast.error(data.error || 'Erro ao baixar a arte.')
+        if (data.code === 'DAILY_LIMIT') setLimitDialog(Number(data.limit) || 500)
+        else toast.error(data.error || 'Erro ao baixar a arte.')
         setDownloadStates((s) => ({ ...s, [art.id]: 'idle' }))
         return
       }
@@ -230,11 +279,40 @@ export function PortalView() {
     }
   }
 
+  const arts = useMemo(() => {
+    const seen = new Set<string>()
+    const out: ArtItem[] = []
+    for (const pg of artsQ.data?.pages ?? []) {
+      for (const a of pg.arts) {
+        if (!seen.has(a.id)) {
+          seen.add(a.id)
+          out.push(a)
+        }
+      }
+    }
+    return out
+  }, [artsQ.data])
+  const total = artsQ.data?.pages[0]?.total ?? 0
+
+  // Sentinela: quando chega perto do fim da lista, carrega a próxima página
+  const sentinelRef = useRef<HTMLDivElement>(null)
+  const { hasNextPage, isFetchingNextPage, fetchNextPage } = artsQ
+  useEffect(() => {
+    const el = sentinelRef.current
+    if (!el || !hasNextPage) return
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (entries[0]?.isIntersecting && !isFetchingNextPage) fetchNextPage()
+      },
+      { rootMargin: '600px 0px' }
+    )
+    io.observe(el)
+    return () => io.disconnect()
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage, arts.length])
+
   if (!user || !user.hasAccess) return null
 
   const counts = catalogQ.data?.counts
-  const arts = artsQ.data?.arts ?? []
-  const total = artsQ.data?.total ?? 0
 
   const activeFilterChips: { label: string; onRemove: () => void }[] = [
     ...categoryIds.map((id) => ({
@@ -438,7 +516,7 @@ export function PortalView() {
       )}
 
       {/* ================= FAIXA DE BACKUP ================= */}
-      {!user.isDemo && <BackupStrip />}
+      {!user.isDemo && <BackupStrip onZip={() => setZipOpen(true)} limit={catalogQ.data?.quota?.limit ?? 0} />}
 
       {/* ================= SEASONAL HERO ================= */}
       {tab === 'sazonal' && catalogQ.data && (
@@ -528,7 +606,9 @@ export function PortalView() {
       {/* ================= CONTENT ================= */}
       <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-6 sm:px-6">
         {/* Novidade: Catálogo Digital (aba inicial) */}
-        {tab === 'todas' && !q && <CatalogoDigitalNews />}
+        {tab === 'todas' && !q && (
+          <CatalogoDigitalNews waitlisted={!!catalogQ.data?.waitlisted} onJoin={() => (user.isDemo ? toast.info('A lista de espera abre após a ativação do seu acesso.') : setWaitlistOpen(true))} />
+        )}
 
         {/* Active filters */}
         {(activeFilterChips.length > 0 || q) && (
@@ -637,6 +717,25 @@ export function PortalView() {
               ))}
             </AnimatePresence>
           </motion.div>
+        )}
+
+        {/* Rolagem infinita */}
+        {tab !== 'compartilhar' && arts.length > 0 && (
+          <div ref={sentinelRef} className="flex flex-col items-center gap-2 py-8">
+            {isFetchingNextPage ? (
+              <span className="flex items-center gap-2 text-sm font-semibold text-zinc-400">
+                <Loader2 className="h-4 w-4 animate-spin text-orange-500" /> Carregando mais artes...
+              </span>
+            ) : hasNextPage ? (
+              <Button variant="outline" onClick={() => fetchNextPage()} className="rounded-xl border-zinc-200 font-bold text-zinc-600">
+                Carregar mais artes
+              </Button>
+            ) : (
+              <span className="text-xs font-semibold text-zinc-300">
+                Você viu todas as {total} {total === 1 ? 'arte' : 'artes'} ✨
+              </span>
+            )}
+          </div>
         )}
 
         {/* Sugerir uma nova arte — chamada em destaque */}
@@ -781,6 +880,9 @@ export function PortalView() {
 
       {/* ================= SUGESTÃO DE TEMA (envia ao Admin Master) ================= */}
       <ThemeSuggestionDialog open={suggestionOpen} onOpenChange={setSuggestionOpen} />
+      <WaitlistDialog open={waitlistOpen} onOpenChange={setWaitlistOpen} />
+      <ZipDownloadDialog open={zipOpen} onOpenChange={setZipOpen} catalog={catalogQ.data} />
+      <DailyLimitDialog open={limitDialog !== null} onOpenChange={(o) => !o && setLimitDialog(null)} limit={limitDialog ?? 500} />
     </div>
   )
 }

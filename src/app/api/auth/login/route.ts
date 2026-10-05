@@ -1,5 +1,6 @@
 import { db } from '@/lib/db'
-import { verifyPassword, createSessionToken, setSessionCookie, jsonError } from '@/lib/auth'
+import { verifyPassword, setSessionCookie, jsonError } from '@/lib/auth'
+import { startSession } from '@/lib/sessions'
 
 export async function POST(req: Request) {
   try {
@@ -15,7 +16,7 @@ export async function POST(req: Request) {
     const ok = await verifyPassword(password, user.password)
     if (!ok) return jsonError('E-mail ou senha incorretos', 401)
 
-    const token = await createSessionToken(user.id)
+    const token = await startSession(user, req)
     await setSessionCookie(token)
 
     return Response.json({

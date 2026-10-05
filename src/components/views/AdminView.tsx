@@ -17,8 +17,11 @@ import {
   Lightbulb,
   LogOut,
   Menu,
+  ClipboardList,
   Receipt,
+  SearchX,
   Settings,
+  ShieldAlert,
   ShieldCheck,
   ShoppingBag,
   Tag,
@@ -38,6 +41,7 @@ import { Label } from '@/components/ui/label'
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet'
 import { Logo } from '@/components/shared/Logo'
 import { AdminArtsSection, AdminCategoriesSection, AdminSuggestionsSection, AdminTagsSection, AdminSeasonalSection, AdminSettingsSection } from '@/components/views/AdminSections'
+import { AdminSearchMissesSection, AdminSecuritySection, AdminWaitlistSection } from '@/components/views/AdminGrowthSections'
 import { useStore } from '@/lib/store'
 import { formatBRL } from '@/lib/types'
 import { cn } from '@/lib/utils'
@@ -51,6 +55,9 @@ export type AdminSection =
   | 'users'
   | 'payments'
   | 'sugestoes'
+  | 'buscas'
+  | 'espera'
+  | 'seguranca'
   | 'settings'
 
 const SECTIONS: { id: AdminSection; label: string; icon: React.ElementType }[] = [
@@ -62,6 +69,9 @@ const SECTIONS: { id: AdminSection; label: string; icon: React.ElementType }[] =
   { id: 'users', label: 'Usuários', icon: Users },
   { id: 'payments', label: 'Pagamentos', icon: CreditCard },
   { id: 'sugestoes', label: 'Sugestões de Tema', icon: Lightbulb },
+  { id: 'buscas', label: 'Buscas sem resultado', icon: SearchX },
+  { id: 'espera', label: 'Lista de espera', icon: ClipboardList },
+  { id: 'seguranca', label: 'Segurança', icon: ShieldAlert },
   { id: 'settings', label: 'Configurações', icon: Settings },
 ]
 
@@ -73,7 +83,7 @@ export function AdminView() {
   const [mobileNav, setMobileNav] = useState(false)
 
   // Badge de sugestões novas (compartilha o cache com o Dashboard)
-  const statsQ = useQuery<{ stats: { suggestionsNew?: number } }>({
+  const statsQ = useQuery<{ stats: { suggestionsNew?: number; searchMissesNew?: number; waitlistTotal?: number; alertsOpen?: number } }>({
     queryKey: ['admin-stats'],
     queryFn: async () => (await fetch('/api/admin/stats')).json(),
     enabled: user?.role === 'ADMIN',
@@ -81,6 +91,12 @@ export function AdminView() {
     refetchInterval: 30_000,
   })
   const newSuggestions = statsQ.data?.stats?.suggestionsNew ?? 0
+  const navBadges: Partial<Record<AdminSection, number>> = {
+    sugestoes: newSuggestions,
+    buscas: statsQ.data?.stats?.searchMissesNew ?? 0,
+    espera: statsQ.data?.stats?.waitlistTotal ?? 0,
+    seguranca: statsQ.data?.stats?.alertsOpen ?? 0,
+  }
 
   if (!user || user.role !== 'ADMIN') {
     return (
@@ -122,9 +138,9 @@ export function AdminView() {
           >
             <s.icon className="h-4.5 w-4.5" />
             {s.label}
-            {s.id === 'sugestoes' && newSuggestions > 0 && (
+            {(navBadges[s.id] ?? 0) > 0 && (
               <span className="ml-auto flex h-5 min-w-5 items-center justify-center rounded-full bg-orange-500 px-1.5 text-[10px] font-black text-white">
-                {newSuggestions}
+                {navBadges[s.id]}
               </span>
             )}
           </button>
@@ -204,6 +220,9 @@ export function AdminView() {
             {section === 'users' && <UsersSection />}
             {section === 'payments' && <PaymentsSection />}
             {section === 'sugestoes' && <AdminSuggestionsSection />}
+            {section === 'buscas' && <AdminSearchMissesSection />}
+            {section === 'espera' && <AdminWaitlistSection />}
+            {section === 'seguranca' && <AdminSecuritySection />}
             {section === 'settings' && <AdminSettingsSection />}
           </motion.div>
         </main>

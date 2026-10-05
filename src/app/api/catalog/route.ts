@@ -3,6 +3,7 @@ import { getSessionUser } from '@/lib/auth'
 import { getSettings, resolveProvider } from '@/lib/settings'
 import { nextEventDate, daysUntil } from '@/lib/seasonal'
 import { ensureDefaultSeasonalEvents } from '@/lib/seasonal-defaults'
+import { downloadQuota } from '@/lib/download-quota'
 
 export async function GET() {
   await ensureDefaultSeasonalEvents()
@@ -42,6 +43,11 @@ export async function GET() {
     })
     .sort((a, b) => new Date(a.nextDate).getTime() - new Date(b.nextDate).getTime())
 
+  const quota = session && session.hasAccess && !session.isDemo && session.role !== 'ADMIN' ? await downloadQuota(session.id) : null
+  const waitlisted = session
+    ? Boolean(await db.catalogoWaitlist.findFirst({ where: { userId: session.id }, select: { id: true } }))
+    : false
+
   const [favCount, dlCount] = session
     ? await Promise.all([
         db.favorite.count({ where: { userId: session.id } }),
@@ -68,6 +74,8 @@ export async function GET() {
       favoritas: favCount,
       minhasDownloads: dlCount,
     },
+    waitlisted,
+    quota: quota ? { used: quota.used, limit: quota.limit } : null,
     priceCents: parseInt(settings.price_cents || '4790', 10),
     provider: resolveProvider(settings),
     providers: {

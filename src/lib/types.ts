@@ -38,6 +38,9 @@ export type CatalogData = {
   events: CatalogEvent[]
   nextEvent: CatalogEvent | null
   counts: { arts: number; lancamentos: number; selecionadas: number; favoritas: number; minhasDownloads: number }
+  waitlisted?: boolean
+  /** downloads de hoje (artes diferentes) e limite diário; limit 0 = sem limite */
+  quota?: { used: number; limit: number } | null
   priceCents: number
   provider: 'MERCADOPAGO' | 'ASAAS' | null
   providers: { mercadopago: boolean; asaas: boolean }

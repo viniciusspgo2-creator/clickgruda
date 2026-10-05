@@ -16,6 +16,8 @@ export const SETTING_KEYS = [
   'r2_bucket',
   'r2_originals_bucket',
   'r2_public_url',
+  'max_devices',
+  'dl_daily_limit',
 ] as const
 
 export type SettingsMap = Partial<Record<(typeof SETTING_KEYS)[number], string>>

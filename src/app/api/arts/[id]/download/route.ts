@@ -1,6 +1,7 @@
 import { db } from '@/lib/db'
 import { getSessionUser, jsonError } from '@/lib/auth'
 import { formatArtCode } from '@/lib/art-code'
+import { downloadQuota, limitMessage, nextResetBR, recordLimitHit } from '@/lib/download-quota'
 import { readLocalFile, extToMime, slugify, getR2Config, presignOriginalGet } from '@/lib/storage'
 
 export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
@@ -15,8 +16,23 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
   const art = await db.art.findUnique({ where: { id } })
   if (!art) return jsonError('Arte não encontrada', 404)
 
+  // Limite diário de downloads (admin fica de fora). Baixar de novo uma arte já baixada HOJE não gasta cota.
+  if (session.role !== 'ADMIN') {
+    const quota = await downloadQuota(session.id)
+    if (quota.limit > 0 && quota.used >= quota.limit && !quota.today.has(id)) {
+      await recordLimitHit(session.id, quota.limit)
+      return Response.json(
+        { error: limitMessage(quota.limit), code: 'DAILY_LIMIT', limit: quota.limit, resetAt: nextResetBR().toISOString() },
+        { status: 429, headers: { 'Cache-Control': 'no-store' } }
+      )
+    }
+  }
+
+  // ?via=zip → a arte está sendo baixada dentro de um ZIP de backup
+  const viaZip = new URL(req.url).searchParams.get('via') === 'zip'
+
   await db.$transaction([
-    db.download.create({ data: { userId: session.id, artId: id } }),
+    db.download.create({ data: { userId: session.id, artId: id, viaZip } }),
     db.art.update({ where: { id }, data: { downloadsCount: { increment: 1 } } }),
   ])
 

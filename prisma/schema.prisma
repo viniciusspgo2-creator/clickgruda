@@ -25,6 +25,10 @@ model User {
   payments     Payment[]
   suggestions  ThemeSuggestion[]
   shareLinks   ShareLink[]
+  sessions     UserSession[]
+  alerts       AccountAlert[]
+  waitlist     CatalogoWaitlist[]
+  limitHits    DownloadLimitHit[]
 }
 
 model Category {
@@ -100,7 +104,10 @@ model Download {
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   artId     String
   art       Art      @relation(fields: [artId], references: [id], onDelete: Cascade)
+  viaZip    Boolean  @default(false) // baixada dentro de um ZIP de backup (conta separado no alerta de volume)
   createdAt DateTime @default(now())
+
+  @@index([userId, createdAt])
 }
 
 model Payment {
@@ -149,4 +156,77 @@ model ShareLink {
   views     Int      @default(0)
   expiresAt DateTime
   createdAt DateTime @default(now())
+}
+
+/**
+ * UserSession — cada login = 1 dispositivo. O JWT carrega o id (sid); revogar a linha
+ * derruba aquele aparelho na hora. Base do limite de dispositivos por conta.
+ */
+model UserSession {
+  id            String    @id @default(cuid())
+  userId        String
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  device        String    @default("") // "Chrome · Windows"
+  ip            String    @default("")
+  createdAt     DateTime  @default(now())
+  lastSeenAt    DateTime  @default(now())
+  revokedAt     DateTime?
+  revokedReason String? // LIMIT | ADMIN | LOGOUT
+
+  @@index([userId, revokedAt])
+}
+
+/** Alerta de possível compartilhamento de conta (troca de aparelhos ou volume anormal de downloads). */
+model AccountAlert {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type      String // DEVICES | DOWNLOADS
+  detail    String
+  resolved  Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([resolved, createdAt])
+}
+
+/** Buscas do portal que não encontraram nenhuma arte — fila de temas para criar. */
+model SearchMiss {
+  id        String   @id @default(cuid())
+  query     String   @unique // normalizada: minúsculas, sem acento, espaços colapsados
+  display   String // última forma digitada
+  count     Int      @default(1) // total de buscas
+  users     Int      @default(0) // pessoas diferentes que buscaram
+  status    String   @default("NEW") // NEW | DONE (arte criada)
+  lastAt    DateTime @default(now())
+  createdAt DateTime @default(now())
+  people    SearchMissUser[]
+}
+
+model SearchMissUser {
+  missId String
+  miss   SearchMiss @relation(fields: [missId], references: [id], onDelete: Cascade)
+  userId String
+
+  @@id([missId, userId])
+}
+
+/** Lista de espera do Catálogo Digital (membros que querem o preço de membro). */
+model CatalogoWaitlist {
+  id         String    @id @default(cuid())
+  name       String
+  email      String    @unique
+  whatsapp   String
+  userId     String?
+  user       User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
+  notifiedAt DateTime? // quando você avisou do lançamento
+  createdAt  DateTime  @default(now())
+}
+
+/** Dias em que a conta bateu o limite diário de downloads (base do alerta de uso pesado recorrente). */
+model DownloadLimitHit {
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  day    String // YYYY-MM-DD no fuso de Brasília
+
+  @@id([userId, day])
 }

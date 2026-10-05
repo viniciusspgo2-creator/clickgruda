@@ -1,6 +1,6 @@
 import { db } from '@/lib/db'
 import { getSessionUser, jsonError } from '@/lib/auth'
-import { listArtsForUser } from '@/lib/arts'
+import { queryArts } from '@/lib/arts'
 
 async function requireAdmin() {
   const session = await getSessionUser()
@@ -8,10 +8,13 @@ async function requireAdmin() {
   return session
 }
 
-export async function GET() {
+export async function GET(req: Request) {
   if (!(await requireAdmin())) return jsonError('Não autorizado', 401)
-  const arts = await listArtsForUser(null)
-  return Response.json({ arts })
+  const url = new URL(req.url)
+  const page = parseInt(url.searchParams.get('page') || '1', 10) || 1
+  const q = (url.searchParams.get('q') || '').trim()
+  const result = await queryArts({ userId: null, tab: 'todas', q, page, pageSize: 40 })
+  return Response.json(result)
 }
 
 export async function POST(req: Request) {

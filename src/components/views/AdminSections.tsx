@@ -1,7 +1,7 @@
 'use client'
 
-import { useMemo, useRef, useState } from 'react'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { CalendarHeart, Check, Images, Cloud, CreditCard, Eye, Image as ImageIcon, Lightbulb, Loader2, Pencil, Plus, QrCode, RotateCcw, Save, Search, Smile, Star, Tag as TagIcon, Trash2, Upload, X } from 'lucide-react'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
@@ -143,7 +143,25 @@ export function AdminArtsSection() {
   const [search, setSearch] = useState('')
   const fileRef = useRef<HTMLInputElement>(null)
 
-  const artsQ = useQuery<{ arts: ArtItem[] }>({ queryKey: ['admin-arts'], queryFn: async () => (await fetch('/api/admin/arts')).json() })
+  // Lista paginada no servidor (40 por página) — funciona com milhares de artes
+  const [page, setPage] = useState(1)
+  const [debouncedSearch, setDebouncedSearch] = useState('')
+  useEffect(() => {
+    const t = setTimeout(() => {
+      setDebouncedSearch(search.trim())
+      setPage(1)
+    }, 300)
+    return () => clearTimeout(t)
+  }, [search])
+  const artsQ = useQuery<{ arts: ArtItem[]; total: number; page: number; pageSize: number; hasMore: boolean }>({
+    queryKey: ['admin-arts', page, debouncedSearch],
+    queryFn: async () => {
+      const p = new URLSearchParams({ page: String(page) })
+      if (debouncedSearch) p.set('q', debouncedSearch)
+      return (await fetch(`/api/admin/arts?${p.toString()}`)).json()
+    },
+    placeholderData: keepPreviousData,
+  })
   const catQ = useQuery<{ categories: { id: string; name: string; emoji: string; icon: string }[] }>({ queryKey: ['admin-categories'], queryFn: async () => (await fetch('/api/admin/categories')).json() })
   const evtQ = useQuery<{ events: { id: string; name: string; emoji: string }[] }>({ queryKey: ['admin-seasonal'], queryFn: async () => (await fetch('/api/admin/seasonal')).json() })
   const tagsQ = useQuery<{ tags: { id: string; name: string }[] }>({ queryKey: ['admin-tags'], queryFn: async () => (await fetch('/api/admin/tags')).json() })
@@ -249,10 +267,9 @@ export function AdminArtsSection() {
     onError: () => toast.error('Erro ao excluir arte.'),
   })
 
-  const arts = (artsQ.data?.arts || []).filter((a) => {
-    const q = search.toLowerCase().trim()
-    return !q || a.title.toLowerCase().includes(q) || formatArtCode(a.code).toLowerCase().includes(q) || String(a.code) === q
-  })
+  const arts = artsQ.data?.arts ?? []
+  const totalArts = artsQ.data?.total ?? 0
+  const totalPages = Math.max(1, Math.ceil(totalArts / (artsQ.data?.pageSize || 40)))
 
   return (
     <div className="space-y-4">
@@ -352,6 +369,20 @@ export function AdminArtsSection() {
             <div className="p-10 text-center text-sm text-zinc-400">Nenhuma arte encontrada. Publique a primeira!</div>
           )}
         </div>
+        {totalArts > 0 && (
+          <div className="flex items-center justify-between gap-3 border-t border-zinc-100 bg-zinc-50 px-4 py-2.5 text-xs font-semibold text-zinc-500">
+            <span>{totalArts} {totalArts === 1 ? 'arte' : 'artes'}</span>
+            <div className="flex items-center gap-2">
+              <Button variant="outline" size="sm" disabled={page <= 1} onClick={() => setPage((p) => Math.max(1, p - 1))} className="h-8 rounded-lg">
+                Anterior
+              </Button>
+              <span>Página {page} de {totalPages}</span>
+              <Button variant="outline" size="sm" disabled={!artsQ.data?.hasMore} onClick={() => setPage((p) => p + 1)} className="h-8 rounded-lg">
+                Próxima
+              </Button>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* ---------- Form Dialog ---------- */}

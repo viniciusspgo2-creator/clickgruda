@@ -1,14 +1,14 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { ArrowRight, BadgeCheck, Newspaper, Sparkles, Store } from 'lucide-react'
+import { ArrowRight, BadgeCheck, CheckCircle2, Newspaper, Sparkles, Store } from 'lucide-react'
 import { CATALOGO_DIGITAL, brl, catalogoWhatsappLink } from '@/lib/portal-news'
 
 /**
  * Caixa de novidade do portal — "Catálogo Digital" chegando.
  * Mesmo visual do hero sazonal (fundo escuro + laranja) para combinar com o portal.
  */
-export function CatalogoDigitalNews() {
+export function CatalogoDigitalNews({ waitlisted, onJoin }: { waitlisted: boolean; onJoin: () => void }) {
   const c = CATALOGO_DIGITAL
   return (
     <motion.section
@@ -65,13 +65,26 @@ export function CatalogoDigitalNews() {
               <span className="text-sm font-bold text-orange-300">/ ano</span>
             </p>
           </div>
+          {waitlisted ? (
+            <div className="mt-3.5 flex h-11 items-center justify-center gap-2 rounded-xl border border-emerald-500/40 bg-emerald-500/10 text-sm font-black text-emerald-300">
+              <CheckCircle2 className="h-4 w-4" /> Você está na lista de espera
+            </div>
+          ) : (
+            <button
+              type="button"
+              onClick={onJoin}
+              className="mt-3.5 flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 text-sm font-black text-white shadow-md shadow-orange-600/30 transition-transform hover:scale-[1.02]"
+            >
+              Entrar na lista de espera <ArrowRight className="h-4 w-4" />
+            </button>
+          )}
           <a
             href={catalogoWhatsappLink()}
             target="_blank"
             rel="noopener noreferrer"
-            className="mt-3.5 flex h-11 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 text-sm font-black text-white shadow-md shadow-orange-600/30 transition-transform hover:scale-[1.02]"
+            className="mt-2 block text-center text-[11px] font-semibold text-zinc-500 underline-offset-2 hover:text-orange-300 hover:underline"
           >
-            Quero garantir o preço de membro <ArrowRight className="h-4 w-4" />
+            Prefere falar com a gente? Chame no WhatsApp
           </a>
         </div>
       </div>

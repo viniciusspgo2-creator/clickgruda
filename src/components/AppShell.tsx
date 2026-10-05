@@ -5,6 +5,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { useStore, type View } from '@/lib/store'
 import { track } from '@/lib/analytics'
+import { toast } from 'sonner'
 import { formatArtCode } from '@/lib/art-code'
 import { LandingView } from '@/components/views/LandingView'
 import { AuthView } from '@/components/views/AuthView'
@@ -71,6 +72,9 @@ export function AppShell() {
         const data = await res.json()
         if (cancelled) return
         setUser(data.user || null)
+        if (data.reason === 'SESSION_REVOKED') {
+          toast.info('Sua conta foi aberta em outro aparelho e este foi desconectado. Entre novamente para continuar.')
+        }
         if (arteParam) {
           useStore.getState().setFilter({ tab: 'todas', q: formatArtCode(arteParam), seasonalEventId: null })
           if (data.user?.hasAccess) {

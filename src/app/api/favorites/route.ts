@@ -1,12 +1,12 @@
 import { db } from '@/lib/db'
 import { getSessionUser, jsonError } from '@/lib/auth'
-import { listArtsForUser } from '@/lib/arts'
+import { queryArts } from '@/lib/arts'
 
 export async function GET() {
   const session = await getSessionUser()
   if (!session) return jsonError('Faça login para ver seus favoritos', 401)
-  const arts = await listArtsForUser(session.id)
-  return Response.json({ arts: arts.filter((a) => a.favorited) })
+  const { arts, total } = await queryArts({ userId: session.id, tab: 'favoritas', pageSize: 200 })
+  return Response.json({ arts, total })
 }
 
 export async function POST(req: Request) {

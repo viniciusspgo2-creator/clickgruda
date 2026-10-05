@@ -1,7 +1,7 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
-import { useQuery } from '@tanstack/react-query'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { useInfiniteQuery, type InfiniteData } from '@tanstack/react-query'
 import { motion } from 'framer-motion'
 import {
   CalendarClock,
@@ -31,6 +31,15 @@ type SharedArt = {
   tags: { name: string }[]
 }
 
+type SharedPage = {
+  catalog: SharedCatalog
+  categories: { name: string; emoji: string; icon: string; count: number }[]
+  arts: SharedArt[]
+  total: number
+  page: number
+  hasMore: boolean
+}
+
 type SharedCatalog = {
   ownerName: string
   ownerWhatsapp: string
@@ -55,49 +64,62 @@ export function SharedCatalogView() {
 
   // Debounce da busca
   useEffect(() => {
-    const t = setTimeout(() => setSearch(q.trim().toLowerCase()), 300)
+    const t = setTimeout(() => setSearch(q.trim()), 300)
     return () => clearTimeout(t)
   }, [q])
 
-  const catalogQ = useQuery<{ catalog: SharedCatalog; arts: SharedArt[] }>({
-    queryKey: ['shared-catalog', token],
-    queryFn: async () => {
-      const res = await fetch(`/api/public/catalog/${token}`)
+  // Busca e categoria são filtradas no servidor; a lista cresce com a rolagem (36 por vez)
+  const catalogQ = useInfiniteQuery<SharedPage, Error, InfiniteData<SharedPage, number>, unknown[], number>({
+    queryKey: ['shared-catalog', token, search, categoryId],
+    initialPageParam: 1,
+    queryFn: async ({ pageParam }) => {
+      const p = new URLSearchParams({ page: String(pageParam) })
+      if (search) p.set('q', search)
+      if (categoryId) p.set('category', categoryId)
+      const res = await fetch(`/api/public/catalog/${token}?${p.toString()}`)
       if (!res.ok) {
         const data = await res.json().catch(() => ({}))
         throw new Error(data.error || 'Catálogo indisponível.')
       }
       return res.json()
     },
+    getNextPageParam: (last) => (last.hasMore ? last.page + 1 : undefined),
     enabled: !!token,
     retry: false,
+    placeholderData: (prev) => prev,
   })
 
-  const categories = useMemo(() => {
-    const map = new Map<string, { name: string; emoji: string; icon: string; count: number }>()
-    for (const a of catalogQ.data?.arts || []) {
-      if (!a.category) continue
-      const c = map.get(a.category.name) || { ...a.category, count: 0 }
-      c.count += 1
-      map.set(a.category.name, c)
+  const firstPage = catalogQ.data?.pages[0]
+  const categories = firstPage?.categories ?? []
+  const total = firstPage?.total ?? 0
+  const arts = useMemo(() => {
+    const seen = new Set<string>()
+    const out: SharedArt[] = []
+    for (const pg of catalogQ.data?.pages ?? []) {
+      for (const a of pg.arts) {
+        if (!seen.has(a.id)) {
+          seen.add(a.id)
+          out.push(a)
+        }
+      }
     }
-    return [...map.values()].sort((a, b) => b.count - a.count)
+    return out
   }, [catalogQ.data])
 
-  const arts = useMemo(() => {
-    let list = catalogQ.data?.arts || []
-    if (categoryId) list = list.filter((a) => a.category?.name === categoryId)
-    if (search) {
-      list = list.filter(
-        (a) =>
-          a.title.toLowerCase().includes(search) ||
-          formatArtCode(a.code).toLowerCase().includes(search) ||
-          (a.category?.name || '').toLowerCase().includes(search) ||
-          a.tags.some((t) => t.name.toLowerCase().includes(search))
-      )
-    }
-    return list
-  }, [catalogQ.data, categoryId, search])
+  const sentinelRef = useRef<HTMLDivElement>(null)
+  const { hasNextPage, isFetchingNextPage, fetchNextPage } = catalogQ
+  useEffect(() => {
+    const el = sentinelRef.current
+    if (!el || !hasNextPage) return
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (entries[0]?.isIntersecting && !isFetchingNextPage) fetchNextPage()
+      },
+      { rootMargin: '500px 0px' }
+    )
+    io.observe(el)
+    return () => io.disconnect()
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage, arts.length])
 
   if (!token) {
     return (
@@ -136,7 +158,7 @@ export function SharedCatalogView() {
     )
   }
 
-  const { catalog, arts: allArts } = catalogQ.data!
+  const catalog = firstPage!.catalog
   const expires = new Date(catalog.expiresAt).toLocaleString('pt-BR', {
     day: '2-digit',
     month: '2-digit',
@@ -214,7 +236,7 @@ export function SharedCatalogView() {
             />
           </div>
           <span className="text-sm font-semibold text-zinc-400">
-            {arts.length} {arts.length === 1 ? 'arte' : 'artes'}
+            {total} {total === 1 ? 'arte' : 'artes'}
           </span>
         </div>
 
@@ -320,6 +342,23 @@ export function SharedCatalogView() {
                 </motion.div>
               )
             })}
+          </div>
+        )}
+
+        {arts.length > 0 && (
+          <div ref={sentinelRef} className="flex justify-center py-8">
+            {isFetchingNextPage ? (
+              <span className="flex items-center gap-2 text-sm font-semibold text-zinc-400">
+                <Loader2 className="h-4 w-4 animate-spin text-orange-500" /> Carregando mais artes...
+              </span>
+            ) : hasNextPage ? (
+              <button
+                onClick={() => fetchNextPage()}
+                className="rounded-xl border border-zinc-200 bg-white px-4 py-2 text-sm font-bold text-zinc-600 hover:text-orange-600"
+              >
+                Carregar mais artes
+              </button>
+            ) : null}
           </div>
         )}
       </main>

@@ -1,5 +1,6 @@
 import { db } from '@/lib/db'
-import { hashPassword, createSessionToken, setSessionCookie, jsonError } from '@/lib/auth'
+import { hashPassword, setSessionCookie, jsonError } from '@/lib/auth'
+import { startSession } from '@/lib/sessions'
 
 export async function POST(req: Request) {
   try {
@@ -19,7 +20,7 @@ export async function POST(req: Request) {
       data: { name, email, password: await hashPassword(password) },
     })
 
-    const token = await createSessionToken(user.id)
+    const token = await startSession(user, req)
     await setSessionCookie(token)
 
     return Response.json({
