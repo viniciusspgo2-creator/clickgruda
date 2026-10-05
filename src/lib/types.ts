@@ -4,6 +4,7 @@ export type ArtItem = {
   title: string
   imageUrl: string
   isLaunch: boolean
+  isSelected: boolean
   downloadsCount: number
   createdAt: string
   category: { id: string; name: string; emoji: string } | null
@@ -36,7 +37,7 @@ export type CatalogData = {
   tags: { id: string; name: string; artCount: number }[]
   events: CatalogEvent[]
   nextEvent: CatalogEvent | null
-  counts: { arts: number; lancamentos: number; favoritas: number; minhasDownloads: number }
+  counts: { arts: number; lancamentos: number; selecionadas: number; favoritas: number; minhasDownloads: number }
   priceCents: number
   provider: 'MERCADOPAGO' | 'ASAAS' | null
   providers: { mercadopago: boolean; asaas: boolean }

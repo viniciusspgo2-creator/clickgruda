@@ -60,6 +60,7 @@ model Art {
   title           String
   imageUrl        String // URL pública da PRÉVIA (WebP leve) — é o que aparece no site
   originalKey     String? // chave do PNG ORIGINAL no R2 (privado) — nunca enviada ao navegador
+  isSelected      Boolean        @default(false) // arte "especial" — aparece na aba Selecionadas do portal
   isLaunch        Boolean        @default(false)
   downloadsCount  Int            @default(0)
   categoryId      String?

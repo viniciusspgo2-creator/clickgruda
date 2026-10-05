@@ -6,6 +6,7 @@ export type ArtDTO = {
   title: string
   imageUrl: string
   isLaunch: boolean
+  isSelected: boolean
   downloadsCount: number
   createdAt: string
   category: { id: string; name: string; emoji: string } | null
@@ -38,6 +39,7 @@ export async function listArtsForUser(userId: string | null): Promise<ArtDTO[]> 
     title: a.title,
     imageUrl: a.imageUrl,
     isLaunch: a.isLaunch,
+    isSelected: a.isSelected,
     downloadsCount: a.downloadsCount,
     createdAt: a.createdAt.toISOString(),
     category: a.category ? { id: a.category.id, name: a.category.name, emoji: a.category.emoji } : null,

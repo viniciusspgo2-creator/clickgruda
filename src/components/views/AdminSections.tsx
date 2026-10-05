@@ -2,7 +2,7 @@
 
 import { useMemo, useRef, useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { CalendarHeart, Check, Images, Cloud, CreditCard, Eye, Image as ImageIcon, Lightbulb, Loader2, Pencil, Plus, QrCode, RotateCcw, Save, Search, Smile, Tag as TagIcon, Trash2, Upload, X } from 'lucide-react'
+import { CalendarHeart, Check, Images, Cloud, CreditCard, Eye, Image as ImageIcon, Lightbulb, Loader2, Pencil, Plus, QrCode, RotateCcw, Save, Search, Smile, Star, Tag as TagIcon, Trash2, Upload, X } from 'lucide-react'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -119,6 +119,7 @@ type ArtFormState = {
   seasonalEventId: string
   tagNames: string[]
   isLaunch: boolean
+  isSelected: boolean
 }
 
 const emptyForm: ArtFormState = {
@@ -128,6 +129,7 @@ const emptyForm: ArtFormState = {
   seasonalEventId: 'none',
   tagNames: [],
   isLaunch: true,
+  isSelected: false,
 }
 
 export function AdminArtsSection() {
@@ -160,6 +162,7 @@ export function AdminArtsSection() {
       seasonalEventId: art.seasonalEvent?.id || 'none',
       tagNames: art.tags.map((t) => t.name),
       isLaunch: art.isLaunch,
+      isSelected: art.isSelected,
     })
     setFormOpen(true)
   }
@@ -190,6 +193,7 @@ export function AdminArtsSection() {
         seasonalEventId: form.seasonalEventId === 'none' ? null : form.seasonalEventId,
         tagNames: form.tagNames,
         isLaunch: form.isLaunch,
+        isSelected: form.isSelected,
       }
       const res = await fetch(form.id ? `/api/admin/arts/${form.id}` : '/api/admin/arts', {
         method: form.id ? 'PATCH' : 'POST',
@@ -210,6 +214,26 @@ export function AdminArtsSection() {
       setSaving(false)
     }
   }
+
+  // Estrela rápida: marca/desmarca a arte como "Selecionada" direto na lista
+  const toggleSelected = useMutation({
+    mutationFn: async (art: ArtItem) => {
+      const res = await fetch(`/api/admin/arts/${art.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ isSelected: !art.isSelected }),
+      })
+      if (!res.ok) throw new Error()
+      return !art.isSelected
+    },
+    onSuccess: (now) => {
+      queryClient.invalidateQueries({ queryKey: ['admin-arts'] })
+      queryClient.invalidateQueries({ queryKey: ['arts'] })
+      queryClient.invalidateQueries({ queryKey: ['catalog'] })
+      toast.success(now ? 'Arte adicionada às Selecionadas ⭐' : 'Arte removida das Selecionadas.')
+    },
+    onError: () => toast.error('Não foi possível atualizar a arte.'),
+  })
 
   const remove = useMutation({
     mutationFn: async (id: string) => {
@@ -278,6 +302,7 @@ export function AdminArtsSection() {
                   <span className="shrink-0 rounded-md bg-zinc-900 px-1.5 py-0.5 font-mono text-[10px] font-bold text-orange-300">{formatArtCode(art.code)}</span>
                   {art.title}
                   {art.isLaunch && <Badge className="bg-orange-100 text-[9px] font-black uppercase text-orange-600">Novo</Badge>}
+                  {art.isSelected && <Badge className="bg-amber-100 text-[9px] font-black uppercase text-amber-700">⭐ Selecionada</Badge>}
                   {art.seasonalEvent && <Badge variant="outline" className="text-[9px] font-black text-zinc-500">{art.seasonalEvent.emoji} {art.seasonalEvent.name}</Badge>}
                 </p>
                 <p className="mt-0.5 flex flex-wrap items-center gap-x-2 text-xs text-zinc-400">
@@ -287,6 +312,17 @@ export function AdminArtsSection() {
                 </p>
               </div>
               <div className="flex shrink-0 items-center gap-1.5">
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  disabled={toggleSelected.isPending}
+                  onClick={() => toggleSelected.mutate(art)}
+                  aria-label={art.isSelected ? 'Remover das Selecionadas' : 'Marcar como Selecionada'}
+                  title={art.isSelected ? 'Remover das Selecionadas' : 'Marcar como Selecionada'}
+                  className="h-8 w-8 rounded-lg text-zinc-300 hover:bg-amber-50 hover:text-amber-500"
+                >
+                  <Star className={art.isSelected ? 'h-4 w-4 fill-amber-400 text-amber-500' : 'h-4 w-4'} />
+                </Button>
                 <Button size="icon" variant="ghost" className="h-8 w-8 rounded-lg text-zinc-400 hover:bg-orange-50 hover:text-orange-600" onClick={() => openEdit(art)} aria-label="Editar arte">
                   <Pencil className="h-4 w-4" />
                 </Button>
@@ -458,6 +494,16 @@ export function AdminArtsSection() {
                 <p className="text-xs text-zinc-400">Aparece na aba Lançamentos com selo NOVO</p>
               </div>
               <Switch checked={form.isLaunch} onCheckedChange={(v) => setForm((f) => ({ ...f, isLaunch: v }))} />
+            </div>
+
+            <div className="flex items-center justify-between rounded-xl border border-amber-200 bg-amber-50/60 px-3.5 py-3">
+              <div>
+                <p className="flex items-center gap-1.5 text-sm font-bold text-zinc-800">
+                  <Star className="h-4 w-4 fill-amber-400 text-amber-500" /> Marcar como Selecionada
+                </p>
+                <p className="text-xs text-zinc-500">Arte especial: aparece na aba Selecionadas do portal</p>
+              </div>
+              <Switch checked={form.isSelected} onCheckedChange={(v) => setForm((f) => ({ ...f, isSelected: v }))} />
             </div>
 
             <Button onClick={save} disabled={saving} className="h-11 w-full rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 font-black">

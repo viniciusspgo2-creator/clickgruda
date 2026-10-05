@@ -1,7 +1,7 @@
 'use client'
 
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { AlertTriangle, Check, CheckCircle2, Loader2, Rocket, Trash2, Upload, X } from 'lucide-react'
+import { AlertTriangle, Check, CheckCircle2, Loader2, Rocket, Star, Trash2, Upload, X } from 'lucide-react'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -28,6 +28,7 @@ type Item = {
   tagNames: string[]
   tagInput: string
   isLaunch: boolean
+  isSelected: boolean
   status: 'idle' | 'working' | 'done' | 'error'
   error?: string
 }
@@ -109,6 +110,7 @@ export function BulkUploadDialog({
         tagNames: [],
         tagInput: '',
         isLaunch: true,
+        isSelected: false,
         status: 'idle',
       })),
     ])
@@ -122,7 +124,7 @@ export function BulkUploadDialog({
     })
   }
 
-  const applyToAll = (partial: Partial<Pick<Item, 'categoryId' | 'seasonalEventId' | 'isLaunch'>>) =>
+  const applyToAll = (partial: Partial<Pick<Item, 'categoryId' | 'seasonalEventId' | 'isLaunch' | 'isSelected'>>) =>
     setItems((list) => list.map((i) => (i.status === 'done' ? i : { ...i, ...partial })))
 
   const addTag = (uid: string, raw: string) => {
@@ -163,6 +165,7 @@ export function BulkUploadDialog({
             seasonalEventId: it.seasonalEventId === 'none' ? null : it.seasonalEventId,
             tagNames: it.tagNames,
             isLaunch: it.isLaunch,
+            isSelected: it.isSelected,
           }),
         })
         const data = await res.json().catch(() => ({}))
@@ -278,12 +281,21 @@ export function BulkUploadDialog({
                   </SelectContent>
                 </Select>
               </div>
-              <div className="flex items-center gap-2 pb-1.5">
-                <Switch
-                  checked={pending.length > 0 && pending.every((i) => i.isLaunch)}
-                  onCheckedChange={(v) => applyToAll({ isLaunch: v })}
-                />
-                <span className="text-xs font-bold text-zinc-600">Todas como lançamento</span>
+              <div className="flex flex-col gap-2 pb-1.5">
+                <label className="flex items-center gap-2">
+                  <Switch
+                    checked={pending.length > 0 && pending.every((i) => i.isLaunch)}
+                    onCheckedChange={(v) => applyToAll({ isLaunch: v })}
+                  />
+                  <span className="text-xs font-bold text-zinc-600">Todas como lançamento</span>
+                </label>
+                <label className="flex items-center gap-2">
+                  <Switch
+                    checked={pending.length > 0 && pending.every((i) => i.isSelected)}
+                    onCheckedChange={(v) => applyToAll({ isSelected: v })}
+                  />
+                  <span className="text-xs font-bold text-zinc-600">Todas como selecionadas</span>
+                </label>
               </div>
             </div>
 
@@ -418,7 +430,7 @@ export function BulkUploadDialog({
                         </div>
                       </div>
 
-                      <div className="flex items-center justify-between gap-3">
+                      <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
                         <label className="flex items-center gap-2 text-xs font-bold text-zinc-600">
                           <Switch
                             checked={it.isLaunch}
@@ -426,6 +438,14 @@ export function BulkUploadDialog({
                             onCheckedChange={(v) => patch(it.uid, { isLaunch: v })}
                           />
                           Lançamento (selo NOVO)
+                        </label>
+                        <label className="flex items-center gap-2 text-xs font-bold text-zinc-600">
+                          <Switch
+                            checked={it.isSelected}
+                            disabled={it.status === 'done' || publishing}
+                            onCheckedChange={(v) => patch(it.uid, { isSelected: v })}
+                          />
+                          <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-500" /> Selecionada
                         </label>
                         {it.status === 'done' && (
                           <span className="flex items-center gap-1 text-xs font-black text-emerald-600">

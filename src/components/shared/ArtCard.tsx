@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { BadgeCheck, CalendarHeart, Check, Download, EyeOff, Flame, Heart, Loader2, Lock } from 'lucide-react'
+import { BadgeCheck, CalendarHeart, Check, Download, EyeOff, Flame, Heart, Loader2, Lock, Star } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import type { ArtItem } from '@/lib/types'
@@ -54,6 +54,11 @@ export function ArtCard({ art, locked = false, demo = false, downloadState = 'id
             {art.isLaunch && (
               <span className="flex items-center gap-1 rounded-full bg-orange-500 px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wide text-white shadow-md shadow-orange-500/40">
                 <Flame className="h-3 w-3" /> Novo
+              </span>
+            )}
+            {art.isSelected && (
+              <span className="flex items-center gap-1 rounded-full bg-amber-400 px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wide text-amber-950 shadow-md shadow-amber-500/30">
+                <Star className="h-3 w-3 fill-amber-950" /> Selecionada
               </span>
             )}
             {art.seasonalEvent && (

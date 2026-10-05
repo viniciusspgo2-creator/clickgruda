@@ -26,6 +26,7 @@ export async function GET(req: Request) {
   let arts = await listArtsForUser(session?.id ?? null)
 
   if (tab === 'lancamentos') arts = arts.filter((a) => a.isLaunch)
+  if (tab === 'selecionadas') arts = arts.filter((a) => a.isSelected)
   if (tab === 'sazonal') arts = arts.filter((a) => a.seasonalEvent)
 
   if (eventId) arts = arts.filter((a) => a.seasonalEvent?.id === eventId)

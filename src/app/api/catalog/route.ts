@@ -6,7 +6,7 @@ import { ensureDefaultSeasonalEvents } from '@/lib/seasonal-defaults'
 
 export async function GET() {
   await ensureDefaultSeasonalEvents()
-  const [session, settings, categories, tags, artsCount, launchesCount, catCounts, tagCounts, eventCounts, events] =
+  const [session, settings, categories, tags, artsCount, launchesCount, selectedCount, catCounts, tagCounts, eventCounts, events] =
     await Promise.all([
       getSessionUser(),
       getSettings(),
@@ -14,6 +14,7 @@ export async function GET() {
       db.tag.findMany({ orderBy: { name: 'asc' } }),
       db.art.count(),
       db.art.count({ where: { isLaunch: true } }),
+      db.art.count({ where: { isSelected: true } }),
       db.art.groupBy({ by: ['categoryId'], _count: true }),
       db.artTag.groupBy({ by: ['tagId'], _count: true }),
       db.art.groupBy({ by: ['seasonalEventId'], _count: true }),
@@ -63,6 +64,7 @@ export async function GET() {
     counts: {
       arts: artsCount,
       lancamentos: launchesCount,
+      selecionadas: selectedCount,
       favoritas: favCount,
       minhasDownloads: dlCount,
     },

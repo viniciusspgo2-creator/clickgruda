@@ -31,6 +31,7 @@ export async function POST(req: Request) {
       imageUrl,
       originalKey: typeof body.originalKey === 'string' && body.originalKey.startsWith('originals/') ? body.originalKey : null,
       isLaunch: Boolean(body.isLaunch),
+      isSelected: Boolean(body.isSelected),
       categoryId: body.categoryId || null,
       seasonalEventId: body.seasonalEventId || null,
       tags: {

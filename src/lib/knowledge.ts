@@ -102,8 +102,8 @@ export const FAQ_ITEMS: { q: string; a: string }[] = [
     a: 'O suporte oficial é pelo WhatsApp +55 62 9838-7816 — canal mais rápido para dúvidas sobre acesso, downloads e pagamentos (inclusive envio de comprovante de PIX manual). Também atendemos pelo e-mail ' + SITE.email + '.',
   },
   {
-    q: 'Posso sugerir um tema para uma arte?',
-    a: 'Sim! Dentro do portal (menu da sua conta ou link "Sugerir um tema" no rodapé) você envia a sua ideia — um tema, uma frase ou um estilo — e ela vai direto para a nossa equipe de criação no painel interno. Os temas mais pedidos entram no cronograma do acervo.',
+    q: 'Posso sugerir uma nova arte?',
+    a: 'Sim! Dentro do portal (menu da sua conta ou botão "Sugerir uma nova arte" no topo e no fim da página) você envia a sua ideia — um tema, uma frase ou um estilo — e ela vai direto para a nossa equipe de criação no painel interno. Os temas mais pedidos entram no cronograma do acervo.',
   },
 ]
 

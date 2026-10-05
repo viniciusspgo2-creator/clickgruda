@@ -15,6 +15,7 @@ import {
   Lightbulb,
   LogOut,
   Menu,
+  MessageCircle,
   RotateCcw,
   Search,
   SearchX,
@@ -23,6 +24,7 @@ import {
   ShieldCheck,
   SlidersHorizontal,
   Sparkles,
+  Star,
   User,
   X,
 } from 'lucide-react'
@@ -38,6 +40,9 @@ import { ArtCard } from '@/components/shared/ArtCard'
 import { ChipScroller } from '@/components/shared/ChipScroller'
 import { ShareCatalogSection } from '@/components/portal/ShareCatalogSection'
 import { ThemeSuggestionDialog } from '@/components/portal/ThemeSuggestionDialog'
+import { CatalogoDigitalNews } from '@/components/portal/CatalogoDigitalNews'
+import { BackupStrip } from '@/components/portal/BackupStrip'
+import { WHATSAPP, WHATSAPP_MESSAGES } from '@/lib/site'
 import { getCategoryIcon } from '@/lib/category-icons'
 import { useStore, type PortalTab } from '@/lib/store'
 import type { ArtItem, CatalogData } from '@/lib/types'
@@ -49,6 +54,7 @@ type DownloadStates = Record<string, 'idle' | 'loading' | 'done'>
 const TABS: { id: PortalTab; label: string; icon: React.ElementType }[] = [
   { id: 'todas', label: 'Todas', icon: LayoutGrid },
   { id: 'lancamentos', label: 'Lançamentos', icon: Flame },
+  { id: 'selecionadas', label: 'Selecionadas', icon: Star },
   { id: 'sazonal', label: 'Sazonal', icon: CalendarHeart },
   { id: 'favoritas', label: 'Favoritas', icon: Heart },
   { id: 'downloads', label: 'Meus downloads', icon: Download },
@@ -300,6 +306,15 @@ export function PortalView() {
             </Select>
           </div>
 
+          {/* Sugerir nova arte — destaque no cabeçalho (telas grandes) */}
+          <Button
+            onClick={() => setSuggestionOpen(true)}
+            className="hidden h-10 shrink-0 rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 font-black shadow-md shadow-orange-500/25 xl:inline-flex"
+          >
+            <Lightbulb className="mr-1.5 h-4 w-4" />
+            Sugerir uma nova arte
+          </Button>
+
           {/* Admin quick access */}
           {user.role === 'ADMIN' && (
             <Button
@@ -345,7 +360,7 @@ export function PortalView() {
                 <Sparkles className="mr-2 h-4 w-4" /> Ver landing page
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => setSuggestionOpen(true)} className="font-bold text-orange-600">
-                <Lightbulb className="mr-2 h-4 w-4" /> Sugerir um tema
+                <Lightbulb className="mr-2 h-4 w-4" /> Sugerir uma nova arte
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={logout} className="text-red-600">
@@ -365,7 +380,9 @@ export function PortalView() {
                   ? counts?.arts
                   : t.id === 'lancamentos'
                     ? counts?.lancamentos
-                    : t.id === 'favoritas'
+                    : t.id === 'selecionadas'
+                      ? counts?.selecionadas
+                      : t.id === 'favoritas'
                       ? counts?.favoritas
                       : t.id === 'downloads'
                         ? counts?.minhasDownloads
@@ -386,7 +403,7 @@ export function PortalView() {
                       transition={{ type: 'spring', stiffness: 420, damping: 34 }}
                     />
                   )}
-                  <t.icon className={cn('h-4 w-4', active && 'text-white', !active && t.id === 'favoritas' && 'text-zinc-400')} />
+                  <t.icon className={cn('h-4 w-4', active && 'text-white', !active && t.id === 'favoritas' && 'text-zinc-400', !active && t.id === 'selecionadas' && 'text-amber-500')} />
                   {t.label}
                   {badge != null && badge > 0 && (
                     <span
@@ -419,6 +436,9 @@ export function PortalView() {
           </div>
         </div>
       )}
+
+      {/* ================= FAIXA DE BACKUP ================= */}
+      {!user.isDemo && <BackupStrip />}
 
       {/* ================= SEASONAL HERO ================= */}
       {tab === 'sazonal' && catalogQ.data && (
@@ -507,6 +527,9 @@ export function PortalView() {
 
       {/* ================= CONTENT ================= */}
       <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-6 sm:px-6">
+        {/* Novidade: Catálogo Digital (aba inicial) */}
+        {tab === 'todas' && !q && <CatalogoDigitalNews />}
+
         {/* Active filters */}
         {(activeFilterChips.length > 0 || q) && (
           <div className="mb-4 flex flex-wrap items-center gap-2">
@@ -547,6 +570,11 @@ export function PortalView() {
                 Lançamentos <span className="rounded-full bg-orange-500 px-2 py-0.5 text-[10px] font-black uppercase text-white">novo</span>
               </span>
             )}
+            {tab === 'selecionadas' && (
+              <span className="flex items-center gap-2">
+                Artes selecionadas <Star className="h-4.5 w-4.5 fill-amber-400 text-amber-500" />
+              </span>
+            )}
             {tab === 'sazonal' && 'Artes sazonais'}
             {tab === 'favoritas' && 'Suas favoritas'}
             {tab === 'downloads' && 'Baixadas por você'}
@@ -580,7 +608,9 @@ export function PortalView() {
             <p className="mt-1 max-w-xs text-sm text-zinc-400">
               {tab === 'favoritas'
                 ? 'Toque no coraçãozinho das artes que você ama para vê-las aqui.'
-                : 'Tente ajustar a busca ou limpar os filtros para ver mais artes.'}
+                : tab === 'selecionadas'
+                  ? 'As artes especiais escolhidas a dedo pela nossa equipe vão aparecer aqui.'
+                  : 'Tente ajustar a busca ou limpar os filtros para ver mais artes.'}
             </p>
             <Button
               onClick={() => {
@@ -608,6 +638,29 @@ export function PortalView() {
             </AnimatePresence>
           </motion.div>
         )}
+
+        {/* Sugerir uma nova arte — chamada em destaque */}
+        {tab !== 'compartilhar' && (
+          <section className="mt-10 overflow-hidden rounded-3xl border border-orange-200 bg-gradient-to-r from-orange-50 via-white to-amber-50 p-5 shadow-sm sm:p-6">
+            <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
+              <div className="flex items-center gap-4">
+                <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-orange-500 to-orange-600 text-white shadow-md shadow-orange-500/30">
+                  <Lightbulb className="h-6 w-6" />
+                </span>
+                <div>
+                  <h3 className="text-base font-black text-zinc-900 sm:text-lg">Não encontrou a arte que procurava?</h3>
+                  <p className="text-sm text-zinc-500">Conte pra gente qual tema você quer — a sua ideia vai direto para a nossa equipe de criação.</p>
+                </div>
+              </div>
+              <Button
+                onClick={() => setSuggestionOpen(true)}
+                className="h-12 w-full shrink-0 rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 px-6 text-sm font-black shadow-md shadow-orange-500/25 sm:w-auto"
+              >
+                <Lightbulb className="mr-2 h-4.5 w-4.5" /> Sugerir uma nova arte
+              </Button>
+            </div>
+          </section>
+        )}
       </main>
 
       <footer className="mt-auto border-t border-zinc-200 bg-white py-5">
@@ -618,7 +671,7 @@ export function PortalView() {
               onClick={() => setSuggestionOpen(true)}
               className="inline-flex items-center gap-1.5 font-bold text-zinc-400 transition-colors hover:text-orange-600"
             >
-              <Lightbulb className="h-3.5 w-3.5" /> Sugerir um tema
+              <Lightbulb className="h-3.5 w-3.5" /> Sugerir uma nova arte
             </button>
             <span className="flex items-center gap-1.5">
               <User className="h-3.5 w-3.5" /> Downloads ilimitados
@@ -710,6 +763,21 @@ export function PortalView() {
           </div>
         </SheetContent>
       </Sheet>
+
+      {/* Botão flutuante de suporte — WhatsApp */}
+      <a
+        href={WHATSAPP.link(WHATSAPP_MESSAGES.support)}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="Falar com o suporte no WhatsApp"
+        className="group fixed bottom-5 right-5 z-40 flex h-13 items-center gap-2 rounded-full bg-emerald-500 py-3 pl-3.5 pr-3.5 text-white shadow-xl shadow-emerald-600/30 transition-all hover:scale-105 hover:bg-emerald-600 sm:pr-4 print:hidden"
+      >
+        <span className="relative flex h-6 w-6 items-center justify-center">
+          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-white/30 opacity-60 group-hover:opacity-0" aria-hidden />
+          <MessageCircle className="relative h-6 w-6" />
+        </span>
+        <span className="hidden text-sm font-black sm:inline">Suporte</span>
+      </a>
 
       {/* ================= SUGESTÃO DE TEMA (envia ao Admin Master) ================= */}
       <ThemeSuggestionDialog open={suggestionOpen} onOpenChange={setSuggestionOpen} />

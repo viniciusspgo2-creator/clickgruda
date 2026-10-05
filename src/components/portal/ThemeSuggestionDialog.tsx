@@ -69,7 +69,7 @@ export function ThemeSuggestionDialog({ open, onOpenChange }: { open: boolean; o
       <DialogContent className="max-w-lg rounded-3xl border-zinc-200 bg-white p-0 sm:p-0" aria-describedby="sugestao-desc">
         <DialogHeader className="rounded-t-3xl bg-gradient-to-r from-orange-500 to-orange-600 px-6 py-5 text-left">
           <DialogTitle className="flex items-center gap-2 text-base font-black uppercase tracking-widest text-white">
-            <Lightbulb className="h-5 w-5" /> Sugestão de tema
+            <Lightbulb className="h-5 w-5" /> Sugerir uma nova arte
           </DialogTitle>
           <DialogDescription id="sugestao-desc" className="text-sm font-medium text-orange-50">
             Queremos te ouvir — a sua ideia vai direto para a nossa equipe de criação.
