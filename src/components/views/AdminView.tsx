@@ -41,6 +41,7 @@ import { Label } from '@/components/ui/label'
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet'
 import { Logo } from '@/components/shared/Logo'
 import { AdminArtsSection, AdminCategoriesSection, AdminSuggestionsSection, AdminTagsSection, AdminSeasonalSection, AdminSettingsSection } from '@/components/views/AdminSections'
+import { NewUserDialog } from '@/components/admin/NewUserDialog'
 import { AdminSearchMissesSection, AdminSecuritySection, AdminWaitlistSection } from '@/components/views/AdminGrowthSections'
 import { useStore } from '@/lib/store'
 import { formatBRL } from '@/lib/types'
@@ -542,6 +543,11 @@ function UsersSection() {
   if (isLoading) return <div className="h-72 animate-pulse rounded-2xl bg-zinc-200/70" />
 
   return (
+    <div className="space-y-4">
+    <div className="flex flex-wrap items-center justify-between gap-3">
+      <p className="text-sm font-semibold text-zinc-500">{data?.users.length ?? 0} contas cadastradas</p>
+      <NewUserDialog />
+    </div>
     <div className="overflow-hidden rounded-2xl border border-zinc-200 bg-white">
       <Table>
         <TableHeader>
@@ -641,6 +647,7 @@ function UsersSection() {
           ))}
         </TableBody>
       </Table>
+    </div>
     </div>
   )
 }
