@@ -52,7 +52,7 @@ export async function GET() {
     sessions
       .filter((s) => s.userId === userId)
       .map((s) => ({ id: s.id, device: s.device || 'Aparelho', ip: s.ip, lastSeenAt: s.lastSeenAt.toISOString(), createdAt: s.createdAt.toISOString() }))
-  const userMap = new Map<string, { id: string; name: string; email: string }>(users.map((u: { id: string; name: string; email: string }) => [u.id, u]))
+  const userMap = new Map(users.map((u) => [u.id, u] as const))
 
   return Response.json({
     settings: {
