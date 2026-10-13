@@ -32,7 +32,6 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
-!.env.example
 
 # vercel
 .vercel
@@ -53,10 +52,3 @@ prompt
 server.log
 # Skills directory
 /skills/
-
-# Postgres local (sandbox/dev)
-.pgdata/
-pg.log
-
-# SQLite legado (migrado para PostgreSQL/Neon)
-/db
