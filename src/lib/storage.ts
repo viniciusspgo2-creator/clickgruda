@@ -86,11 +86,12 @@ export async function presignOriginalGet(cfg: R2Config, key: string, filename: s
 /**
  * Stores an image. Uses Cloudflare R2 when configured, otherwise falls back
  * to local /public/uploads. Returns the public URL of the stored object.
+ * `prefix` organiza a pasta de destino (ex.: "arts", "enhance").
  */
-export async function putImage(buffer: Buffer, ext: string): Promise<string> {
+export async function putImage(buffer: Buffer, ext: string, prefix = 'arts'): Promise<string> {
   const s = await getSettings()
   const extClean = ext.toLowerCase()
-  const key = `arts/${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}.${extClean}`
+  const key = `${prefix}/${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}.${extClean}`
 
   const r2Ready =
     s.r2_enabled === 'true' &&
@@ -135,7 +136,7 @@ export async function putImage(buffer: Buffer, ext: string): Promise<string> {
   /* Fallback local (ambiente de desenvolvimento) */
   const fs = await import('fs/promises')
   const path = await import('path')
-  const dir = path.join(process.cwd(), 'public', 'uploads', 'arts')
+  const dir = path.join(process.cwd(), 'public', 'uploads', prefix)
   await fs.mkdir(dir, { recursive: true })
   await fs.writeFile(path.join(dir, path.basename(key)), buffer)
   return `/uploads/${key}`

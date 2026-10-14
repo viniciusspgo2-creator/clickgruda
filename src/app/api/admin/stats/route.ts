@@ -5,7 +5,7 @@ export async function GET() {
   const session = await getSessionUser()
   if (!session || session.role !== 'ADMIN') return jsonError('Não autorizado', 401)
 
-  const [users, usersWithAccess, arts, categories, tags, events, downloads, revenue, pending, suggestionsTotal, suggestionsNew, recentPayments, recentUsers, recentSuggestions, pendingManualCount, pendingManualUsers, searchMissesNew, waitlistTotal, alertsOpen] =
+  const [users, usersWithAccess, arts, categories, tags, events, downloads, revenue, pending, suggestionsTotal, suggestionsNew, recentPayments, recentUsers, recentSuggestions, pendingManualCount, pendingManualUsers, searchMissesNew, waitlistTotal, alertsOpen, enhanceNew] =
     await Promise.all([
       db.user.count(),
       db.user.count({ where: { hasAccess: true } }),
@@ -35,6 +35,7 @@ export async function GET() {
       db.searchMiss.count({ where: { status: 'NEW' } }),
       db.catalogoWaitlist.count({ where: { notifiedAt: null } }),
       db.accountAlert.count({ where: { resolved: false } }),
+      db.artEnhanceRequest.count({ where: { status: 'NEW' } }),
     ])
 
   return Response.json({
@@ -55,6 +56,7 @@ export async function GET() {
       searchMissesNew,
       waitlistTotal,
       alertsOpen,
+      enhanceNew,
     },
     recentPayments: recentPayments.map((p) => ({
       id: p.id,

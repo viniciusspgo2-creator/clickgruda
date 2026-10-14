@@ -29,6 +29,7 @@ import {
   TrendingUp,
   User as UserIcon,
   Users,
+  Wand2,
 } from 'lucide-react'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
@@ -42,7 +43,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sh
 import { Logo } from '@/components/shared/Logo'
 import { AdminArtsSection, AdminCategoriesSection, AdminSuggestionsSection, AdminTagsSection, AdminSeasonalSection, AdminSettingsSection } from '@/components/views/AdminSections'
 import { NewUserDialog } from '@/components/admin/NewUserDialog'
-import { AdminSearchMissesSection, AdminSecuritySection, AdminWaitlistSection } from '@/components/views/AdminGrowthSections'
+import { AdminEnhanceSection, AdminSearchMissesSection, AdminSecuritySection, AdminWaitlistSection } from '@/components/views/AdminGrowthSections'
 import { useStore } from '@/lib/store'
 import { formatBRL } from '@/lib/types'
 import { cn } from '@/lib/utils'
@@ -57,6 +58,7 @@ export type AdminSection =
   | 'payments'
   | 'sugestoes'
   | 'buscas'
+  | 'melhorias'
   | 'espera'
   | 'seguranca'
   | 'settings'
@@ -71,6 +73,7 @@ const SECTIONS: { id: AdminSection; label: string; icon: React.ElementType }[] =
   { id: 'payments', label: 'Pagamentos', icon: CreditCard },
   { id: 'sugestoes', label: 'Sugestões de Tema', icon: Lightbulb },
   { id: 'buscas', label: 'Buscas sem resultado', icon: SearchX },
+  { id: 'melhorias', label: 'Melhorias de Arte', icon: Wand2 },
   { id: 'espera', label: 'Lista de espera', icon: ClipboardList },
   { id: 'seguranca', label: 'Segurança', icon: ShieldAlert },
   { id: 'settings', label: 'Configurações', icon: Settings },
@@ -84,7 +87,7 @@ export function AdminView() {
   const [mobileNav, setMobileNav] = useState(false)
 
   // Badge de sugestões novas (compartilha o cache com o Dashboard)
-  const statsQ = useQuery<{ stats: { suggestionsNew?: number; searchMissesNew?: number; waitlistTotal?: number; alertsOpen?: number } }>({
+  const statsQ = useQuery<{ stats: { suggestionsNew?: number; searchMissesNew?: number; waitlistTotal?: number; alertsOpen?: number; enhanceNew?: number } }>({
     queryKey: ['admin-stats'],
     queryFn: async () => (await fetch('/api/admin/stats')).json(),
     enabled: user?.role === 'ADMIN',
@@ -95,6 +98,7 @@ export function AdminView() {
   const navBadges: Partial<Record<AdminSection, number>> = {
     sugestoes: newSuggestions,
     buscas: statsQ.data?.stats?.searchMissesNew ?? 0,
+    melhorias: statsQ.data?.stats?.enhanceNew ?? 0,
     espera: statsQ.data?.stats?.waitlistTotal ?? 0,
     seguranca: statsQ.data?.stats?.alertsOpen ?? 0,
   }
@@ -222,6 +226,7 @@ export function AdminView() {
             {section === 'payments' && <PaymentsSection />}
             {section === 'sugestoes' && <AdminSuggestionsSection />}
             {section === 'buscas' && <AdminSearchMissesSection />}
+            {section === 'melhorias' && <AdminEnhanceSection />}
             {section === 'espera' && <AdminWaitlistSection />}
             {section === 'seguranca' && <AdminSecuritySection />}
             {section === 'settings' && <AdminSettingsSection />}

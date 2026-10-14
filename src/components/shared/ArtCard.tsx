@@ -132,10 +132,6 @@ export function ArtCard({ art, locked = false, demo = false, downloadState = 'id
             <h3 className="line-clamp-1 text-sm font-bold text-zinc-900" title={art.title}>
               {art.title}
             </h3>
-            <span className="flex shrink-0 items-center gap-1 text-[11px] font-medium text-zinc-400">
-              <Download className="h-3 w-3" />
-              {art.downloadsCount}
-            </span>
           </div>
 
           <div className="flex flex-wrap items-center gap-1.5">

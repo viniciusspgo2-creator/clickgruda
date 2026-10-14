@@ -14,26 +14,18 @@ import {
   Check,
   ChevronDown,
   Clock3,
-  CreditCard,
   Crown,
   Flame,
-  Image as ImageIcon,
   Landmark,
   ListOrdered,
   Lock,
-  Megaphone,
   Menu,
   MessageCircle,
-  Package,
   QrCode,
   Quote,
-  Rocket,
   Ruler,
   Scale,
   Sparkles,
-  Store,
-  TicketPercent,
-  Truck,
   Users,
   Wallet,
   X,
@@ -123,7 +115,6 @@ export function LandingView() {
   const setPendingIntent = useStore((s) => s.setPendingIntent)
   const [scrolled, setScrolled] = useState(false)
   const [mobileNav, setMobileNav] = useState(false)
-  const [showBanner, setShowBanner] = useState(true)
 
   const { data: catalog } = useQuery<CatalogData>({
     queryKey: ['catalog'],
@@ -170,41 +161,11 @@ export function LandingView() {
 
   return (
     <div className="flex min-h-screen flex-col bg-white">
-      {/* ================= AVISO FIXO (dispensável) ================= */}
-      {showBanner && (
-        <div className="fixed inset-x-0 top-0 z-[60] h-10 bg-gradient-to-r from-orange-500 via-orange-600 to-orange-500 text-white shadow-lg">
-          <div className="relative mx-auto flex h-full max-w-7xl items-center justify-center px-10 text-center">
-            <Megaphone className="mr-2 hidden h-4 w-4 shrink-0 sm:block" aria-hidden />
-            <p className="text-[11px] font-bold leading-tight sm:text-xs">
-              <span className="hidden sm:inline">Em desenvolvimento: o </span>
-              <button
-                onClick={() => scrollTo('catalogo')}
-                className="underline decoration-white/60 underline-offset-2 transition-colors hover:decoration-white"
-              >
-                Catálogo Digital
-              </button>
-              <span className="hidden sm:inline">
-                {' '}— a sua mini loja de personalizados. Assinantes terão{' '}
-                <strong>condição especial</strong> no lançamento.
-              </span>
-              <span className="sm:hidden"> — a sua mini loja. Assinantes: condição especial no lançamento.</span>
-            </p>
-            <button
-              onClick={() => setShowBanner(false)}
-              aria-label="Fechar aviso"
-              className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full p-1.5 transition-colors hover:bg-white/20"
-            >
-              <X className="h-4 w-4" />
-            </button>
-          </div>
-        </div>
-      )}
-
       {/* ================= HEADER ================= */}
       <header
         className={cn(
           'fixed inset-x-0 z-50 transition-all duration-300',
-          showBanner ? 'top-10' : 'top-0',
+          'top-0',
           scrolled ? 'glass-header border-b border-zinc-200/80 shadow-sm' : 'bg-transparent'
         )}
       >
@@ -1011,107 +972,6 @@ export function LandingView() {
               </motion.div>
             ))}
           </div>
-        </div>
-      </section>
-
-      {/* ================= CATÁLOGO DIGITAL (EM BREVE) ================= */}
-      <section id="catalogo" className="scroll-mt-20 bg-zinc-50 py-20 sm:py-24" aria-labelledby="catalogo-titulo">
-        <div className="mx-auto w-full max-w-6xl px-4 sm:px-6">
-          <motion.div {...fadeUp} className="mx-auto max-w-2xl text-center">
-            <span className="inline-flex items-center gap-1.5 rounded-full border border-orange-200 bg-orange-50 px-3.5 py-1.5 text-xs font-bold uppercase tracking-wider text-orange-600">
-              <Rocket className="h-3.5 w-3.5" /> Em breve · novo sistema
-            </span>
-            <h2 id="catalogo-titulo" className="mt-4 text-3xl font-black tracking-tight text-zinc-950 sm:text-4xl">
-              O <span className="text-gradient-orange">Catálogo Digital</span> está chegando
-            </h2>
-            <p className="mt-3 text-zinc-500">
-              A sua própria vitrine online com a sua marca, para receber pedidos de catálogo. Está em
-              desenvolvimento — e quem é assinante entra na frente.
-            </p>
-          </motion.div>
-
-          <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {[
-              {
-                icon: Store,
-                title: 'Sua vitrine exclusiva',
-                desc: 'Um endereço seu na internet para expor e vender com a sua marca.',
-              },
-              {
-                icon: ImageIcon,
-                title: 'Cadastro de produtos',
-                desc: 'Produtos com fotos, descrição e preço, organizados em minutos.',
-              },
-              {
-                icon: TicketPercent,
-                title: 'Cupons de desconto',
-                desc: 'Crie promoções e cupons para atrair e fidelizar clientes.',
-              },
-              {
-                icon: Truck,
-                title: 'Formas de entrega',
-                desc: 'Defina retirada, entrega local ou envio — com as suas regras.',
-              },
-              {
-                icon: CreditCard,
-                title: 'Meios de pagamento',
-                desc: 'Ofereça PIX, cartão ou o método que preferir para receber.',
-              },
-              {
-                icon: Package,
-                title: 'Pedidos organizados',
-                desc: 'Acompanhe pedidos e clientes em um painel simples e direto.',
-              },
-            ].map((f, i) => (
-              <motion.div
-                key={f.title}
-                {...fadeUp}
-                transition={{ ...fadeUp.transition, delay: i * 0.08 }}
-                className="rounded-3xl border border-zinc-200 bg-white p-6 shadow-sm transition-all hover:-translate-y-1 hover:border-orange-200 hover:shadow-xl hover:shadow-orange-500/10"
-              >
-                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-orange-100">
-                  <f.icon className="h-5.5 w-5.5 text-orange-600" />
-                </div>
-                <h3 className="mt-4 font-black text-zinc-900">{f.title}</h3>
-                <p className="mt-1.5 text-sm leading-relaxed text-zinc-500">{f.desc}</p>
-              </motion.div>
-            ))}
-          </div>
-
-          {/* Vantagem exclusiva do assinante */}
-          <motion.div
-            {...fadeUp}
-            className="relative mt-10 overflow-hidden rounded-[2rem] bg-gradient-to-r from-orange-500 via-orange-600 to-orange-500 p-8 text-white shadow-2xl shadow-orange-600/30 sm:p-10"
-          >
-            <div className="flex flex-col items-start justify-between gap-7 lg:flex-row lg:items-center">
-              <div className="max-w-2xl">
-                <p className="inline-flex items-center gap-1.5 rounded-full bg-white/15 px-3.5 py-1.5 text-[11px] font-black uppercase tracking-wider">
-                  <Crown className="h-3.5 w-3.5" /> Condição de fundador
-                </p>
-                <h3 className="mt-4 text-2xl font-black leading-tight sm:text-3xl">
-                  Quem já é assinante garante{' '}
-                  <span className="underline decoration-white/50 decoration-4 underline-offset-4">50% de desconto</span>{' '}
-                  no plano anual
-                </h3>
-                <p className="mt-3 text-sm font-medium leading-relaxed text-white/90 sm:text-base">
-                  Quando o Catálogo Digital lançar, o plano anual sai por{' '}
-                  <strong className="text-white">R$ 98,00/ano</strong> em vez de R$ 196,00 — condição reservada
-                  para quem já tem acesso ativo por aqui.
-                </p>
-              </div>
-              <Button
-                onClick={goSignup}
-                className="group min-h-13 w-full shrink-0 whitespace-normal rounded-2xl bg-zinc-950 px-5 py-3 text-center text-sm font-black uppercase leading-tight tracking-wide text-white shadow-xl transition-all hover:scale-[1.02] hover:bg-zinc-900 sm:px-7 sm:py-3.5 sm:text-base lg:w-auto"
-              >
-                Assinar e garantir o benefício
-                <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
-              </Button>
-            </div>
-            <p className="mt-6 border-t border-white/20 pt-4 text-xs font-medium leading-relaxed text-white/85">
-              Nossa equipe de produto está em pleno desenvolvimento. Acompanhe as novidades por aqui e no nosso
-              WhatsApp oficial {WHATSAPP.display}.
-            </p>
-          </motion.div>
         </div>
       </section>
 

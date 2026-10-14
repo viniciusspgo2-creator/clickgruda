@@ -29,6 +29,7 @@ model User {
   alerts       AccountAlert[]
   waitlist     CatalogoWaitlist[]
   limitHits    DownloadLimitHit[]
+  enhanceRequests ArtEnhanceRequest[]
 }
 
 model Category {
@@ -229,4 +230,22 @@ model DownloadLimitHit {
   day    String // YYYY-MM-DD no fuso de Brasília
 
   @@id([userId, day])
+}
+
+/**
+ * ArtEnhanceRequest — pedido de melhoria de qualidade.
+ * O assinante envia a própria arte (pixelizada / baixa qualidade) e a equipe
+ * devolve em alta resolução. O arquivo cai direto no Painel Admin Master.
+ */
+model ArtEnhanceRequest {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  imageUrl  String // URL pública da imagem enviada
+  fileName  String   @default("") // nome original do arquivo
+  note      String   @default("") // observação opcional do assinante
+  status    String   @default("NEW") // NEW | DONE
+  createdAt DateTime @default(now())
+
+  @@index([status, createdAt])
 }

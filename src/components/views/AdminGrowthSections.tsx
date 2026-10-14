@@ -16,6 +16,7 @@ import {
   ShieldAlert,
   Trash2,
   Users,
+  Wand2,
 } from 'lucide-react'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
@@ -580,6 +581,157 @@ export function AdminSecuritySection() {
           </div>
         </details>
       )}
+    </div>
+  )
+}
+
+/* ============================================================
+ * MELHORIAS DE ARTE — artes enviadas p/ melhorar a qualidade
+ * ============================================================ */
+
+type EnhanceRequest = {
+  id: string
+  imageUrl: string
+  fileName: string
+  note: string
+  status: string
+  createdAt: string
+  userName: string
+  userEmail: string
+}
+
+export function AdminEnhanceSection() {
+  const queryClient = useQueryClient()
+  const [showDone, setShowDone] = useState(false)
+  const reqQ = useQuery<{ requests: EnhanceRequest[] }>({
+    queryKey: ['admin-enhance-requests'],
+    queryFn: async () => (await fetch('/api/admin/enhance-requests')).json(),
+  })
+
+  const refresh = () => {
+    queryClient.invalidateQueries({ queryKey: ['admin-enhance-requests'] })
+    queryClient.invalidateQueries({ queryKey: ['admin-stats'] })
+  }
+
+  const setStatus = useMutation({
+    mutationFn: async ({ id, status }: { id: string; status: 'NEW' | 'DONE' }) => {
+      const res = await fetch(`/api/admin/enhance-requests/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status }),
+      })
+      if (!res.ok) throw new Error()
+    },
+    onSuccess: refresh,
+    onError: () => toast.error('Não foi possível atualizar.'),
+  })
+
+  const remove = useMutation({
+    mutationFn: async (id: string) => {
+      const res = await fetch(`/api/admin/enhance-requests/${id}`, { method: 'DELETE' })
+      if (!res.ok) throw new Error()
+    },
+    onSuccess: refresh,
+    onError: () => toast.error('Não foi possível excluir.'),
+  })
+
+  const all = reqQ.data?.requests ?? []
+  const pending = all.filter((r) => r.status !== 'DONE')
+  const done = all.filter((r) => r.status === 'DONE')
+  const list = showDone ? done : pending
+
+  return (
+    <div className="space-y-4">
+      <div className="flex flex-col gap-3 rounded-2xl border border-orange-200 bg-orange-50/60 p-4">
+        <div className="flex items-start gap-3">
+          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-zinc-950 text-orange-400">
+            <Wand2 className="h-5 w-5" />
+          </span>
+          <div>
+            <p className="text-sm font-black text-zinc-900">Artes enviadas para melhorar a qualidade</p>
+            <p className="text-xs text-zinc-500">
+              Os assinantes mandam aqui as artes próprias que estão pixelizadas ou em baixa qualidade. Abra a imagem, melhore a qualidade e devolva para o assinante pelo contato dele.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div className="flex gap-2">
+        <button
+          onClick={() => setShowDone(false)}
+          className={cn('rounded-full px-3.5 py-1.5 text-xs font-bold', !showDone ? 'bg-zinc-950 text-white' : 'bg-white text-zinc-500 ring-1 ring-zinc-200')}
+        >
+          Para melhorar ({pending.length})
+        </button>
+        <button
+          onClick={() => setShowDone(true)}
+          className={cn('rounded-full px-3.5 py-1.5 text-xs font-bold', showDone ? 'bg-zinc-950 text-white' : 'bg-white text-zinc-500 ring-1 ring-zinc-200')}
+        >
+          Concluídas ({done.length})
+        </button>
+      </div>
+
+      <div className="overflow-hidden rounded-2xl border border-zinc-200 bg-white">
+        {reqQ.isLoading && <div className="p-6 text-sm text-zinc-400">Carregando...</div>}
+        <div className="divide-y divide-zinc-100">
+          {list.map((r) => (
+            <div key={r.id} className="flex flex-wrap items-center gap-3 p-3.5 hover:bg-zinc-50">
+              <a
+                href={r.imageUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                title="Abrir imagem em tamanho real"
+                className="block h-14 w-24 shrink-0 overflow-hidden rounded-lg border border-zinc-200 bg-zinc-100"
+              >
+                <img src={r.imageUrl} alt={r.fileName || 'Arte enviada'} className="h-full w-full object-contain" />
+              </a>
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-sm font-bold text-zinc-900">
+                  {r.userName || 'Assinante'} <span className="font-normal text-zinc-400">· {r.userEmail}</span>
+                </p>
+                <p className="truncate text-xs text-zinc-400">
+                  {r.fileName || 'arquivo'} · {fmtDateTime(r.createdAt)}
+                </p>
+                {r.note && <p className="mt-1 rounded-lg bg-zinc-50 px-2 py-1 text-xs text-zinc-600">{r.note}</p>}
+              </div>
+              <div className="flex shrink-0 items-center gap-1.5">
+                <Button asChild size="sm" variant="outline" className="h-8 rounded-lg text-xs font-bold">
+                  <a href={r.imageUrl} target="_blank" rel="noopener noreferrer">
+                    Abrir imagem
+                  </a>
+                </Button>
+                {r.status === 'DONE' ? (
+                  <Button variant="outline" size="sm" onClick={() => setStatus.mutate({ id: r.id, status: 'NEW' })} className="h-8 rounded-lg text-xs font-bold">
+                    Reabrir
+                  </Button>
+                ) : (
+                  <Button
+                    size="sm"
+                    onClick={() => setStatus.mutate({ id: r.id, status: 'DONE' })}
+                    className="h-8 rounded-lg bg-emerald-500 text-xs font-bold hover:bg-emerald-600"
+                  >
+                    <Check className="mr-1 h-3.5 w-3.5" /> Concluir
+                  </Button>
+                )}
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  onClick={() => remove.mutate(r.id)}
+                  aria-label="Excluir pedido"
+                  className="h-8 w-8 rounded-lg text-red-400 hover:bg-red-50 hover:text-red-600"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+          ))}
+          {!reqQ.isLoading && list.length === 0 && (
+            <div className="p-10 text-center text-sm text-zinc-400">
+              {showDone ? 'Nenhum pedido marcado como concluído ainda.' : 'Nenhum pedido por enquanto. Quando um assinante enviar uma arte para melhorar, aparece aqui.'}
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   )
 }

@@ -27,6 +27,7 @@ import {
   Sparkles,
   Star,
   User,
+  Wand2,
   X,
 } from 'lucide-react'
 import { toast } from 'sonner'
@@ -41,9 +42,10 @@ import { ArtCard } from '@/components/shared/ArtCard'
 import { ChipScroller } from '@/components/shared/ChipScroller'
 import { ShareCatalogSection } from '@/components/portal/ShareCatalogSection'
 import { ThemeSuggestionDialog } from '@/components/portal/ThemeSuggestionDialog'
-import { CatalogoDigitalNews } from '@/components/portal/CatalogoDigitalNews'
+import { MockupToolCard } from '@/components/portal/MockupToolCard'
+import { NovidadesCard } from '@/components/portal/NovidadesCard'
+import { EnhanceRequestDialog } from '@/components/portal/EnhanceRequestDialog'
 import { BackupStrip } from '@/components/portal/BackupStrip'
-import { WaitlistDialog } from '@/components/portal/WaitlistDialog'
 import { LoadMoreFooter } from '@/components/shared/LoadMoreFooter'
 import { ZipDownloadDialog } from '@/components/portal/ZipDownloadDialog'
 import { DailyLimitDialog } from '@/components/portal/DailyLimitDialog'
@@ -104,7 +106,7 @@ export function PortalView() {
   const [searchInput, setSearchInput] = useState(q)
   const [downloadStates, setDownloadStates] = useState<DownloadStates>({})
   const [suggestionOpen, setSuggestionOpen] = useState(false)
-  const [waitlistOpen, setWaitlistOpen] = useState(false)
+  const [enhanceOpen, setEnhanceOpen] = useState(false)
   const [zipOpen, setZipOpen] = useState(false)
   const [limitDialog, setLimitDialog] = useState<number | null>(null)
 
@@ -592,9 +594,12 @@ export function PortalView() {
 
       {/* ================= CONTENT ================= */}
       <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-6 sm:px-6">
-        {/* Novidade: Catálogo Digital (aba inicial) */}
+        {/* Ferramentas + novidades (aba inicial) */}
         {tab === 'todas' && !q && (
-          <CatalogoDigitalNews waitlisted={!!catalogQ.data?.waitlisted} onJoin={() => (user.isDemo ? toast.info('A lista de espera abre após a ativação do seu acesso.') : setWaitlistOpen(true))} />
+          <div className="mb-6 grid gap-4 lg:grid-cols-2">
+            <MockupToolCard />
+            <NovidadesCard />
+          </div>
         )}
 
         {/* Active filters */}
@@ -719,27 +724,49 @@ export function PortalView() {
           />
         )}
 
-        {/* Sugerir uma nova arte — chamada em destaque */}
+        {/* Chamadas de ação: sugerir arte + melhorar arte própria (aba de catálogo) */}
         {tab !== 'compartilhar' && (
-          <section className="mt-10 overflow-hidden rounded-3xl border border-orange-200 bg-gradient-to-r from-orange-50 via-white to-amber-50 p-5 shadow-sm sm:p-6">
-            <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
-              <div className="flex items-center gap-4">
-                <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-orange-500 to-orange-600 text-white shadow-md shadow-orange-500/30">
-                  <Lightbulb className="h-6 w-6" />
-                </span>
-                <div>
-                  <h3 className="text-base font-black text-zinc-900 sm:text-lg">Não encontrou a arte que procurava?</h3>
-                  <p className="text-sm text-zinc-500">Conte pra gente qual tema você quer — a sua ideia vai direto para a nossa equipe de criação.</p>
+          <div className="mt-10 grid gap-4 lg:grid-cols-2">
+            <section className="overflow-hidden rounded-3xl border border-orange-200 bg-gradient-to-r from-orange-50 via-white to-amber-50 p-5 shadow-sm">
+              <div className="flex h-full flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
+                <div className="flex items-center gap-4">
+                  <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-orange-500 to-orange-600 text-white shadow-md shadow-orange-500/30">
+                    <Lightbulb className="h-6 w-6" />
+                  </span>
+                  <div>
+                    <h3 className="text-base font-black text-zinc-900">Não encontrou a arte que procurava?</h3>
+                    <p className="text-sm text-zinc-500">Conte pra gente qual tema você quer — a ideia vai direto para a nossa equipe de criação.</p>
+                  </div>
                 </div>
+                <Button
+                  onClick={() => setSuggestionOpen(true)}
+                  className="h-11 w-full shrink-0 rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 px-5 text-sm font-black shadow-md shadow-orange-500/25 sm:w-auto"
+                >
+                  <Lightbulb className="mr-2 h-4.5 w-4.5" /> Sugerir uma arte
+                </Button>
               </div>
-              <Button
-                onClick={() => setSuggestionOpen(true)}
-                className="h-12 w-full shrink-0 rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 px-6 text-sm font-black shadow-md shadow-orange-500/25 sm:w-auto"
-              >
-                <Lightbulb className="mr-2 h-4.5 w-4.5" /> Sugerir uma nova arte
-              </Button>
-            </div>
-          </section>
+            </section>
+
+            <section className="overflow-hidden rounded-3xl border border-zinc-200 bg-white p-5 shadow-sm">
+              <div className="flex h-full flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
+                <div className="flex items-center gap-4">
+                  <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-zinc-950 text-orange-400 shadow-md">
+                    <Wand2 className="h-6 w-6" />
+                  </span>
+                  <div>
+                    <h3 className="text-base font-black text-zinc-900">Arte própria pixelizada ou borrada?</h3>
+                    <p className="text-sm text-zinc-500">Envie a sua arte que a gente melhora a qualidade pra você — <span className="font-bold text-orange-600">grátis para assinantes</span>.</p>
+                  </div>
+                </div>
+                <Button
+                  onClick={() => (user.isDemo ? toast.info('O envio de artes abre após a ativação do seu acesso.') : setEnhanceOpen(true))}
+                  className="h-11 w-full shrink-0 rounded-xl bg-zinc-950 px-5 text-sm font-black text-white shadow-md hover:bg-zinc-800 sm:w-auto"
+                >
+                  <Wand2 className="mr-2 h-4.5 w-4.5" /> Enviar minha arte
+                </Button>
+              </div>
+            </section>
+          </div>
         )}
       </main>
 
@@ -861,7 +888,7 @@ export function PortalView() {
 
       {/* ================= SUGESTÃO DE TEMA (envia ao Admin Master) ================= */}
       <ThemeSuggestionDialog open={suggestionOpen} onOpenChange={setSuggestionOpen} />
-      <WaitlistDialog open={waitlistOpen} onOpenChange={setWaitlistOpen} />
+      <EnhanceRequestDialog open={enhanceOpen} onOpenChange={setEnhanceOpen} />
       <ZipDownloadDialog open={zipOpen} onOpenChange={setZipOpen} catalog={catalogQ.data} />
       <DailyLimitDialog open={limitDialog !== null} onOpenChange={(o) => !o && setLimitDialog(null)} limit={limitDialog ?? 500} />
     </div>
