@@ -76,7 +76,7 @@ export function GeoSchema() {
       },
       speakable: {
         '@type': 'SpeakableSpecification',
-        cssSelector: ['#recursos', '#faq'],
+        cssSelector: ['#biblioteca', '#perguntas'],
       },
       primaryImageOfPage: {
         '@type': 'ImageObject',

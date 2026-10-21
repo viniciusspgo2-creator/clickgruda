@@ -19,7 +19,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "Click & Gruda — Biblioteca de Artes, Mockups 3D e Catálogo Online",
+    default: "Click&Gruda — Biblioteca de Artes para Canecas | Artes Selecionadas",
     template: "%s | Click & Gruda",
   },
   description:
@@ -58,9 +58,9 @@ export const metadata: Metadata = {
     },
   },
   openGraph: {
-    title: "Click & Gruda — Artes Prontas, Mockups 3D e Loja Online",
+    title: "Click&Gruda — Biblioteca de Artes para Sublimação de Canecas",
     description:
-      "Biblioteca organizada com curadoria, atualizações semanais, mockups 3D e loja online para assinantes. Veja a oferta e os recursos da plataforma.",
+      "Biblioteca de artes selecionadas e organizadas por tema, com atualizações semanais. Mockups 3D e loja online inclusos na assinatura.",
     siteName: SITE.name,
     locale: "pt_BR",
     type: "website",
