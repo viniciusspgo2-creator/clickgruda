@@ -1,1125 +1,198 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
-import Image from 'next/image'
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useQuery } from '@tanstack/react-query'
-import { motion, useInView } from 'framer-motion'
+import { motion, useReducedMotion } from 'framer-motion'
 import {
-  ArrowRight,
-  BadgeCheck,
-  Box,
-  ExternalLink,
-  FolderHeart,
-  Store,
-  Wand2,
-  BarChart3,
-  BookOpen,
-  BookMarked,
-  Check,
-  ChevronDown,
-  Clock3,
-  Crown,
-  Flame,
-  Landmark,
-  ListOrdered,
-  Lock,
-  Menu,
-  MessageCircle,
-  QrCode,
-  Quote,
-  Ruler,
-  Scale,
-  Sparkles,
-  Users,
-  Wallet,
-  X,
-  XCircle,
-  Zap,
+  ArrowRight, BadgeCheck, CalendarDays, Check,
+  CircleCheck, Clock3, Coffee, CreditCard, ExternalLink, FolderOpen,
+  Gift, Heart, LayoutDashboard, LockKeyhole, Menu, MessageCircle,
+  MousePointerClick, Paintbrush, Play, Search, ShieldCheck,
+  ShoppingBag, Sparkles, Star, Store, Wallet, WandSparkles,
+  X, Zap,
 } from 'lucide-react'
-import { Button } from '@/components/ui/button'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
+import { Button } from '@/components/ui/button'
 import { Logo } from '@/components/shared/Logo'
-import { Marquee } from '@/components/shared/Marquee'
-import { HeroCollage } from '@/components/landing/HeroCollage'
 import { ShowcaseCarousel } from '@/components/landing/ShowcaseCarousel'
-import { MiniPlayer } from '@/components/landing/MiniPlayer'
 import { WHATSAPP, WHATSAPP_MESSAGES } from '@/lib/site'
 import { useStore } from '@/lib/store'
 import { formatBRL, type CatalogData } from '@/lib/types'
-import { cn } from '@/lib/utils'
-import { toast } from 'sonner'
-import {
-  ENTITY_PRACTICAL,
-  FAQ_ITEMS,
-  GLOSSARY_TERMS,
-  COMPARISON,
-  FOR_WHO,
-  NOT_FOR_WHO,
-  HOWTO_STEPS,
-  HOWTO_TOOLING,
-  KEY_FACTS,
-} from '@/lib/knowledge'
-import { BLOG_ARTICLES } from '@/content/blog'
-import { todayISO, todayBR, CONTENT_PUBLISHED_ISO } from '@/lib/site'
+import { FAQ_ITEMS } from '@/lib/knowledge'
 import { track } from '@/lib/analytics'
+import { cn } from '@/lib/utils'
 
-const FACT_LABELS: Record<string, string> = {
-  businessModel: 'Modelo de negócio',
-  price: 'Preço',
-  artFormatCm: 'Formato das artes',
-  mugStandard: 'Caneca de referência',
-  downloads: 'Downloads',
-  commercialUse: 'Uso comercial',
-  newArtsFrequency: 'Novas artes',
-  payment: 'Pagamento',
-  portalFeatures: 'Organização do portal',
+const PROMO_END = new Date('2026-12-20T23:59:59-03:00').getTime()
+const CATALOG_URL = 'https://www.clickgruda.com.br'
+const FLOW = [
+  { title: 'Encontre', detail: 'Busque por tema, categoria, tags ou data comemorativa.', icon: Search, number: '01' },
+  { title: 'Apresente', detail: 'Use o mockup 3D para visualizar o produto com sua arte.', icon: WandSparkles, number: '02' },
+  { title: 'Venda', detail: 'Divulgue seu trabalho com uma loja online própria.', icon: ShoppingBag, number: '03' },
+]
+const FEATURE_CARDS = [
+  { icon: FolderOpen, title: 'Biblioteca que você realmente usa', label: 'ACERVO ORGANIZADO', detail: 'Nada de navegar por centenas de pastas. Use buscas, categorias, filtros, favoritos e coleções de datas especiais para achar o tema certo.', points: ['Artes selecionadas com curadoria', 'Novos conteúdos semanalmente', 'Busca e filtros inteligentes'], span: 'lg:col-span-2', tone: 'dark' },
+  { icon: WandSparkles, title: 'Mostre antes de produzir', label: 'GERADOR DE MOCKUPS 3D', detail: 'Aplique suas artes em modelos de produtos e apresente suas ideias de uma maneira muito mais profissional.', points: ['Apresentação visual', 'Ferramenta para assinantes'], span: '', tone: 'light' },
+  { icon: Store, title: 'Sua própria vitrine online', label: 'CATÁLOGO DIGITAL', detail: 'Crie sua loja digital e facilite a apresentação dos produtos aos clientes. Grátis para assinantes da Click&Gruda.', points: ['Sua marca, seus produtos', 'Link próprio para divulgar'], span: '', tone: 'light' },
+  { icon: CalendarDays, title: 'Antecipe as datas que movimentam as vendas', label: 'DATAS SAZONAIS', detail: 'Encontre conteúdos para Natal, Dia das Mães, Namorados, profissões e muitas outras ocasiões sem perder tempo criando tudo do zero.', points: ['Datas organizadas por tema', 'Encontre ideias na hora certa'], span: 'lg:col-span-2', tone: 'dark' },
+]
+const comparison = [
+  ['Encontrar a arte certa', 'Pastas, nomes soltos e várias tentativas', 'Pesquisa, categorias, tags e favoritos'],
+  ['Datas comemorativas', 'Você precisa separar tudo manualmente', 'Temas sazonais organizados no portal'],
+  ['Apresentar ao cliente', 'Montar uma prévia por fora', 'Ferramenta de mockup 3D disponível'],
+  ['Divulgar produtos', 'Links e fotos espalhados', 'Loja online gratuita para assinantes'],
+]
+const miniFaq = [0, 2, 6, 8, 9, 11, 14].map(i => FAQ_ITEMS[i]).filter(Boolean)
+
+function Reveal({ children, className = '', delay = 0 }: { children: React.ReactNode; className?: string; delay?: number }) {
+  const reducedMotion = useReducedMotion()
+  return <motion.div initial={reducedMotion ? false : { opacity: 0, y: 22 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.12 }} transition={{ duration: reducedMotion ? 0 : .5, delay }} className={className}>{children}</motion.div>
 }
 
-const FALLBACK_CATEGORIES = ['FLORK', 'PROFISSÕES', 'RELIGIÃO', 'FRASES', 'ANIMAIS', 'COMEMORATIVAS']
-const FALLBACK_EVENTS = ['NATAL', 'DIA DAS MÃES', 'DIA DOS NAMORADOS', 'PÁSCOA', 'ANO NOVO', 'BLACK FRIDAY']
-
-function CountUp({ to, suffix = '' }: { to: number; suffix?: string }) {
-  const ref = useRef<HTMLSpanElement>(null)
-  const inView = useInView(ref, { once: true, margin: '-40px' })
-  const [val, setVal] = useState(0)
-
-  useEffect(() => {
-    if (!inView) return
-    const start = performance.now()
-    const dur = 1500
-    let raf = 0
-    const tick = (t: number) => {
-      const p = Math.min(1, (t - start) / dur)
-      setVal(Math.round(to * (1 - Math.pow(1 - p, 3))))
-      if (p < 1) raf = requestAnimationFrame(tick)
-    }
-    raf = requestAnimationFrame(tick)
-    return () => cancelAnimationFrame(raf)
-  }, [inView, to])
-
+function ProductPreview({ artsCount }: { artsCount?: number }) {
   return (
-    <span ref={ref}>
-      {val.toLocaleString('pt-BR')}
-      {suffix}
-    </span>
+    <div className="landing-preview relative mx-auto w-full max-w-[590px] select-none" aria-label="Representação ilustrativa do fluxo dentro da Click&Gruda">
+      <div className="absolute -inset-8 rounded-[55px] bg-orange-500/15 blur-[55px]" aria-hidden="true" />
+      <div className="relative overflow-hidden rounded-[24px] border border-white/20 bg-[#171b24] shadow-[0_35px_100px_-30px_rgba(0,0,0,0.8)] sm:rounded-[30px]">
+        <div className="flex items-center justify-between border-b border-white/10 bg-[#20242e] px-4 py-3 sm:px-5">
+          <div className="flex gap-1.5" aria-hidden="true"><span className="h-2.5 w-2.5 rounded-full bg-[#f26e60]" /><span className="h-2.5 w-2.5 rounded-full bg-[#e6bd62]" /><span className="h-2.5 w-2.5 rounded-full bg-[#58b998]" /></div>
+          <div className="flex items-center gap-2 rounded-lg border border-white/10 bg-[#151820] px-3 py-1 text-[10px] font-medium text-zinc-400"><LockKeyhole className="h-3 w-3 text-emerald-400" /> Sua área de trabalho</div>
+          <LayoutDashboard className="h-4 w-4 text-zinc-500" />
+        </div>
+        <div className="p-4 sm:p-6">
+          <div className="flex items-center justify-between gap-3">
+            <div><div className="mb-1 text-[10px] font-black uppercase tracking-[.2em] text-orange-400">PAINEL DE CRIAÇÃO</div><div className="text-xl font-black tracking-tight text-white sm:text-2xl">Tudo no mesmo lugar.</div></div>
+            <div className="flex h-10 w-10 items-center justify-center rounded-2xl border border-orange-400/20 bg-orange-500/15"><Sparkles className="h-5 w-5 text-orange-400" /></div>
+          </div>
+          <div className="mt-5 flex items-center gap-2 rounded-xl border border-white/10 bg-white/[.06] px-3 py-3 text-xs text-zinc-400"><Search className="h-4 w-4 text-orange-400" /> Buscar arte, categoria, ocasião ou código... <span className="ml-auto rounded-md border border-white/10 px-1.5 py-0.5 text-[10px]">⌘ K</span></div>
+          <div className="mt-3 flex flex-wrap gap-2">
+            {['Todas as artes', 'Datas especiais', 'Favoritas'].map((tab, i) => <span key={tab} className={cn('rounded-full px-3 py-1.5 text-[10px] font-bold', i === 0 ? 'bg-orange-500 text-white' : 'border border-white/10 bg-white/5 text-zinc-400')}>{tab}</span>)}
+          </div>
+          <div className="mt-5 grid grid-cols-3 gap-2.5 sm:gap-3">
+            {[
+              { icon: FolderOpen, label: 'Biblioteca', detail: artsCount ? `${artsCount.toLocaleString('pt-BR')} artes` : 'Por categorias', color: 'text-orange-400', glow: 'bg-orange-500/10' },
+              { icon: WandSparkles, label: 'Mockup 3D', detail: 'Seu estúdio', color: 'text-violet-300', glow: 'bg-violet-500/10' },
+              { icon: Store, label: 'Loja online', detail: 'Sua vitrine', color: 'text-emerald-300', glow: 'bg-emerald-500/10' },
+            ].map((card) => <div key={card.label} className="rounded-2xl border border-white/10 bg-white/[.045] p-3 sm:p-4"><div className={cn('flex h-9 w-9 items-center justify-center rounded-xl', card.glow)}><card.icon className={cn('h-4 w-4', card.color)} /></div><div className="mt-5 text-[11px] font-bold text-white sm:text-xs">{card.label}</div><div className="mt-1 text-[10px] text-zinc-500">{card.detail}</div></div>)}
+          </div>
+          <div className="mt-4 flex items-center justify-between rounded-2xl border border-orange-400/15 bg-gradient-to-r from-orange-500/10 to-transparent px-4 py-4">
+            <div className="flex items-center gap-3"><div className="flex h-9 w-9 items-center justify-center rounded-xl bg-orange-500/20"><CalendarDays className="h-4 w-4 text-orange-400" /></div><div><div className="text-xs font-bold text-white">Coleções sazonais</div><div className="mt-1 text-[10px] text-zinc-400">Organize a produção por ocasião</div></div></div>
+            <ArrowRight className="h-4 w-4 text-orange-400" />
+          </div>
+        </div>
+      </div>
+      <div className="absolute -bottom-5 -left-3 hidden items-center gap-2 rounded-2xl border border-white/20 bg-white px-4 py-3 shadow-2xl sm:flex"><span className="flex h-8 w-8 items-center justify-center rounded-full bg-emerald-100"><Check className="h-4 w-4 text-emerald-700" /></span><div><div className="text-[11px] font-black text-zinc-900">Seu processo, simplificado.</div><div className="text-[10px] text-zinc-500">Da ideia à vitrine</div></div></div>
+      <div className="mt-5 text-center text-[11px] text-zinc-500">Representação ilustrativa da organização e das ferramentas</div>
+    </div>
   )
 }
 
-const fadeUp = {
-  initial: { opacity: 0, y: 26 },
-  whileInView: { opacity: 1, y: 0 },
-  viewport: { once: true, margin: '-60px' },
-  transition: { duration: 0.55, ease: 'easeOut' as const },
-}
-
 export function LandingView() {
-  const setView = useStore((s) => s.setView)
-  const user = useStore((s) => s.user)
-  const setAuthMode = useStore((s) => s.setAuthMode)
-  const setPendingIntent = useStore((s) => s.setPendingIntent)
+  const user = useStore(s => s.user)
+  const setView = useStore(s => s.setView)
+  const setAuthMode = useStore(s => s.setAuthMode)
+  const setPendingIntent = useStore(s => s.setPendingIntent)
   const [scrolled, setScrolled] = useState(false)
   const [mobileNav, setMobileNav] = useState(false)
-
+  const [showMobileCta, setShowMobileCta] = useState(false)
   const { data: catalog } = useQuery<CatalogData>({
     queryKey: ['catalog'],
-    queryFn: async () => { const res = await fetch('/api/catalog'); if (!res.ok) throw new Error('Falha ao carregar informações'); return res.json() },
+    queryFn: async () => { const r = await fetch('/api/catalog'); if (!r.ok) throw new Error('Não foi possível consultar os planos'); return r.json() },
     staleTime: 60_000,
   })
+  const price = formatBRL(catalog?.priceCents ?? 4790)
+  const campaignActive = (catalog?.priceCents ?? 4790) === 4790 && Date.now() <= PROMO_END
+  const priceQualifier = campaignActive ? 'Acesso vitalício · pagamento único' : 'Confira as condições atuais no checkout'
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 24)
-    window.addEventListener('scroll', onScroll, { passive: true })
-    return () => window.removeEventListener('scroll', onScroll)
+    const handleScroll = () => {
+      const y = window.scrollY
+      setScrolled(y > 20)
+      setShowMobileCta(y > 520)
+    }
+    handleScroll()
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
-  const categories = catalog?.categories?.length
-    ? catalog.categories.map((c) => `${c.emoji} ${c.name}`)
-    : FALLBACK_CATEGORIES
-  const events = catalog?.events?.length
-    ? catalog.events.map((e) => `${e.emoji} ${e.name.toUpperCase()}`)
-    : FALLBACK_EVENTS
-
-  const price = formatBRL(catalog?.priceCents ?? 4790)
-  const campaignActive = (catalog?.priceCents ?? 4790) === 4790 && Date.now() <= new Date('2026-12-20T23:59:59-03:00').getTime()
-  /* Ancoragem honesta: preço real do catálogo ÷ nº real de artes (atualiza sozinho). */
-  const perArt = formatBRL(Math.round((catalog?.priceCents ?? 4790) / Math.max(1, catalog?.counts.arts ?? 14)))
-
-  const goSignup = () => {
-    track('cta_click', { location: 'landing', intent: 'signup' })
-    if (user) {
-      setView(user.hasAccess ? 'portal' : 'checkout')
-      return
-    }
+  const goSignup = (location: string) => {
+    track('cta_click', { location, intent: 'signup', price_cents: catalog?.priceCents ?? 4790 })
+    if (user) { setView(user.hasAccess ? 'portal' : 'checkout'); return }
     setAuthMode('register')
     setPendingIntent('checkout')
     setView('auth')
   }
-
-  const goArts = () => {
-    track('cta_click', { location: 'landing', intent: 'ver-artes' })
-    document.getElementById('artes')?.scrollIntoView({ behavior: 'smooth' })
-  }
-
+  const goLogin = () => { setMobileNav(false); setAuthMode('login'); setView('auth') }
   const scrollTo = (id: string) => {
     setMobileNav(false)
-    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })
+    track('cta_click', { location: 'navigation', intent: id })
+    document.getElementById(id)?.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' })
   }
+  const goCatalog = () => { track('cta_click', { location: 'landing', intent: 'external_catalog' }) }
+  const navLinks = [ ['Recursos', 'recursos'], ['Como funciona', 'como-funciona'], ['Ver artes', 'artes'], ['Investimento', 'preco'], ['Dúvidas', 'faq'] ]
 
   return (
-    <div className="flex min-h-screen flex-col bg-white">
-      {/* ================= HEADER ================= */}
-      <header
-        className={cn(
-          'fixed inset-x-0 z-50 transition-all duration-300',
-          'top-0',
-          scrolled ? 'glass-header border-b border-zinc-200/80 shadow-sm' : 'bg-transparent'
-        )}
-      >
-        <div className="mx-auto flex h-16 w-full max-w-7xl items-center justify-between gap-3 px-4 sm:px-6">
-          <button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} aria-label="Ir para o topo">
-            <Logo dark={!scrolled} />
-          </button>
-
-          <nav className="hidden items-center gap-1 md:flex" aria-label="Navegação principal">
-            {[
-              ['Artes', 'artes'],
-              ['Benefícios', 'beneficios'],
-              ['Como funciona', 'como-funciona'],
-              ['Preço', 'preco'],
-              ['FAQ', 'faq'],
-              ['Blog', '/blog'],
-            ].map(([label, id]) =>
-              id.startsWith('/') ? (
-                <Link
-                  key={id}
-                  href={id}
-                  className={cn(
-                    'rounded-full px-3.5 py-2 text-sm font-semibold transition-colors',
-                    scrolled ? 'text-zinc-600 hover:bg-orange-50 hover:text-orange-600' : 'text-white/85 hover:text-white'
-                  )}
-                >
-                  {label}
-                </Link>
-              ) : (
-                <button
-                  key={id}
-                  onClick={() => scrollTo(id)}
-                  className={cn(
-                    'rounded-full px-3.5 py-2 text-sm font-semibold transition-colors',
-                    scrolled ? 'text-zinc-600 hover:bg-orange-50 hover:text-orange-600' : 'text-white/85 hover:text-white'
-                  )}
-                >
-                  {label}
-                </button>
-              )
-            )}
+    <div className="landing-v2 min-h-screen overflow-x-clip bg-[#f8f7f5] pb-16 font-sans text-zinc-950 md:pb-0">
+      {campaignActive && <div className="relative z-[60] border-b border-orange-600 bg-orange-500 px-4 py-2 text-center text-[11px] font-bold tracking-wide text-zinc-950 sm:text-xs"><span className="inline-flex flex-wrap items-center justify-center gap-1.5"><Gift className="h-3.5 w-3.5" /> Oferta especial: acesso vitalício por {price} <span className="hidden sm:inline">·</span> <span>até 20/12/2026</span> <button onClick={() => scrollTo('preco')} className="ml-1 inline-flex items-center gap-1 underline underline-offset-2">Ver oferta <ArrowRight className="h-3 w-3" /></button></span></div>}
+      <header className={cn('sticky top-0 z-50 border-b transition-all duration-300', scrolled ? 'border-white/10 bg-[#11141b]/95 shadow-lg shadow-black/10 backdrop-blur-xl' : 'border-white/10 bg-[#14171e]')}>
+        <div className="mx-auto flex h-[72px] max-w-7xl items-center justify-between gap-3 px-5 sm:px-8">
+          <button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} aria-label="Click&Gruda — voltar ao início"><Logo dark /></button>
+          <nav className="hidden items-center gap-1 lg:flex" aria-label="Navegação da página de vendas">
+            {navLinks.map(([label, id]) => <button key={id} onClick={() => scrollTo(id)} className="rounded-xl px-3.5 py-2 text-[13px] font-semibold text-zinc-300 transition-colors hover:bg-white/10 hover:text-white">{label}</button>)}
           </nav>
-
-          <div className="hidden items-center gap-2 md:flex">
-            {user ? (
-              <Button
-                onClick={() => setView(user.hasAccess ? 'portal' : 'checkout')}
-                className="h-10 rounded-xl bg-zinc-950 font-bold text-white hover:bg-zinc-800"
-              >
-                <Crown className="mr-1 h-4 w-4 text-orange-400" />
-                {user.hasAccess ? 'Meu Portal' : 'Assinar agora'}
-              </Button>
-            ) : (
-              <>
-                <Button
-                  variant="ghost"
-                  onClick={() => {
-                    setAuthMode('login')
-                    setView('auth')
-                  }}
-                  className={cn(
-                    'h-10 rounded-xl font-bold',
-                    scrolled ? 'text-zinc-700 hover:text-orange-600' : 'text-white/90 hover:text-white'
-                  )}
-                >
-                  Entrar
-                </Button>
-                <Button
-                  onClick={goSignup}
-                  className="h-10 rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 px-4 font-extrabold text-white shadow-lg shadow-orange-500/30 hover:shadow-orange-500/50 hover:brightness-105"
-                >
-                  Assinar {price} <ArrowRight className="ml-1 h-4 w-4" />
-                </Button>
-              </>
-            )}
-          </div>
-
-          <button
-            className="flex h-10 w-10 items-center justify-center rounded-xl text-zinc-900 md:hidden"
-            onClick={() => setMobileNav((v) => !v)}
-            aria-label="Abrir menu"
-          >
-            {mobileNav ? <XCircle className={scrolled ? '' : 'text-white'} /> : <Menu className={scrolled ? '' : 'text-white'} />}
-          </button>
+          <div className="hidden items-center gap-2 sm:flex"><button onClick={goLogin} className="rounded-xl px-4 py-2.5 text-sm font-bold text-zinc-200 hover:bg-white/10">Entrar</button><Button onClick={() => goSignup('header')} className="h-11 rounded-xl bg-orange-500 px-5 font-extrabold text-zinc-950 shadow-lg shadow-orange-500/20 hover:bg-orange-400">{user?.hasAccess ? 'Meu portal' : 'Quero meu acesso'} <ArrowRight className="ml-1.5 h-4 w-4" /></Button></div>
+          <button aria-expanded={mobileNav} aria-label={mobileNav ? 'Fechar navegação' : 'Abrir navegação'} onClick={() => setMobileNav(s => !s)} className="flex h-11 w-11 items-center justify-center rounded-xl border border-white/15 text-white sm:hidden">{mobileNav ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}</button>
         </div>
-
-        {mobileNav && (
-          <div className="border-t border-zinc-200 bg-white px-4 pb-4 pt-2 shadow-2xl md:hidden">
-            {[
-              ['Artes', 'artes'],
-              ['Benefícios', 'beneficios'],
-              ['Como funciona', 'como-funciona'],
-              ['Preço', 'preco'],
-              ['FAQ', 'faq'],
-            ].map(([label, id]) => (
-              <button
-                key={id}
-                onClick={() => scrollTo(id)}
-                className="block w-full rounded-lg px-3 py-2.5 text-left text-sm font-semibold text-zinc-700 hover:bg-orange-50"
-              >
-                {label}
-              </button>
-            ))}
-            <Button
-              onClick={goSignup}
-              className="mt-2 h-11 w-full rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 font-extrabold"
-            >
-              Assinar por {price}
-            </Button>
-          </div>
-        )}
+        {mobileNav && <nav className="border-t border-white/10 bg-[#14171e] px-5 py-4 sm:hidden" aria-label="Navegação móvel">{navLinks.map(([label, id]) => <button key={id} onClick={() => scrollTo(id)} className="flex w-full items-center justify-between border-b border-white/5 py-3 text-left text-sm font-semibold text-zinc-200">{label}<ArrowRight className="h-4 w-4 text-orange-400" /></button>)}<button onClick={goLogin} className="mt-3 w-full py-2 text-sm font-bold text-zinc-300">Já tenho conta · Entrar</button></nav>}
       </header>
 
-      {/* ================= HERO ================= */}
-      <section className="relative overflow-hidden bg-zinc-950 pb-16 pt-28 text-white sm:pb-20 sm:pt-32">
-        <div className="bg-grid-dark absolute inset-0" aria-hidden />
-        <div
-          className="absolute -left-32 top-10 h-96 w-96 rounded-full bg-orange-600/25 blur-[130px]"
-          aria-hidden
-        />
-        <div
-          className="absolute -right-24 bottom-0 h-80 w-80 rounded-full bg-orange-500/15 blur-[120px]"
-          aria-hidden
-        />
-
-        <div className="relative mx-auto grid w-full max-w-7xl items-center gap-12 px-4 sm:px-6 lg:grid-cols-[1.05fr_0.95fr]">
-          <div>
-            <motion.div
-              initial={{ opacity: 0, y: 18 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-              className="inline-flex items-center gap-2 rounded-full border border-orange-500/40 bg-orange-500/10 px-3.5 py-1.5 text-xs font-bold text-orange-300"
-            >
-              <Flame className="h-3.5 w-3.5" />
-              Biblioteca com curadoria · atualizações semanais
-            </motion.div>
-
-            <motion.h1
-              initial={{ opacity: 0, y: 22 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.55, delay: 0.08 }}
-              className="mt-5 text-4xl font-black leading-[1.04] tracking-tight sm:text-5xl xl:text-6xl"
-            >
-              Menos tempo procurando artes.
-              <br />
-              <span className="text-gradient-orange">Mais tempo criando e vendendo.</span>
-            </motion.h1>
-
-            <motion.p
-              initial={{ opacity: 0, y: 22 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.55, delay: 0.16 }}
-              className="mt-5 max-w-xl text-base leading-relaxed text-zinc-400 sm:text-lg"
-            >
-              Chega de se perder em pastas e packs gigantes. A Click&amp;Gruda reúne uma{' '}
-              <strong className="text-white">biblioteca de artes selecionadas, organizada por temas e datas comemorativas</strong>,
-              com ferramentas para apresentar e divulgar seus personalizados.{' '}
-              {campaignActive ? <strong className="text-orange-400">Acesso vitalício por {price} nesta oferta.</strong> : <strong className="text-orange-400">Conheça os planos e condições de acesso.</strong>}
-            </motion.p>
-
-            <motion.div
-              initial={{ opacity: 0, y: 22 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.55, delay: 0.24 }}
-              className="mt-7 flex flex-col gap-3 sm:flex-row"
-            >
-              <Button
-                onClick={goSignup}
-                className="group min-h-13 whitespace-normal rounded-2xl bg-gradient-to-r from-orange-500 to-orange-600 px-5 py-3 text-center text-sm font-black uppercase leading-tight tracking-wide text-white shadow-xl shadow-orange-600/40 transition-all hover:scale-[1.02] hover:shadow-orange-500/60 sm:px-7 sm:py-3.5 sm:text-base"
-              >
-                Garantir meu acesso — {price}
-                <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
-              </Button>
-              <Button
-                onClick={goArts}
-                variant="outline"
-                className="min-h-13 whitespace-normal rounded-2xl border-zinc-700 bg-zinc-900/60 px-5 py-3 text-center text-sm font-bold text-zinc-100 backdrop-blur hover:bg-zinc-800 hover:text-white sm:px-7 sm:py-3.5 sm:text-base"
-              >
-                <Sparkles className="mr-2 h-5 w-5 text-orange-400" />
-                Ver as artes
-              </Button>
-            </motion.div>
-
-            {campaignActive && <p className="mt-3 inline-flex items-center gap-2 text-xs font-bold text-orange-200"><Clock3 className="h-3.5 w-3.5" /> Oferta de acesso vitalício válida até 20 de dezembro de 2026.</p>}
-
-            <motion.ul
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.6, delay: 0.36 }}
-              className="mt-7 grid max-w-xl grid-cols-2 gap-x-4 gap-y-2 text-[13px] font-medium text-zinc-300"
-            >
-              {[
-                'Organização por categorias e tags',
-                'Novas artes toda semana',
-                'Gerador de mockups 3D',
-                'Loja online para assinantes',
-              ].map((item) => (
-                <li key={item} className="flex items-center gap-2">
-                  <span className="flex h-4.5 w-4.5 items-center justify-center rounded-full bg-orange-500/20">
-                    <Check className="h-3 w-3 text-orange-400" />
-                  </span>
-                  {item}
-                </li>
-              ))}
-            </motion.ul>
+      {/* Nova hero: a vitrine visual demonstra a plataforma, sem repetir as artes do carrossel. */}
+      <section className="relative isolate overflow-hidden bg-[#14171e] pb-20 pt-16 text-white sm:pb-24 sm:pt-20 xl:pt-24">
+        <div aria-hidden="true" className="landing-hero-grid absolute inset-0 opacity-50" />
+        <div aria-hidden="true" className="pointer-events-none absolute -left-44 top-14 h-[450px] w-[450px] rounded-full bg-orange-600/10 blur-[100px]" />
+        <div className="relative mx-auto grid max-w-7xl items-center gap-14 px-5 sm:px-8 lg:grid-cols-[1.05fr_.95fr] xl:gap-16">
+          <div className="max-w-[680px]">
+            <Reveal><div className="inline-flex flex-wrap items-center gap-2 rounded-full border border-orange-400/25 bg-orange-400/10 px-3.5 py-2 text-[11px] font-black uppercase tracking-[.13em] text-orange-300"><span className="relative flex h-2 w-2"><span className="absolute inset-0 animate-ping rounded-full bg-orange-400/60"/><span className="relative h-2 w-2 rounded-full bg-orange-400" /></span> Para quem vive de personalizados</div></Reveal>
+            <Reveal delay={.05}><h1 className="mt-7 text-[clamp(2.9rem,5vw,5rem)] font-black leading-[1.065] tracking-[-.06em]">Sua criatividade merece mais que uma <span className="relative whitespace-nowrap text-orange-400">pasta de arquivos<span aria-hidden="true" className="absolute -bottom-1 left-0 h-1 w-full rounded-full bg-orange-400/70" /></span>.</h1></Reveal>
+            <Reveal delay={.11}><p className="mt-7 max-w-xl text-base leading-[1.8] text-zinc-300 sm:text-lg">Encontre a arte certa, apresente seus produtos com mockups 3D e divulgue seu catálogo online. <strong className="font-bold text-white">Uma plataforma criada para você produzir mais e procurar menos.</strong></p></Reveal>
+            <Reveal delay={.15}><div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center"><Button onClick={() => goSignup('hero_primary')} className="landing-cta group min-h-14 rounded-2xl bg-orange-500 px-7 text-base font-black text-zinc-950 shadow-[0_15px_40px_-12px_rgba(249,115,22,.55)] hover:bg-orange-400">{user?.hasAccess ? 'Entrar no meu portal' : 'Quero acessar a plataforma'} <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" /></Button><button onClick={() => scrollTo('como-funciona')} className="inline-flex min-h-14 items-center justify-center gap-2 rounded-2xl border border-white/15 px-6 text-sm font-bold text-white transition-colors hover:bg-white/10"><Play className="h-4 w-4 fill-orange-400 text-orange-400" /> Como funciona</button></div></Reveal>
+            <Reveal delay={.2}><div className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-2.5 text-xs font-semibold text-zinc-400"><span className="inline-flex items-center gap-1.5"><CircleCheck className="h-4 w-4 text-emerald-400" /> Artes selecionadas</span><span className="inline-flex items-center gap-1.5"><CircleCheck className="h-4 w-4 text-emerald-400" /> Atualização semanal</span><span className="inline-flex items-center gap-1.5"><CircleCheck className="h-4 w-4 text-emerald-400" /> Loja online para assinantes</span></div>{campaignActive && <p className="mt-5 flex items-center gap-2 text-sm font-semibold text-orange-300"><Clock3 className="h-4 w-4" /> Condição especial: {price}, pagamento único até 20 de dezembro.</p>}</Reveal>
           </div>
-
-          {/* Colagem de artes reais do acervo (substitui a foto estática das canecas) */}
-          <HeroCollage />
+          <Reveal delay={.17} className="lg:pl-2"><ProductPreview artsCount={catalog?.counts.arts} /></Reveal>
         </div>
-
-        {/* Stats */}
-        <div className="relative mx-auto mt-16 grid w-full max-w-4xl grid-cols-3 gap-4 px-4 sm:px-6">
+        <div className="relative mx-auto mt-16 grid max-w-7xl gap-3 px-5 sm:grid-cols-3 sm:px-8 lg:mt-24">
           {[
-            { value: catalog?.counts.arts, suffix: '', label: 'artes disponíveis agora' },
-            { value: catalog?.categories?.length, suffix: '', label: 'categorias para explorar' },
-            { value: catalog?.events?.length, suffix: '', label: 'datas sazonais organizadas' },
-          ].map((s) => (
-            <div
-              key={s.label}
-              className="rounded-2xl border border-zinc-800 bg-zinc-900/60 px-4 py-5 text-center backdrop-blur"
-            >
-              <div className="text-2xl font-black text-orange-400 sm:text-3xl">
-                {s.value == null ? '—' : <CountUp to={s.value} suffix={s.suffix} />}
-              </div>
-              <div className="mt-1 text-[11px] font-semibold uppercase tracking-wider text-zinc-500">{s.label}</div>
-            </div>
-          ))}
+            { icon: FolderOpen, title: catalog?.counts.arts ? `${catalog.counts.arts.toLocaleString('pt-BR')} artes no acervo` : 'Artes com curadoria', desc: 'Conteúdo organizado para encontrar' },
+            { icon: Sparkles, title: 'Novidades toda semana', desc: 'Mais opções para novas encomendas' },
+            { icon: BadgeCheck, title: 'Ferramentas no mesmo acesso', desc: 'Biblioteca, mockup e catálogo online' },
+          ].map(s => <div key={s.title} className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/[.04] p-4"><span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-orange-400/10"><s.icon className="h-5 w-5 text-orange-400" /></span><div><div className="text-sm font-extrabold text-white">{s.title}</div><div className="mt-0.5 text-[11px] text-zinc-400">{s.desc}</div></div></div>)}
         </div>
       </section>
 
-      {/* ================= MARQUEES ================= */}
-      <div className="relative z-10" aria-hidden>
-        <Marquee
-          items={categories}
-          duration={36}
-          className="border-y border-zinc-800 bg-zinc-950 py-3.5"
-          itemClassName="text-sm font-black uppercase tracking-[0.18em] text-zinc-100"
-        />
-        <Marquee
-          items={events}
-          reverse
-          duration={30}
-          className="bg-gradient-to-r from-orange-500 via-orange-600 to-orange-500 py-3.5"
-          itemClassName="text-sm font-black uppercase tracking-[0.18em] text-white"
-        />
-      </div>
+      <section className="border-b border-zinc-200 bg-white py-7"><div className="mx-auto flex max-w-7xl flex-wrap items-center justify-center gap-x-12 gap-y-5 px-5 text-center text-xs font-black uppercase tracking-[.14em] text-zinc-500 sm:px-8"><span className="flex items-center gap-2"><Search className="h-4 w-4 text-orange-500" /> Encontre rápido</span><span className="flex items-center gap-2"><Paintbrush className="h-4 w-4 text-orange-500" /> Apresente melhor</span><span className="flex items-center gap-2"><Store className="h-4 w-4 text-orange-500" /> Divulgue sua loja</span><span className="flex items-center gap-2"><Heart className="h-4 w-4 text-orange-500" /> Ganhe tempo</span></div></section>
 
-      {/* ================= BENEFÍCIOS REAIS: biblioteca + ferramentas ================= */}
-      <section id="beneficios" className="scroll-mt-20 bg-zinc-50 py-20 sm:py-24">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6">
-          <motion.div {...fadeUp} className="mx-auto max-w-3xl text-center">
-            <span className="inline-flex items-center gap-2 rounded-full bg-orange-100 px-3 py-1 text-xs font-extrabold uppercase tracking-wider text-orange-700"><Sparkles className="h-3.5 w-3.5" /> Feito para quem produz personalizados</span>
-            <h2 className="mt-4 text-3xl font-black tracking-tight text-zinc-950 sm:text-4xl">Não é só um pack de artes. <span className="text-gradient-orange">É o seu espaço de produção.</span></h2>
-            <p className="mt-4 text-sm leading-relaxed text-zinc-600 sm:text-base">Em vez de milhares de arquivos soltos, você encontra temas organizados, recursos práticos e um caminho simples entre escolher, apresentar e vender.</p>
-          </motion.div>
-          <div className="mt-11 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-            {[
-              { icon: FolderHeart, title: 'Acervo com curadoria', desc: 'Artes escolhidas e separadas por categorias, tags e datas especiais. Ache o tema certo sem navegar por pastas intermináveis.', detail: 'Biblioteca organizada' },
-              { icon: Box, title: 'Mockups 3D', desc: 'Visualize suas artes aplicadas em produtos e apresente propostas com mais clareza e profissionalismo.', detail: 'Código grátis para assinantes' },
-              { icon: Store, title: 'Sua loja online', desc: 'Crie um catálogo digital dos seus próprios produtos e compartilhe sua vitrine com os clientes.', detail: 'Incluída na assinatura' },
-              { icon: Wand2, title: 'Ferramentas que ajudam', desc: 'Favoritos, busca por código, sugestões de novos temas e recursos para otimizar a rotina.', detail: 'Tudo mais fácil de encontrar' },
-            ].map((f, index) => (
-              <motion.div key={f.title} {...fadeUp} transition={{ duration: 0.45, delay: index * 0.07 }} className="group flex flex-col rounded-3xl border border-zinc-200 bg-white p-5 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-orange-200 hover:shadow-xl hover:shadow-orange-500/10 sm:p-6">
-                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-orange-50 text-orange-600 transition-colors group-hover:bg-orange-500 group-hover:text-white"><f.icon className="h-5.5 w-5.5" /></div>
-                <h3 className="mt-5 text-lg font-extrabold text-zinc-950">{f.title}</h3>
-                <p className="mt-2 flex-1 text-sm leading-relaxed text-zinc-600">{f.desc}</p>
-                <span className="mt-5 inline-flex items-center gap-1.5 text-xs font-extrabold text-orange-700"><Check className="h-3.5 w-3.5" /> {f.detail}</span>
-              </motion.div>
-            ))}
-          </div>
-          <div className="mt-7 flex flex-col items-center justify-between gap-4 rounded-2xl border border-orange-200 bg-orange-50 px-5 py-4 sm:flex-row">
-            <p className="max-w-2xl text-sm text-zinc-700"><strong className="text-zinc-950">Sua loja online já está disponível.</strong> Assinantes podem criar a própria vitrine sem custo adicional.</p>
-            <a href="https://www.clickgruda.com.br" target="_blank" rel="noopener noreferrer" onClick={() => track('catalog_store_open', { source: 'landing' })} className="inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-xl bg-zinc-950 px-5 text-sm font-extrabold text-white transition-colors hover:bg-zinc-800">Conhecer a loja online <ExternalLink className="h-4 w-4" /></a>
-          </div>
-        </div>
-      </section>
+      <section id="recursos" className="scroll-mt-24 py-20 sm:py-28"><div className="mx-auto max-w-7xl px-5 sm:px-8">
+        <Reveal className="max-w-3xl"><div className="landing-eyebrow"><Sparkles className="h-3.5 w-3.5" /> TUDO O QUE VOCÊ PRECISA NO MESMO LUGAR</div><h2 className="mt-5 text-3xl font-black leading-[1.14] tracking-[-.045em] sm:text-5xl">Menos ferramentas espalhadas.<br/><span className="text-orange-600">Mais trabalho fluindo.</span></h2><p className="mt-5 max-w-2xl text-base leading-relaxed text-zinc-600">A Click&Gruda foi pensada para o cotidiano de quem vende personalizados: pesquisa, criação, apresentação e divulgação sem um labirinto de arquivos.</p></Reveal>
+        <div className="mt-11 grid gap-4 lg:grid-cols-3">{FEATURE_CARDS.map((f, i) => <Reveal key={f.title} className={f.span} delay={Math.min(i * .045, .2)}><div className={cn('group relative flex h-full min-h-[320px] flex-col overflow-hidden rounded-[28px] p-7 transition-all duration-300 hover:-translate-y-1 sm:p-9', f.tone === 'dark' ? 'bg-[#191d27] text-white' : 'border border-zinc-200 bg-white text-zinc-900 hover:shadow-xl hover:shadow-zinc-200/70')}><div className={cn('absolute -right-10 -top-10 h-56 w-56 rounded-full blur-3xl', f.tone === 'dark' ? 'bg-orange-500/10' : 'bg-orange-100/70')} /><div className="relative z-10 flex h-12 w-12 items-center justify-center rounded-2xl bg-orange-500/15"><f.icon className="h-6 w-6 text-orange-500" /></div><p className={cn('relative z-10 mt-8 text-[10px] font-black tracking-[.19em]', f.tone === 'dark' ? 'text-orange-400' : 'text-orange-600')}>{f.label}</p><h3 className="relative z-10 mt-2 text-2xl font-black tracking-tight sm:text-[27px]">{f.title}</h3><p className={cn('relative z-10 mt-3 max-w-lg text-sm leading-[1.8]', f.tone === 'dark' ? 'text-zinc-300' : 'text-zinc-600')}>{f.detail}</p><div className="relative z-10 mt-auto flex flex-wrap gap-x-4 gap-y-2 pt-6">{f.points.map(p => <span key={p} className={cn('inline-flex items-center gap-1.5 text-[11px] font-bold', f.tone === 'dark' ? 'text-zinc-300' : 'text-zinc-600')}><Check className="h-3.5 w-3.5 text-orange-500" /> {p}</span>)}</div>{f.title.includes('vitrine') && <a onClick={goCatalog} href={CATALOG_URL} target="_blank" rel="noopener noreferrer" className="relative z-10 mt-5 inline-flex w-fit items-center gap-1.5 text-xs font-bold text-orange-600 hover:underline">Conhecer o catálogo <ExternalLink className="h-3.5 w-3.5" /></a>}</div></Reveal>)}</div>
+      </div></section>
 
-      {/* ================= DOR / SOLUÇÃO ================= */}
-      <section className="bg-grid-light bg-white py-20 sm:py-24">
-        <div className="mx-auto w-full max-w-6xl px-4 sm:px-6">
-          <motion.div {...fadeUp} className="mx-auto max-w-2xl text-center">
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-red-50 px-3 py-1 text-xs font-bold uppercase tracking-wider text-red-500">
-              <XCircle className="h-3.5 w-3.5" /> Pare de perder dinheiro
-            </span>
-            <h2 className="mt-4 text-3xl font-black tracking-tight text-zinc-950 sm:text-4xl">
-              Sua criatividade merece um fluxo de trabalho <span className="text-gradient-orange">mais simples.</span>
-            </h2>
-            <p className="mt-3 text-zinc-500">
-              Menos obstáculos entre uma boa ideia e o produto pronto para o cliente.
-            </p>
-          </motion.div>
+      <section className="bg-white py-20 sm:py-24"><div className="mx-auto grid max-w-7xl items-center gap-10 px-5 sm:px-8 lg:grid-cols-[.85fr_1.15fr] lg:gap-16"><Reveal><div className="landing-eyebrow"><Zap className="h-3.5 w-3.5" /> MUDANÇA REAL NA ROTINA</div><h2 className="mt-5 text-3xl font-black leading-[1.14] tracking-[-.045em] sm:text-5xl">Você não precisa de <span className="text-orange-600">200 mil arquivos</span> para trabalhar melhor.</h2><p className="mt-5 text-base leading-relaxed text-zinc-600">Quantidade por si só não resolve. O que faz diferença é encontrar a opção certa, quando o cliente precisa, e apresentar bem o seu trabalho.</p><Button onClick={() => scrollTo('preco')} className="mt-7 h-12 rounded-xl bg-zinc-950 px-6 font-black hover:bg-zinc-800">Conhecer o acesso <ArrowRight className="ml-2 h-4 w-4" /></Button></Reveal><Reveal delay={.1}><div className="overflow-hidden rounded-[28px] border border-zinc-200 bg-white shadow-[0_22px_70px_-40px_rgba(0,0,0,.24)]"><div className="grid grid-cols-[.8fr_1fr_1fr] gap-2 border-b border-zinc-100 bg-zinc-50 px-4 py-4 text-[10px] font-black uppercase tracking-wide text-zinc-500 sm:px-6 sm:text-xs"><span>NA PRÁTICA</span><span>ARQUIVOS SOLTOS</span><span className="text-orange-600">CLICK&GRUDA</span></div>{comparison.map(([title, old, newer]) => <div key={title} className="grid grid-cols-[.8fr_1fr_1fr] gap-2 border-b border-zinc-100 px-4 py-4 text-[11px] leading-relaxed last:border-b-0 sm:px-6 sm:py-5 sm:text-sm"><div className="font-extrabold text-zinc-800">{title}</div><div className="flex items-start gap-1.5 text-zinc-500"><X className="mt-0.5 h-3.5 w-3.5 shrink-0 text-zinc-400" /><span>{old}</span></div><div className="flex items-start gap-1.5 font-semibold text-zinc-800"><Check className="mt-0.5 h-3.5 w-3.5 shrink-0 text-orange-600" /><span>{newer}</span></div></div>)}</div></Reveal></div></section>
 
-          <div className="mt-12 grid gap-5 md:grid-cols-3">
-            {[
-              {
-                pain: 'Packs enormes, arquivos repetidos e pastas difíceis de navegar',
-                solution: 'Uma biblioteca com curadoria, filtros por tema, tags e busca rápida por nome ou código.',
-                icon: FolderHeart,
-              },
-              {
-                pain: 'Dificuldade para apresentar seus produtos de maneira profissional',
-                solution: 'Use mockups 3D e sua loja online para mostrar os personalizados antes da produção.',
-                icon: Box,
-              },
-              {
-                pain: 'Esquecer datas importantes ou perder tempo caçando o tema ideal',
-                solution: 'Datas sazonais reunidas em um só lugar para ajudar você a se planejar com antecedência.',
-                icon: Clock3,
-              },
-            ].map((c, i) => (
-              <motion.div
-                key={i}
-                {...fadeUp}
-                transition={{ ...fadeUp.transition, delay: i * 0.12 }}
-                className="group relative flex flex-col overflow-hidden rounded-3xl border border-zinc-200 bg-white p-6 shadow-sm transition-all hover:-translate-y-1 hover:border-orange-200 hover:shadow-xl hover:shadow-orange-500/10"
-              >
-                <div className="flex items-start gap-3">
-                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-red-50">
-                    <c.icon className="h-5.5 w-5.5 text-red-400" />
-                  </div>
-                  <p className="text-[15px] font-bold leading-snug text-zinc-800">{c.pain}</p>
-                </div>
-                <div className="my-4 flex items-center gap-2" aria-hidden>
-                  <div className="h-px flex-1 bg-zinc-200" />
-                  <ChevronDown className="h-4 w-4 text-orange-500" />
-                  <div className="h-px flex-1 bg-orange-200" />
-                </div>
-                <div className="mt-auto flex items-start gap-3 rounded-2xl bg-orange-50/70 p-3.5">
-                  <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-orange-500">
-                    <Check className="h-3 w-3 text-white" />
-                  </span>
-                  <p className="text-sm font-medium leading-relaxed text-zinc-700">{c.solution}</p>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
+      <section id="como-funciona" className="scroll-mt-24 bg-[#f2f0ed] py-20 sm:py-24"><div className="mx-auto max-w-7xl px-5 sm:px-8"><Reveal className="mx-auto max-w-3xl text-center"><div className="landing-eyebrow justify-center"><MousePointerClick className="h-3.5 w-3.5" /> SIMPLES DE USAR</div><h2 className="mt-5 text-3xl font-black tracking-[-.045em] sm:text-5xl">Do tema ao pedido.<br/><span className="text-orange-600">Tudo mais simples.</span></h2><p className="mt-5 text-zinc-600">Três etapas para transformar ideias em apresentações que ajudam você a vender.</p></Reveal><div className="mt-12 grid gap-4 md:grid-cols-3">{FLOW.map((f, i) => <Reveal key={f.title} delay={i * .1}><div className="relative h-full rounded-[26px] border border-zinc-200 bg-white p-7 shadow-sm sm:p-8"><span className="text-5xl font-black tracking-tighter text-zinc-100">{f.number}</span><span className="absolute right-6 top-7 flex h-11 w-11 items-center justify-center rounded-xl bg-orange-100"><f.icon className="h-5 w-5 text-orange-600" /></span><h3 className="mt-4 text-2xl font-black">{f.title}</h3><p className="mt-2 text-sm leading-relaxed text-zinc-600">{f.detail}</p></div></Reveal>)}</div><Reveal className="mt-9 flex flex-col items-center gap-3 text-center"><span className="text-xs font-semibold text-zinc-600">Tudo começa com uma conta na plataforma.</span><Button onClick={() => goSignup('workflow')} className="h-12 rounded-xl bg-orange-500 px-8 font-black text-zinc-950 hover:bg-orange-400">Quero começar <ArrowRight className="ml-2 h-4 w-4" /></Button></Reveal></div></section>
 
-      {/* ================= VITRINE ================= */}
-      <section id="artes" className="scroll-mt-20 bg-zinc-950 py-20 sm:py-24">
-        <div className="mx-auto w-full max-w-6xl px-4 sm:px-6">
-          <motion.div {...fadeUp} className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-end">
-            <div>
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-orange-500/15 px-3 py-1 text-xs font-bold uppercase tracking-wider text-orange-400">
-                <Sparkles className="h-3.5 w-3.5" /> Vitrine do acervo
-              </span>
-              <h2 className="mt-4 text-3xl font-black tracking-tight text-white sm:text-4xl">
-                Veja o que te espera <span className="text-gradient-orange">lá dentro</span>
-              </h2>
-              <p className="mt-2 max-w-lg text-zinc-400">
-                Prévia de cada arte, já na medida da caneca. Liberou o acesso, baixou o PNG original em alta —
-                21×9,5 cm, pronto pra prensa.
-              </p>
-            </div>
-            <Button
-              onClick={goSignup}
-              className="h-11 rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 px-5 font-extrabold shadow-lg shadow-orange-600/30"
-            >
-              Desbloquear todas <Lock className="ml-1.5 h-4 w-4" />
-            </Button>
-          </motion.div>
+      <section id="artes" className="scroll-mt-24 overflow-hidden bg-[#14171e] py-20 text-white sm:py-24"><div className="mx-auto max-w-7xl px-5 sm:px-8"><Reveal className="flex flex-col items-start justify-between gap-6 sm:flex-row sm:items-end"><div className="max-w-2xl"><div className="landing-eyebrow border-orange-400/20 bg-orange-500/10 text-orange-300"><Star className="h-3.5 w-3.5" /> UMA PRÉVIA DO ACERVO</div><h2 className="mt-5 text-3xl font-black tracking-[-.045em] sm:text-5xl">As artes falam <span className="text-orange-400">por si.</span></h2><p className="mt-4 text-sm leading-relaxed text-zinc-400 sm:text-base">Aqui você vê uma amostra das artes. Dentro da plataforma, a biblioteca fica organizada para pesquisar, favoritar e baixar com facilidade.</p></div><Button onClick={() => goSignup('showcase')} className="h-12 shrink-0 rounded-xl bg-orange-500 px-6 font-black text-zinc-950 hover:bg-orange-400">Acessar biblioteca <ArrowRight className="ml-2 h-4 w-4" /></Button></Reveal><ShowcaseCarousel /><p className="mt-5 text-center text-xs text-zinc-500">Amostra do acervo. As artes são compartilhadas entre os assinantes.</p></div></section>
 
-          {/* Carrossel infinito deslizando para a esquerda — 2 fileiras, pausa no hover */}
-          <ShowcaseCarousel />
+      <section className="bg-white py-20 sm:py-24"><div className="mx-auto grid max-w-7xl items-center gap-10 px-5 sm:px-8 lg:grid-cols-[1fr_1fr] lg:gap-16"><Reveal><div className="landing-eyebrow"><Store className="h-3.5 w-3.5" /> UM BENEFÍCIO A MAIS</div><h2 className="mt-5 text-3xl font-black leading-tight tracking-[-.045em] sm:text-5xl">Seu catálogo online. <span className="text-orange-600">Sua marca em destaque.</span></h2><p className="mt-5 max-w-xl text-base leading-relaxed text-zinc-600">O acesso à Click&Gruda também inclui a possibilidade de criar sua própria loja online de produtos personalizados. Você organiza a vitrine e compartilha com seus clientes.</p><div className="mt-6 flex items-center gap-2 text-sm font-extrabold text-emerald-700"><CircleCheck className="h-5 w-5" /> Grátis para quem é assinante</div><a href={CATALOG_URL} target="_blank" rel="noopener noreferrer" onClick={goCatalog} className="mt-7 inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-zinc-950 px-6 text-sm font-black text-white transition-colors hover:bg-zinc-800">Conhecer o catálogo <ExternalLink className="h-4 w-4" /></a></Reveal><Reveal delay={.1}><div className="relative overflow-hidden rounded-[30px] border border-zinc-200 bg-[#f7f3ee] p-6 sm:p-9"><div className="absolute -right-16 -top-16 h-60 w-60 rounded-full bg-orange-200/60 blur-3xl"/><div className="relative overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-[0_20px_50px_-24px_rgba(0,0,0,.2)]"><div className="flex items-center justify-between border-b border-zinc-100 px-5 py-4"><div className="flex items-center gap-2 text-sm font-extrabold"><span className="flex h-8 w-8 items-center justify-center rounded-lg bg-orange-100"><Store className="h-4 w-4 text-orange-600" /></span> Minha loja</div><span className="rounded-full bg-emerald-100 px-2.5 py-1 text-[10px] font-black text-emerald-800">VITRINE ONLINE</span></div><div className="grid grid-cols-2 gap-3 p-4 sm:p-5">{[{icon: Coffee, title: 'Canecas personalizadas', tag: 'Seu catálogo'}, {icon: Gift, title: 'Presentes criativos', tag: 'Sua marca'}].map(item => <div key={item.title} className="rounded-xl bg-zinc-50 p-4"><div className="flex h-24 items-center justify-center rounded-lg bg-gradient-to-br from-orange-100 to-[#e7d6c7]"><item.icon className="h-10 w-10 text-orange-700" /></div><div className="mt-3 text-xs font-black text-zinc-800">{item.title}</div><div className="mt-1 text-[10px] text-zinc-400">{item.tag}</div></div>)}</div><div className="mx-5 mb-5 rounded-xl bg-zinc-950 px-4 py-3 text-center text-xs font-bold text-white">Confira nossos produtos <ArrowRight className="ml-1 inline h-3 w-3" /></div></div><p className="relative mt-4 text-center text-[11px] text-zinc-500">Ilustração conceitual de uma vitrine digital</p></div></Reveal></div></section>
 
-          <motion.p {...fadeUp} className="mt-8 text-center text-sm text-zinc-500">
-            <strong className="text-orange-400">{catalog?.counts.arts ?? 20} artes</strong> no acervo agora — e os
-            lançamentos frequentes já estão inclusos no seu acesso.
-          </motion.p>
-        </div>
-      </section>
+      <section id="preco" className="relative scroll-mt-24 overflow-hidden bg-[#f3f1ed] py-20 sm:py-28"><div className="mx-auto grid max-w-7xl items-center gap-12 px-5 sm:px-8 lg:grid-cols-[.95fr_1.05fr] lg:gap-20"><Reveal><div className="landing-eyebrow"><Wallet className="h-3.5 w-3.5" /> ESCOLHA COM CLAREZA</div><h2 className="mt-5 text-3xl font-black leading-[1.13] tracking-[-.045em] sm:text-5xl">Uma plataforma para facilitar seu trabalho. <span className="text-orange-600">Um investimento direto.</span></h2><p className="mt-5 max-w-lg text-base leading-relaxed text-zinc-600">Você investe em organização, novas opções de artes e ferramentas úteis para seu negócio. Sem promessas irreais — veja o que está incluído e decida.</p><div className="mt-8 space-y-3">{['Biblioteca organizada e atualizada', 'Gerador de mockups 3D', 'Loja online gratuita para assinantes', 'Favoritos, filtros e coleções sazonais', 'Suporte pelos canais oficiais'].map(item => <div key={item} className="flex items-center gap-3 text-sm font-semibold text-zinc-800"><span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-emerald-100"><Check className="h-3.5 w-3.5 text-emerald-700" /></span>{item}</div>)}</div></Reveal><Reveal delay={.1}><div className="relative overflow-hidden rounded-[32px] border border-zinc-200 bg-white p-7 shadow-[0_26px_90px_-35px_rgba(16,20,28,.25)] sm:p-10"><div className="absolute right-0 top-0 rounded-bl-2xl bg-zinc-950 px-4 py-2 text-[10px] font-black uppercase tracking-widest text-white">{campaignActive ? 'OFERTA ATÉ 20/12' : 'PLANO DISPONÍVEL'}</div><div className="inline-flex items-center gap-2 rounded-full bg-orange-100 px-3 py-1.5 text-[11px] font-black text-orange-700"><Sparkles className="h-3.5 w-3.5" /> Click&Gruda</div><h3 className="mt-5 text-2xl font-black text-zinc-900">Acesso à plataforma</h3><p className="mt-2 text-sm text-zinc-500">Artes, organização e ferramentas em um só lugar.</p><div className="mt-7 flex items-end gap-2 border-b border-zinc-100 pb-6"><span className="text-5xl font-black tracking-[-.06em] text-zinc-950 sm:text-6xl">{price}</span><span className="pb-2 text-sm font-bold text-zinc-500">{campaignActive ? 'uma vez' : 'preço exibido'}</span></div><p className="mt-4 flex items-start gap-2 text-sm font-bold text-zinc-700"><ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600" /> {priceQualifier}</p>{campaignActive && <p className="mt-2 text-xs leading-relaxed text-zinc-500">Plano promocional vitalício: válido para novas contratações até 20 de dezembro de 2026, sujeito às condições apresentadas no checkout.</p>}<Button onClick={() => goSignup('pricing')} className="landing-cta mt-7 min-h-14 w-full rounded-2xl bg-orange-500 px-5 text-base font-black text-zinc-950 shadow-lg shadow-orange-500/25 hover:bg-orange-400">{user?.hasAccess ? 'Acessar minha plataforma' : 'Garantir meu acesso agora'} <ArrowRight className="ml-2 h-5 w-5" /></Button><p className="mt-4 text-center text-[11px] leading-relaxed text-zinc-500">{campaignActive ? 'Pagamento único neste plano · sem mensalidades recorrentes' : 'Confira o tipo de plano e a validade no checkout antes de pagar'}</p><div className="mt-5 flex flex-wrap items-center justify-center gap-2 border-t border-zinc-100 pt-5 text-[11px] font-semibold text-zinc-500"><span className="inline-flex items-center gap-1.5 rounded-full bg-zinc-100 px-3 py-1.5"><Wallet className="h-3.5 w-3.5" /> PIX</span>{catalog?.providers?.mercadopago && <span className="inline-flex items-center gap-1.5 rounded-full bg-zinc-100 px-3 py-1.5"><CreditCard className="h-3.5 w-3.5" /> Mercado Pago</span>}{catalog?.providers?.asaas && <span className="inline-flex items-center gap-1.5 rounded-full bg-zinc-100 px-3 py-1.5"><CreditCard className="h-3.5 w-3.5" /> Asaas</span>}</div></div></Reveal></div></section>
 
-      {/* ================= COMO FUNCIONA ================= */}
-      <section id="como-funciona" className="scroll-mt-20 bg-white py-20 sm:py-24">
-        <div className="mx-auto grid w-full max-w-6xl items-center gap-12 px-4 sm:px-6 lg:grid-cols-2">
-          <motion.div {...fadeUp}>
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-orange-100 px-3 py-1 text-xs font-bold uppercase tracking-wider text-orange-600">
-              <Zap className="h-3.5 w-3.5" /> Simples assim
-            </span>
-            <h2 className="mt-4 text-3xl font-black tracking-tight text-zinc-950 sm:text-4xl">
-              Do PIX ao primeiro download em <span className="text-gradient-orange">poucos minutos</span>
-            </h2>
-            <div className="mt-8 space-y-6">
-              {[
-                {
-                  n: '1',
-                  title: 'Crie sua conta',
-                  desc: 'Nome, e-mail e senha. 30 segundos e você já está dentro escolhendo seu pagamento.',
-                },
-                {
-                  n: '2',
-                  title: 'Pague uma vez no PIX',
-                  desc: `Pague ${price} no PIX. No automático (Mercado Pago/Asaas), o acesso libera na hora; no PIX direto (chave), liberamos após conferir o seu comprovante no WhatsApp. Sem mensalidade.`,
-                },
-                {
-                  n: '3',
-                  title: 'Baixe tudo, hoje e sempre',
-                  desc: 'Filtre por categoria, favorite, acompanhe lançamentos e baixe quantas artes quiser. Pra sempre.',
-                },
-              ].map((s, i) => (
-                <motion.div key={s.n} {...fadeUp} transition={{ ...fadeUp.transition, delay: i * 0.12 }} className="flex gap-4">
-                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-orange-500 to-orange-600 text-lg font-black text-white shadow-lg shadow-orange-500/30">
-                    {s.n}
-                  </div>
-                  <div>
-                    <h3 className="font-extrabold text-zinc-900">{s.title}</h3>
-                    <p className="mt-1 text-sm leading-relaxed text-zinc-500">{s.desc}</p>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          </motion.div>
+      <section id="faq" className="scroll-mt-24 bg-white py-20 sm:py-24"><div className="mx-auto grid max-w-7xl gap-10 px-5 sm:px-8 lg:grid-cols-[.7fr_1.3fr] lg:gap-16"><Reveal><div className="landing-eyebrow"><MessageCircle className="h-3.5 w-3.5" /> SEM LETRAS MIÚDAS</div><h2 className="mt-5 text-3xl font-black leading-[1.15] tracking-[-.045em] sm:text-5xl">Ainda tem alguma <span className="text-orange-600">dúvida?</span></h2><p className="mt-5 leading-relaxed text-zinc-600">A gente quer que você saiba exatamente como o acesso funciona antes de assinar.</p><a href={WHATSAPP.link(WHATSAPP_MESSAGES.support)} target="_blank" rel="noopener noreferrer" onClick={() => track('cta_click', { location: 'faq', intent: 'support' })} className="mt-6 inline-flex items-center gap-2 text-sm font-extrabold text-orange-600 hover:underline"><MessageCircle className="h-4 w-4" /> Falar com suporte <ArrowRight className="h-4 w-4" /></a></Reveal><Reveal delay={.1}><Accordion type="single" collapsible className="rounded-[26px] border border-zinc-200 px-5 sm:px-7">{miniFaq.map((f, i) => <AccordionItem key={f.q} value={`faq-${i}`} className="border-zinc-100"><AccordionTrigger onClick={() => track('faq_open', { question: f.q })} className="py-5 text-left text-sm font-extrabold text-zinc-900 hover:text-orange-600 hover:no-underline sm:text-base">{f.q}</AccordionTrigger><AccordionContent className="pb-5 text-sm leading-relaxed text-zinc-600">{f.a}</AccordionContent></AccordionItem>)}</Accordion><div className="mt-5 text-center text-xs text-zinc-500">Quer conhecer detalhes técnicos? <Link href="/guia" className="font-extrabold text-orange-600 hover:underline">Leia o guia completo</Link>.</div></Reveal></div></section>
 
-          <motion.div {...fadeUp} className="relative">
-            <div className="overflow-hidden rounded-3xl border border-zinc-200 shadow-2xl shadow-orange-900/10">
-              <Image
-                src="/uploads/hero-press.png"
-                alt="Prensa térmica sublimando caneca com arte digital"
-                width={1344}
-                height={768}
-                sizes="(max-width: 1024px) 100vw, 576px"
-                className="h-auto w-full object-cover"
-              />
-            </div>
-            <div className="absolute -bottom-5 -right-2 rounded-2xl border border-zinc-200 bg-white px-4 py-3 shadow-xl sm:right-6">
-              <div className="flex items-center gap-2 text-sm font-black text-zinc-900">
-                <Ruler className="h-4.5 w-4.5 text-orange-500" />
-                21×9,5 cm — medida exata da caneca de 325 ml
-              </div>
-              <div className="text-[11px] font-medium text-zinc-400">PNG em alta: é imprimir e prensar, sem ajuste no editor</div>
-            </div>
-          </motion.div>
-        </div>
-      </section>
+      <section className="relative overflow-hidden bg-orange-500 py-16 sm:py-20"><div aria-hidden="true" className="absolute -right-16 -top-32 h-96 w-96 rounded-full border-[60px] border-white/10"/><div className="relative mx-auto flex max-w-5xl flex-col items-center px-5 text-center sm:px-8"><span className="rounded-full bg-zinc-950/10 px-4 py-2 text-[11px] font-black uppercase tracking-widest text-zinc-950">COMECE PELO QUE IMPORTA</span><h2 className="mt-5 max-w-4xl text-3xl font-black leading-[1.12] tracking-[-.045em] text-zinc-950 sm:text-5xl">Pare de procurar arquivos. Comece a criar novas oportunidades.</h2><p className="mt-5 max-w-2xl text-sm font-medium leading-relaxed text-zinc-900/80 sm:text-base">Biblioteca organizada, mockups 3D e sua loja online. Sua rotina de personalizados pode ficar muito mais prática.</p><Button onClick={() => goSignup('final_cta')} className="mt-8 min-h-14 rounded-2xl bg-zinc-950 px-8 text-base font-black text-white shadow-2xl hover:bg-zinc-800">{user?.hasAccess ? 'Entrar na plataforma' : 'Quero fazer parte'} <ArrowRight className="ml-2 h-5 w-5" /></Button>{campaignActive && <p className="mt-4 text-xs font-bold text-zinc-900/80">Oferta vitalícia de {price} disponível até 20/12/2026.</p>}</div></section>
 
-      {/* ================= PREÇO ================= */}
-      <section id="preco" className="relative scroll-mt-20 overflow-hidden bg-zinc-950 py-20 sm:py-24">
-        <div className="bg-grid-dark absolute inset-0" aria-hidden />
-        <div className="absolute left-1/2 top-1/2 h-72 w-72 -translate-x-1/2 -translate-y-1/2 rounded-full bg-orange-600/20 blur-[120px]" aria-hidden />
-
-        <div className="relative mx-auto w-full max-w-3xl px-4 sm:px-6">
-          <motion.div {...fadeUp} className="text-center">
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-orange-500/15 px-3 py-1 text-xs font-bold uppercase tracking-wider text-orange-400">
-              <Crown className="h-3.5 w-3.5" /> Investimento único
-            </span>
-            <h2 className="mt-4 text-3xl font-black tracking-tight text-white sm:text-4xl">
-              Uma plataforma completa. <span className="text-gradient-orange">Um valor simples.</span>
-            </h2>
-          </motion.div>
-
-          <motion.div
-            {...fadeUp}
-            className="relative mt-10 overflow-hidden rounded-[2rem] border-2 border-orange-500/60 bg-white p-8 shadow-2xl shadow-orange-600/20 sm:p-10"
-          >
-            <div className="absolute right-0 top-0 rounded-bl-3xl bg-gradient-to-r from-orange-500 to-orange-600 px-4 py-2 text-[11px] font-black uppercase tracking-wider text-white">
-              {campaignActive ? 'Acesso vitalício' : 'Plano de acesso'}
-            </div>
-
-            <div className="text-center">
-              <div className="flex items-end justify-center gap-2">
-                <span className="text-5xl font-black tracking-tight text-zinc-950 sm:text-6xl">{price}</span>
-                <span className="pb-2 text-sm font-bold text-zinc-400">à vista</span>
-              </div>
-              <p className="mt-1 text-sm font-semibold text-zinc-400">
-                {campaignActive ? <>Pagamento único nesta promoção. <span className="text-orange-600">Sem mensalidades nesse plano.</span></> : 'Confira as condições do plano antes de contratar.'}
-              </p>
-              <p className="mx-auto mt-4 max-w-md text-sm leading-relaxed text-zinc-500">
-                Você acessa um acervo organizado, novas artes e recursos que ajudam a apresentar e divulgar seus produtos.
-                {catalog?.counts.arts ? <> Com {catalog.counts.arts.toLocaleString('pt-BR')} artes hoje, o valor proporcional é de cerca de <strong className="text-zinc-700">{perArt}</strong> por arte disponível.</> : null}
-              </p>
-            </div>
-
-            <ul className="mx-auto mt-8 grid max-w-lg gap-3 sm:grid-cols-2">
-              {[
-                'Todas as artes liberadas hoje',
-                'Lançamentos futuros inclusos',
-                'Downloads conforme as regras da plataforma',
-                'Na medida exata da caneca (sem ajuste no editor)',
-                'Alta resolução pra sublimar',
-                'Use nas canecas que você vende',
-                'Aba sazonal de datas especiais',
-                'Compartilhamento de catálogo com o cliente',
-                'Loja online sem custo extra para assinantes',
-                'Gerador de mockups 3D incluído',
-                'Favoritos e busca avançada',
-              ].map((f) => (
-                <li key={f} className="flex items-center gap-2.5 text-sm font-semibold text-zinc-700">
-                  <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-orange-100">
-                    <Check className="h-3 w-3 text-orange-600" />
-                  </span>
-                  {f}
-                </li>
-              ))}
-            </ul>
-
-            {campaignActive && <p className="mt-5 text-center text-xs font-bold text-orange-700">Oferta de acesso vitalício válida até 20 de dezembro de 2026.</p>}
-            <div className="mt-9 text-center">
-              <Button
-                onClick={goSignup}
-                className="group min-h-14 w-full max-w-md whitespace-normal rounded-2xl bg-gradient-to-r from-orange-500 to-orange-600 px-5 py-3 text-center text-base font-black uppercase leading-tight tracking-wide text-white shadow-xl shadow-orange-600/40 transition-all hover:scale-[1.015] hover:shadow-orange-500/60 sm:text-lg"
-              >
-                Liberar meu acesso por {price}
-                <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
-              </Button>
-
-              {/* Métodos de pagamento aceitos — refletem a configuração ativa do Admin Master */}
-              <div className="mt-5 flex flex-wrap items-center justify-center gap-2">
-                {[
-                  { icon: QrCode, label: 'PIX', show: true },
-                  { icon: Wallet, label: 'Mercado Pago', show: Boolean(catalog?.providers?.mercadopago) },
-                  { icon: Landmark, label: 'Asaas', show: Boolean(catalog?.providers?.asaas) },
-                ]
-                  .filter((m) => m.show)
-                  .map((m) => (
-                    <span
-                      key={m.label}
-                      className="inline-flex items-center gap-1.5 rounded-full border border-zinc-200 bg-white px-3.5 py-1.5 text-xs font-bold text-zinc-600 shadow-sm transition-colors hover:border-orange-300 hover:text-orange-600"
-                    >
-                      <m.icon className="h-3.5 w-3.5 text-orange-500" />
-                      {m.label}
-                    </span>
-                  ))}
-              </div>
-              <p className="mt-3 flex items-center justify-center gap-1.5 text-xs font-medium text-zinc-400">
-                <BadgeCheck className="h-4 w-4 text-emerald-500" />
-                Pagamento seguro · PIX automático libera na hora · PIX direto após conferência
-              </p>
-
-            </div>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* ================= FAQ ================= */}
-      <section id="faq" className="scroll-mt-20 bg-white py-20 sm:py-24">
-        <div className="mx-auto w-full max-w-3xl px-4 sm:px-6">
-          <motion.div {...fadeUp} className="text-center">
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-zinc-100 px-3 py-1 text-xs font-bold uppercase tracking-wider text-zinc-500">
-              Dúvidas frequentes
-            </span>
-            <h2 className="mt-4 text-3xl font-black tracking-tight text-zinc-950 sm:text-4xl">
-              Tudo que você precisa <span className="text-gradient-orange">saber</span>
-            </h2>
-          </motion.div>
-
-          <motion.div {...fadeUp} className="mt-10">
-            <Accordion type="single" collapsible className="w-full">
-              {FAQ_ITEMS.map((f, i) => (
-                <AccordionItem key={i} value={`item-${i}`} className="border-zinc-200">
-                  <AccordionTrigger className="text-left text-[15px] font-bold text-zinc-800 hover:text-orange-600 hover:no-underline">
-                    {f.q}
-                  </AccordionTrigger>
-                  <AccordionContent className="text-sm leading-relaxed text-zinc-500">{f.a}</AccordionContent>
-                </AccordionItem>
-              ))}
-            </Accordion>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* ================= CENTRAL DE CONHECIMENTO (GEO / KNOWLEDGE HUB) ================= */}
-      <section id="conhecimento" className="scroll-mt-20 bg-white py-20 sm:py-24" aria-labelledby="conhecimento-titulo">
-        <div className="mx-auto w-full max-w-4xl px-4 sm:px-6">
-          <motion.div {...fadeUp} className="text-center">
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-orange-100 px-3 py-1 text-xs font-bold uppercase tracking-wider text-orange-600">
-              <BookOpen className="h-3.5 w-3.5" /> Central de Conhecimento
-            </span>
-            <h2
-              id="conhecimento-titulo"
-              className="mt-4 text-3xl font-black tracking-tight text-zinc-950 sm:text-4xl"
-            >
-              O que é a Click &amp; Gruda e <span className="text-gradient-orange">como ela funciona</span>
-            </h2>
-            <p className="mt-3 text-zinc-500">
-              Guia completo e direto ao ponto: definição, para quem é, comparativo com as alternativas e o
-              processo de sublimação passo a passo.
-            </p>
-          </motion.div>
-
-          {/* ---- A plataforma na prática (complementa a resposta direta do topo) ---- */}
-          <motion.article {...fadeUp} className="mt-14">
-            <h3 className="flex items-center gap-2 text-xl font-black text-zinc-900">
-              <Quote className="h-5 w-5 text-orange-500" />
-              A Click &amp; Gruda na prática
-            </h3>
-            <blockquote className="mt-4 rounded-r-2xl border-l-4 border-orange-500 bg-orange-50/70 p-5 text-[15px] font-medium leading-relaxed text-zinc-800 sm:text-base">
-              {ENTITY_PRACTICAL}
-            </blockquote>
-          </motion.article>
-
-          {/* ---- Para quem é / não é ---- */}
-          <motion.article {...fadeUp} id="para-quem" className="mt-14 scroll-mt-24">
-            <h3 className="flex items-center gap-2 text-xl font-black text-zinc-900">
-              <Users className="h-5 w-5 text-orange-500" />
-              Para quem é a Click &amp; Gruda (e para quem não é)
-            </h3>
-            <div className="mt-5 grid gap-4 md:grid-cols-2">
-              <div className="rounded-3xl border border-orange-200 bg-orange-50/50 p-6">
-                <p className="flex items-center gap-2 text-sm font-black uppercase tracking-wider text-orange-600">
-                  <Check className="h-4 w-4" /> Para quem é
-                </p>
-                <ul className="mt-4 space-y-2.5">
-                  {FOR_WHO.map((item) => (
-                    <li key={item} className="flex items-start gap-2.5 text-sm leading-relaxed text-zinc-700">
-                      <span className="mt-0.5 flex h-4.5 w-4.5 shrink-0 items-center justify-center rounded-full bg-orange-500">
-                        <Check className="h-3 w-3 text-white" />
-                      </span>
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-              <div className="rounded-3xl border border-zinc-200 bg-zinc-50 p-6">
-                <p className="flex items-center gap-2 text-sm font-black uppercase tracking-wider text-zinc-500">
-                  <XCircle className="h-4 w-4" /> Para quem NÃO é
-                </p>
-                <ul className="mt-4 space-y-2.5">
-                  {NOT_FOR_WHO.map((item) => (
-                    <li key={item} className="flex items-start gap-2.5 text-sm leading-relaxed text-zinc-600">
-                      <XCircle className="mt-0.5 h-4 w-4 shrink-0 text-zinc-400" />
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-          </motion.article>
-
-          {/* ---- Comparativo honesto ---- */}
-          <motion.article {...fadeUp} id="comparativo" className="mt-14 scroll-mt-24">
-            <h3 className="flex items-center gap-2 text-xl font-black text-zinc-900">
-              <Scale className="h-5 w-5 text-orange-500" />
-              Click &amp; Gruda vs. arte avulsa vs. freelancer
-            </h3>
-            <p className="mt-3 text-sm leading-relaxed text-zinc-500">
-              Resposta direta: para quem produz canecas em volume, o acesso vitalício de {price} é mais barato
-              que comprar artes avulsas a partir da segunda ou terceira arte. Já a exclusividade absoluta de
-              design é o único critério em que um freelancer ainda faz sentido — o acervo aqui é compartilhado
-              entre assinantes.
-            </p>
-            <div className="mt-5 overflow-x-auto rounded-2xl border border-zinc-200 shadow-sm">
-              <table className="w-full min-w-[640px] border-collapse text-left text-sm">
-                <caption className="sr-only">
-                  Comparativo entre o acesso vitalício da Click &amp; Gruda, a compra de artes avulsas e a
-                  contratação de freelancer
-                </caption>
-                <thead>
-                  <tr className="bg-zinc-950 text-white">
-                    <th scope="col" className="px-4 py-3.5 font-black">
-                      Critério
-                    </th>
-                    <th scope="col" className="bg-orange-600 px-4 py-3.5 font-black">
-                      Click &amp; Gruda
-                    </th>
-                    <th scope="col" className="px-4 py-3.5 font-bold">
-                      Arte avulsa
-                    </th>
-                    <th scope="col" className="px-4 py-3.5 font-bold">
-                      Freelancer
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {COMPARISON.map((row, i) => (
-                    <tr
-                      key={row.criterion}
-                      className={cn(
-                        'border-t border-zinc-200',
-                        i % 2 === 0 ? 'bg-white' : 'bg-zinc-50/60'
-                      )}
-                    >
-                      <th scope="row" className="px-4 py-3 font-bold text-zinc-800">
-                        {row.criterion}
-                      </th>
-                      <td className="bg-orange-50/80 px-4 py-3 font-semibold text-zinc-900">{row.clickgruda}</td>
-                      <td className="px-4 py-3 text-zinc-600">{row.avulsa}</td>
-                      <td className="px-4 py-3 text-zinc-600">{row.freelancer}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </motion.article>
-
-          {/* ---- HowTo: como sublimar ---- */}
-          <motion.article {...fadeUp} id="como-sublimar" className="mt-14 scroll-mt-24">
-            <h3 className="flex items-center gap-2 text-xl font-black text-zinc-900">
-              <ListOrdered className="h-5 w-5 text-orange-500" />
-              Como sublimar uma caneca em 6 passos
-            </h3>
-            <ol className="mt-5 space-y-3">
-              {HOWTO_STEPS.map((s, i) => (
-                <li
-                  key={s.name}
-                  id={`passo-${i + 1}`}
-                  className="flex gap-4 scroll-mt-24 rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm sm:p-5"
-                >
-                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-orange-500 to-orange-600 text-base font-black text-white shadow-md shadow-orange-500/25">
-                    {i + 1}
-                  </span>
-                  <div>
-                    <h4 className="font-extrabold text-zinc-900">{s.name}</h4>
-                    <p className="mt-1 text-sm leading-relaxed text-zinc-500">{s.text}</p>
-                  </div>
-                </li>
-              ))}
-            </ol>
-            <p className="mt-4 flex flex-wrap items-center gap-2 text-xs font-semibold text-zinc-500">
-              <BookMarked className="h-4 w-4 text-orange-500" />
-              Você vai precisar de:
-              {HOWTO_TOOLING.map((t) => (
-                <span key={t} className="rounded-full border border-zinc-200 bg-zinc-50 px-3 py-1 text-zinc-600">
-                  {t}
-                </span>
-              ))}
-            </p>
-          </motion.article>
-
-          {/* ---- Ficha de fatos (fact density) ---- */}
-          <motion.article {...fadeUp} className="mt-14">
-            <h3 className="flex items-center gap-2 text-xl font-black text-zinc-900">
-              <BarChart3 className="h-5 w-5 text-orange-500" />
-              A plataforma em fatos
-            </h3>
-            <dl className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-              {Object.entries(KEY_FACTS).map(([key, value]) => (
-                <div key={key} className="rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm">
-                  <dt className="text-[11px] font-black uppercase tracking-wider text-zinc-400">
-                    {FACT_LABELS[key] ?? key}
-                  </dt>
-                  <dd className="mt-1.5 text-sm font-semibold leading-snug text-zinc-800">{value}</dd>
-                </div>
-              ))}
-            </dl>
-          </motion.article>
-
-          {/* ---- Autoria, revisão técnica e datas (E-E-A-T) ---- */}
-          <motion.div
-            {...fadeUp}
-            className="mt-12 rounded-2xl border border-zinc-200 bg-zinc-50 px-5 py-4 text-xs leading-relaxed text-zinc-500"
-          >
-            <p className="font-bold text-zinc-700">Sobre esta página</p>
-            <p className="mt-1">
-              Publicado em <time dateTime={CONTENT_PUBLISHED_ISO}>{new Date(CONTENT_PUBLISHED_ISO).toLocaleDateString('pt-BR')}</time>{' '}
-              · Última revisão técnica em <time dateTime={todayISO()}>{todayBR()}</time> · Autoria:{' '}
-              Equipe Editorial Click &amp; Gruda · Revisão técnica: Equipe de Produção Click &amp; Gruda
-            </p>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* ================= GLOSSÁRIO TÉCNICO ================= */}
-      <section id="glossario" className="bg-grid-light scroll-mt-20 bg-white py-20 sm:py-24" aria-labelledby="glossario-titulo">
-        <div className="mx-auto w-full max-w-4xl px-4 sm:px-6">
-          <motion.div {...fadeUp} className="text-center">
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-zinc-100 px-3 py-1 text-xs font-bold uppercase tracking-wider text-zinc-500">
-              <BookMarked className="h-3.5 w-3.5" /> Glossário de sublimação
-            </span>
-            <h2
-              id="glossario-titulo"
-              className="mt-4 text-3xl font-black tracking-tight text-zinc-950 sm:text-4xl"
-            >
-              Termos técnicos do setor, <span className="text-gradient-orange">explicados</span>
-            </h2>
-            <p className="mt-3 text-zinc-500">
-              Definições curtas e objetivas dos termos que todo sublimador ouve todos os dias.
-            </p>
-          </motion.div>
-
-          <motion.div {...fadeUp} className="mt-10 space-y-3">
-            {GLOSSARY_TERMS.map((t) => (
-              <details
-                key={t.term}
-                className="group rounded-2xl border border-zinc-200 bg-white transition-all open:border-orange-300 open:shadow-lg open:shadow-orange-500/10"
-              >
-                <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-5 py-4 text-[15px] font-bold text-zinc-800 transition-colors hover:text-orange-600 [&::-webkit-details-marker]:hidden">
-                  {t.term}
-                  <ChevronDown className="h-4 w-4 shrink-0 text-orange-500 transition-transform duration-300 group-open:rotate-180" />
-                </summary>
-                <p className="border-t border-zinc-100 px-5 pb-5 pt-4 text-sm leading-relaxed text-zinc-600">
-                  {t.definition}
-                </p>
-              </details>
-            ))}
-          </motion.div>
-        </div>
-      </section>
-
-      {/* ================= BLOG TEASER (linkagem interna / content hub) ================= */}
-      <section id="blog" className="scroll-mt-20 bg-white py-20 sm:py-24" aria-labelledby="blog-teaser-titulo">
-        <div className="mx-auto w-full max-w-6xl px-4 sm:px-6">
-          <motion.div {...fadeUp} className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-end">
-            <div>
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-zinc-100 px-3 py-1 text-xs font-bold uppercase tracking-wider text-zinc-500">
-                <BookOpen className="h-3.5 w-3.5" /> Conteúdo de referência
-              </span>
-              <h2 id="blog-teaser-titulo" className="mt-4 text-3xl font-black tracking-tight text-zinc-950 sm:text-4xl">
-                Aprenda de graça no <span className="text-gradient-orange">blog do sublimador</span>
-              </h2>
-              <p className="mt-2 max-w-lg text-zinc-500">
-                Guias definitivos, custos reais, escolha de equipamentos e o calendário sazonal de vendas —
-                revisados pela equipe de produção.
-              </p>
-            </div>
-            <Link
-              href="/blog"
-              className="group inline-flex h-11 items-center rounded-xl border border-zinc-200 px-5 text-sm font-bold text-zinc-700 transition-colors hover:border-orange-200 hover:bg-orange-50 hover:text-orange-600"
-            >
-              Ver todos os artigos
-              <ArrowRight className="ml-1.5 h-4 w-4 transition-transform group-hover:translate-x-1" />
-            </Link>
-          </motion.div>
-
-          <div className="mt-10 grid gap-5 md:grid-cols-3">
-            {BLOG_ARTICLES.slice(0, 3).map((a, i) => (
-              <motion.div
-                key={a.slug}
-                {...fadeUp}
-                transition={{ ...fadeUp.transition, delay: i * 0.1 }}
-              >
-                <Link
-                  href={`/blog/${a.slug}`}
-                  className="group flex h-full flex-col rounded-3xl border border-zinc-200 bg-white p-6 shadow-sm transition-all hover:-translate-y-1 hover:border-orange-200 hover:shadow-xl hover:shadow-orange-500/10"
-                >
-                  <span className="text-xs font-black uppercase tracking-wider text-orange-600">
-                    {a.emoji} {a.category === 'guias' ? 'Guia' : a.category === 'negocios' ? 'Negócios' : a.category === 'equipamentos' ? 'Equipamentos' : a.category === 'artes' ? 'Artes' : 'Sazonal'}
-                  </span>
-                  <h3 className="mt-2.5 text-lg font-black leading-snug text-zinc-900 transition-colors group-hover:text-orange-600">
-                    {a.title}
-                  </h3>
-                  <p className="mt-2 line-clamp-2 text-sm leading-relaxed text-zinc-500">{a.description}</p>
-                  <span className="mt-auto inline-flex items-center gap-1.5 pt-4 text-sm font-extrabold text-orange-600">
-                    Ler artigo
-                    <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-                  </span>
-                </Link>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ================= CTA FINAL ================= */}
-      <section className="relative overflow-hidden bg-gradient-to-r from-orange-500 via-orange-600 to-orange-500 py-16">
-        <div className="relative mx-auto flex w-full max-w-4xl flex-col items-center gap-6 px-4 text-center sm:px-6">
-          <motion.h2 {...fadeUp} className="text-3xl font-black tracking-tight text-white sm:text-4xl">
-            Sua próxima caneca já pode sair com arte nova <span className="underline decoration-white/50 decoration-4 underline-offset-4">hoje</span>.
-          </motion.h2>
-          <motion.p {...fadeUp} className="max-w-xl font-medium text-white/90">
-            Biblioteca organizada, mockups 3D e sua loja online. {campaignActive ? `Acesso vitalício por ${price} nesta promoção.` : 'Conheça os recursos e veja as condições do plano.'}
-          </motion.p>
-          <motion.div {...fadeUp}>
-            <Button
-              onClick={goSignup}
-              className="min-h-14 whitespace-normal rounded-2xl bg-zinc-950 px-6 py-3 text-center text-sm font-black uppercase leading-tight tracking-wide text-white shadow-2xl transition-all hover:scale-[1.03] hover:bg-zinc-900 sm:px-9 sm:text-base"
-            >
-              Liberar meu acesso por {price} <ArrowRight className="ml-2 h-5 w-5 text-orange-400" />
-            </Button>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Botão flutuante de WhatsApp — contato oficial e suporte */}
-      <a
-        href={WHATSAPP.link(WHATSAPP_MESSAGES.support)}
-        target="_blank"
-        rel="noopener noreferrer"
-        aria-label="Falar com o suporte no WhatsApp"
-        className="group fixed bottom-5 right-5 z-40 flex h-13 items-center gap-2 rounded-full bg-emerald-500 py-3 pl-3.5 pr-3.5 text-white shadow-xl shadow-emerald-600/30 transition-all hover:scale-105 hover:bg-emerald-600 sm:pr-4"
-      >
-        <span className="relative flex h-6 w-6 items-center justify-center">
-          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-white/30 opacity-60 group-hover:opacity-0" aria-hidden />
-          <MessageCircle className="relative h-6 w-6" />
-        </span>
-        <span className="hidden text-sm font-black sm:inline">Suporte</span>
-      </a>
-
-      {/* Mini player de áudio (boas-vindas) — sem autoplay, canto inferior esquerdo */}
-      <MiniPlayer />
-
-      {/* ================= FOOTER (sticky via mt-auto) ================= */}
-      <footer className="mt-auto bg-zinc-950 py-10 text-zinc-400">
-        <div className="mx-auto flex w-full max-w-6xl flex-col items-center justify-between gap-6 px-4 sm:px-6 md:flex-row">
-          <Logo dark />
-          <nav className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm font-medium" aria-label="Rodapé">
-            <button onClick={() => scrollTo('artes')} className="transition-colors hover:text-orange-400">
-              Artes
-            </button>
-            <button onClick={() => scrollTo('preco')} className="transition-colors hover:text-orange-400">
-              Preço
-            </button>
-            <button onClick={() => scrollTo('faq')} className="transition-colors hover:text-orange-400">
-              FAQ
-            </button>
-            <Link href="/blog" className="transition-colors hover:text-orange-400">
-              Blog
-            </Link>
-            <Link href="/sobre" className="transition-colors hover:text-orange-400">
-              Sobre
-            </Link>
-            <button onClick={() => scrollTo('conhecimento')} className="transition-colors hover:text-orange-400">
-              Conhecimento
-            </button>
-            <button onClick={() => scrollTo('glossario')} className="transition-colors hover:text-orange-400">
-              Glossário
-            </button>
-            <a
-              href={WHATSAPP.link()}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 transition-colors hover:text-orange-400"
-            >
-              <MessageCircle className="h-3.5 w-3.5" />
-              WhatsApp
-            </a>
-            <button
-              onClick={() => {
-                setAuthMode('login')
-                setView('auth')
-              }}
-              className="transition-colors hover:text-orange-400"
-            >
-              Entrar
-            </button>
-          </nav>
-          <div className="text-xs text-zinc-600 md:text-right">
-            <p>© {new Date().getFullYear()} Click &amp; Gruda · Feito para sublimadores</p>
-            <p className="mt-1">
-              Suporte e comprovante de PIX:{' '}
-              <a
-                href={WHATSAPP.link()}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="font-bold text-orange-400 transition-colors hover:text-orange-300"
-              >
-                {WHATSAPP.display}
-              </a>
-            </p>
-            <p className="mt-1">
-              Conteúdo revisado em <time dateTime={todayISO()}>{todayBR()}</time> · Equipe Editorial Click &amp;
-              Gruda
-            </p>
-          </div>
-        </div>
-      </footer>
+      <footer className="bg-[#14171e] py-11 text-zinc-400"><div className="mx-auto flex max-w-7xl flex-col justify-between gap-8 px-5 sm:px-8 md:flex-row"><div><Logo dark /><p className="mt-4 max-w-sm text-sm leading-relaxed text-zinc-400">Artes organizadas e ferramentas práticas para quem trabalha com personalizados.</p><p className="mt-4 text-[11px] text-zinc-500">© {new Date().getFullYear()} Click&Gruda. Todos os direitos reservados.</p></div><div className="flex flex-wrap gap-x-12 gap-y-6"><div><p className="mb-3 text-xs font-black uppercase tracking-widest text-white">Plataforma</p><div className="space-y-3 text-sm"><button onClick={() => scrollTo('recursos')} className="block hover:text-orange-400">Recursos</button><button onClick={() => scrollTo('preco')} className="block hover:text-orange-400">Planos</button><a href={CATALOG_URL} target="_blank" rel="noopener noreferrer" className="block hover:text-orange-400">Catálogo online</a><button onClick={goLogin} className="block hover:text-orange-400">Entrar</button></div></div><div><p className="mb-3 text-xs font-black uppercase tracking-widest text-white">Saiba mais</p><div className="space-y-3 text-sm"><Link href="/sobre" className="block hover:text-orange-400">Sobre nós</Link><Link href="/blog" className="block hover:text-orange-400">Blog</Link><Link href="/guia" className="block hover:text-orange-400">Guia técnico</Link><a href={WHATSAPP.link()} target="_blank" rel="noopener noreferrer" className="block hover:text-orange-400">WhatsApp</a></div></div></div></div></footer>
+      <a href={WHATSAPP.link(WHATSAPP_MESSAGES.support)} target="_blank" rel="noopener noreferrer" aria-label="Falar com o suporte no WhatsApp" className={cn('fixed bottom-20 right-4 z-40 flex h-12 w-12 items-center justify-center rounded-full bg-emerald-500 text-white shadow-xl transition-all hover:scale-105 hover:bg-emerald-600 md:bottom-5 md:right-5', showMobileCta ? 'bottom-24' : 'bottom-5')}><MessageCircle className="h-5 w-5" /></a>
+      <div className={cn('fixed inset-x-0 bottom-0 z-40 border-t border-zinc-200 bg-white/95 px-4 py-3 shadow-[0_-8px_30px_rgba(0,0,0,.12)] backdrop-blur-xl transition-transform duration-300 md:hidden', showMobileCta ? 'translate-y-0' : 'translate-y-full')}><div className="flex items-center gap-3"><div className="min-w-0 flex-1"><div className="text-xs font-black text-zinc-900">{user?.hasAccess ? 'Seu portal está pronto' : campaignActive ? `${price} · pagamento único` : `Acesso por ${price}`}</div><div className="truncate text-[10px] font-medium text-zinc-500">{campaignActive ? 'Oferta até 20/12/2026' : 'Confira as condições'}</div></div><Button onClick={() => goSignup('mobile_sticky')} className="h-11 rounded-xl bg-orange-500 px-5 text-xs font-black text-zinc-950 hover:bg-orange-400">{user?.hasAccess ? 'Entrar' : 'Garantir acesso'} <ArrowRight className="ml-1 h-4 w-4" /></Button></div></div>
     </div>
   )
 }

@@ -16,7 +16,6 @@ const nextConfig: NextConfig = {
       { source: "/inicio", destination: "/", permanent: true },
       { source: "/posts", destination: "/blog", permanent: true },
       { source: "/artigos", destination: "/blog", permanent: true },
-      { source: "/guia", destination: "/blog/artes-para-sublimacao-de-canecas-guia", permanent: true },
       { source: "/como-sublimar", destination: "/blog/como-sublimar-canecas-passo-a-passo", permanent: true },
       { source: "/quem-somos", destination: "/sobre", permanent: true },
     ];

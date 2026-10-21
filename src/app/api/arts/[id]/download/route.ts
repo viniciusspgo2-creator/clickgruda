@@ -31,10 +31,14 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
   // ?via=zip → a arte está sendo baixada dentro de um ZIP de backup
   const viaZip = new URL(req.url).searchParams.get('via') === 'zip'
 
-  await db.$transaction([
-    db.download.create({ data: { userId: session.id, artId: id, viaZip } }),
-    db.art.update({ where: { id }, data: { downloadsCount: { increment: 1 } } }),
-  ])
+  // Registra somente quando o arquivo/link existir e estiver pronto para entrega.
+  // Assim uma falha no R2/storage não consome a cota de um assinante.
+  const recordSuccess = async () => {
+    await db.$transaction([
+      db.download.create({ data: { userId: session.id, artId: id, viaZip } }),
+      db.art.update({ where: { id }, data: { downloadsCount: { increment: 1 } } }),
+    ])
+  }
 
   const filename = `${formatArtCode(art.code)}-${slugify(art.title) || 'arte'}`
 
@@ -45,6 +49,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
       const oext = art.originalKey.split('.').pop() || 'png'
       try {
         const url = await presignOriginalGet(cfg, art.originalKey, `${filename}.${oext}`)
+        await recordSuccess()
         return Response.json({ url, filename: `${filename}.${oext}` }, { headers: { 'Cache-Control': 'no-store' } })
       } catch {
         return jsonError('Não foi possível gerar o link de download. Tente novamente.', 502)
@@ -83,6 +88,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
 
   if (!buffer) return jsonError('Arquivo da arte não encontrado', 404)
 
+  await recordSuccess()
   return new Response(new Uint8Array(buffer), {
     headers: {
       'Content-Type': extToMime(ext),

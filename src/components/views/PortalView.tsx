@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient, type InfiniteData } from '@tanstack/react-query'
 import { AnimatePresence, motion } from 'framer-motion'
 import {
@@ -88,6 +88,29 @@ function useCountdown(targetIso: string | null | undefined) {
   }, [targetIso, now])
 }
 
+
+/** A contagem regressiva precisa de atualização por segundo apenas na aba Sazonal.
+ * Mantê-la isolada evita renderizar novamente centenas de cards do portal a cada tick. */
+function SeasonalCountdown({ targetIso }: { targetIso?: string | null }) {
+  const countdown = useCountdown(targetIso)
+  if (!countdown) return null
+  return (
+    <div className="flex items-center gap-2.5" aria-label="Tempo até a data sazonal">
+      {([
+        [countdown.days, 'dias'],
+        [countdown.hours, 'horas'],
+        [countdown.minutes, 'min'],
+        [countdown.seconds, 'seg'],
+      ] as const).map(([value, label]) => (
+        <div key={label} className="rounded-xl border border-zinc-800 bg-zinc-900/90 px-3 py-2 text-center shadow">
+          <div className="text-xl font-black text-orange-400 tabular-nums">{String(value).padStart(2, '0')}</div>
+          <div className="text-[9px] font-bold uppercase tracking-wider text-zinc-500">{label}</div>
+        </div>
+      ))}
+    </div>
+  )
+}
+
 export function PortalView() {
   const user = useStore((s) => s.user)
   const setUser = useStore((s) => s.setUser)
@@ -105,6 +128,7 @@ export function PortalView() {
 
   const queryClient = useQueryClient()
   const [searchInput, setSearchInput] = useState(q)
+  const searchRef = useRef<HTMLInputElement>(null)
   const [downloadStates, setDownloadStates] = useState<DownloadStates>({})
   const [suggestionOpen, setSuggestionOpen] = useState(false)
   const [enhanceOpen, setEnhanceOpen] = useState(false)
@@ -113,6 +137,20 @@ export function PortalView() {
 
   // O campo acompanha mudanças externas (logo, limpar filtros, troca de página).
   useEffect(() => { setSearchInput(q) }, [q])
+
+  // Atalho de produtividade: Ctrl/⌘ + K abre a busca; Esc fecha o foco.
+  useEffect(() => {
+    const onKeydown = (event: KeyboardEvent) => {
+      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'k') {
+        event.preventDefault()
+        searchRef.current?.focus()
+        searchRef.current?.select()
+      }
+      if (event.key === 'Escape' && document.activeElement === searchRef.current) searchRef.current?.blur()
+    }
+    window.addEventListener('keydown', onKeydown)
+    return () => window.removeEventListener('keydown', onKeydown)
+  }, [])
 
   // Debounce: não consulta o servidor a cada tecla.
   useEffect(() => {
@@ -197,7 +235,6 @@ export function PortalView() {
   }, [tab, seasonalEventId, catalogQ.data, setFilter])
 
   const selectedEvent = catalogQ.data?.events.find((e) => e.id === seasonalEventId)
-  const countdown = useCountdown(selectedEvent?.nextDate || catalogQ.data?.nextEvent?.nextDate)
 
   // ---------- Favorite (optimistic) ----------
   const favMutation = useMutation({
@@ -356,9 +393,11 @@ export function PortalView() {
           <div className="relative min-w-0 flex-1 sm:max-w-md">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400" />
             <Input
+              ref={searchRef}
+              aria-label="Buscar artes por título, categoria, tag ou código"
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
-              placeholder="Buscar por nome, tag, categoria ou código (CG-0042)..."
+              placeholder="Buscar artes, temas ou código... (Ctrl+K)"
               className="h-10 rounded-xl border-zinc-200 bg-white pl-9 pr-9 text-sm focus-visible:ring-orange-500"
             />
             {searchInput && (
@@ -427,7 +466,7 @@ export function PortalView() {
               </DropdownMenuLabel>
               <div className="px-2 pb-1.5">
                 <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-black uppercase tracking-wide text-emerald-600">
-                  <ShieldCheck className="h-3 w-3" /> Acesso vitalício ativo
+                  <ShieldCheck className="h-3 w-3" /> Acesso ativo
                 </span>
               </div>
               <DropdownMenuSeparator />
@@ -553,21 +592,7 @@ export function PortalView() {
                 </div>
               </div>
 
-              {countdown && (
-                <div className="flex items-center gap-2.5">
-                  {[
-                    [countdown.days, 'dias'],
-                    [countdown.hours, 'horas'],
-                    [countdown.minutes, 'min'],
-                    [countdown.seconds, 'seg'],
-                  ].map(([v, l]) => (
-                    <div key={l as string} className="rounded-xl border border-zinc-800 bg-zinc-900/90 px-3 py-2 text-center shadow">
-                      <div className="text-xl font-black text-orange-400 tabular-nums">{String(v).padStart(2, '0')}</div>
-                      <div className="text-[9px] font-bold uppercase tracking-wider text-zinc-500">{l}</div>
-                    </div>
-                  ))}
-                </div>
-              )}
+              <SeasonalCountdown targetIso={selectedEvent?.nextDate || catalogQ.data.nextEvent?.nextDate} />
             </div>
 
             {/* Event chips — setas + arrastar + deslizar; centraliza a data ativa */}
@@ -732,8 +757,8 @@ export function PortalView() {
             </Button>
           </div>
         ) : (
-          <motion.div layout className="grid grid-cols-1 gap-5 md:grid-cols-2 2xl:grid-cols-3">
-            <AnimatePresence mode="popLayout">
+          <div className="grid grid-cols-1 gap-5 md:grid-cols-2 2xl:grid-cols-3">
+            <AnimatePresence initial={false}>
               {arts.map((art) => (
                 <ArtCard
                   key={art.id}
@@ -745,7 +770,7 @@ export function PortalView() {
                 />
               ))}
             </AnimatePresence>
-          </motion.div>
+          </div>
         )}
 
         {/* Rolagem híbrida: carrega sozinho até um limite, depois "Carregar mais" */}
@@ -765,7 +790,7 @@ export function PortalView() {
 
       <footer className="mt-auto border-t border-zinc-200 bg-white py-5">
         <div className="mx-auto flex w-full max-w-7xl flex-wrap items-center justify-between gap-2 px-4 text-xs text-zinc-400 sm:px-6">
-          <span>© {new Date().getFullYear()} Click &amp; Gruda · Acesso vitalício ativo</span>
+          <span>© {new Date().getFullYear()} Click &amp; Gruda · Acesso ativo</span>
           <div className="flex items-center gap-4">
             <button
               onClick={() => setSuggestionOpen(true)}
@@ -851,6 +876,12 @@ export function PortalView() {
               className="mt-7 w-full rounded-xl border-zinc-200 font-bold text-zinc-600"
             >
               <RotateCcw className="mr-1.5 h-4 w-4" /> Limpar filtros
+            </Button>
+          </div>
+          <div className="shrink-0 border-t border-zinc-200 bg-white p-4 shadow-[0_-8px_24px_rgba(0,0,0,.04)]">
+            <Button onClick={() => setMenuOpen(false)} className="h-11 w-full rounded-xl bg-zinc-950 font-black text-white hover:bg-zinc-800">
+              <Check className="mr-2 h-4 w-4 text-orange-400" />
+              Ver {artsQ.isFetching ? 'resultados' : `${total.toLocaleString('pt-BR')} artes`}
             </Button>
           </div>
         </SheetContent>

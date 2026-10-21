@@ -76,7 +76,7 @@ export function GeoSchema() {
       },
       speakable: {
         '@type': 'SpeakableSpecification',
-        cssSelector: ['#conhecimento', '#faq'],
+        cssSelector: ['#recursos', '#faq'],
       },
       primaryImageOfPage: {
         '@type': 'ImageObject',
@@ -85,6 +85,7 @@ export function GeoSchema() {
       significantLink: [
         `${SITE.url}/blog`,
         `${SITE.url}/sobre`,
+        `${SITE.url}/guia`,
         `${SITE.url}/llms.txt`,
         `${SITE.url}/llms-full.txt`,
         `${SITE.url}/api/geo/knowledge-base`,
@@ -95,10 +96,10 @@ export function GeoSchema() {
     {
       '@type': 'Service',
       '@id': `${SITE.url}/#servico-plataforma`,
-      name: 'Plataforma de artes digitais para sublimação de canecas — acesso vitalício',
-      serviceType: 'Plataforma de assinatura vitalícia de artes digitais para sublimação',
+      name: 'Plataforma de artes digitais e ferramentas para personalizados',
+      serviceType: 'Biblioteca de artes, mockups 3D e catálogo online para personalizados',
       description:
-        'Serviço digital que concede acesso vitalício ao acervo de artes para sublimação de canecas da Click & Gruda, com downloads ilimitados, lançamentos frequentes e artes para produzir e vender canecas, por pagamento único de R$ 47,90.',
+        'Plataforma de artes para sublimação com biblioteca organizada, categorias e datas comemorativas, gerador de mockups 3D e catálogo online para assinantes. Oferta promocional de acesso vitalício por pagamento único até 20/12/2026; pode haver limite diário de downloads.',
       provider: { '@id': `${SITE.url}/#organization` },
       areaServed: { '@type': 'Country', name: 'Brasil' },
       audience: { '@type': 'BusinessAudience', audienceType: 'Sublimadores e produtores de canecas personalizadas' },
@@ -137,7 +138,7 @@ export function GeoSchema() {
       '@id': `${SITE.url}/#produto-acesso-vitalicio`,
       name: 'Acesso Vitalício Click & Gruda',
       description:
-        'Acesso vitalício ao acervo completo de artes digitais para sublimação de canecas da Click & Gruda: downloads ilimitados, lançamentos frequentes inclusos, artes no formato exato de 21 × 9,5 cm, prontas para produzir e vender canecas.',
+        'Biblioteca organizada de artes digitais para sublimação de canecas, com lançamentos, mockups 3D e loja online para assinantes. Promoção vitalícia disponível até 20/12/2026, sujeita às condições do checkout e às regras de download.',
       brand: { '@id': `${SITE.url}/#organization` },
       category: 'Artes digitais para sublimação de canecas',
       audience: {
@@ -146,8 +147,8 @@ export function GeoSchema() {
       },
       additionalProperty: [
         { '@type': 'PropertyValue', name: 'Formato da arte', value: '21 × 9,5 cm' },
-        { '@type': 'PropertyValue', name: 'Modelo de cobrança', value: 'Pagamento único, sem mensalidade' },
-        { '@type': 'PropertyValue', name: 'Downloads', value: 'Ilimitados e vitalícios' },
+        { '@type': 'PropertyValue', name: 'Modelo de cobrança', value: 'Promoção de pagamento único até 20/12/2026; outras condições após a data' },
+        { '@type': 'PropertyValue', name: 'Downloads', value: 'Re-download permitido; pode haver limite diário de artes diferentes' },
         { '@type': 'PropertyValue', name: 'Lançamentos futuros', value: 'Inclusos sem custo adicional' },
         { '@type': 'PropertyValue', name: 'Uso comercial', value: 'Liberado para sublimadores' },
         { '@type': 'PropertyValue', name: 'Forma de pagamento', value: 'PIX, Mercado Pago e Asaas (ativação manual via chave PIX disponível)' },
@@ -160,7 +161,7 @@ export function GeoSchema() {
         availability: 'https://schema.org/InStock',
         itemCondition: 'https://schema.org/NewCondition',
         seller: { '@id': `${SITE.url}/#organization` },
-        priceValidUntil: `${new Date().getFullYear() + 1}-12-31`,
+        priceValidUntil: '2026-12-20',
         areaServed: 'BR',
       },
       isRelatedTo: CATEGORIES.map((c) => ({
@@ -174,7 +175,7 @@ export function GeoSchema() {
     /* ---------- FAQPAGE (espelho integral do FAQ visível) ---------- */
     {
       '@type': 'FAQPage',
-      '@id': `${SITE.url}/#faq`,
+      '@id': `${SITE.url}/guia#perguntas`,
       inLanguage: 'pt-BR',
       dateModified,
       mainEntity: FAQ_ITEMS.map((f) => ({
@@ -187,7 +188,7 @@ export function GeoSchema() {
     /* ---------- HOWTO (guia de sublimação) ---------- */
     {
       '@type': 'HowTo',
-      '@id': `${SITE.url}/#como-sublimar`,
+      '@id': `${SITE.url}/guia#como-funciona`,
       name: 'Como sublimar uma caneca com artes da Click & Gruda',
       description:
         'Guia passo a passo para imprimir e prensar uma caneca de porcelana de 325 ml usando artes digitais no formato 21 × 9,5 cm da Click & Gruda.',
@@ -207,14 +208,14 @@ export function GeoSchema() {
         position: i + 1,
         name: s.name,
         text: s.text,
-        url: `${SITE.url}/#passo-${i + 1}`,
+        url: `${SITE.url}/guia#como-funciona`,
       })),
     },
 
     /* ---------- DEFINEDTERMSET + DEFINEDTERMS (glossário) ---------- */
     {
       '@type': 'DefinedTermSet',
-      '@id': `${SITE.url}/#glossario-sublimacao`,
+      '@id': `${SITE.url}/guia#glossario`,
       name: 'Glossário de Sublimação de Canecas — Click & Gruda',
       description:
         'Definições técnicas dos termos essenciais da sublimação de canecas: sublimação têxtil, prensa térmica, papel sublimático, cobre-caneca, DPI e outros.',
@@ -225,7 +226,7 @@ export function GeoSchema() {
         '@type': 'DefinedTerm',
         name: t.term,
         description: t.definition,
-        inDefinedTermSet: { '@id': `${SITE.url}/#glossario-sublimacao` },
+        inDefinedTermSet: { '@id': `${SITE.url}/guia#glossario` },
       })),
     },
 

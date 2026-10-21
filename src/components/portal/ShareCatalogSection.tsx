@@ -13,6 +13,7 @@ import {
   MessageCircle,
   Plus,
   Share2,
+  Send,
   Trash2,
 } from 'lucide-react'
 import { toast } from 'sonner'
@@ -131,6 +132,24 @@ export function ShareCatalogSection() {
     } catch {
       toast.error('Não foi possível copiar.')
     }
+  }
+
+  // Compartilhamento nativo do celular (WhatsApp, Instagram, etc.).
+  // O fallback sempre funciona no desktop ou em navegadores sem Web Share API.
+  const shareNative = async (l: ShareLink) => {
+    const url = linkUrl(l.token)
+    const payload = { title: 'Escolha sua arte', text: 'Escolha uma arte para seu personalizado:', url }
+    if (navigator.share) {
+      try {
+        await navigator.share(payload)
+        track('share_link_native', { linkId: l.id })
+        return
+      } catch (error) {
+        if ((error as Error)?.name === 'AbortError') return
+        // Compartilhamento não disponível no dispositivo: oferece cópia.
+      }
+    }
+    await copyLink(l)
   }
 
   const shareWhatsapp = (l: ShareLink) => {
@@ -286,6 +305,16 @@ export function ShareCatalogSection() {
                   <Button size="sm" variant="outline" onClick={() => copyLink(l)} disabled={expired} className="h-9 rounded-lg text-xs font-bold">
                     {copiedId === l.id ? <Check className="mr-1 h-3.5 w-3.5 text-emerald-500" /> : <Copy className="mr-1 h-3.5 w-3.5" />}
                     {copiedId === l.id ? 'Copiado!' : 'Copiar'}
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => shareNative(l)}
+                    disabled={expired}
+                    className="h-9 rounded-lg text-xs font-bold"
+                    aria-label="Compartilhar catálogo pelo celular ou copiar link"
+                  >
+                    <Send className="mr-1 h-3.5 w-3.5" /> Compartilhar
                   </Button>
                   <Button
                     size="sm"

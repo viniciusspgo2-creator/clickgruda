@@ -19,11 +19,11 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "Click & Gruda — Artes Prontas para Sublimação de Canecas | Acesso Vitalício",
+    default: "Click & Gruda — Biblioteca de Artes, Mockups 3D e Catálogo Online",
     template: "%s | Click & Gruda",
   },
   description:
-    "Acesso vitalício às artes prontas para sublimação de canecas, no formato 21×9,5 cm em alta resolução. Lançamentos frequentes, pagamento único de R$ 47,90 — sem mensalidade, downloads ilimitados para produzir e vender as suas canecas.",
+    "Plataforma de artes para sublimação com biblioteca organizada, categorias, datas especiais, atualizações semanais, gerador de mockups 3D e loja online para assinantes. Conheça as condições de acesso.",
   keywords: [
     "artes para canecas",
     "sublimação de canecas",
@@ -58,9 +58,9 @@ export const metadata: Metadata = {
     },
   },
   openGraph: {
-    title: "Click & Gruda — Artes Prontas para Canecas | Acesso Vitalício por R$ 47,90",
+    title: "Click & Gruda — Artes Prontas, Mockups 3D e Loja Online",
     description:
-      "Todas as artes liberadas por R$ 47,90. Pagamento único, sem mensalidade, downloads ilimitados, formato 21×9,5 cm e lançamentos frequentes inclusos.",
+      "Biblioteca organizada com curadoria, atualizações semanais, mockups 3D e loja online para assinantes. Veja a oferta e os recursos da plataforma.",
     siteName: SITE.name,
     locale: "pt_BR",
     type: "website",
@@ -78,7 +78,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Click & Gruda — Artes Prontas para Sublimação de Canecas",
     description:
-      "Acesso vitalício: todas as artes + lançamentos por R$ 47,90 únicos. Formato 21×9,5 cm, download ilimitado para produzir e vender as suas canecas.",
+      "Biblioteca de artes com curadoria, atualizações semanais, mockups 3D e loja online para assinantes. Confira a oferta atual.",
     images: ["/uploads/hero-mug.png"],
   },
   other: {
@@ -95,7 +95,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#f97316",
+  themeColor: "#14171e",
   width: "device-width",
   initialScale: 1,
 };

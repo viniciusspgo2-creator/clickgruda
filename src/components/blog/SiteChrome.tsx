@@ -12,6 +12,7 @@ const NAV = [
   { label: 'Início', href: '/' },
   { label: 'Blog', href: '/blog' },
   { label: 'Sobre', href: '/sobre' },
+  { label: 'Guia', href: '/guia' },
 ]
 
 export function SiteHeader() {
@@ -19,7 +20,7 @@ export function SiteHeader() {
     <header className="sticky top-0 z-40 border-b border-zinc-200/80 bg-white/90 backdrop-blur">
       <div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between gap-3 px-4 sm:px-6">
         <Link href="/" aria-label="Ir para a página inicial da Click & Gruda">
-          <Logo dark />
+          <Logo />
         </Link>
         <nav className="hidden items-center gap-1 md:flex" aria-label="Navegação principal">
           {NAV.map((item) => (
@@ -36,7 +37,7 @@ export function SiteHeader() {
           href="/#preco"
           className="hidden h-10 items-center rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 px-4 font-extrabold text-white shadow-lg shadow-orange-500/30 transition-all hover:shadow-orange-500/50 hover:brightness-105 md:inline-flex"
         >
-          Assinar R$ 47,90 <ArrowRight className="ml-1 h-4 w-4" />
+          Ver condições <ArrowRight className="ml-1 h-4 w-4" />
         </Link>
       </div>
     </header>
@@ -75,6 +76,9 @@ export function SiteFooter() {
             <Link href="/sobre" className="transition-colors hover:text-orange-400">
               Sobre
             </Link>
+            <Link href="/guia" className="transition-colors hover:text-orange-400">
+              Guia
+            </Link>
             <Link href="/#faq" className="transition-colors hover:text-orange-400">
               FAQ
             </Link>
@@ -88,7 +92,7 @@ export function SiteFooter() {
         </div>
         <p className="mt-6 flex items-center justify-center gap-1.5 text-center text-[11px] text-zinc-600">
           <Coffee className="h-3 w-3" />
-          Plataforma de artes digitais para sublimação de canecas · Acesso vitalício por pagamento único
+          Plataforma de artes digitais para sublimação de canecas · Consulte as condições atuais da oferta
         </p>
       </div>
     </footer>

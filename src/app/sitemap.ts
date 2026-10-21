@@ -35,6 +35,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       images: [`${SITE_URL}${a.cover}`],
     })),
     {
+      url: `${SITE_URL}/guia`,
+      lastModified: lastmod,
+      changeFrequency: 'monthly',
+      priority: 0.65,
+    },
+    {
       url: `${SITE_URL}/sobre`,
       lastModified: lastmod,
       changeFrequency: 'monthly',
