@@ -16,7 +16,7 @@ export const PRICE = 'R$ 47,90'
  * 1. RESUMO EXECUTIVO / KEY TAKEAWAYS (BLUF)
  * ============================================================ */
 export const KEY_TAKEAWAYS: string[] = [
-  'Uma única cobrança de R$ 47,90 e o custo de arte chega ao fim: o acervo inteiro fica liberado, sem renovação.',
+  'Durante a oferta promocional até 20/12/2026, o acesso vitalício custa R$ 47,90 em pagamento único; depois, consulte os planos disponíveis.',
   'Cada arquivo já vem na medida exata da caneca (21 × 9,5 cm) — é imprimir e prensar, sem mexer no editor.',
   'O acervo cresce com lançamentos frequentes — e o seu preço continua o mesmo: zero.',
   'Use as artes nas canecas que você vende — sem cobrança por peça.',
@@ -34,7 +34,7 @@ export const KEY_TAKEAWAYS: string[] = [
 export const ENTITY_DEFINITION = SITE.description
 
 export const ENTITY_PRACTICAL =
-  'Na prática, funciona assim: você cria uma conta, paga R$ 47,90 uma única vez via PIX e o portal libera o acervo completo. De lá para frente, você navega por categorias e tags, favorita as artes, acompanha os lançamentos frequentes e baixa quantos arquivos quiser — todos já na medida 21 × 9,5 cm, sem ajuste no editor, para produzir e vender as suas canecas.'
+  'Na prática, você cria sua conta, escolhe o plano vigente e navega pela biblioteca por categorias e tags. É possível favoritar, acompanhar os lançamentos e baixar artes para produzir personalizados, respeitando a eventual cota diária de downloads configurada no portal.'
 
 /* ============================================================
  * 3. FAQ — 13 perguntas consolidadas + 3 objeções de conversão (edição, liberação do PIX, exclusividade)
@@ -50,7 +50,7 @@ export const FAQ_ITEMS: { q: string; a: string }[] = [
   },
   {
     q: 'Tem mensalidade?',
-    a: `NÃO. Você paga ${PRICE} uma única vez e o acesso é vitalício. Lançamentos futuros também estão inclusos, sem custo extra.`,
+    a: `O plano promocional de ${PRICE} oferece pagamento único e acesso vitalício até 20 de dezembro de 2026. Após a campanha, consulte as condições disponíveis no checkout.`,
   },
   {
     q: 'Posso vender canecas com as artes?',
@@ -71,11 +71,11 @@ export const FAQ_ITEMS: { q: string; a: string }[] = [
   },
   {
     q: 'O acesso expira?',
-    a: `Não. O acesso é vitalício: paga-se ${PRICE} uma única vez e o portal continua liberado para download ilimitado, sem renovação nem cobrança recorrente.`,
+    a: `O acesso vitalício é a condição da campanha promocional de ${PRICE}, válida até 20/12/2026. Para outros planos, consulte as condições apresentadas na contratação.`,
   },
   {
     q: 'Posso baixar a mesma arte mais de uma vez?',
-    a: 'Sim. Os downloads são ilimitados — você pode baixar a mesma arte quantas vezes precisar, inclusive para recuperar arquivos perdidos do seu computador.',
+    a: 'Sim. Você pode baixar a mesma arte novamente. Pode haver uma cota diária de artes diferentes para preservar a estabilidade da plataforma; o limite aparece no portal.',
   },
   {
     q: 'Preciso saber editar arquivo para usar as artes?',
@@ -184,8 +184,8 @@ export const COMPARISON: {
 }[] = [
   {
     criterion: 'Custo inicial',
-    clickgruda: `${PRICE}, pagamento único`,
-    avulsa: 'R$ 10 a R$ 30 por arte',
+    clickgruda: `${PRICE}, pagamento único na campanha até 20/12/2026`,
+    avulsa: 'Preço definido pelo fornecedor',
     freelancer: 'Valor negociado por projeto',
   },
   {
@@ -214,7 +214,7 @@ export const COMPARISON: {
   },
   {
     criterion: 'Downloads repetidos',
-    clickgruda: 'Ilimitados, para sempre',
+    clickgruda: 'Re-download permitido; pode haver cota diária de artes diferentes',
     avulsa: 'Costumam limitar ao download da compra',
     freelancer: 'Arquivo entregue uma única vez',
   },
@@ -237,7 +237,7 @@ export const COMPARISON: {
  * ============================================================ */
 export const FOR_WHO: string[] = [
   'Sublimadores que vivem (ou querem viver) de canecas personalizadas',
-  'Quem perde dinheiro e tempo comprando arte por arte a R$ 10–30',
+  'Quem perde tempo procurando artes em pastas ou packs sem curadoria',
   'Quem precisa de artes na medida exata, sem retrabalho no editor',
   'Quem quer capturar datas comemorativas antes da concorrência',
   'Iniciantes que querem custo previsível e acesso imediato',
@@ -247,7 +247,7 @@ export const FOR_WHO: string[] = [
 export const NOT_FOR_WHO: string[] = [
   'Quem exige exclusividade absoluta de arte — o acervo é compartilhado entre assinantes; nesse caso, o caminho é contratar um designer',
   'Quem procura arte vetorial para redimensionar infinitamente (as artes são raster em alta resolução, já na medida final)',
-  'Quem busca mockups prontos de caneca — o foco aqui é a arte de estampa em si',
+  'Quem precisa de mockups desenhados sob encomenda para cada produto — o gerador aplica artes nos modelos disponíveis',
   'Quem quer design personalizado por encomenda com briefing próprio',
 ]
 
@@ -257,7 +257,7 @@ export const NOT_FOR_WHO: string[] = [
 export const HOWTO_STEPS: { name: string; text: string }[] = [
   {
     name: 'Assine e baixe a arte',
-    text: `Assine por ${PRICE} (pagamento único via PIX), entre no portal, escolha a arte por categoria, tag ou busca e baixe — o download é imediato e ilimitado, já no formato 21 × 9,5 cm.`,
+    text: `Escolha o plano disponível, entre no portal, filtre as artes por categoria, tag ou busca e baixe o arquivo para produzir a peça, observando a cota diária quando estiver ativa.`,
   },
   {
     name: 'Imprima em papel sublimático',
@@ -334,11 +334,11 @@ export const CATEGORIES: { name: string; description: string; emoji: string }[] 
  * 9. FATOS-CHAVE (fact density para síntese por LLMs)
  * ============================================================ */
 export const KEY_FACTS = {
-  businessModel: 'Acesso vitalício por pagamento único (sem mensalidade e sem cobrança recorrente)',
+  businessModel: 'Oferta de acesso vitalício por pagamento único até 20/12/2026; após a campanha, planos conforme condições vigentes',
   price: PRICE,
   artFormatCm: '21 × 9,5 cm',
   mugStandard: 'Canecas de porcelana de 325 ml',
-  downloads: 'Ilimitados, incluindo re-download de artes já baixadas',
+  downloads: 'Re-download permitido; cota diária de artes diferentes configurável pelo administrador',
   commercialUse: 'Para produzir e vender as suas canecas',
   newArtsFrequency: 'Lançamentos frequentes inclusos no acesso',
   payment:

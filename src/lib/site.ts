@@ -12,11 +12,11 @@ export const SITE = {
   name: 'Click & Gruda',
   legalName: 'Click & Gruda',
   url: SITE_URL,
-  tagline: 'Artes digitais para sublimação de canecas com acesso vitalício',
+  tagline: 'Artes digitais para sublimação de canecas, com biblioteca e ferramentas organizadas',
   description:
-    'A Click & Gruda é uma plataforma brasileira de artes digitais para sublimação de canecas. Por um pagamento único de R$ 47,90, o assinante obtém acesso vitalício e downloads ilimitados a todo o acervo — incluindo os lançamentos frequentes — em artes no formato exato de 21 × 9,5 cm, prontas para prensagem térmica e para produzir e vender as suas canecas.',
+    'A Click & Gruda reúne artes digitais para sublimação de canecas, com biblioteca organizada por categorias, tags e datas sazonais, mockups 3D e recursos para divulgar produtos personalizados. A oferta de acesso vitalício por R$ 47,90 vale até 20/12/2026. A quantidade de downloads de artes diferentes pode estar sujeita a uma cota diária.',
   shortAnswer:
-    'A Click & Gruda é uma plataforma brasileira de artes digitais para sublimação de canecas: por um pagamento único de R$ 47,90 (sem mensalidade), o assinante recebe acesso vitalício com downloads ilimitados a todas as artes — inclusive lançamentos futuros — no formato exato de 21 × 9,5 cm para prensagem térmica, para produzir e vender as suas canecas.',
+    'A Click & Gruda oferece uma biblioteca organizada de artes digitais para sublimação, gerador de mockups e loja online para assinantes. O acesso vitalício por R$ 47,90 é condição promocional até 20/12/2026. Pode haver limite diário de downloads de artes diferentes.',
   email: 'contato@clickgruda.com.br',
   areaServed: 'BR',
   inLanguage: 'pt-BR',

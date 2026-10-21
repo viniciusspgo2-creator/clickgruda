@@ -35,9 +35,10 @@ export async function POST(req: Request) {
 
   const body = await req.json().catch(() => ({}))
   const whatsapp = typeof body.whatsapp === 'string' ? body.whatsapp.replace(/[^\d+]/g, '').slice(0, 20) : ''
+  if (whatsapp && !/^\+?\d{10,15}$/.test(whatsapp)) return jsonError('Informe um WhatsApp válido com DDD.', 400)
   const days = VALID_DAYS.includes(Number(body.expiresInDays)) ? Number(body.expiresInDays) : 3
 
-  const activeCount = await db.shareLink.count({ where: { userId: session.id, active: true } })
+  const activeCount = await db.shareLink.count({ where: { userId: session.id, active: true, expiresAt: { gt: new Date() } } })
   if (activeCount >= 5) {
     return jsonError('Você já tem 5 links ativos. Exclua um antes de criar outro.', 400)
   }

@@ -19,6 +19,8 @@ import {
   Menu,
   ClipboardList,
   Receipt,
+  RefreshCw,
+  FileDown,
   SearchX,
   Settings,
   ShieldAlert,
@@ -85,6 +87,7 @@ export function AdminView() {
   const setView = useStore((s) => s.setView)
   const [section, setSection] = useState<AdminSection>('dashboard')
   const [mobileNav, setMobileNav] = useState(false)
+  const queryClient = useQueryClient()
 
   // Badge de sugestões novas (compartilha o cache com o Dashboard)
   const statsQ = useQuery<{ stats: { suggestionsNew?: number; searchMissesNew?: number; waitlistTotal?: number; alertsOpen?: number; enhanceNew?: number } }>({
@@ -201,10 +204,13 @@ export function AdminView() {
               >
                 <Menu className="h-4.5 w-4.5" />
               </Button>
-              <h1 className="text-lg font-black tracking-tight text-zinc-900">
+              <h1 className="min-w-0 truncate text-base font-black tracking-tight text-zinc-900 sm:text-lg">
                 {SECTIONS.find((s) => s.id === section)?.label}
               </h1>
             </div>
+            <div className="flex items-center gap-2">
+            <a href="/api/admin/arts/export" download title="Exportar títulos, códigos, categorias e tags (CSV)" className="inline-flex h-9 items-center justify-center gap-1.5 rounded-xl border border-zinc-200 bg-white px-3 text-xs font-bold text-zinc-700 transition-colors hover:border-orange-300 hover:text-orange-700"><FileDown className="h-4 w-4" /><span className="hidden sm:inline">Exportar artes</span></a>
+            <Button variant="outline" size="sm" title="Atualizar dados desta seção" aria-label="Atualizar dados do painel" onClick={() => { queryClient.invalidateQueries({ predicate: (query) => String(query.queryKey[0] ?? '').startsWith('admin-') }); toast.info('Atualizando dados do painel...'); }} className="h-9 rounded-xl border-zinc-200 text-zinc-600"><RefreshCw className="h-4 w-4" /><span className="ml-1.5 hidden sm:inline">Atualizar</span></Button>
             <Button
               onClick={() => setView('portal')}
               variant="outline"
@@ -212,6 +218,7 @@ export function AdminView() {
             >
               <ExternalLink className="mr-1.5 h-3.5 w-3.5" /> Ver portal
             </Button>
+            </div>
           </div>
         </header>
 
@@ -281,9 +288,9 @@ type AdminStats = {
 
 function DashboardSection({ onNavigate }: { onNavigate?: (s: AdminSection) => void }) {
   const queryClient = useQueryClient()
-  const { data, isLoading } = useQuery<AdminStats>({
+  const { data, isLoading, isError, refetch } = useQuery<AdminStats>({
     queryKey: ['admin-stats'],
-    queryFn: async () => (await fetch('/api/admin/stats')).json(),
+    queryFn: async () => { const res = await fetch('/api/admin/stats'); if (!res.ok) throw new Error('Falha ao carregar indicadores'); return res.json() },
   })
 
   const releaseUser = useMutation({
@@ -303,6 +310,10 @@ function DashboardSection({ onNavigate }: { onNavigate?: (s: AdminSection) => vo
     },
     onError: () => toast.error('Erro ao liberar a conta.'),
   })
+
+  if (isError) {
+    return <div role="alert" className="rounded-2xl border border-rose-200 bg-white p-8 text-center"><ShieldAlert className="mx-auto h-8 w-8 text-rose-500" /><h2 className="mt-3 font-black text-zinc-800">Não foi possível carregar os indicadores</h2><p className="mt-1 text-sm text-zinc-500">Verifique sua conexão e tente novamente.</p><Button onClick={() => refetch()} className="mt-4 rounded-xl bg-orange-500 hover:bg-orange-600"><RefreshCw className="mr-2 h-4 w-4" /> Atualizar indicadores</Button></div>
+  }
 
   if (isLoading || !data) {
     return <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">{Array.from({ length: 8 }).map((_, i) => <div key={i} className="h-28 animate-pulse rounded-2xl bg-zinc-200/70" />)}</div>

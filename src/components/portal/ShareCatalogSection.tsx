@@ -73,11 +73,18 @@ export function ShareCatalogSection() {
 
   const linksQ = useQuery<{ links: ShareLink[] }>({
     queryKey: ['share-links'],
-    queryFn: async () => (await fetch('/api/portal/share-links')).json(),
+    queryFn: async () => {
+      const res = await fetch('/api/portal/share-links')
+      if (!res.ok) throw new Error('Não foi possível carregar seus links')
+      return res.json()
+    },
+    staleTime: 15_000,
   })
 
   const create = useMutation({
     mutationFn: async () => {
+      const digits = whatsapp.replace(/\D/g, '')
+      if (digits && (digits.length < 10 || digits.length > 15)) throw new Error('Informe seu WhatsApp com DDD (10 a 15 dígitos).')
       const res = await fetch('/api/portal/share-links', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -93,9 +100,10 @@ export function ShareCatalogSection() {
       toast.success('Link gerado! Copie e envie para o seu cliente.')
       track('share_link_created', { linkId: data.link.id })
       // Copia já o link — UX de um toque
-      navigator.clipboard.writeText(linkUrl(data.link.token)).catch(() => {})
-      setCopiedId(data.link.id)
-      setTimeout(() => setCopiedId(null), 2500)
+      if (!navigator.clipboard?.writeText) { toast.info('Copie o novo link usando o botão abaixo.'); return }
+      navigator.clipboard.writeText(linkUrl(data.link.token))
+        .then(() => { setCopiedId(data.link.id); setTimeout(() => setCopiedId(null), 2500) })
+        .catch(() => toast.info('Use o botão Copiar ao lado do seu novo link.'))
     },
     onError: (e: Error) => toast.error(e.message),
   })
@@ -133,7 +141,7 @@ export function ShareCatalogSection() {
   }
 
   const links = linksQ.data?.links ?? []
-  const activeCount = links.filter((l) => !isExpired(l)).length
+  const activeCount = links.filter((l) => l.active && !isExpired(l)).length
 
   return (
     <div className="space-y-6">
@@ -227,7 +235,7 @@ export function ShareCatalogSection() {
           </Button>
         </div>
         <p className="mt-2.5 text-[11px] leading-relaxed text-zinc-400">
-          Com o WhatsApp preenchido, o cliente usa o botão &quot;Quero esta arte&quot; e a escolha chega prontinha para você.
+          Dica: informe o WhatsApp com DDD para receber as escolhas diretamente na sua conversa. Com o WhatsApp preenchido, o cliente usa o botão &quot;Quero esta arte&quot; e a escolha chega prontinha para você.
           Máximo de 5 links ativos por vez.
         </p>
       </div>
@@ -237,6 +245,8 @@ export function ShareCatalogSection() {
         <h3 className="text-sm font-black uppercase tracking-wide text-zinc-600">Seus links</h3>
         {linksQ.isLoading ? (
           <div className="h-24 animate-pulse rounded-2xl bg-zinc-200/70" />
+        ) : linksQ.isError ? (
+          <div role="alert" className="rounded-2xl border border-rose-200 bg-white p-5 text-center text-sm text-zinc-600">Erro ao consultar seus links. <button onClick={() => linksQ.refetch()} className="font-bold text-orange-600 underline">Tentar novamente</button></div>
         ) : links.length === 0 ? (
           <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-zinc-300 bg-white py-12 text-center">
             <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-orange-50">
@@ -249,7 +259,7 @@ export function ShareCatalogSection() {
           </div>
         ) : (
           links.map((l) => {
-            const expired = isExpired(l)
+            const expired = isExpired(l) || !l.active
             return (
               <div
                 key={l.id}
@@ -272,8 +282,8 @@ export function ShareCatalogSection() {
                     {linkUrl(l.token)}
                   </code>
                 </div>
-                <div className="flex shrink-0 items-center gap-1.5">
-                  <Button size="sm" variant="outline" onClick={() => copyLink(l)} className="h-9 rounded-lg text-xs font-bold">
+                <div className="flex shrink-0 flex-wrap items-center gap-1.5">
+                  <Button size="sm" variant="outline" onClick={() => copyLink(l)} disabled={expired} className="h-9 rounded-lg text-xs font-bold">
                     {copiedId === l.id ? <Check className="mr-1 h-3.5 w-3.5 text-emerald-500" /> : <Copy className="mr-1 h-3.5 w-3.5" />}
                     {copiedId === l.id ? 'Copiado!' : 'Copiar'}
                   </Button>
@@ -281,6 +291,7 @@ export function ShareCatalogSection() {
                     size="sm"
                     variant="outline"
                     onClick={() => shareWhatsapp(l)}
+                    disabled={expired}
                     className="h-9 rounded-lg border-emerald-200 text-xs font-bold text-emerald-600 hover:bg-emerald-50"
                   >
                     <MessageCircle className="mr-1 h-3.5 w-3.5" /> Enviar
@@ -289,6 +300,7 @@ export function ShareCatalogSection() {
                     size="sm"
                     variant="ghost"
                     onClick={() => window.open(linkUrl(l.token), '_blank', 'noopener')}
+                    disabled={expired}
                     className="h-9 w-9 rounded-lg p-0 text-zinc-400"
                     aria-label="Abrir catálogo"
                   >

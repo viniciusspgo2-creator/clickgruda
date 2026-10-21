@@ -215,3 +215,10 @@
 .animate-float-soft {
   animation: float-soft 5s ease-in-out infinite;
 }
+
+/* Acessibilidade: respeita quem prefere menos movimento. */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto !important; }
+  .animate-marquee-left, .animate-marquee-right { animation: none !important; }
+  .group img { transition-duration: 0.01ms !important; }
+}

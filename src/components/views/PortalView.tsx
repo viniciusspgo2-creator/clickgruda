@@ -5,6 +5,7 @@ import { useInfiniteQuery, useMutation, useQuery, useQueryClient, type InfiniteD
 import { AnimatePresence, motion } from 'framer-motion'
 import {
   CalendarHeart,
+  RefreshCw,
   Clock3,
   Crown,
   Download,
@@ -26,7 +27,6 @@ import {
   SlidersHorizontal,
   Sparkles,
   Star,
-  User,
   Wand2,
   X,
 } from 'lucide-react'
@@ -43,6 +43,7 @@ import { ChipScroller } from '@/components/shared/ChipScroller'
 import { ShareCatalogSection } from '@/components/portal/ShareCatalogSection'
 import { ThemeSuggestionDialog } from '@/components/portal/ThemeSuggestionDialog'
 import { MockupToolCard } from '@/components/portal/MockupToolCard'
+import { TagFilterPanel } from '@/components/portal/TagFilterPanel'
 import { NovidadesCard } from '@/components/portal/NovidadesCard'
 import { EnhanceRequestDialog } from '@/components/portal/EnhanceRequestDialog'
 import { BackupStrip } from '@/components/portal/BackupStrip'
@@ -110,11 +111,15 @@ export function PortalView() {
   const [zipOpen, setZipOpen] = useState(false)
   const [limitDialog, setLimitDialog] = useState<number | null>(null)
 
-  // Debounce search
+  // O campo acompanha mudanças externas (logo, limpar filtros, troca de página).
+  useEffect(() => { setSearchInput(q) }, [q])
+
+  // Debounce: não consulta o servidor a cada tecla.
   useEffect(() => {
-    const t = setTimeout(() => setFilter({ q: searchInput }), 300)
+    if (searchInput === q) return
+    const t = setTimeout(() => setFilter({ q: searchInput.trim() }), 350)
     return () => clearTimeout(t)
-  }, [searchInput, setFilter])
+  }, [searchInput, q, setFilter])
 
   // Vigia da sessão: se este aparelho foi desconectado (limite de dispositivos), volta para o login
   useEffect(() => {
@@ -153,7 +158,12 @@ export function PortalView() {
 
   const catalogQ = useQuery<CatalogData>({
     queryKey: ['catalog'],
-    queryFn: async () => (await fetch('/api/catalog')).json(),
+    queryFn: async () => {
+      const res = await fetch('/api/catalog')
+      if (!res.ok) throw new Error('Falha ao carregar filtros')
+      return res.json()
+    },
+    staleTime: 60_000,
   })
 
   const params = new URLSearchParams({ tab, sort })
@@ -175,6 +185,8 @@ export function PortalView() {
     },
     getNextPageParam: (last) => (last.hasMore ? last.page + 1 : undefined),
     enabled: !!user?.hasAccess && tab !== 'compartilhar',
+    staleTime: 15_000,
+    retry: 1,
   })
 
   // Default seasonal event = next one
@@ -329,14 +341,15 @@ export function PortalView() {
           <Button
             variant="outline"
             onClick={() => setMenuOpen(true)}
-            className="h-10 shrink-0 gap-2 rounded-xl border-zinc-200 font-bold text-zinc-700 hover:bg-orange-50 hover:text-orange-600"
-            aria-label="Abrir categorias"
+            className="h-10 shrink-0 gap-2 rounded-xl border-zinc-200 font-bold text-zinc-700 transition-all hover:border-orange-300 hover:bg-orange-50 hover:text-orange-600"
+            aria-label="Abrir categorias e filtros"
           >
             <Menu className="h-4.5 w-4.5" />
-            <span className="hidden sm:inline">Categorias</span>
+            <span className="hidden sm:inline">Explorar</span>
+            {categoryIds.length + tagIds.length > 0 && <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-orange-500 px-1 text-[10px] font-black text-white">{categoryIds.length + tagIds.length}</span>}
           </Button>
 
-          <button onClick={resetFilters} aria-label="Início do portal" className="shrink-0">
+          <button onClick={() => { resetFilters(); setSearchInput('') }} aria-label="Início do portal" className="shrink-0">
             <Logo compact />
           </button>
 
@@ -505,7 +518,7 @@ export function PortalView() {
       )}
 
       {/* ================= FAIXA DE BACKUP ================= */}
-      {!user.isDemo && <BackupStrip onZip={() => setZipOpen(true)} limit={catalogQ.data?.quota?.limit ?? 0} />}
+      {!user.isDemo && catalogQ.data && <BackupStrip onZip={() => setZipOpen(true)} limit={catalogQ.data.quota?.limit ?? 0} />}
 
       {/* ================= SEASONAL HERO ================= */}
       {tab === 'sazonal' && catalogQ.data && (
@@ -602,6 +615,23 @@ export function PortalView() {
           </div>
         )}
 
+        {/* Utilidades à vista, antes da lista infinita de artes. */}
+        {tab !== 'compartilhar' && (
+          <div className="mb-6 flex flex-col gap-3 rounded-2xl border border-zinc-200 bg-white p-3.5 shadow-sm sm:flex-row sm:items-center sm:justify-between sm:px-4" aria-label="Ações e informações da biblioteca">
+            <div className="flex min-w-0 items-center gap-3">
+              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-orange-50 text-orange-600"><ShieldCheck className="h-4.5 w-4.5" /></span>
+              <div>
+                <p className="text-xs font-extrabold text-zinc-800">Sua biblioteca, sempre à mão</p>
+                <p className="text-[11px] leading-relaxed text-zinc-500">{catalogQ.data?.quota?.limit ? `Downloads hoje: ${catalogQ.data.quota.used} de ${catalogQ.data.quota.limit}` : 'Encontre, favorite e baixe suas artes'} · Não achou o que queria? Peça uma arte.</p>
+              </div>
+            </div>
+            <div className="flex shrink-0 flex-wrap gap-2">
+              <button onClick={() => setSuggestionOpen(true)} className="inline-flex h-9 flex-1 items-center justify-center gap-1.5 rounded-xl bg-orange-50 px-3 text-xs font-bold text-orange-700 transition-colors hover:bg-orange-100 sm:flex-none"><Lightbulb className="h-3.5 w-3.5" /> Sugerir arte</button>
+              <button onClick={() => (user.isDemo ? toast.info('Disponível após a ativação do acesso.') : setEnhanceOpen(true))} className="inline-flex h-9 flex-1 items-center justify-center gap-1.5 rounded-xl bg-zinc-950 px-3 text-xs font-bold text-white transition-colors hover:bg-zinc-800 sm:flex-none"><Wand2 className="h-3.5 w-3.5" /> Melhorar minha arte</button>
+            </div>
+          </div>
+        )}
+
         {/* Active filters */}
         {(activeFilterChips.length > 0 || q) && (
           <div className="mb-4 flex flex-wrap items-center gap-2">
@@ -660,6 +690,13 @@ export function PortalView() {
         {/* Grid */}
         {tab === 'compartilhar' ? (
           <ShareCatalogSection />
+        ) : artsQ.isError ? (
+          <div role="alert" className="rounded-3xl border border-rose-200 bg-white px-5 py-12 text-center shadow-sm">
+            <SearchX className="mx-auto h-9 w-9 text-rose-400" />
+            <h2 className="mt-3 text-lg font-black text-zinc-900">Não foi possível carregar as artes</h2>
+            <p className="mt-1 text-sm text-zinc-500">Verifique sua conexão e tente novamente. Seus filtros foram preservados.</p>
+            <Button onClick={() => artsQ.refetch()} className="mt-5 rounded-xl bg-orange-500 font-bold hover:bg-orange-600"><RefreshCw className="mr-2 h-4 w-4" /> Tentar novamente</Button>
+          </div>
         ) : artsQ.isLoading ? (
           <div className="grid grid-cols-1 gap-5 md:grid-cols-2 2xl:grid-cols-3">
             {Array.from({ length: 6 }).map((_, i) => (
@@ -724,50 +761,6 @@ export function PortalView() {
           />
         )}
 
-        {/* Chamadas de ação: sugerir arte + melhorar arte própria (aba de catálogo) */}
-        {tab !== 'compartilhar' && (
-          <div className="mt-10 grid gap-4 lg:grid-cols-2">
-            <section className="overflow-hidden rounded-3xl border border-orange-200 bg-gradient-to-r from-orange-50 via-white to-amber-50 p-5 shadow-sm">
-              <div className="flex h-full flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
-                <div className="flex items-center gap-4">
-                  <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-orange-500 to-orange-600 text-white shadow-md shadow-orange-500/30">
-                    <Lightbulb className="h-6 w-6" />
-                  </span>
-                  <div>
-                    <h3 className="text-base font-black text-zinc-900">Não encontrou a arte que procurava?</h3>
-                    <p className="text-sm text-zinc-500">Conte pra gente qual tema você quer — a ideia vai direto para a nossa equipe de criação.</p>
-                  </div>
-                </div>
-                <Button
-                  onClick={() => setSuggestionOpen(true)}
-                  className="h-11 w-full shrink-0 rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 px-5 text-sm font-black shadow-md shadow-orange-500/25 sm:w-auto"
-                >
-                  <Lightbulb className="mr-2 h-4.5 w-4.5" /> Sugerir uma arte
-                </Button>
-              </div>
-            </section>
-
-            <section className="overflow-hidden rounded-3xl border border-zinc-200 bg-white p-5 shadow-sm">
-              <div className="flex h-full flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
-                <div className="flex items-center gap-4">
-                  <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-zinc-950 text-orange-400 shadow-md">
-                    <Wand2 className="h-6 w-6" />
-                  </span>
-                  <div>
-                    <h3 className="text-base font-black text-zinc-900">Arte própria pixelizada ou borrada?</h3>
-                    <p className="text-sm text-zinc-500">Envie a sua arte que a gente melhora a qualidade pra você — <span className="font-bold text-orange-600">grátis para assinantes</span>.</p>
-                  </div>
-                </div>
-                <Button
-                  onClick={() => (user.isDemo ? toast.info('O envio de artes abre após a ativação do seu acesso.') : setEnhanceOpen(true))}
-                  className="h-11 w-full shrink-0 rounded-xl bg-zinc-950 px-5 text-sm font-black text-white shadow-md hover:bg-zinc-800 sm:w-auto"
-                >
-                  <Wand2 className="mr-2 h-4.5 w-4.5" /> Enviar minha arte
-                </Button>
-              </div>
-            </section>
-          </div>
-        )}
       </main>
 
       <footer className="mt-auto border-t border-zinc-200 bg-white py-5">
@@ -781,7 +774,7 @@ export function PortalView() {
               <Lightbulb className="h-3.5 w-3.5" /> Sugerir uma nova arte
             </button>
             <span className="flex items-center gap-1.5">
-              <User className="h-3.5 w-3.5" /> Downloads ilimitados
+              <Download className="h-3.5 w-3.5" /> {catalogQ.data?.quota?.limit ? `Até ${catalogQ.data.quota.limit} artes por dia` : 'Baixe suas artes a qualquer hora'}
             </span>
           </div>
         </div>
@@ -789,14 +782,25 @@ export function PortalView() {
 
       {/* ================= HAMBURGER MENU (Categorias + Tags) ================= */}
       <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
-        <SheetContent side="left" className="w-[300px] overflow-y-auto p-0 sm:w-[340px]">
+        <SheetContent side="left" className="flex w-[min(90vw,355px)] flex-col overflow-hidden p-0 sm:max-w-[355px]">
           <SheetHeader className="border-b border-zinc-100 p-5 text-left">
             <SheetTitle className="flex items-center gap-2 text-base font-black text-zinc-900">
               <Menu className="h-4.5 w-4.5 text-orange-500" /> Explorar artes
             </SheetTitle>
           </SheetHeader>
 
-          <div className="p-5">
+          <div className="min-h-0 flex-1 overflow-y-auto p-5 scrollbar-thin">
+            <div className="mb-5">
+              <p className="mb-2 text-[11px] font-black uppercase tracking-wider text-zinc-400">Ordenar artes</p>
+              <Select value={sort} onValueChange={(v) => setFilter({ sort: v as typeof sort })}>
+                <SelectTrigger className="h-10 w-full rounded-xl border-zinc-200 text-xs font-semibold"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="recentes">Mais recentes</SelectItem>
+                  <SelectItem value="baixadas">Mais baixadas</SelectItem>
+                  <SelectItem value="nome">Nome (A–Z)</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
             <p className="mb-2.5 text-[11px] font-black uppercase tracking-wider text-zinc-400">Categorias</p>
             <div className="space-y-1">
               {(catalogQ.data?.categories || []).map((c) => {
@@ -834,27 +838,8 @@ export function PortalView() {
               })}
             </div>
 
-            <p className="mb-2.5 mt-6 text-[11px] font-black uppercase tracking-wider text-zinc-400">Tags</p>
-            <div className="flex flex-wrap gap-1.5">
-              {(catalogQ.data?.tags || []).map((t) => {
-                const active = tagIds.includes(t.id)
-                return (
-                  <button
-                    key={t.id}
-                    onClick={() => setFilter({ tagIds: active ? tagIds.filter((i) => i !== t.id) : [...tagIds, t.id] })}
-                    className={cn(
-                      'rounded-full px-2.5 py-1.5 text-xs font-bold transition-all',
-                      active
-                        ? 'bg-zinc-950 text-white shadow'
-                        : 'bg-zinc-100 text-zinc-500 hover:bg-orange-100 hover:text-orange-600'
-                    )}
-                  >
-                    #{t.name}
-                    <span className={cn('ml-1 text-[9px]', active ? 'text-zinc-400' : 'text-zinc-300')}>{t.artCount}</span>
-                  </button>
-                )
-              })}
-            </div>
+            {catalogQ.isError && <p role="alert" className="mt-3 rounded-xl bg-rose-50 p-3 text-xs text-rose-700">Falha ao carregar os filtros. <button type="button" onClick={() => catalogQ.refetch()} className="font-bold underline">Tentar de novo</button></p>}
+            <TagFilterPanel tags={catalogQ.data?.tags ?? []} selected={tagIds} onChange={(ids) => setFilter({ tagIds: ids })} />
 
             <Button
               onClick={() => {

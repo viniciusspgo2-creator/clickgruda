@@ -1,9 +1,10 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { BadgeCheck, CalendarHeart, Check, Download, EyeOff, Flame, Heart, Loader2, Lock, Star } from 'lucide-react'
+import { BadgeCheck, CalendarHeart, Check, Copy, Download, EyeOff, Flame, Heart, Loader2, Lock, Star } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
+import { toast } from 'sonner'
 import type { ArtItem } from '@/lib/types'
 import { formatArtCode } from '@/lib/art-code'
 
@@ -26,13 +27,13 @@ export function ArtCard({ art, locked = false, demo = false, downloadState = 'id
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, scale: 0.97 }}
       transition={{ duration: 0.3, ease: 'easeOut' }}
-      whileHover={{ y: -4 }}
+      whileHover={{ y: -3 }}
       className="group relative"
     >
       <div
         className={cn(
           'relative overflow-hidden rounded-2xl border bg-white shadow-sm transition-all duration-300',
-          'hover:border-orange-300 hover:shadow-[0_24px_48px_-16px_rgba(234,88,12,0.28)]',
+          'hover:border-orange-300 hover:shadow-[0_22px_48px_-20px_rgba(234,88,12,0.24)] focus-within:border-orange-300 focus-within:ring-2 focus-within:ring-orange-100',
           'border-zinc-200'
         )}
       >
@@ -43,6 +44,7 @@ export function ArtCard({ art, locked = false, demo = false, downloadState = 'id
             src={art.imageUrl}
             alt={art.title}
             loading="lazy"
+            decoding="async"
             className={cn(
               'absolute inset-0 h-full w-full object-contain p-2 transition-transform duration-500 ease-out group-hover:scale-[1.035]',
               (locked || demo) && 'scale-105 blur-[7px] brightness-[0.72]'
@@ -129,7 +131,7 @@ export function ArtCard({ art, locked = false, demo = false, downloadState = 'id
         {/* ---------- Info ---------- */}
         <div className="space-y-2.5 p-3.5">
           <div className="flex items-start justify-between gap-2">
-            <h3 className="line-clamp-1 text-sm font-bold text-zinc-900" title={art.title}>
+            <h3 className="line-clamp-2 min-h-9 text-sm font-extrabold leading-snug text-zinc-900" title={art.title}>
               {art.title}
             </h3>
           </div>
@@ -140,17 +142,15 @@ export function ArtCard({ art, locked = false, demo = false, downloadState = 'id
                 {art.category.emoji} {art.category.name}
               </span>
             )}
-            <span
-              title="Código da arte — use na busca para achar rápido"
-              className="rounded-md bg-zinc-900 px-1.5 py-0.5 font-mono text-[10px] font-bold tracking-wide text-orange-300"
-            >
-              {formatArtCode(art.code)}
-            </span>
-            {art.tags.slice(0, 3).map((t) => (
-              <span key={t.id} className="rounded-full bg-zinc-100 px-2 py-0.5 text-[10px] font-medium text-zinc-500">
+            <button type="button" title="Copiar código da arte" aria-label={`Copiar código ${formatArtCode(art.code)}`} onClick={async () => { try { await navigator.clipboard.writeText(formatArtCode(art.code)); toast.success('Código copiado! Cole na busca para encontrar esta arte.'); } catch { toast.error('Não foi possível copiar o código.'); } }} className="inline-flex items-center gap-1 rounded-md bg-zinc-900 px-2 py-1 font-mono text-[10px] font-bold tracking-wide text-orange-300 transition-colors hover:bg-orange-600 hover:text-white focus-visible:outline-2 focus-visible:outline-orange-400">
+              {formatArtCode(art.code)} <Copy className="h-3 w-3" />
+            </button>
+            {art.tags.slice(0, 2).map((t) => (
+              <span key={t.id} className="max-w-[120px] truncate rounded-full bg-zinc-100 px-2 py-0.5 text-[10px] font-medium text-zinc-500" title={`#${t.name}`}>
                 #{t.name}
               </span>
             ))}
+            {art.tags.length > 2 && <span className="rounded-full bg-zinc-100 px-2 py-0.5 text-[10px] font-bold text-zinc-500" title={art.tags.slice(2).map((t) => `#${t.name}`).join(' · ')}>+{art.tags.length - 2}</span>}
           </div>
 
           <Button
@@ -158,7 +158,7 @@ export function ArtCard({ art, locked = false, demo = false, downloadState = 'id
             disabled={demo || downloadState === 'loading'}
             onClick={() => onDownload?.(art)}
             className={cn(
-              'h-9 w-full gap-2 rounded-xl text-[13px] font-bold transition-all',
+              'h-10 w-full gap-2 rounded-xl text-[13px] font-extrabold transition-all focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-orange-500',
               demo
                 ? 'cursor-not-allowed bg-zinc-200 text-zinc-400'
                 : locked

@@ -8,6 +8,11 @@ import { motion, useInView } from 'framer-motion'
 import {
   ArrowRight,
   BadgeCheck,
+  Box,
+  ExternalLink,
+  FolderHeart,
+  Store,
+  Wand2,
   BarChart3,
   BookOpen,
   BookMarked,
@@ -118,7 +123,8 @@ export function LandingView() {
 
   const { data: catalog } = useQuery<CatalogData>({
     queryKey: ['catalog'],
-    queryFn: async () => (await fetch('/api/catalog')).json(),
+    queryFn: async () => { const res = await fetch('/api/catalog'); if (!res.ok) throw new Error('Falha ao carregar informações'); return res.json() },
+    staleTime: 60_000,
   })
 
   useEffect(() => {
@@ -135,6 +141,7 @@ export function LandingView() {
     : FALLBACK_EVENTS
 
   const price = formatBRL(catalog?.priceCents ?? 4790)
+  const campaignActive = (catalog?.priceCents ?? 4790) === 4790 && Date.now() <= new Date('2026-12-20T23:59:59-03:00').getTime()
   /* Ancoragem honesta: preço real do catálogo ÷ nº real de artes (atualiza sozinho). */
   const perArt = formatBRL(Math.round((catalog?.priceCents ?? 4790) / Math.max(1, catalog?.counts.arts ?? 14)))
 
@@ -177,6 +184,7 @@ export function LandingView() {
           <nav className="hidden items-center gap-1 md:flex" aria-label="Navegação principal">
             {[
               ['Artes', 'artes'],
+              ['Benefícios', 'beneficios'],
               ['Como funciona', 'como-funciona'],
               ['Preço', 'preco'],
               ['FAQ', 'faq'],
@@ -255,6 +263,7 @@ export function LandingView() {
           <div className="border-t border-zinc-200 bg-white px-4 pb-4 pt-2 shadow-2xl md:hidden">
             {[
               ['Artes', 'artes'],
+              ['Benefícios', 'beneficios'],
               ['Como funciona', 'como-funciona'],
               ['Preço', 'preco'],
               ['FAQ', 'faq'],
@@ -298,7 +307,7 @@ export function LandingView() {
               className="inline-flex items-center gap-2 rounded-full border border-orange-500/40 bg-orange-500/10 px-3.5 py-1.5 text-xs font-bold text-orange-300"
             >
               <Flame className="h-3.5 w-3.5" />
-              Lançamentos frequentes · inclusos no acesso
+              Biblioteca com curadoria · atualizações semanais
             </motion.div>
 
             <motion.h1
@@ -307,9 +316,9 @@ export function LandingView() {
               transition={{ duration: 0.55, delay: 0.08 }}
               className="mt-5 text-4xl font-black leading-[1.04] tracking-tight sm:text-5xl xl:text-6xl"
             >
-              Caneca sem arte boa <span className="text-zinc-500 line-through decoration-orange-500/70 decoration-4">não vende.</span>
+              Menos tempo procurando artes.
               <br />
-              Arte pronta, na medida certa, por <span className="text-gradient-orange">um pagamento só.</span>
+              <span className="text-gradient-orange">Mais tempo criando e vendendo.</span>
             </motion.h1>
 
             <motion.p
@@ -318,10 +327,10 @@ export function LandingView() {
               transition={{ duration: 0.55, delay: 0.16 }}
               className="mt-5 max-w-xl text-base leading-relaxed text-zinc-400 sm:text-lg"
             >
-              Você perde horas caçando arte, paga <strong className="text-zinc-200">R$ 10 a R$ 30 por imagem</strong> e
-              ainda recebe arquivo borrado que estraga a sublimação. Aqui é diferente:{' '}
-              <strong className="text-orange-400">pagamento único de {price}</strong> e{' '}
-              <strong className="text-white">TODAS as artes liberadas pra sempre</strong> — inclusive os lançamentos.
+              Chega de se perder em pastas e packs gigantes. A Click&amp;Gruda reúne uma{' '}
+              <strong className="text-white">biblioteca de artes selecionadas, organizada por temas e datas comemorativas</strong>,
+              com ferramentas para apresentar e divulgar seus personalizados.{' '}
+              {campaignActive ? <strong className="text-orange-400">Acesso vitalício por {price} nesta oferta.</strong> : <strong className="text-orange-400">Conheça os planos e condições de acesso.</strong>}
             </motion.p>
 
             <motion.div
@@ -334,7 +343,7 @@ export function LandingView() {
                 onClick={goSignup}
                 className="group min-h-13 whitespace-normal rounded-2xl bg-gradient-to-r from-orange-500 to-orange-600 px-5 py-3 text-center text-sm font-black uppercase leading-tight tracking-wide text-white shadow-xl shadow-orange-600/40 transition-all hover:scale-[1.02] hover:shadow-orange-500/60 sm:px-7 sm:py-3.5 sm:text-base"
               >
-                Quero acesso total — {price}
+                Garantir meu acesso — {price}
                 <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
               </Button>
               <Button
@@ -347,6 +356,8 @@ export function LandingView() {
               </Button>
             </motion.div>
 
+            {campaignActive && <p className="mt-3 inline-flex items-center gap-2 text-xs font-bold text-orange-200"><Clock3 className="h-3.5 w-3.5" /> Oferta de acesso vitalício válida até 20 de dezembro de 2026.</p>}
+
             <motion.ul
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -354,10 +365,10 @@ export function LandingView() {
               className="mt-7 grid max-w-xl grid-cols-2 gap-x-4 gap-y-2 text-[13px] font-medium text-zinc-300"
             >
               {[
-                'Download ilimitado',
-                'Lançamentos inclusos',
-                'Medida exata 21×9,5 cm',
-                'Use nas canecas que você vende',
+                'Organização por categorias e tags',
+                'Novas artes toda semana',
+                'Gerador de mockups 3D',
+                'Loja online para assinantes',
               ].map((item) => (
                 <li key={item} className="flex items-center gap-2">
                   <span className="flex h-4.5 w-4.5 items-center justify-center rounded-full bg-orange-500/20">
@@ -376,16 +387,16 @@ export function LandingView() {
         {/* Stats */}
         <div className="relative mx-auto mt-16 grid w-full max-w-4xl grid-cols-3 gap-4 px-4 sm:px-6">
           {[
-            { value: catalog?.counts.arts ?? 14, suffix: '', label: 'artes no acervo agora' },
-            { value: catalog?.categories?.length ?? 6, suffix: '', label: 'categorias organizadas' },
-            { value: catalog?.events?.length ?? 9, suffix: '', label: 'datas sazonais cobertas' },
+            { value: catalog?.counts.arts, suffix: '', label: 'artes disponíveis agora' },
+            { value: catalog?.categories?.length, suffix: '', label: 'categorias para explorar' },
+            { value: catalog?.events?.length, suffix: '', label: 'datas sazonais organizadas' },
           ].map((s) => (
             <div
               key={s.label}
               className="rounded-2xl border border-zinc-800 bg-zinc-900/60 px-4 py-5 text-center backdrop-blur"
             >
               <div className="text-2xl font-black text-orange-400 sm:text-3xl">
-                <CountUp to={s.value} suffix={s.suffix} />
+                {s.value == null ? '—' : <CountUp to={s.value} suffix={s.suffix} />}
               </div>
               <div className="mt-1 text-[11px] font-semibold uppercase tracking-wider text-zinc-500">{s.label}</div>
             </div>
@@ -410,6 +421,36 @@ export function LandingView() {
         />
       </div>
 
+      {/* ================= BENEFÍCIOS REAIS: biblioteca + ferramentas ================= */}
+      <section id="beneficios" className="scroll-mt-20 bg-zinc-50 py-20 sm:py-24">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6">
+          <motion.div {...fadeUp} className="mx-auto max-w-3xl text-center">
+            <span className="inline-flex items-center gap-2 rounded-full bg-orange-100 px-3 py-1 text-xs font-extrabold uppercase tracking-wider text-orange-700"><Sparkles className="h-3.5 w-3.5" /> Feito para quem produz personalizados</span>
+            <h2 className="mt-4 text-3xl font-black tracking-tight text-zinc-950 sm:text-4xl">Não é só um pack de artes. <span className="text-gradient-orange">É o seu espaço de produção.</span></h2>
+            <p className="mt-4 text-sm leading-relaxed text-zinc-600 sm:text-base">Em vez de milhares de arquivos soltos, você encontra temas organizados, recursos práticos e um caminho simples entre escolher, apresentar e vender.</p>
+          </motion.div>
+          <div className="mt-11 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+            {[
+              { icon: FolderHeart, title: 'Acervo com curadoria', desc: 'Artes escolhidas e separadas por categorias, tags e datas especiais. Ache o tema certo sem navegar por pastas intermináveis.', detail: 'Biblioteca organizada' },
+              { icon: Box, title: 'Mockups 3D', desc: 'Visualize suas artes aplicadas em produtos e apresente propostas com mais clareza e profissionalismo.', detail: 'Código grátis para assinantes' },
+              { icon: Store, title: 'Sua loja online', desc: 'Crie um catálogo digital dos seus próprios produtos e compartilhe sua vitrine com os clientes.', detail: 'Incluída na assinatura' },
+              { icon: Wand2, title: 'Ferramentas que ajudam', desc: 'Favoritos, busca por código, sugestões de novos temas e recursos para otimizar a rotina.', detail: 'Tudo mais fácil de encontrar' },
+            ].map((f, index) => (
+              <motion.div key={f.title} {...fadeUp} transition={{ duration: 0.45, delay: index * 0.07 }} className="group flex flex-col rounded-3xl border border-zinc-200 bg-white p-5 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-orange-200 hover:shadow-xl hover:shadow-orange-500/10 sm:p-6">
+                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-orange-50 text-orange-600 transition-colors group-hover:bg-orange-500 group-hover:text-white"><f.icon className="h-5.5 w-5.5" /></div>
+                <h3 className="mt-5 text-lg font-extrabold text-zinc-950">{f.title}</h3>
+                <p className="mt-2 flex-1 text-sm leading-relaxed text-zinc-600">{f.desc}</p>
+                <span className="mt-5 inline-flex items-center gap-1.5 text-xs font-extrabold text-orange-700"><Check className="h-3.5 w-3.5" /> {f.detail}</span>
+              </motion.div>
+            ))}
+          </div>
+          <div className="mt-7 flex flex-col items-center justify-between gap-4 rounded-2xl border border-orange-200 bg-orange-50 px-5 py-4 sm:flex-row">
+            <p className="max-w-2xl text-sm text-zinc-700"><strong className="text-zinc-950">Sua loja online já está disponível.</strong> Assinantes podem criar a própria vitrine sem custo adicional.</p>
+            <a href="https://www.clickgruda.com.br" target="_blank" rel="noopener noreferrer" onClick={() => track('catalog_store_open', { source: 'landing' })} className="inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-xl bg-zinc-950 px-5 text-sm font-extrabold text-white transition-colors hover:bg-zinc-800">Conhecer a loja online <ExternalLink className="h-4 w-4" /></a>
+          </div>
+        </div>
+      </section>
+
       {/* ================= DOR / SOLUÇÃO ================= */}
       <section className="bg-grid-light bg-white py-20 sm:py-24">
         <div className="mx-auto w-full max-w-6xl px-4 sm:px-6">
@@ -418,28 +459,28 @@ export function LandingView() {
               <XCircle className="h-3.5 w-3.5" /> Pare de perder dinheiro
             </span>
             <h2 className="mt-4 text-3xl font-black tracking-tight text-zinc-950 sm:text-4xl">
-              Você conhece essa <span className="text-gradient-orange">dor, sublimador?</span>
+              Sua criatividade merece um fluxo de trabalho <span className="text-gradient-orange">mais simples.</span>
             </h2>
             <p className="mt-3 text-zinc-500">
-              Se você vive de canecas, com certeza já passou por pelo menos uma delas...
+              Menos obstáculos entre uma boa ideia e o produto pronto para o cliente.
             </p>
           </motion.div>
 
           <div className="mt-12 grid gap-5 md:grid-cols-3">
             {[
               {
-                pain: 'Pagar R$ 10 a R$ 30 em CADA arte que você compra',
-                solution: 'Pagamento único e TUDO liberado pra sempre. Na 2ª ou 3ª arte que você baixar, o acesso já se pagou.',
-                icon: Wallet,
+                pain: 'Packs enormes, arquivos repetidos e pastas difíceis de navegar',
+                solution: 'Uma biblioteca com curadoria, filtros por tema, tags e busca rápida por nome ou código.',
+                icon: FolderHeart,
               },
               {
-                pain: 'Arte borrada ou com medida errada que estraga a sublimação',
-                solution: 'Alta resolução, no formato exato 21×9,5 cm. Abriu, imprimiu, gruda — sem retrabalho.',
-                icon: Ruler,
+                pain: 'Dificuldade para apresentar seus produtos de maneira profissional',
+                solution: 'Use mockups 3D e sua loja online para mostrar os personalizados antes da produção.',
+                icon: Box,
               },
               {
-                pain: 'Ver o concorrente vender na data comemorativa antes de você',
-                solution: 'A aba SAZONAL mostra a próxima data e separa as artes. Você prepara a produção antes da data chegar.',
+                pain: 'Esquecer datas importantes ou perder tempo caçando o tema ideal',
+                solution: 'Datas sazonais reunidas em um só lugar para ajudar você a se planejar com antecedência.',
                 icon: Clock3,
               },
             ].map((c, i) => (
@@ -580,7 +621,7 @@ export function LandingView() {
               <Crown className="h-3.5 w-3.5" /> Investimento único
             </span>
             <h2 className="mt-4 text-3xl font-black tracking-tight text-white sm:text-4xl">
-              O acesso inteiro sai pelo preço de <span className="text-gradient-orange">2 artes avulsas</span>
+              Uma plataforma completa. <span className="text-gradient-orange">Um valor simples.</span>
             </h2>
           </motion.div>
 
@@ -589,7 +630,7 @@ export function LandingView() {
             className="relative mt-10 overflow-hidden rounded-[2rem] border-2 border-orange-500/60 bg-white p-8 shadow-2xl shadow-orange-600/20 sm:p-10"
           >
             <div className="absolute right-0 top-0 rounded-bl-3xl bg-gradient-to-r from-orange-500 to-orange-600 px-4 py-2 text-[11px] font-black uppercase tracking-wider text-white">
-              Acesso vitalício
+              {campaignActive ? 'Acesso vitalício' : 'Plano de acesso'}
             </div>
 
             <div className="text-center">
@@ -598,13 +639,11 @@ export function LandingView() {
                 <span className="pb-2 text-sm font-bold text-zinc-400">à vista</span>
               </div>
               <p className="mt-1 text-sm font-semibold text-zinc-400">
-                Pagamento único. <span className="text-red-500 line-through">Sem mensalidade.</span>{' '}
-                <span className="text-orange-600">Pra sempre.</span>
+                {campaignActive ? <>Pagamento único nesta promoção. <span className="text-orange-600">Sem mensalidades nesse plano.</span></> : 'Confira as condições do plano antes de contratar.'}
               </p>
               <p className="mx-auto mt-4 max-w-md text-sm leading-relaxed text-zinc-500">
-                Arte avulsa custa R$ 10 a R$ 30. Aqui, o acesso se paga na 2ª ou 3ª arte que você baixar — hoje, dá
-                cerca de <strong className="text-zinc-700">{perArt}</strong> por arte, e cada lançamento novo reduz
-                esse número.
+                Você acessa um acervo organizado, novas artes e recursos que ajudam a apresentar e divulgar seus produtos.
+                {catalog?.counts.arts ? <> Com {catalog.counts.arts.toLocaleString('pt-BR')} artes hoje, o valor proporcional é de cerca de <strong className="text-zinc-700">{perArt}</strong> por arte disponível.</> : null}
               </p>
             </div>
 
@@ -612,12 +651,14 @@ export function LandingView() {
               {[
                 'Todas as artes liberadas hoje',
                 'Lançamentos futuros inclusos',
-                'Baixe quantas vezes quiser, pra sempre',
+                'Downloads conforme as regras da plataforma',
                 'Na medida exata da caneca (sem ajuste no editor)',
                 'Alta resolução pra sublimar',
                 'Use nas canecas que você vende',
                 'Aba sazonal de datas especiais',
-                'Link de catálogo pra seu cliente escolher a arte',
+                'Compartilhamento de catálogo com o cliente',
+                'Loja online sem custo extra para assinantes',
+                'Gerador de mockups 3D incluído',
                 'Favoritos e busca avançada',
               ].map((f) => (
                 <li key={f} className="flex items-center gap-2.5 text-sm font-semibold text-zinc-700">
@@ -629,6 +670,7 @@ export function LandingView() {
               ))}
             </ul>
 
+            {campaignActive && <p className="mt-5 text-center text-xs font-bold text-orange-700">Oferta de acesso vitalício válida até 20 de dezembro de 2026.</p>}
             <div className="mt-9 text-center">
               <Button
                 onClick={goSignup}
@@ -982,7 +1024,7 @@ export function LandingView() {
             Sua próxima caneca já pode sair com arte nova <span className="underline decoration-white/50 decoration-4 underline-offset-4">hoje</span>.
           </motion.h2>
           <motion.p {...fadeUp} className="max-w-xl font-medium text-white/90">
-            {price} uma vez, acesso vitalício. Escolha a arte, baixe em alta resolução e mande pra prensa.
+            Biblioteca organizada, mockups 3D e sua loja online. {campaignActive ? `Acesso vitalício por ${price} nesta promoção.` : 'Conheça os recursos e veja as condições do plano.'}
           </motion.p>
           <motion.div {...fadeUp}>
             <Button
