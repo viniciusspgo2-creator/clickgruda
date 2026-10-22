@@ -21,6 +21,9 @@ import {
   LogOut,
   Menu,
   MessageCircle,
+  Box,
+  Store,
+  ExternalLink,
   RotateCcw,
   Search,
   SearchX,
@@ -117,6 +120,58 @@ function SeasonalCountdown({ targetIso }: { targetIso?: string | null }) {
   )
 }
 
+function SeasonalHighlights({
+  catalog,
+  onOpenAll,
+  onSelect,
+}: {
+  catalog?: CatalogData
+  onOpenAll: () => void
+  onSelect: (eventId: string) => void
+}) {
+  const items = [...(catalog?.events || [])]
+    .sort((a, b) => new Date(a.nextDate).getTime() - new Date(b.nextDate).getTime())
+    .slice(0, 4)
+
+  if (!items.length) return null
+
+  return (
+    <aside className="cg-seasonal-spotlight" aria-label="Datas sazonais em destaque">
+      <div className="cg-seasonal-spotlight-head">
+        <div>
+          <div className="cg-seasonal-kicker">Calendário criativo</div>
+          <h3>Datas sazonais</h3>
+        </div>
+        <button type="button" onClick={onOpenAll} className="cg-seasonal-link">
+          Ver todas <ArrowRight className="h-3.5 w-3.5" />
+        </button>
+      </div>
+
+      <div className="cg-seasonal-listing">
+        {items.map((event) => {
+          const dateLabel = new Date(event.nextDate).toLocaleDateString('pt-BR', {
+            day: '2-digit',
+            month: 'short',
+          })
+          return (
+            <button key={event.id} type="button" onClick={() => onSelect(event.id)} className="cg-seasonal-card-item">
+              <span className="cg-seasonal-card-icon" aria-hidden="true">{event.emoji}</span>
+              <span className="cg-seasonal-card-copy">
+                <span className="cg-seasonal-card-title">{event.name}</span>
+                <span className="cg-seasonal-card-meta">{event.artCount} artes disponíveis</span>
+              </span>
+              <span className="cg-seasonal-card-side">
+                <span className="cg-seasonal-card-date">{dateLabel}</span>
+                <span className="cg-seasonal-card-days">{event.daysLeft}d</span>
+              </span>
+            </button>
+          )
+        })}
+      </div>
+    </aside>
+  )
+}
+
 export function PortalView() {
   const user = useStore((s) => s.user)
   const setUser = useStore((s) => s.setUser)
@@ -136,6 +191,7 @@ export function PortalView() {
   const [searchInput, setSearchInput] = useState(q)
   const searchRef = useRef<HTMLInputElement>(null)
   const resultsRef = useRef<HTMLDivElement>(null)
+  const toolsSectionRef = useRef<HTMLDetailsElement>(null)
   const [searchFocused, setSearchFocused] = useState(false)
   const [previewId, setPreviewId] = useState<string | null>(null)
   const [downloadStates, setDownloadStates] = useState<DownloadStates>({})
@@ -373,14 +429,16 @@ export function PortalView() {
     scrollToResults()
   }
   const openTools = () => {
-    setFilter({ tab: 'todas', q: '', categoryIds: [], tagIds: [], seasonalEventId: null })
-    setSearchInput('')
-    // Atalho para os cards de ferramentas que já existem; não altera suas funções.
+    // A seção agora fica acima do catálogo, fora da rolagem infinita.
+    // Não alteramos o filtro nem fazemos a lista reiniciar ao abrir ferramentas.
+    const section = toolsSectionRef.current
+    if (!section) return
+    section.open = true
     requestAnimationFrame(() => {
-      const section = document.getElementById('cg-portal-tools') as HTMLDetailsElement | null
-      if (!section) return
-      section.open = true
-      section.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth', block: 'start' })
+      section.scrollIntoView({
+        behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
+        block: 'start',
+      })
     })
   }
   const toggleCategory = (id: string) => {
@@ -532,6 +590,36 @@ export function PortalView() {
             )}
           </div>
 
+          {/* Acessos rápidos: mesmos destinos dos cards já existentes. */}
+          <div className="cg-header-quicklinks hidden shrink-0 items-center gap-2 md:flex" aria-label="Acessos rápidos">
+            <a
+              href="https://clicktools.vercel.app/"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Abrir Gerador de Mockup em nova aba"
+              title="Gerador de Mockup"
+              onClick={() => track('mockup_platform_open', { source: 'portal_header' })}
+              className="cg-header-quicklink"
+            >
+              <Box className="h-4 w-4 shrink-0" />
+              <span className="cg-header-quicklabel">Gerador de Mockup</span>
+              <ExternalLink className="cg-header-external h-3 w-3 shrink-0" />
+            </a>
+            <a
+              href="https://www.clickgruda.com.br"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Abrir Loja Online em nova aba"
+              title="Loja Online"
+              onClick={() => track('catalog_store_open', { source: 'portal_header' })}
+              className="cg-header-quicklink cg-header-quicklink-shop"
+            >
+              <Store className="h-4 w-4 shrink-0" />
+              <span className="cg-header-quicklabel">Loja Online</span>
+              <ExternalLink className="cg-header-external h-3 w-3 shrink-0" />
+            </a>
+          </div>
+
           {/* Admin quick access */}
           {user.role === 'ADMIN' && (
             <Button
@@ -586,6 +674,16 @@ export function PortalView() {
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
+
+        {/* Atalhos próprios do mobile — mantêm a busca legível no cabeçalho. */}
+        <nav className="cg-mobile-quicklinks mx-auto flex w-full max-w-[1600px] items-center gap-2 px-4 pb-2.5 md:hidden sm:px-7" aria-label="Ferramentas rápidas">
+          <a href="https://clicktools.vercel.app/" target="_blank" rel="noopener noreferrer" onClick={() => track('mockup_platform_open', { source: 'portal_mobile_header' })} className="cg-header-quicklink flex-1 justify-center">
+            <Box className="h-4 w-4" /> Gerador de Mockup <ExternalLink className="h-3 w-3" />
+          </a>
+          <a href="https://www.clickgruda.com.br" target="_blank" rel="noopener noreferrer" onClick={() => track('catalog_store_open', { source: 'portal_mobile_header' })} className="cg-header-quicklink cg-header-quicklink-shop flex-1 justify-center">
+            <Store className="h-4 w-4" /> Loja Online <ExternalLink className="h-3 w-3" />
+          </a>
+        </nav>
 
         {/* Tabs */}
         <div className="cg-portal-mobile-tabs mx-auto w-full max-w-[1600px] px-4 sm:px-7 lg:hidden">
@@ -659,16 +757,16 @@ export function PortalView() {
       {/* ================= IMMERSIVE WELCOME ================= */}
       {tab === 'todas' && !q && categoryIds.length === 0 && tagIds.length === 0 && (
         <section className="cg-welcome-shell mx-auto w-full max-w-[1600px] px-4 pt-6 sm:px-7 lg:pt-8" aria-label="Boas-vindas à biblioteca">
-          <div className="cg-welcome-hero">
+          <div className="cg-welcome-hero cg-welcome-hero-premium">
             <div className="cg-welcome-glow" aria-hidden="true" />
             <div className="cg-welcome-copy">
               <div className="cg-eyebrow"><span className="cg-eyebrow-dot"/> SUA BIBLIOTECA, SEU PRÓXIMO PROJETO</div>
               <p className="cg-welcome-hello">Olá, {user.name.split(' ')[0]} <span aria-hidden="true">✦</span></p>
-              <h1>Grandes ideias<br/><em>começam aqui.</em></h1>
-              <p className="cg-welcome-description">Artes escolhidas a dedo, organizadas para você encontrar a inspiração certa e criar mais rápido.</p>
+              <h1>Sua criatividade<br/><em>em outro nível.</em></h1>
+              <p className="cg-welcome-description">Mais de {counts?.arts?.toLocaleString('pt-BR') || 'milhares de'} artes para você produzir mais rápido, com visual premium, organização e praticidade no dia a dia.</p>
               <div className="cg-welcome-actions">
-                <button type="button" className="cg-primary-action" onClick={() => { navigateTab('lancamentos') }}><Flame className="h-4 w-4"/> Ver lançamentos <ArrowRight className="h-4 w-4"/></button>
-                <button type="button" className="cg-secondary-action" onClick={() => { navigateTab('sazonal') }}><CalendarHeart className="h-4 w-4"/> Datas sazonais</button>
+                <button type="button" className="cg-primary-action" onClick={() => { navigateTab('lancamentos') }}><Flame className="h-4 w-4"/> Explorar artes <ArrowRight className="h-4 w-4"/></button>
+                <button type="button" className="cg-secondary-action" onClick={() => { navigateTab('lancamentos') }}><Flame className="h-4 w-4"/> Ver lançamentos</button>
               </div>
               <div className="cg-welcome-proof">
                 <span><Layers3 className="h-4 w-4 text-orange-400"/>{counts?.arts != null ? `${counts.arts.toLocaleString('pt-BR')} artes no acervo` : 'Biblioteca em constante evolução'}</span>
@@ -678,7 +776,14 @@ export function PortalView() {
             <div className="cg-welcome-gallery cg-mascot-gallery" aria-hidden="true">
               <div className="cg-mascot-halo" />
               <div className="cg-mascot-stage" />
-              <img src="/uploads/cg-mascote-premium.png" alt="" className="cg-mascot-image" loading="eager" decoding="async" />
+              <div className="cg-hero-right-badge">Click&amp;Gruda</div>
+              <div className="cg-hero-script">
+                <span>Artes</span>
+                <strong>que inspiram<br/>negócios</strong>
+              </div>
+              <div className="cg-mascot-card-frame">
+                <img src="/uploads/cg-mascote-premium.png" alt="" className="cg-mascot-image" loading="eager" decoding="async" />
+              </div>
               <span className="cg-mascot-statement">CRIE <b>•</b> PERSONALIZE <b>•</b> SURPREENDA</span>
             </div>
           </div>
@@ -759,8 +864,22 @@ export function PortalView() {
       {/* ================= CONTENT ================= */}
       <main className="cg-portal-main mx-auto w-full max-w-[1600px] flex-1 px-4 py-6 sm:px-7 lg:py-8">
         {tab === 'todas' && !q && (
-          <DiscoveryShelf catalog={catalogQ.data} onTab={navigateTab} onCategory={toggleCategory} onSeasonal={viewSeasonal} activeCategories={categoryIds} />
+          <div className="cg-overview-row mb-7 grid gap-4 xl:grid-cols-[minmax(0,1.5fr)_minmax(300px,.9fr)] xl:items-start">
+            <DiscoveryShelf catalog={catalogQ.data} onTab={navigateTab} onCategory={toggleCategory} onSeasonal={viewSeasonal} activeCategories={categoryIds} />
+            <SeasonalHighlights catalog={catalogQ.data} onOpenAll={() => navigateTab('sazonal')} onSelect={viewSeasonal} />
+          </div>
         )}
+
+        {/* Ferramentas antes da grade: o carregamento infinito nunca empurra esta área para longe. */}
+        <details ref={toolsSectionRef} id="cg-portal-tools" className="cg-portal-tools cg-tools-access group/tools mb-5 scroll-mt-28 overflow-hidden rounded-2xl border border-white/10 shadow-sm">
+          <summary className="flex cursor-pointer list-none items-center gap-2.5 px-4 py-3.5 text-sm font-extrabold text-slate-100 marker:hidden hover:bg-white/5 sm:px-5">
+            <Sparkles className="h-[18px] w-[18px] shrink-0 text-orange-400" />
+            <span>Ferramentas e novidades da Click&Gruda</span>
+            <span className="ml-auto hidden text-xs font-medium text-slate-400 sm:inline">Mockups 3D · Loja Online</span>
+            <ChevronDown className="h-4 w-4 shrink-0 text-orange-300 transition-transform group-open/tools:rotate-180" />
+          </summary>
+          <div className="grid gap-4 border-t border-white/10 p-3.5 lg:grid-cols-2"><MockupToolCard /><NovidadesCard /></div>
+        </details>
 
         {/* Informações de assinatura ocupam apenas uma linha e não empurram a grade. */}
         {tab !== 'compartilhar' && (
@@ -923,12 +1042,6 @@ export function PortalView() {
           />
         )}
 
-        {tab === 'todas' && !q && (
-          <details id="cg-portal-tools" className="cg-portal-tools group/tools mt-10 overflow-hidden rounded-2xl border border-white/10 shadow-sm">
-            <summary className="flex cursor-pointer list-none items-center gap-2.5 px-4 py-4 text-sm font-extrabold text-zinc-800 marker:hidden hover:bg-orange-50/40"><Sparkles className="h-4.5 w-4.5 text-orange-500" /> Ferramentas e novidades da Click&Gruda <ChevronDown className="ml-auto h-4 w-4 text-zinc-400 transition-transform group-open/tools:rotate-180" /></summary>
-            <div className="grid gap-4 border-t border-zinc-100 p-3.5 lg:grid-cols-2"><MockupToolCard /><NovidadesCard /></div>
-          </details>
-        )}
       </main>
 
       <footer className="cg-portal-footer mt-auto border-t border-white/10 py-5">

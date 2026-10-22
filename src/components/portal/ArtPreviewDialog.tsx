@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 
-import { CalendarHeart, Check, Copy, Download, EyeOff, Flame, Heart, Loader2, Star, Tag, ZoomIn, ZoomOut, RotateCcw, ExternalLink } from 'lucide-react'
+import { CalendarHeart, Check, Copy, Download, EyeOff, Flame, Heart, Loader2, Star, Tag, ZoomIn, ZoomOut, RotateCcw, ExternalLink, Info, ShieldCheck } from 'lucide-react'
 import { toast } from 'sonner'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
@@ -31,9 +31,12 @@ export function ArtPreviewDialog({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="cg-premium-preview flex max-h-[96dvh] w-[calc(100vw-1rem)] max-w-[min(96vw,1480px)] flex-col overflow-y-auto rounded-2xl border-white/10 bg-[#121a2a] p-0 text-slate-100 sm:rounded-3xl">
-        <DialogHeader className="sr-only"><DialogTitle>{art.title}</DialogTitle><DialogDescription>Pré-visualização da estampa original, sem mockups</DialogDescription></DialogHeader>
+        <DialogHeader className="sr-only"><DialogTitle>{art.title}</DialogTitle><DialogDescription>Prévia visual. O download da arte é feito pelo botão Baixar arte.</DialogDescription></DialogHeader>
         <div className="grid min-h-0 gap-0 lg:grid-cols-[minmax(0,2.45fr)_minmax(265px,.85fr)]">
-          <div className="cg-preview-visual relative flex min-h-[350px] flex-col overflow-hidden bg-[#e5e8ee] sm:min-h-[65dvh]">
+          <div className="cg-preview-visual relative flex min-h-[300px] flex-col overflow-hidden bg-[#e5e8ee] sm:min-h-[65dvh]">
+            <span className="cg-preview-watermark-note absolute left-3 top-3 z-20 inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white/95 px-3 py-2 text-[11px] font-extrabold text-slate-800 shadow-md sm:left-4 sm:top-4">
+              <Info className="h-3.5 w-3.5 text-orange-600" /> <span className="cg-preview-note-label">SOMENTE PRÉVIA</span>
+            </span>
             <div className="absolute right-4 top-4 z-20 flex items-center gap-1 rounded-xl border border-slate-200 bg-white/95 p-1 shadow-lg" aria-label="Controles da ampliação">
               <button type="button" onClick={() => setZoom((z) => Math.max(1, Number((z - 0.25).toFixed(2))))} disabled={zoom === 1} title="Diminuir zoom" aria-label="Diminuir zoom" className="rounded-lg p-2 text-slate-700 hover:bg-slate-100 disabled:opacity-35"><ZoomOut className="h-4 w-4" /></button>
               <span className="w-12 text-center text-xs font-extrabold text-slate-800">{Math.round(zoom * 100)}%</span>
@@ -44,14 +47,21 @@ export function ArtPreviewDialog({
               <img src={art.imageUrl} alt={`Estampa completa: ${art.title}`} draggable={false} onDoubleClick={() => setZoom((z) => z === 1 ? 1.75 : 1)} style={{ transform: `scale(${zoom})` }} className={cn('cg-preview-art block max-h-[76dvh] w-full max-w-full select-none object-contain transition-transform duration-200', demo && 'blur-[8px] brightness-[0.7]')} />
               {demo && <span className="pointer-events-none absolute rounded-xl bg-zinc-950/90 px-4 py-2 text-xs font-bold text-white"><EyeOff className="mr-1 inline h-4 w-4" /> Prévia protegida</span>}
             </div>
-            {!demo && <a href={art.imageUrl} target="_blank" rel="noopener noreferrer" className="cg-preview-open absolute bottom-3 left-1/2 z-10 inline-flex -translate-x-1/2 items-center gap-1.5 rounded-lg border border-slate-200 bg-white/95 px-3 py-2 text-xs font-bold text-slate-800 shadow-sm hover:bg-white"><ExternalLink className="h-3.5 w-3.5"/> Abrir imagem em tamanho original</a>}
+            {!demo && <a href={art.imageUrl} target="_blank" rel="noopener noreferrer" className="cg-preview-open absolute bottom-3 left-1/2 z-10 inline-flex -translate-x-1/2 items-center gap-1.5 rounded-lg border border-slate-200 bg-white/95 px-3 py-2 text-xs font-bold text-slate-800 shadow-sm hover:bg-white"><ExternalLink className="h-3.5 w-3.5"/> Abrir esta prévia em outra aba</a>}
           </div>
           <div className="flex flex-col gap-4 p-5 sm:p-6">
             <div className="flex flex-wrap gap-1.5">
               {art.isLaunch && <span className="inline-flex items-center gap-1 rounded-full bg-orange-100 px-2.5 py-1 text-[10px] font-black uppercase text-orange-700"><Flame className="h-3 w-3" /> Novo</span>}
               {art.isSelected && <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2.5 py-1 text-[10px] font-black uppercase text-amber-800"><Star className="h-3 w-3" /> Selecionada</span>}
             </div>
-            <div><h2 className="pr-5 text-xl font-black leading-tight tracking-tight text-white">{art.title}</h2><p className="mt-2 text-xs text-slate-400">Arte completa no formato original de visualização, sem aplicação em produto.</p></div>
+            <div><h2 className="pr-5 text-xl font-black leading-tight tracking-tight text-white">{art.title}</h2><p className="mt-2 text-xs text-slate-400">Confira a composição e os detalhes da arte antes de baixar.</p></div>
+            <div className="cg-preview-download-notice flex items-start gap-2.5 rounded-xl border border-orange-400/25 bg-orange-400/[.075] p-3.5" role="note">
+              <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-orange-300" />
+              <div>
+                <p className="text-xs font-extrabold text-orange-200">Esta imagem é apenas uma prévia!</p>
+                <p className="mt-1 text-[12px] leading-relaxed text-slate-300">Salvar a imagem exibida pelo navegador pode gerar um arquivo otimizado ou de qualidade inferior. Para obter <strong className="font-extrabold text-white">a arte disponibilizada para download</strong>, utilize o botão <strong className="font-extrabold text-orange-200">Baixar arte</strong> abaixo.</p>
+              </div>
+            </div>
             <button type="button" onClick={async () => { try { await navigator.clipboard.writeText(formatArtCode(art.code)); toast.success('Código copiado!') } catch { toast.error('Não foi possível copiar o código.') } }} className="flex w-fit items-center gap-2 rounded-lg bg-zinc-950 px-3 py-2 font-mono text-xs font-bold text-orange-300" title="Copiar código da arte"><Copy className="h-3.5 w-3.5" /> {formatArtCode(art.code)}</button>
             <div className="flex flex-wrap gap-2">
               {art.category && <button onClick={() => { onCategory(art.category!.id); onOpenChange(false) }} className="rounded-lg border border-orange-200 bg-orange-50 px-3 py-2 text-xs font-bold text-orange-700 hover:bg-orange-100">{art.category.emoji} {art.category.name}</button>}
@@ -59,7 +69,7 @@ export function ArtPreviewDialog({
               {art.tags.map((tag) => <button key={tag.id} onClick={() => { onTag(tag.id); onOpenChange(false) }} className="inline-flex items-center gap-1 rounded-lg border border-white/15 px-2.5 py-1.5 text-[11px] font-semibold text-slate-400 hover:border-orange-200 hover:bg-orange-50 hover:text-orange-700"><Tag className="h-3 w-3" /> {tag.name}</button>)}
             </div>
             <div className="mt-auto flex gap-2 border-t border-white/10 pt-4">
-              <Button disabled={demo || downloadState === 'loading'} onClick={() => onDownload(art)} className="h-11 flex-1 rounded-xl bg-orange-500 font-black text-white hover:bg-orange-600">{demo ? <><EyeOff className="mr-2 h-4 w-4" /> Demo</> : downloadState === 'loading' ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Preparando...</> : downloadState === 'done' ? <><Check className="mr-2 h-4 w-4" /> Baixar novamente</> : <><Download className="mr-2 h-4 w-4" /> Baixar arte</>}</Button>
+              <Button disabled={demo || downloadState === 'loading'} onClick={() => onDownload(art)} className="h-12 flex-1 rounded-xl bg-orange-500 font-black text-white hover:bg-orange-600">{demo ? <><EyeOff className="mr-2 h-4 w-4" /> Demo</> : downloadState === 'loading' ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Preparando...</> : downloadState === 'done' ? <><Check className="mr-2 h-4 w-4" /> Baixar novamente</> : <><Download className="mr-2 h-4 w-4" /> Baixar arte</>}</Button>
               {!demo && <Button variant="outline" aria-label={art.favorited ? 'Remover dos favoritos' : 'Adicionar aos favoritos'} title={art.favorited ? 'Remover dos favoritos' : 'Adicionar aos favoritos'} onClick={() => onFavorite(art)} className="h-11 w-11 rounded-xl border-white/15 p-0"><Heart className={cn('h-4 w-4', art.favorited ? 'fill-rose-500 text-rose-500' : 'text-slate-400')} /></Button>}
             </div>
           </div>
