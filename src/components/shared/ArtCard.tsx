@@ -23,22 +23,21 @@ type ArtCardProps = {
 export function ArtCard({ art, locked = false, demo = false, downloadState = 'idle', onDownload, onToggleFavorite, onPreview }: ArtCardProps) {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 14, scale: 0.98 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
-      exit={{ opacity: 0, scale: 0.97 }}
-      transition={{ duration: 0.3, ease: 'easeOut' }}
-      whileHover={{ y: -3 }}
-      className="group relative"
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.2, ease: 'easeOut' }}
+      className="cg-member-artcard group relative"
     >
       <div
         className={cn(
-          'relative overflow-hidden rounded-2xl border bg-white shadow-sm transition-all duration-300',
+          'cg-art-card-surface relative overflow-hidden rounded-2xl border bg-white shadow-sm transition-[border-color,box-shadow] duration-200',
           'hover:border-orange-300 hover:shadow-[0_22px_48px_-20px_rgba(234,88,12,0.24)] focus-within:border-orange-300 focus-within:ring-2 focus-within:ring-orange-100',
           'border-zinc-200'
         )}
       >
         {/* ---------- Art area: 21 x 9.5 ---------- */}
-        <div className="relative aspect-[16/9] w-full overflow-hidden bg-[radial-gradient(circle_at_50%_40%,#fdf7f2,#f6f3f0)]">
+        <div className="cg-art-visual relative aspect-[16/9] w-full overflow-hidden bg-[radial-gradient(circle_at_50%_40%,#fdf7f2,#f6f3f0)]">
           { }
           <img
             src={art.imageUrl}
@@ -136,7 +135,7 @@ export function ArtCard({ art, locked = false, demo = false, downloadState = 'id
         </div>
 
         {/* ---------- Info ---------- */}
-        <div className="space-y-2.5 p-3.5">
+        <div className="cg-art-info space-y-2.5 p-3.5">
           <div className="flex items-start justify-between gap-2">
             <h3 className="line-clamp-2 min-h-9 text-sm font-extrabold leading-snug text-zinc-900" title={art.title}>
               {art.title}
@@ -165,7 +164,7 @@ export function ArtCard({ art, locked = false, demo = false, downloadState = 'id
             disabled={demo || downloadState === 'loading'}
             onClick={() => onDownload?.(art)}
             className={cn(
-              'h-10 w-full gap-2 rounded-xl text-[13px] font-extrabold transition-all focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-orange-500',
+              'cg-art-download h-10 w-full gap-2 rounded-xl text-[13px] font-extrabold transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-orange-500',
               demo
                 ? 'cursor-not-allowed bg-zinc-200 text-zinc-400'
                 : locked

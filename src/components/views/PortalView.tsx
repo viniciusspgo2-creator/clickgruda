@@ -25,6 +25,8 @@ import {
   Search,
   SearchX,
   Settings2,
+  Layers3,
+  ArrowUpRight,
   Share2,
   ShieldCheck,
   SlidersHorizontal,
@@ -364,12 +366,23 @@ export function PortalView() {
   const previewArt = arts.find((art) => art.id === previewId) ?? null
 
   const scrollToResults = () => {
-    requestAnimationFrame(() => resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }))
+    requestAnimationFrame(() => resultsRef.current?.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth', block: 'start' }))
   }
   const navigateTab = (nextTab: PortalTab, nextSort?: typeof sort) => {
     setFilter({ tab: nextTab, categoryIds: [], tagIds: [], q: '', seasonalEventId: null, ...(nextSort ? { sort: nextSort } : {}) })
     setSearchInput('')
     scrollToResults()
+  }
+  const openTools = () => {
+    setFilter({ tab: 'todas', q: '', categoryIds: [], tagIds: [], seasonalEventId: null })
+    setSearchInput('')
+    // Atalho para os cards de ferramentas que já existem; não altera suas funções.
+    requestAnimationFrame(() => {
+      const section = document.getElementById('cg-portal-tools') as HTMLDetailsElement | null
+      if (!section) return
+      section.open = true
+      section.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth', block: 'start' })
+    })
   }
   const toggleCategory = (id: string) => {
     setFilter({ tab: 'todas', categoryIds: categoryIds.includes(id) ? categoryIds.filter((value) => value !== id) : [id], tagIds: [], seasonalEventId: null })
@@ -418,14 +431,53 @@ export function PortalView() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-zinc-50">
+    <div className="cg-portal relative flex min-h-screen flex-col bg-[#080d18] text-slate-100 lg:pl-[248px]">
+      {/* Navegação fixa de desktop. Todos os destinos usam os filtros originais da biblioteca. */}
+      <aside className="cg-portal-sidebar fixed inset-y-0 left-0 z-50 hidden w-[248px] flex-col lg:flex" aria-label="Navegação principal da Click&Gruda">
+        <button type="button" className="cg-sidebar-brand" onClick={() => { resetFilters(); setSearchInput(''); window.scrollTo({ top: 0, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' }) }} aria-label="Ir para a página inicial da biblioteca">
+          <Logo dark />
+        </button>
+        <div className="cg-sidebar-welcome">
+          <span className="cg-sidebar-welcome-dot" /> SUA ÁREA CRIATIVA
+        </div>
+        <div className="cg-sidebar-scroll no-scrollbar">
+          <p className="cg-sidebar-heading">BIBLIOTECA</p>
+          <nav className="cg-sidebar-nav" aria-label="Explorar a biblioteca">
+            {TABS.map((item) => {
+              const active = tab === item.id
+              const count = item.id === 'todas' ? counts?.arts : item.id === 'lancamentos' ? counts?.lancamentos : item.id === 'selecionadas' ? counts?.selecionadas : item.id === 'favoritas' ? counts?.favoritas : item.id === 'downloads' ? counts?.minhasDownloads : undefined
+              return (
+                <button key={item.id} type="button" aria-current={active ? 'page' : undefined}
+                  onClick={() => setFilter({ tab: item.id, ...(item.id !== 'sazonal' ? { seasonalEventId: null } : {}) })}
+                  className={cn('cg-sidebar-link', active && 'cg-sidebar-link-active')}>
+                  <item.icon className="h-[18px] w-[18px] shrink-0" />
+                  <span className="min-w-0 flex-1 text-left">{item.label === 'Todas' ? 'Visão geral' : item.label}</span>
+                  {typeof count === 'number' && count > 0 && <span className="cg-sidebar-count">{count > 9999 ? `${Math.floor(count / 1000)}k+` : count.toLocaleString('pt-BR')}</span>}
+                </button>
+              )
+            })}
+          </nav>
+          <p className="cg-sidebar-heading mt-7">ACESSO RÁPIDO</p>
+          <nav className="cg-sidebar-nav" aria-label="Atalhos da plataforma">
+            <button type="button" className="cg-sidebar-link" onClick={() => { setMenuOpen(true) }}><SlidersHorizontal className="h-[18px] w-[18px]"/><span>Categorias e filtros</span><ArrowUpRight className="ml-auto h-3.5 w-3.5 opacity-50"/></button>
+            <button type="button" className="cg-sidebar-link" onClick={() => { navigateTab('todas', 'baixadas') }}><Flame className="h-[18px] w-[18px]"/><span>Mais baixadas</span></button>
+            <button type="button" className="cg-sidebar-link" onClick={openTools}><Wand2 className="h-[18px] w-[18px]"/><span>Ferramentas e novidades</span></button>
+            <button type="button" className="cg-sidebar-link" onClick={() => { setSuggestionOpen(true) }}><Lightbulb className="h-[18px] w-[18px]"/><span>Sugerir uma arte</span></button>
+            {user.role === 'ADMIN' && <button type="button" className="cg-sidebar-link" onClick={() => setView('admin')}><Settings2 className="h-[18px] w-[18px]"/><span>Painel Master</span></button>}
+          </nav>
+        </div>
+        <div className="cg-sidebar-bottom">
+          <span className="cg-sidebar-status"><ShieldCheck className="h-4 w-4"/> Membro com acesso ativo</span>
+          <p>Seu espaço para criar sem limites de ideias.</p>
+        </div>
+      </aside>
       {/* ================= HEADER ================= */}
-      <header className="glass-header sticky top-0 z-40 border-b border-zinc-200">
-        <div className="mx-auto flex h-16 w-full max-w-7xl items-center gap-3 px-4 sm:px-6">
+      <header className="cg-portal-header sticky top-0 z-40 border-b border-white/10">
+        <div className="mx-auto flex h-[72px] w-full max-w-[1600px] items-center gap-3 px-4 sm:px-7">
           <Button
             variant="outline"
             onClick={() => setMenuOpen(true)}
-            className="h-10 shrink-0 gap-2 rounded-xl border-zinc-200 font-bold text-zinc-700 transition-all hover:border-orange-300 hover:bg-orange-50 hover:text-orange-600"
+            className="cg-header-explore h-10 shrink-0 gap-2 rounded-xl font-bold transition-colors"
             aria-label="Abrir categorias e filtros"
           >
             <Menu className="h-4.5 w-4.5" />
@@ -433,14 +485,14 @@ export function PortalView() {
             {categoryIds.length + tagIds.length > 0 && <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-orange-500 px-1 text-[10px] font-black text-white">{categoryIds.length + tagIds.length}</span>}
           </Button>
 
-          <button onClick={() => { resetFilters(); setSearchInput('') }} aria-label="Início do portal" className="shrink-0">
+          <button onClick={() => { resetFilters(); setSearchInput('') }} aria-label="Início do portal" className="shrink-0 lg:hidden">
             <Logo compact />
           </button>
 
           <div className="relative min-w-0 flex-1 sm:max-w-2xl" onBlur={(event) => {
             if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setSearchFocused(false)
           }}>
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400" />
+            <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
             <Input
               ref={searchRef}
               aria-label="Buscar artes por título, categoria, tag ou código"
@@ -455,8 +507,8 @@ export function PortalView() {
                 if (e.key === 'Escape') setSearchFocused(false)
               }}
               autoComplete="off"
-              placeholder="Tema, personagem, ocasião ou código..."
-              className="h-10 rounded-xl border-zinc-200 bg-white pl-9 pr-9 text-sm focus-visible:ring-orange-500"
+              placeholder="O que você quer criar hoje? Busque temas, personagens, códigos..."
+              className="cg-portal-search h-11 rounded-xl pl-10 pr-9 text-sm focus-visible:ring-orange-500"
             />
             {searchInput && (
               <button
@@ -468,7 +520,7 @@ export function PortalView() {
               </button>
             )}
             {searchFocused && searchInput.trim().length >= 2 && (
-              <div className="absolute left-0 right-0 top-[calc(100%+9px)] z-[70] max-h-[350px] overflow-y-auto rounded-2xl border border-zinc-200 bg-white p-2 shadow-2xl" role="group" aria-label="Sugestões de busca">
+              <div className="cg-search-suggestions absolute left-0 right-0 top-[calc(100%+9px)] z-[70] max-h-[350px] overflow-y-auto rounded-2xl border border-zinc-200 bg-white p-2 shadow-2xl" role="group" aria-label="Sugestões de busca">
                 <p className="px-3 pb-1.5 pt-1 text-[10px] font-black uppercase tracking-wider text-zinc-400">Buscar no acervo</p>
                 <button type="button" onMouseDown={(e) => e.preventDefault()} onClick={() => applySuggestion(searchInput.trim())} className="flex w-full items-center gap-2 rounded-xl px-3 py-2.5 text-left text-xs font-bold text-orange-700 hover:bg-orange-50"><Search className="h-4 w-4" /> Pesquisar “{searchInput.trim()}” <ArrowRight className="ml-auto h-4 w-4" /></button>
                 {(suggestionsQ.data?.suggestions || []).map((title) => (
@@ -485,7 +537,7 @@ export function PortalView() {
             <Button
               variant="outline"
               onClick={() => setView('admin')}
-              className="hidden h-10 shrink-0 rounded-xl border-orange-300 bg-orange-50 font-bold text-orange-600 hover:bg-orange-100 md:inline-flex"
+              className="hidden h-10 shrink-0 rounded-xl border-white/15 bg-white/5 font-bold text-orange-300 hover:bg-white/10 lg:hidden md:inline-flex"
             >
               <Settings2 className="mr-1.5 h-4 w-4" />
               Painel Master
@@ -495,11 +547,11 @@ export function PortalView() {
           {/* User menu */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <button className="flex shrink-0 items-center gap-2 rounded-xl border border-zinc-200 bg-white py-1.5 pl-1.5 pr-2.5 shadow-sm transition-shadow hover:shadow-md">
+              <button className="cg-user-trigger flex shrink-0 items-center gap-2 rounded-xl py-1.5 pl-1.5 pr-2.5 transition-colors">
                 <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-orange-500 to-orange-600 text-xs font-black text-white">
                   {user.name.charAt(0).toUpperCase()}
                 </span>
-                <span className="hidden max-w-[110px] truncate text-sm font-bold text-zinc-700 lg:inline">
+                <span className="hidden max-w-[110px] truncate text-sm font-bold text-slate-100 xl:inline">
                   {user.name.split(' ')[0]}
                 </span>
                 <Crown className="h-3.5 w-3.5 text-orange-500" />
@@ -536,7 +588,7 @@ export function PortalView() {
         </div>
 
         {/* Tabs */}
-        <div className="mx-auto w-full max-w-7xl px-4 sm:px-6">
+        <div className="cg-portal-mobile-tabs mx-auto w-full max-w-[1600px] px-4 sm:px-7 lg:hidden">
           <div className="no-scrollbar flex items-center gap-1 overflow-x-auto pb-2.5 pt-1">
             {TABS.map((t) => {
               const active = tab === t.id
@@ -558,7 +610,7 @@ export function PortalView() {
                   onClick={() => setFilter({ tab: t.id, ...(t.id !== 'sazonal' ? { seasonalEventId: null } : {}) })}
                   className={cn(
                     'relative flex shrink-0 items-center gap-1.5 rounded-full px-4 py-2 text-[13px] font-bold transition-colors',
-                    active ? 'text-white' : 'text-zinc-500 hover:bg-orange-50 hover:text-orange-600'
+                    active ? 'text-white' : 'text-slate-400 hover:bg-white/10 hover:text-white'
                   )}
                 >
                   {active && (
@@ -574,7 +626,7 @@ export function PortalView() {
                     <span
                       className={cn(
                         'rounded-full px-1.5 py-0.5 text-[10px] font-black',
-                        active ? 'bg-white/25 text-white' : 'bg-zinc-100 text-zinc-500'
+                        active ? 'bg-white/25 text-white' : 'bg-white/10 text-slate-300'
                       )}
                     >
                       {badge}
@@ -590,7 +642,7 @@ export function PortalView() {
       {/* ================= DEMO BANNER ================= */}
       {user.isDemo && (
         <div className="border-b border-orange-200 bg-orange-50 px-4 py-2.5 sm:px-6">
-          <div className="mx-auto flex w-full max-w-7xl flex-wrap items-center justify-center gap-x-3 gap-y-1 text-center">
+          <div className="mx-auto flex w-full max-w-[1600px] flex-wrap items-center justify-center gap-x-3 gap-y-1 text-center">
             <span className="inline-flex items-center gap-1.5 text-[13px] font-bold text-orange-700">
               <EyeOff className="h-4 w-4" />
               Você está no modo demonstração
@@ -605,9 +657,38 @@ export function PortalView() {
       {/* ================= FAIXA DE BACKUP ================= */}
       {!user.isDemo && catalogQ.data && <BackupStrip onZip={() => setZipOpen(true)} limit={catalogQ.data.quota?.limit ?? 0} />}
 
+      {/* ================= IMMERSIVE WELCOME ================= */}
+      {tab === 'todas' && !q && categoryIds.length === 0 && tagIds.length === 0 && (
+        <section className="cg-welcome-shell mx-auto w-full max-w-[1600px] px-4 pt-6 sm:px-7 lg:pt-8" aria-label="Boas-vindas à biblioteca">
+          <div className="cg-welcome-hero">
+            <div className="cg-welcome-glow" aria-hidden="true" />
+            <div className="cg-welcome-copy">
+              <div className="cg-eyebrow"><span className="cg-eyebrow-dot"/> SUA BIBLIOTECA, SEU PRÓXIMO PROJETO</div>
+              <p className="cg-welcome-hello">Olá, {user.name.split(' ')[0]} <span aria-hidden="true">✦</span></p>
+              <h1>Grandes ideias<br/><em>começam aqui.</em></h1>
+              <p className="cg-welcome-description">Artes escolhidas a dedo, organizadas para você encontrar a inspiração certa e criar mais rápido.</p>
+              <div className="cg-welcome-actions">
+                <button type="button" className="cg-primary-action" onClick={() => { navigateTab('lancamentos') }}><Flame className="h-4 w-4"/> Ver lançamentos <ArrowRight className="h-4 w-4"/></button>
+                <button type="button" className="cg-secondary-action" onClick={() => { navigateTab('sazonal') }}><CalendarHeart className="h-4 w-4"/> Datas sazonais</button>
+              </div>
+              <div className="cg-welcome-proof">
+                <span><Layers3 className="h-4 w-4 text-orange-400"/>{counts?.arts != null ? `${counts.arts.toLocaleString('pt-BR')} artes no acervo` : 'Biblioteca em constante evolução'}</span>
+                <span><Sparkles className="h-4 w-4 text-orange-400"/>Novidades frequentes</span>
+              </div>
+            </div>
+            <div className="cg-welcome-gallery" aria-hidden="true">
+              <div className="cg-gallery-ambient" />
+              {arts.slice(0, 3).map((art, index) => <div key={art.id} className={`cg-gallery-frame cg-gallery-frame-${index + 1}`}><img src={art.imageUrl} alt="" loading={index === 0 ? 'eager' : 'lazy'} decoding="async" className={cn('cg-gallery-image', user.isDemo && 'blur-[9px] brightness-75')}/></div>)}
+              {arts.length === 0 && <div className="cg-gallery-placeholder"><Layers3 className="h-16 w-16 text-orange-400/70"/><span>Ideias que ganham forma.</span></div>}
+              <span className="cg-gallery-caption"><span className="cg-gallery-live"/> EXPLORE • CRIE • PERSONALIZE</span>
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* ================= SEASONAL HERO ================= */}
       {tab === 'sazonal' && catalogQ.data && (
-        <div className="mx-auto w-full max-w-7xl px-4 pt-6 sm:px-6">
+        <div className="mx-auto w-full max-w-[1600px] px-4 pt-6 sm:px-6">
           <motion.div
             initial={{ opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
@@ -677,14 +758,14 @@ export function PortalView() {
       )}
 
       {/* ================= CONTENT ================= */}
-      <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-6 sm:px-6">
+      <main className="cg-portal-main mx-auto w-full max-w-[1600px] flex-1 px-4 py-6 sm:px-7 lg:py-8">
         {tab === 'todas' && !q && (
           <DiscoveryShelf catalog={catalogQ.data} onTab={navigateTab} onCategory={toggleCategory} onSeasonal={viewSeasonal} activeCategories={categoryIds} />
         )}
 
         {/* Informações de assinatura ocupam apenas uma linha e não empurram a grade. */}
         {tab !== 'compartilhar' && (
-          <div className="mb-4 flex flex-col gap-3 rounded-2xl border border-zinc-200 bg-white p-3 shadow-sm sm:flex-row sm:items-center sm:justify-between" aria-label="Ações e informações da biblioteca">
+          <div className="cg-member-toolbar mb-5 flex flex-col gap-3 rounded-2xl p-3 sm:flex-row sm:items-center sm:justify-between" aria-label="Ações e informações da biblioteca">
             <div className="flex min-w-0 items-center gap-3">
               <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-orange-50 text-orange-600"><ShieldCheck className="h-4.5 w-4.5" /></span>
               <div>
@@ -745,7 +826,7 @@ export function PortalView() {
           </div>
         )}
 
-        <div ref={resultsRef} className="mb-5 flex scroll-mt-48 items-baseline justify-between">
+        <div ref={resultsRef} className="cg-library-heading mb-5 flex scroll-mt-36 items-baseline justify-between">
           <h1 className="text-lg font-black tracking-tight text-zinc-900 sm:text-xl">
             {tab === 'todas' && 'Todo o acervo'}
             {tab === 'lancamentos' && (
@@ -779,7 +860,7 @@ export function PortalView() {
             <Button onClick={() => artsQ.refetch()} className="mt-5 rounded-xl bg-orange-500 font-bold hover:bg-orange-600"><RefreshCw className="mr-2 h-4 w-4" /> Tentar novamente</Button>
           </div>
         ) : artsQ.isLoading ? (
-          <div className="grid grid-cols-1 gap-5 md:grid-cols-2 2xl:grid-cols-3">
+          <div className="cg-member-grid grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
             {Array.from({ length: 6 }).map((_, i) => (
               <div key={i} className="rounded-2xl border border-zinc-200 bg-white p-3.5">
                 <Skeleton className="aspect-[16/9] w-full rounded-xl bg-zinc-100" />
@@ -813,7 +894,7 @@ export function PortalView() {
             </Button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 gap-5 md:grid-cols-2 2xl:grid-cols-3">
+          <div className="cg-member-grid grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
             <AnimatePresence initial={false}>
               {arts.map((art) => (
                 <ArtCard
@@ -844,15 +925,15 @@ export function PortalView() {
         )}
 
         {tab === 'todas' && !q && (
-          <details className="group/tools mt-10 overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm">
+          <details id="cg-portal-tools" className="cg-portal-tools group/tools mt-10 overflow-hidden rounded-2xl border border-white/10 shadow-sm">
             <summary className="flex cursor-pointer list-none items-center gap-2.5 px-4 py-4 text-sm font-extrabold text-zinc-800 marker:hidden hover:bg-orange-50/40"><Sparkles className="h-4.5 w-4.5 text-orange-500" /> Ferramentas e novidades da Click&Gruda <ChevronDown className="ml-auto h-4 w-4 text-zinc-400 transition-transform group-open/tools:rotate-180" /></summary>
             <div className="grid gap-4 border-t border-zinc-100 p-3.5 lg:grid-cols-2"><MockupToolCard /><NovidadesCard /></div>
           </details>
         )}
       </main>
 
-      <footer className="mt-auto border-t border-zinc-200 bg-white py-5">
-        <div className="mx-auto flex w-full max-w-7xl flex-wrap items-center justify-between gap-2 px-4 text-xs text-zinc-400 sm:px-6">
+      <footer className="cg-portal-footer mt-auto border-t border-white/10 py-5">
+        <div className="mx-auto flex w-full max-w-[1600px] flex-wrap items-center justify-between gap-2 px-4 text-xs text-zinc-400 sm:px-6">
           <span>© {new Date().getFullYear()} Click &amp; Gruda · Acesso ativo</span>
           <div className="flex items-center gap-4">
             <button
