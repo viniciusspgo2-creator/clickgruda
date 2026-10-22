@@ -8,7 +8,7 @@ const MAX_ARTS_PER_ACTION = 10000
 const idsSchema = z.array(z.string().min(1).max(100)).min(1).max(MAX_ARTS_PER_ACTION)
 const filtersSchema = z.object({
   q: z.string().max(150), categoryId: z.string().max(100),
-  seasonalEventId: z.string().max(100), launch: z.string(), selected: z.string(),
+  seasonalEventId: z.string().max(100), launch: z.string(), selected: z.string(), quality: z.string().optional(),
 })
 const changesSchema = z.object({
   categoryId: z.string().max(100).optional().nullable(),

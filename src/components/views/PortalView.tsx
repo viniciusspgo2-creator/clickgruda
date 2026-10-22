@@ -5,6 +5,8 @@ import { useInfiniteQuery, useMutation, useQuery, useQueryClient, type InfiniteD
 import { AnimatePresence, motion } from 'framer-motion'
 import {
   CalendarHeart,
+  ArrowRight,
+  ChevronDown,
   Check,
   RefreshCw,
   Clock3,
@@ -45,6 +47,8 @@ import { ShareCatalogSection } from '@/components/portal/ShareCatalogSection'
 import { ThemeSuggestionDialog } from '@/components/portal/ThemeSuggestionDialog'
 import { MockupToolCard } from '@/components/portal/MockupToolCard'
 import { TagFilterPanel } from '@/components/portal/TagFilterPanel'
+import { DiscoveryShelf } from '@/components/portal/DiscoveryShelf'
+import { ArtPreviewDialog } from '@/components/portal/ArtPreviewDialog'
 import { NovidadesCard } from '@/components/portal/NovidadesCard'
 import { EnhanceRequestDialog } from '@/components/portal/EnhanceRequestDialog'
 import { BackupStrip } from '@/components/portal/BackupStrip'
@@ -130,6 +134,9 @@ export function PortalView() {
   const queryClient = useQueryClient()
   const [searchInput, setSearchInput] = useState(q)
   const searchRef = useRef<HTMLInputElement>(null)
+  const resultsRef = useRef<HTMLDivElement>(null)
+  const [searchFocused, setSearchFocused] = useState(false)
+  const [previewId, setPreviewId] = useState<string | null>(null)
   const [downloadStates, setDownloadStates] = useState<DownloadStates>({})
   const [suggestionOpen, setSuggestionOpen] = useState(false)
   const [enhanceOpen, setEnhanceOpen] = useState(false)
@@ -205,6 +212,18 @@ export function PortalView() {
     staleTime: 60_000,
   })
 
+  const suggestionsQ = useQuery<{ suggestions: string[]; related: string[] }>({
+    queryKey: ['art-suggestions', q],
+    queryFn: async () => {
+      const response = await fetch(`/api/arts/suggestions?q=${encodeURIComponent(q)}`)
+      if (!response.ok) throw new Error('Sugestões indisponíveis')
+      return response.json()
+    },
+    enabled: !!user?.hasAccess && searchFocused && q.length >= 2,
+    staleTime: 30_000,
+    retry: false,
+  })
+
   const params = new URLSearchParams({ tab, sort })
   if (q) params.set('q', q)
   if (categoryIds.length) params.set('categories', categoryIds.join(','))
@@ -228,12 +247,8 @@ export function PortalView() {
     retry: 1,
   })
 
-  // Default seasonal event = next one
-  useEffect(() => {
-    if (tab === 'sazonal' && !seasonalEventId && catalogQ.data?.nextEvent) {
-      setFilter({ seasonalEventId: catalogQ.data.nextEvent.id })
-    }
-  }, [tab, seasonalEventId, catalogQ.data, setFilter])
+  // "Todas as datas" representa realmente todos os eventos.
+  // Nenhum efeito reativa o próximo evento depois que o cliente limpa o filtro.
 
   const selectedEvent = catalogQ.data?.events.find((e) => e.id === seasonalEventId)
 
@@ -346,6 +361,37 @@ export function PortalView() {
     return out
   }, [artsQ.data])
   const total = artsQ.data?.pages[0]?.total ?? 0
+  const previewArt = arts.find((art) => art.id === previewId) ?? null
+
+  const scrollToResults = () => {
+    requestAnimationFrame(() => resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }))
+  }
+  const navigateTab = (nextTab: PortalTab, nextSort?: typeof sort) => {
+    setFilter({ tab: nextTab, categoryIds: [], tagIds: [], q: '', seasonalEventId: null, ...(nextSort ? { sort: nextSort } : {}) })
+    setSearchInput('')
+    scrollToResults()
+  }
+  const toggleCategory = (id: string) => {
+    setFilter({ tab: 'todas', categoryIds: categoryIds.includes(id) ? categoryIds.filter((value) => value !== id) : [id], tagIds: [], seasonalEventId: null })
+    scrollToResults()
+  }
+  const viewSeasonal = (id: string) => {
+    setFilter({ tab: 'sazonal', categoryIds: [], tagIds: [], q: '', seasonalEventId: id })
+    setSearchInput('')
+    scrollToResults()
+  }
+  const viewTag = (id: string) => {
+    setFilter({ tab: 'todas', categoryIds: [], tagIds: [id], seasonalEventId: null, q: '' })
+    setSearchInput('')
+    scrollToResults()
+  }
+  const applySuggestion = (text: string) => {
+    setSearchInput(text)
+    setFilter({ q: text, tab: 'todas', seasonalEventId: null, categoryIds: [], tagIds: [] })
+    setSearchFocused(false)
+    searchRef.current?.blur()
+    scrollToResults()
+  }
 
   const { hasNextPage, isFetchingNextPage, fetchNextPage } = artsQ
 
@@ -391,14 +437,25 @@ export function PortalView() {
             <Logo compact />
           </button>
 
-          <div className="relative min-w-0 flex-1 sm:max-w-md">
+          <div className="relative min-w-0 flex-1 sm:max-w-2xl" onBlur={(event) => {
+            if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setSearchFocused(false)
+          }}>
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400" />
             <Input
               ref={searchRef}
               aria-label="Buscar artes por título, categoria, tag ou código"
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
-              placeholder="Buscar artes, temas ou código... (Ctrl+K)"
+              onFocus={() => setSearchFocused(true)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault()
+                  applySuggestion(searchInput.trim())
+                }
+                if (e.key === 'Escape') setSearchFocused(false)
+              }}
+              autoComplete="off"
+              placeholder="Tema, personagem, ocasião ou código..."
               className="h-10 rounded-xl border-zinc-200 bg-white pl-9 pr-9 text-sm focus-visible:ring-orange-500"
             />
             {searchInput && (
@@ -410,30 +467,18 @@ export function PortalView() {
                 <X className="h-3.5 w-3.5" />
               </button>
             )}
+            {searchFocused && searchInput.trim().length >= 2 && (
+              <div className="absolute left-0 right-0 top-[calc(100%+9px)] z-[70] max-h-[350px] overflow-y-auto rounded-2xl border border-zinc-200 bg-white p-2 shadow-2xl" role="group" aria-label="Sugestões de busca">
+                <p className="px-3 pb-1.5 pt-1 text-[10px] font-black uppercase tracking-wider text-zinc-400">Buscar no acervo</p>
+                <button type="button" onMouseDown={(e) => e.preventDefault()} onClick={() => applySuggestion(searchInput.trim())} className="flex w-full items-center gap-2 rounded-xl px-3 py-2.5 text-left text-xs font-bold text-orange-700 hover:bg-orange-50"><Search className="h-4 w-4" /> Pesquisar “{searchInput.trim()}” <ArrowRight className="ml-auto h-4 w-4" /></button>
+                {(suggestionsQ.data?.suggestions || []).map((title) => (
+                  <button key={title} type="button" onMouseDown={(e) => e.preventDefault()} onClick={() => applySuggestion(title)} className="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-left text-xs text-zinc-700 hover:bg-zinc-50"><Search className="h-3.5 w-3.5 shrink-0 text-zinc-400" /><span className="line-clamp-1">{title}</span></button>
+                ))}
+                {(suggestionsQ.data?.related.length ?? 0) > 0 && <p className="px-3 pb-1 pt-2 text-[10px] font-black uppercase tracking-wider text-zinc-400">Também pode interessar</p>}
+                <div className="flex flex-wrap gap-1 px-2 pb-1">{(suggestionsQ.data?.related || []).map((related) => <button type="button" key={related} onMouseDown={(e) => e.preventDefault()} onClick={() => applySuggestion(related)} className="rounded-lg bg-zinc-100 px-2 py-1.5 text-[11px] font-semibold text-zinc-600 hover:bg-orange-50 hover:text-orange-700">{related}</button>)}</div>
+              </div>
+            )}
           </div>
-
-          <div className="hidden md:block">
-            <Select value={sort} onValueChange={(v) => setFilter({ sort: v as typeof sort })}>
-              <SelectTrigger className="h-10 w-44 rounded-xl border-zinc-200 text-sm font-semibold text-zinc-600">
-                <SlidersHorizontal className="mr-1 h-3.5 w-3.5 text-orange-500" />
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="recentes">Mais recentes</SelectItem>
-                <SelectItem value="baixadas">Mais baixadas</SelectItem>
-                <SelectItem value="nome">Nome (A–Z)</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          {/* Sugerir nova arte — destaque no cabeçalho (telas grandes) */}
-          <Button
-            onClick={() => setSuggestionOpen(true)}
-            className="hidden h-10 shrink-0 rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 font-black shadow-md shadow-orange-500/25 xl:inline-flex"
-          >
-            <Lightbulb className="mr-1.5 h-4 w-4" />
-            Sugerir uma nova arte
-          </Button>
 
           {/* Admin quick access */}
           {user.role === 'ADMIN' && (
@@ -633,17 +678,13 @@ export function PortalView() {
 
       {/* ================= CONTENT ================= */}
       <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-6 sm:px-6">
-        {/* Ferramentas + novidades (aba inicial) */}
         {tab === 'todas' && !q && (
-          <div className="mb-6 grid gap-4 lg:grid-cols-2">
-            <MockupToolCard />
-            <NovidadesCard />
-          </div>
+          <DiscoveryShelf catalog={catalogQ.data} onTab={navigateTab} onCategory={toggleCategory} onSeasonal={viewSeasonal} activeCategories={categoryIds} />
         )}
 
-        {/* Utilidades à vista, antes da lista infinita de artes. */}
+        {/* Informações de assinatura ocupam apenas uma linha e não empurram a grade. */}
         {tab !== 'compartilhar' && (
-          <div className="mb-6 flex flex-col gap-3 rounded-2xl border border-zinc-200 bg-white p-3.5 shadow-sm sm:flex-row sm:items-center sm:justify-between sm:px-4" aria-label="Ações e informações da biblioteca">
+          <div className="mb-4 flex flex-col gap-3 rounded-2xl border border-zinc-200 bg-white p-3 shadow-sm sm:flex-row sm:items-center sm:justify-between" aria-label="Ações e informações da biblioteca">
             <div className="flex min-w-0 items-center gap-3">
               <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-orange-50 text-orange-600"><ShieldCheck className="h-4.5 w-4.5" /></span>
               <div>
@@ -654,6 +695,20 @@ export function PortalView() {
             <div className="flex shrink-0 flex-wrap gap-2">
               <button onClick={() => setSuggestionOpen(true)} className="inline-flex h-9 flex-1 items-center justify-center gap-1.5 rounded-xl bg-orange-50 px-3 text-xs font-bold text-orange-700 transition-colors hover:bg-orange-100 sm:flex-none"><Lightbulb className="h-3.5 w-3.5" /> Sugerir arte</button>
               <button onClick={() => (user.isDemo ? toast.info('Disponível após a ativação do acesso.') : setEnhanceOpen(true))} className="inline-flex h-9 flex-1 items-center justify-center gap-1.5 rounded-xl bg-zinc-950 px-3 text-xs font-bold text-white transition-colors hover:bg-zinc-800 sm:flex-none"><Wand2 className="h-3.5 w-3.5" /> Melhorar minha arte</button>
+            </div>
+          </div>
+        )}
+
+        {tab !== 'compartilhar' && (
+          <div className="sticky top-[110px] z-20 mb-4 flex flex-wrap items-center gap-2 rounded-2xl border border-zinc-200/90 bg-white/95 p-2.5 shadow-sm backdrop-blur-lg sm:top-[118px]" aria-label="Barra de navegação das artes">
+            <button type="button" onClick={() => setMenuOpen(true)} className="inline-flex h-9 items-center gap-2 rounded-xl border border-orange-200 bg-orange-50 px-3 text-xs font-bold text-orange-700 hover:bg-orange-100"><SlidersHorizontal className="h-4 w-4" /> Categorias e filtros{categoryIds.length + tagIds.length > 0 ? ` (${categoryIds.length + tagIds.length})` : ''}</button>
+            <span className="hidden text-xs font-medium text-zinc-400 sm:inline">{total.toLocaleString('pt-BR')} {total === 1 ? 'resultado' : 'resultados'}</span>
+            <div className="ml-auto flex items-center gap-2">
+              <span className="hidden text-xs font-semibold text-zinc-500 sm:inline">Ordenar</span>
+              <Select value={sort} onValueChange={(value) => setFilter({ sort: value as typeof sort })}>
+                <SelectTrigger className="h-9 w-[157px] rounded-xl border-zinc-200 bg-white text-xs font-bold text-zinc-700 sm:w-[172px]"><SelectValue /></SelectTrigger>
+                <SelectContent><SelectItem value="recentes">Mais recentes</SelectItem><SelectItem value="baixadas">Mais baixadas</SelectItem><SelectItem value="nome">Nome (A–Z)</SelectItem></SelectContent>
+              </Select>
             </div>
           </div>
         )}
@@ -690,7 +745,7 @@ export function PortalView() {
           </div>
         )}
 
-        <div className="mb-5 flex items-baseline justify-between">
+        <div ref={resultsRef} className="mb-5 flex scroll-mt-48 items-baseline justify-between">
           <h1 className="text-lg font-black tracking-tight text-zinc-900 sm:text-xl">
             {tab === 'todas' && 'Todo o acervo'}
             {tab === 'lancamentos' && (
@@ -727,7 +782,7 @@ export function PortalView() {
           <div className="grid grid-cols-1 gap-5 md:grid-cols-2 2xl:grid-cols-3">
             {Array.from({ length: 6 }).map((_, i) => (
               <div key={i} className="rounded-2xl border border-zinc-200 bg-white p-3.5">
-                <Skeleton className="aspect-[21/9.5] w-full rounded-xl bg-zinc-100" />
+                <Skeleton className="aspect-[16/9] w-full rounded-xl bg-zinc-100" />
                 <Skeleton className="mt-3 h-4 w-2/3 rounded bg-zinc-100" />
                 <Skeleton className="mt-2 h-3 w-1/3 rounded bg-zinc-100" />
                 <Skeleton className="mt-3 h-9 w-full rounded-xl bg-zinc-100" />
@@ -768,6 +823,7 @@ export function PortalView() {
                   downloadState={downloadStates[art.id] || 'idle'}
                   onDownload={handleDownload}
                   onToggleFavorite={toggleFavorite}
+                  onPreview={(chosen) => setPreviewId(chosen.id)}
                 />
               ))}
             </AnimatePresence>
@@ -787,6 +843,12 @@ export function PortalView() {
           />
         )}
 
+        {tab === 'todas' && !q && (
+          <details className="group/tools mt-10 overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm">
+            <summary className="flex cursor-pointer list-none items-center gap-2.5 px-4 py-4 text-sm font-extrabold text-zinc-800 marker:hidden hover:bg-orange-50/40"><Sparkles className="h-4.5 w-4.5 text-orange-500" /> Ferramentas e novidades da Click&Gruda <ChevronDown className="ml-auto h-4 w-4 text-zinc-400 transition-transform group-open/tools:rotate-180" /></summary>
+            <div className="grid gap-4 border-t border-zinc-100 p-3.5 lg:grid-cols-2"><MockupToolCard /><NovidadesCard /></div>
+          </details>
+        )}
       </main>
 
       <footer className="mt-auto border-t border-zinc-200 bg-white py-5">
@@ -904,6 +966,7 @@ export function PortalView() {
       </a>
 
       {/* ================= SUGESTÃO DE TEMA (envia ao Admin Master) ================= */}
+      <ArtPreviewDialog art={previewArt} open={!!previewArt} onOpenChange={(open) => !open && setPreviewId(null)} demo={!!user.isDemo} downloadState={previewArt ? downloadStates[previewArt.id] || 'idle' : 'idle'} onDownload={handleDownload} onFavorite={toggleFavorite} onCategory={toggleCategory} onTag={viewTag} onSeasonal={viewSeasonal} />
       <ThemeSuggestionDialog open={suggestionOpen} onOpenChange={setSuggestionOpen} />
       <EnhanceRequestDialog open={enhanceOpen} onOpenChange={setEnhanceOpen} />
       <ZipDownloadDialog open={zipOpen} onOpenChange={setZipOpen} catalog={catalogQ.data} />

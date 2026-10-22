@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { CalendarHeart, Check, Sparkles, Layers3, FilterX, Images, Cloud, CreditCard, Eye, Image as ImageIcon, Lightbulb, Loader2, Pencil, Plus, QrCode, RotateCcw, Save, Search, Smile, Star, Tag as TagIcon, Trash2, Upload, X } from 'lucide-react'
+import { CalendarHeart, Check, Sparkles, Layers3, FilterX, LayoutGrid, List, ImageOff, Images, Cloud, CreditCard, Eye, Image as ImageIcon, Lightbulb, Loader2, Pencil, Plus, QrCode, RotateCcw, Save, Search, Smile, Star, Tag as TagIcon, Trash2, Upload, X } from 'lucide-react'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -146,6 +146,8 @@ export function AdminArtsSection() {
   const [filterSeasonal, setFilterSeasonal] = useState('all')
   const [filterLaunch, setFilterLaunch] = useState('all')
   const [filterSelected, setFilterSelected] = useState('all')
+  const [filterQuality, setFilterQuality] = useState('all')
+  const [viewMode, setViewMode] = useState<'list' | 'grid'>('list')
   const [form, setForm] = useState<ArtFormState>(emptyForm)
   const [tagInput, setTagInput] = useState('')
   const [uploading, setUploading] = useState(false)
@@ -166,8 +168,8 @@ export function AdminArtsSection() {
   }, [search])
   const filters = useMemo<AdminArtFilters>(() => ({
     q: debouncedSearch, categoryId: filterCategory, seasonalEventId: filterSeasonal,
-    launch: filterLaunch, selected: filterSelected,
-  }), [debouncedSearch, filterCategory, filterSeasonal, filterLaunch, filterSelected])
+    launch: filterLaunch, selected: filterSelected, quality: filterQuality,
+  }), [debouncedSearch, filterCategory, filterSeasonal, filterLaunch, filterSelected, filterQuality])
   const artsQ = useQuery<{ arts: ArtItem[]; total: number; page: number; pageSize: number; hasMore: boolean }>({
     queryKey: ['admin-arts', page, filters],
     queryFn: async () => {
@@ -177,6 +179,7 @@ export function AdminArtsSection() {
       if (filters.seasonalEventId !== 'all') p.set('seasonalEventId', filters.seasonalEventId)
       if (filters.launch !== 'all') p.set('launch', filters.launch)
       if (filters.selected !== 'all') p.set('selected', filters.selected)
+      if (filters.quality !== 'all') p.set('quality', filters.quality)
       const response = await fetch(`/api/admin/arts?${p.toString()}`)
       if (!response.ok) throw new Error('Falha ao buscar artes.')
       return response.json()
@@ -430,9 +433,20 @@ export function AdminArtsSection() {
         {(hasActiveAdminArtFilters(filters) || search) && (
           <Button variant="ghost" size="sm" onClick={() => {
             setSearch(''); setDebouncedSearch(''); setFilterCategory('all'); setFilterSeasonal('all')
-            setFilterLaunch('all'); setFilterSelected('all'); setAllSelection(null); setPage(1)
+            setFilterLaunch('all'); setFilterSelected('all'); setFilterQuality('all'); setAllSelection(null); setPage(1)
           }} className="h-9 rounded-lg text-xs text-zinc-500"><FilterX className="mr-1.5 h-3.5 w-3.5" /> Limpar filtros</Button>
         )}
+      </div>
+
+      {/* Central de revisão: filtros seguros, sem apagar nem alterar arte automaticamente. */}
+      <div className="flex flex-wrap items-center gap-2 rounded-2xl border border-zinc-200 bg-white p-3 shadow-sm">
+        <span className="mr-1 inline-flex items-center gap-1.5 text-xs font-extrabold text-zinc-700"><ImageOff className="h-4 w-4 text-orange-500" /> Revisar cadastros</span>
+        <button type="button" aria-pressed={filterCategory === 'none'} onClick={() => { changeFilter(setFilterCategory, filterCategory === 'none' ? 'all' : 'none'); setFilterQuality('all') }} className={cn('rounded-lg border px-3 py-2 text-xs font-bold transition-colors', filterCategory === 'none' ? 'border-orange-400 bg-orange-500 text-white' : 'border-zinc-200 bg-zinc-50 text-zinc-600 hover:border-orange-300 hover:text-orange-700')}>Sem categoria</button>
+        <button type="button" aria-pressed={filterQuality === 'no-tags'} onClick={() => { changeFilter(setFilterQuality, filterQuality === 'no-tags' ? 'all' : 'no-tags'); setFilterCategory('all') }} className={cn('rounded-lg border px-3 py-2 text-xs font-bold transition-colors', filterQuality === 'no-tags' ? 'border-orange-400 bg-orange-500 text-white' : 'border-zinc-200 bg-zinc-50 text-zinc-600 hover:border-orange-300 hover:text-orange-700')}>Sem tags</button>
+        <div className="ml-auto inline-flex shrink-0 gap-1 rounded-xl bg-zinc-100 p-1" role="group" aria-label="Visualização das artes">
+          <button type="button" aria-pressed={viewMode === 'list'} aria-label="Visualizar artes em lista" title="Modo lista" onClick={() => setViewMode('list')} className={cn('flex h-8 items-center gap-1.5 rounded-lg px-2.5 text-xs font-bold', viewMode === 'list' ? 'bg-white text-orange-600 shadow-sm' : 'text-zinc-500 hover:text-zinc-800')}><List className="h-4 w-4" /><span className="hidden sm:inline">Lista</span></button>
+          <button type="button" aria-pressed={viewMode === 'grid'} aria-label="Visualizar artes em grade" title="Modo visual" onClick={() => setViewMode('grid')} className={cn('flex h-8 items-center gap-1.5 rounded-lg px-2.5 text-xs font-bold', viewMode === 'grid' ? 'bg-white text-orange-600 shadow-sm' : 'text-zinc-500 hover:text-zinc-800')}><LayoutGrid className="h-4 w-4" /><span className="hidden sm:inline">Visual</span></button>
+        </div>
       </div>
 
       <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-orange-100 bg-orange-50/50 px-3.5 py-3 text-xs">
@@ -484,10 +498,33 @@ export function AdminArtsSection() {
       />
 
       <div className="overflow-hidden rounded-2xl border border-zinc-200 bg-white">
-        <div className="divide-y divide-zinc-100">
+        <div className={viewMode === 'grid' ? 'grid grid-cols-1 gap-3 bg-zinc-50/70 p-3 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4' : 'divide-y divide-zinc-100'}>
           {artsQ.isLoading && <div className="p-6 text-sm text-zinc-400">Carregando artes...</div>}
           {artsQ.isError && <div className="p-6 text-sm text-red-500">Falha ao carregar as artes. <button className="font-bold underline" onClick={() => artsQ.refetch()}>Tentar novamente</button></div>}
-          {arts.map((art) => (
+          {arts.map((art) => viewMode === 'grid' ? (
+            <div key={art.id} className={cn('relative flex flex-col overflow-hidden rounded-2xl border bg-white shadow-sm transition hover:border-orange-300 hover:shadow-md', isSelectedForBulk(art.id) ? 'border-orange-400 ring-2 ring-orange-100' : 'border-zinc-200')}>
+              <div className="relative aspect-[16/9] w-full overflow-hidden bg-[radial-gradient(circle_at_center,#fff9f3,#f2efeb)] p-2">
+                <img src={art.imageUrl} alt={art.title} loading="lazy" className="h-full w-full object-contain" />
+                <div className="absolute left-2.5 top-2.5 z-10 rounded-lg bg-white/95 p-2 shadow-sm"><Checkbox disabled={artsQ.isFetching} checked={isSelectedForBulk(art.id)} onCheckedChange={(v) => toggleArtInBulk(art.id, v === true)} aria-label={`Selecionar arte ${formatArtCode(art.code)} para edição em lote`} /></div>
+                <button type="button" onClick={() => openEdit(art)} className="absolute bottom-2 right-2 rounded-lg bg-zinc-950/90 px-3 py-2 text-xs font-bold text-white shadow-sm hover:bg-orange-600"><Pencil className="mr-1 inline h-3 w-3" /> Editar arte</button>
+              </div>
+              <div className="flex flex-1 flex-col gap-2.5 p-3.5">
+                <div className="flex items-start gap-2"><span className="shrink-0 rounded-md bg-zinc-950 px-1.5 py-1 font-mono text-[10px] font-black text-orange-300">{formatArtCode(art.code)}</span><h3 className="line-clamp-2 text-xs font-extrabold leading-snug text-zinc-900" title={art.title}>{art.title}</h3></div>
+                <div className="flex min-h-6 flex-wrap gap-1">
+                  {art.category ? <Badge className="bg-orange-50 text-[10px] font-bold text-orange-700">{art.category.emoji} {art.category.name}</Badge> : <Badge className="bg-rose-50 text-[10px] text-rose-600">Sem categoria</Badge>}
+                  {art.seasonalEvent && <Badge variant="outline" className="text-[10px] text-zinc-600">{art.seasonalEvent.emoji} {art.seasonalEvent.name}</Badge>}
+                  {art.tags.length === 0 && <Badge className="bg-amber-50 text-[10px] text-amber-700">Sem tags</Badge>}
+                </div>
+                <p className="line-clamp-1 text-[11px] text-zinc-500">{art.tags.map((tag) => `#${tag.name}`).join(' · ') || 'Adicione tags para facilitar a busca'}</p>
+                <div className="mt-auto flex items-center gap-1 border-t border-zinc-100 pt-2">
+                  <span className="mr-auto text-[11px] text-zinc-400">{art.downloadsCount} downloads</span>
+                  <Button size="icon" variant="ghost" disabled={toggleSelected.isPending} onClick={() => toggleSelected.mutate(art)} aria-label={art.isSelected ? 'Remover das Selecionadas' : 'Marcar como Selecionada'} title="Selecionadas" className="h-8 w-8 rounded-lg text-zinc-400"><Star className={cn('h-4 w-4', art.isSelected && 'fill-amber-400 text-amber-500')} /></Button>
+                  <Button size="icon" variant="ghost" disabled={toggleLaunch.isPending} onClick={() => toggleLaunch.mutate(art)} aria-label={art.isLaunch ? 'Remover dos lançamentos' : 'Marcar como lançamento'} title="Lançamento" className="h-8 w-8 rounded-lg text-zinc-400"><Sparkles className={cn('h-4 w-4', art.isLaunch && 'fill-orange-400 text-orange-500')} /></Button>
+                  <AlertDialog><AlertDialogTrigger asChild><Button size="icon" variant="ghost" className="h-8 w-8 text-red-400 hover:bg-red-50" aria-label="Excluir arte"><Trash2 className="h-4 w-4" /></Button></AlertDialogTrigger><AlertDialogContent><AlertDialogHeader><AlertDialogTitle>Excluir “{art.title}”?</AlertDialogTitle><AlertDialogDescription>A arte deixa de aparecer para todos os clientes. Esta ação não pode ser desfeita.</AlertDialogDescription></AlertDialogHeader><AlertDialogFooter><AlertDialogCancel>Cancelar</AlertDialogCancel><AlertDialogAction className="bg-red-500 hover:bg-red-600" onClick={() => remove.mutate(art.id)}>Excluir</AlertDialogAction></AlertDialogFooter></AlertDialogContent></AlertDialog>
+                </div>
+              </div>
+            </div>
+          ) : (
             <div key={art.id} className={cn('flex items-center gap-2.5 p-3 transition-colors hover:bg-zinc-50 sm:gap-4 sm:p-3.5', isSelectedForBulk(art.id) && 'bg-orange-50/50')}>
               <Checkbox
                 disabled={artsQ.isFetching}
@@ -508,7 +545,8 @@ export function AdminArtsSection() {
                   {art.seasonalEvent && <Badge variant="outline" className="text-[9px] font-black text-zinc-500">{art.seasonalEvent.emoji} {art.seasonalEvent.name}</Badge>}
                 </p>
                 <p className="mt-0.5 flex flex-wrap items-center gap-x-2 text-xs text-zinc-400">
-                  <span className="font-bold text-orange-500">{art.category?.emoji} {art.category?.name || 'Sem categoria'}</span>
+                  <span className={cn('font-bold', art.category ? 'text-orange-500' : 'text-rose-600')}>{art.category?.emoji} {art.category?.name || 'Sem categoria'}</span>
+                  {art.tags.length === 0 && <span className="font-bold text-amber-600">· Sem tags</span>}
                   <span>· {art.downloadsCount} downloads</span>
                   <span className="hidden sm:inline">· {art.tags.map((t) => `#${t.name}`).join(' ')}</span>
                 </p>

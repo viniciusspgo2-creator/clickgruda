@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { BadgeCheck, CalendarHeart, Check, Copy, Download, EyeOff, Flame, Heart, Loader2, Lock, Star } from 'lucide-react'
+import { BadgeCheck, CalendarHeart, Check, Copy, Download, Eye, EyeOff, Flame, Heart, Loader2, Lock, Star } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
@@ -17,9 +17,10 @@ type ArtCardProps = {
   downloadState?: DownloadState
   onDownload?: (art: ArtItem) => void
   onToggleFavorite?: (art: ArtItem) => void
+  onPreview?: (art: ArtItem) => void
 }
 
-export function ArtCard({ art, locked = false, demo = false, downloadState = 'idle', onDownload, onToggleFavorite }: ArtCardProps) {
+export function ArtCard({ art, locked = false, demo = false, downloadState = 'idle', onDownload, onToggleFavorite, onPreview }: ArtCardProps) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 14, scale: 0.98 }}
@@ -37,7 +38,7 @@ export function ArtCard({ art, locked = false, demo = false, downloadState = 'id
         )}
       >
         {/* ---------- Art area: 21 x 9.5 ---------- */}
-        <div className="relative aspect-[21/9.5] w-full overflow-hidden bg-[radial-gradient(circle_at_50%_40%,#fdf7f2,#f6f3f0)]">
+        <div className="relative aspect-[16/9] w-full overflow-hidden bg-[radial-gradient(circle_at_50%_40%,#fdf7f2,#f6f3f0)]">
           { }
           <img
             src={art.imageUrl}
@@ -45,13 +46,20 @@ export function ArtCard({ art, locked = false, demo = false, downloadState = 'id
             loading="lazy"
             decoding="async"
             className={cn(
-              'absolute inset-0 h-full w-full object-contain p-2 transition-transform duration-500 ease-out group-hover:scale-[1.035]',
+              'absolute inset-0 h-full w-full object-contain p-1.5 transition-transform duration-500 ease-out group-hover:scale-[1.035]',
               (locked || demo) && 'scale-105 blur-[7px] brightness-[0.72]'
             )}
           />
 
+          {/* Ampliar a própria estampa, sem gerar mockups e sem recortar. */}
+          {!locked && onPreview && (
+            <button type="button" onClick={() => onPreview(art)} className="absolute inset-0 z-[1] flex items-end justify-center pb-3 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-inset focus-visible:ring-orange-400" aria-label={`Ampliar estampa ${art.title}`}>
+              <span className="pointer-events-none inline-flex translate-y-1 items-center gap-1.5 rounded-full bg-zinc-950/90 px-4 py-2 text-xs font-bold text-white opacity-0 shadow-lg transition-all group-hover:translate-y-0 group-hover:opacity-100 group-focus-within:opacity-100 max-sm:translate-y-0 max-sm:opacity-90"><Eye className="h-3.5 w-3.5" /> Ampliar arte</span>
+            </button>
+          )}
+
           {/* Badges */}
-          <div className="absolute left-2.5 top-2.5 flex items-center gap-1.5">
+          <div className="pointer-events-none absolute left-2.5 top-2.5 z-[2] flex flex-wrap items-center gap-1.5">
             {art.isLaunch && (
               <span className="flex items-center gap-1 rounded-full bg-orange-500 px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wide text-white shadow-md shadow-orange-500/40">
                 <Flame className="h-3 w-3" /> Novo
@@ -80,7 +88,7 @@ export function ArtCard({ art, locked = false, demo = false, downloadState = 'id
                 onToggleFavorite?.(art)
               }}
               aria-label={art.favorited ? 'Remover dos favoritos' : 'Favoritar arte'}
-              className="absolute right-2.5 top-2.5 flex h-9 w-9 items-center justify-center rounded-full bg-white/95 shadow-md ring-1 ring-zinc-200/70 backdrop-blur transition-colors hover:bg-white"
+              className="absolute right-2.5 top-2.5 z-[2] flex h-9 w-9 items-center justify-center rounded-full bg-white/95 shadow-md ring-1 ring-zinc-200/70 backdrop-blur transition-colors hover:bg-white"
             >
               <Heart
                 className={cn(

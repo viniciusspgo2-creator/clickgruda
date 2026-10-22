@@ -1,6 +1,7 @@
 import type { Prisma } from '@prisma/client'
 import { db } from '@/lib/db'
 import { parseArtCode } from '@/lib/art-code'
+import { searchTokens, searchVariants } from '@/lib/art-search'
 
 export type ArtDTO = {
   id: string
@@ -71,17 +72,27 @@ export function buildArtWhere(o: ArtQuery): Prisma.ArtWhereInput {
   if (o.categoryIds?.length) AND.push({ categoryId: { in: o.categoryIds } })
   if (o.tagIds?.length) AND.push({ tags: { some: { tagId: { in: o.tagIds } } } })
 
-  const q = (o.q || '').trim()
+  const q = (o.q || '').trim().slice(0, 160)
   if (q) {
     const code = parseArtCode(q)
-    const or: Prisma.ArtWhereInput[] = [
-      { title: { contains: q, mode: 'insensitive' } },
-      { category: { is: { name: { contains: q, mode: 'insensitive' } } } },
-      { seasonalEvent: { is: { name: { contains: q, mode: 'insensitive' } } } },
-      { tags: { some: { tag: { name: { contains: q, mode: 'insensitive' } } } } },
-    ]
-    if (code !== null) or.push({ code })
-    AND.push({ OR: or })
+    if (code !== null) {
+      // A busca por código é exata, sem misturar resultados por números parecidos.
+      AND.push({ code })
+    } else {
+      const matchTerm = (term: string): Prisma.ArtWhereInput => ({ OR: [
+        { title: { contains: term, mode: 'insensitive' } },
+        { category: { is: { name: { contains: term, mode: 'insensitive' } } } },
+        { seasonalEvent: { is: { name: { contains: term, mode: 'insensitive' } } } },
+        { tags: { some: { tag: { name: { contains: term, mode: 'insensitive' } } } } },
+      ] })
+      const terms = searchTokens(q)
+      // Frase literal OU todos os termos relevantes, cada qual incluindo sinônimos.
+      // Tudo acontece no PostgreSQL com paginação; nenhuma arte é carregada em massa.
+      AND.push({ OR: [
+        matchTerm(q),
+        { AND: terms.map((term) => ({ OR: searchVariants(term).map(matchTerm) })) },
+      ] })
+    }
   }
   return AND.length ? { AND } : {}
 }

@@ -8,10 +8,11 @@ export type AdminArtFilters = {
   seasonalEventId: string
   launch: string
   selected: string
+  quality: string
 }
 
 export const DEFAULT_ADMIN_ART_FILTERS: AdminArtFilters = {
-  q: '', categoryId: 'all', seasonalEventId: 'all', launch: 'all', selected: 'all',
+  q: '', categoryId: 'all', seasonalEventId: 'all', launch: 'all', selected: 'all', quality: 'all',
 }
 
 export function normalizeAdminArtFilters(input: Partial<AdminArtFilters>): AdminArtFilters {
@@ -21,6 +22,7 @@ export function normalizeAdminArtFilters(input: Partial<AdminArtFilters>): Admin
     seasonalEventId: typeof input.seasonalEventId === 'string' && input.seasonalEventId ? input.seasonalEventId.slice(0, 100) : 'all',
     launch: input.launch === 'yes' || input.launch === 'no' ? input.launch : 'all',
     selected: input.selected === 'yes' || input.selected === 'no' ? input.selected : 'all',
+    quality: input.quality === 'no-tags' ? 'no-tags' : 'all',
   }
 }
 
@@ -31,6 +33,7 @@ export function adminArtFiltersFromParams(params: URLSearchParams): AdminArtFilt
     seasonalEventId: params.get('seasonalEventId') || 'all',
     launch: params.get('launch') || 'all',
     selected: params.get('selected') || 'all',
+    quality: params.get('quality') || 'all',
   })
 }
 
@@ -44,9 +47,10 @@ export function buildAdminArtWhere(filters: AdminArtFilters): Prisma.ArtWhereInp
   }
   if (filters.launch !== 'all') AND.push({ isLaunch: filters.launch === 'yes' })
   if (filters.selected !== 'all') AND.push({ isSelected: filters.selected === 'yes' })
+  if (filters.quality === 'no-tags') AND.push({ tags: { none: {} } })
   return { AND }
 }
 
 export function hasActiveAdminArtFilters(filters: AdminArtFilters) {
-  return Boolean(filters.q || filters.categoryId !== 'all' || filters.seasonalEventId !== 'all' || filters.launch !== 'all' || filters.selected !== 'all')
+  return Boolean(filters.q || filters.categoryId !== 'all' || filters.seasonalEventId !== 'all' || filters.launch !== 'all' || filters.selected !== 'all' || filters.quality !== 'all')
 }
