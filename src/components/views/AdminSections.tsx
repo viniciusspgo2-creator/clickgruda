@@ -2,10 +2,11 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { CalendarHeart, Check, Images, Cloud, CreditCard, Eye, Image as ImageIcon, Lightbulb, Loader2, Pencil, Plus, QrCode, RotateCcw, Save, Search, Smile, Star, Tag as TagIcon, Trash2, Upload, X } from 'lucide-react'
+import { CalendarHeart, Check, Sparkles, Layers3, FilterX, Images, Cloud, CreditCard, Eye, Image as ImageIcon, Lightbulb, Loader2, Pencil, Plus, QrCode, RotateCcw, Save, Search, Smile, Star, Tag as TagIcon, Trash2, Upload, X } from 'lucide-react'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { Checkbox } from '@/components/ui/checkbox'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
 import { Badge } from '@/components/ui/badge'
@@ -17,6 +18,8 @@ import { CATEGORY_ICONS, getCategoryIcon } from '@/lib/category-icons'
 import { uploadArtFile } from '@/lib/art-upload'
 import { formatArtCode } from '@/lib/art-code'
 import { BulkUploadDialog } from '@/components/admin/BulkUploadDialog'
+import { BulkEditArtsDialog, type BulkArtSelection } from '@/components/admin/BulkEditArtsDialog'
+import { type AdminArtFilters, hasActiveAdminArtFilters } from '@/lib/admin-art-filters'
 import type { ArtItem } from '@/lib/types'
 import { cn } from '@/lib/utils'
 
@@ -136,6 +139,13 @@ export function AdminArtsSection() {
   const queryClient = useQueryClient()
   const [formOpen, setFormOpen] = useState(false)
   const [bulkOpen, setBulkOpen] = useState(false)
+  const [editBulkOpen, setEditBulkOpen] = useState(false)
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(() => new Set())
+  const [allSelection, setAllSelection] = useState<{ filters: AdminArtFilters; count: number; excludedIds: Set<string> } | null>(null)
+  const [filterCategory, setFilterCategory] = useState('all')
+  const [filterSeasonal, setFilterSeasonal] = useState('all')
+  const [filterLaunch, setFilterLaunch] = useState('all')
+  const [filterSelected, setFilterSelected] = useState('all')
   const [form, setForm] = useState<ArtFormState>(emptyForm)
   const [tagInput, setTagInput] = useState('')
   const [uploading, setUploading] = useState(false)
@@ -150,15 +160,26 @@ export function AdminArtsSection() {
     const t = setTimeout(() => {
       setDebouncedSearch(search.trim())
       setPage(1)
+      setAllSelection(null)
     }, 300)
     return () => clearTimeout(t)
   }, [search])
+  const filters = useMemo<AdminArtFilters>(() => ({
+    q: debouncedSearch, categoryId: filterCategory, seasonalEventId: filterSeasonal,
+    launch: filterLaunch, selected: filterSelected,
+  }), [debouncedSearch, filterCategory, filterSeasonal, filterLaunch, filterSelected])
   const artsQ = useQuery<{ arts: ArtItem[]; total: number; page: number; pageSize: number; hasMore: boolean }>({
-    queryKey: ['admin-arts', page, debouncedSearch],
+    queryKey: ['admin-arts', page, filters],
     queryFn: async () => {
       const p = new URLSearchParams({ page: String(page) })
-      if (debouncedSearch) p.set('q', debouncedSearch)
-      return (await fetch(`/api/admin/arts?${p.toString()}`)).json()
+      if (filters.q) p.set('q', filters.q)
+      if (filters.categoryId !== 'all') p.set('categoryId', filters.categoryId)
+      if (filters.seasonalEventId !== 'all') p.set('seasonalEventId', filters.seasonalEventId)
+      if (filters.launch !== 'all') p.set('launch', filters.launch)
+      if (filters.selected !== 'all') p.set('selected', filters.selected)
+      const response = await fetch(`/api/admin/arts?${p.toString()}`)
+      if (!response.ok) throw new Error('Falha ao buscar artes.')
+      return response.json()
     },
     placeholderData: keepPreviousData,
   })
@@ -253,15 +274,38 @@ export function AdminArtsSection() {
     onError: () => toast.error('Não foi possível atualizar a arte.'),
   })
 
+  // Lançamentos podem ser ativados ou desativados sem abrir a janela de edição.
+  const toggleLaunch = useMutation({
+    mutationFn: async (art: ArtItem) => {
+      const res = await fetch(`/api/admin/arts/${art.id}`, {
+        method: 'PATCH', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ isLaunch: !art.isLaunch }),
+      })
+      if (!res.ok) throw new Error('Não foi possível alterar o lançamento.')
+      return !art.isLaunch
+    },
+    onSuccess: (now) => {
+      queryClient.invalidateQueries({ queryKey: ['admin-arts'] })
+      queryClient.invalidateQueries({ queryKey: ['arts'] })
+      queryClient.invalidateQueries({ queryKey: ['catalog'] })
+      toast.success(now ? 'Arte marcada como lançamento ✨' : 'Lançamento removido.')
+    },
+    onError: () => toast.error('Erro ao atualizar o lançamento.'),
+  })
+
   const remove = useMutation({
     mutationFn: async (id: string) => {
       const res = await fetch(`/api/admin/arts/${id}`, { method: 'DELETE' })
       if (!res.ok) throw new Error()
       return res.json()
     },
-    onSuccess: () => {
+    onSuccess: (_, id) => {
+      setSelectedIds((previous) => { const next = new Set(previous); next.delete(id); return next })
+      setAllSelection(null)
       queryClient.invalidateQueries({ queryKey: ['admin-arts'] })
       queryClient.invalidateQueries({ queryKey: ['admin-stats'] })
+      queryClient.invalidateQueries({ queryKey: ['arts'] })
+      queryClient.invalidateQueries({ queryKey: ['catalog'] })
       toast.success('Arte excluída.')
     },
     onError: () => toast.error('Erro ao excluir arte.'),
@@ -270,6 +314,65 @@ export function AdminArtsSection() {
   const arts = artsQ.data?.arts ?? []
   const totalArts = artsQ.data?.total ?? 0
   const totalPages = Math.max(1, Math.ceil(totalArts / (artsQ.data?.pageSize || 40)))
+
+  const selectionCount = allSelection ? Math.max(0, allSelection.count - allSelection.excludedIds.size) : selectedIds.size
+  const isSelectedForBulk = (id: string) => allSelection ? !allSelection.excludedIds.has(id) : selectedIds.has(id)
+  const selectedOnPage = arts.filter((art) => isSelectedForBulk(art.id)).length
+  const allPageChecked = arts.length > 0 && selectedOnPage === arts.length
+  const bulkSelection: BulkArtSelection = allSelection
+    ? { scope: 'filter', filters: allSelection.filters, excludedIds: [...allSelection.excludedIds], count: selectionCount }
+    : { scope: 'ids', ids: [...selectedIds], count: selectionCount }
+
+  function toggleArtInBulk(id: string, checked: boolean) {
+    if (allSelection) {
+      setAllSelection((previous) => {
+        if (!previous) return previous
+        const excludedIds = new Set(previous.excludedIds)
+        if (checked) excludedIds.delete(id)
+        else excludedIds.add(id)
+        return { ...previous, excludedIds }
+      })
+    } else {
+      setSelectedIds((previous) => {
+        const next = new Set(previous)
+        if (checked) next.add(id)
+        else next.delete(id)
+        return next
+      })
+    }
+  }
+
+  function toggleCurrentPage(checked: boolean) {
+    if (allSelection) {
+      setAllSelection((previous) => {
+        if (!previous) return previous
+        const excludedIds = new Set(previous.excludedIds)
+        for (const art of arts) checked ? excludedIds.delete(art.id) : excludedIds.add(art.id)
+        return { ...previous, excludedIds }
+      })
+    } else {
+      setSelectedIds((previous) => {
+        const next = new Set(previous)
+        for (const art of arts) checked ? next.add(art.id) : next.delete(art.id)
+        return next
+      })
+    }
+  }
+
+  function clearBulkSelection() { setSelectedIds(new Set()); setAllSelection(null) }
+  function changeFilter(setter: (value: string) => void, value: string) {
+    setter(value); setPage(1); setAllSelection(null)
+  }
+  function onBulkApplied() {
+    clearBulkSelection()
+    queryClient.invalidateQueries({ queryKey: ['admin-arts'] })
+    queryClient.invalidateQueries({ queryKey: ['admin-categories'] })
+    queryClient.invalidateQueries({ queryKey: ['admin-seasonal'] })
+    queryClient.invalidateQueries({ queryKey: ['admin-tags'] })
+    queryClient.invalidateQueries({ queryKey: ['arts'] })
+    queryClient.invalidateQueries({ queryKey: ['catalog'] })
+    queryClient.invalidateQueries({ queryKey: ['admin-stats'] })
+  }
 
   return (
     <div className="space-y-4">
@@ -290,6 +393,81 @@ export function AdminArtsSection() {
         </div>
       </div>
 
+      <div className="flex flex-wrap items-center gap-2 rounded-2xl border border-zinc-200 bg-white p-3">
+        <span className="mr-1 text-xs font-black text-zinc-500">Filtrar:</span>
+        <Select value={filterCategory} onValueChange={(v) => changeFilter(setFilterCategory, v)}>
+          <SelectTrigger className="h-9 w-[min(100%,190px)] rounded-xl text-xs"><SelectValue placeholder="Categorias" /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Todas as categorias</SelectItem>
+            <SelectItem value="none">Sem categoria</SelectItem>
+            {(catQ.data?.categories || []).map((c) => <SelectItem key={c.id} value={c.id}>{c.emoji} {c.name}</SelectItem>)}
+          </SelectContent>
+        </Select>
+        <Select value={filterSeasonal} onValueChange={(v) => changeFilter(setFilterSeasonal, v)}>
+          <SelectTrigger className="h-9 w-[min(100%,190px)] rounded-xl text-xs"><SelectValue placeholder="Sazonalidade" /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Todas as datas</SelectItem>
+            <SelectItem value="none">Sem data sazonal</SelectItem>
+            {(evtQ.data?.events || []).map((e) => <SelectItem key={e.id} value={e.id}>{e.emoji} {e.name}</SelectItem>)}
+          </SelectContent>
+        </Select>
+        <Select value={filterLaunch} onValueChange={(v) => changeFilter(setFilterLaunch, v)}>
+          <SelectTrigger className="h-9 w-[148px] rounded-xl text-xs"><SelectValue /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Lançamento: todos</SelectItem>
+            <SelectItem value="yes">Apenas lançamentos</SelectItem>
+            <SelectItem value="no">Não lançamentos</SelectItem>
+          </SelectContent>
+        </Select>
+        <Select value={filterSelected} onValueChange={(v) => changeFilter(setFilterSelected, v)}>
+          <SelectTrigger className="h-9 w-[160px] rounded-xl text-xs"><SelectValue /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Selecionadas: todas</SelectItem>
+            <SelectItem value="yes">Apenas selecionadas</SelectItem>
+            <SelectItem value="no">Não selecionadas</SelectItem>
+          </SelectContent>
+        </Select>
+        {(hasActiveAdminArtFilters(filters) || search) && (
+          <Button variant="ghost" size="sm" onClick={() => {
+            setSearch(''); setDebouncedSearch(''); setFilterCategory('all'); setFilterSeasonal('all')
+            setFilterLaunch('all'); setFilterSelected('all'); setAllSelection(null); setPage(1)
+          }} className="h-9 rounded-lg text-xs text-zinc-500"><FilterX className="mr-1.5 h-3.5 w-3.5" /> Limpar filtros</Button>
+        )}
+      </div>
+
+      <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-orange-100 bg-orange-50/50 px-3.5 py-3 text-xs">
+        <Checkbox
+          checked={allPageChecked ? true : selectedOnPage > 0 ? 'indeterminate' : false}
+          disabled={!arts.length || artsQ.isFetching}
+          onCheckedChange={(v) => toggleCurrentPage(v === true)}
+          aria-label="Selecionar artes desta página"
+          className="border-orange-400 data-[state=checked]:border-orange-500 data-[state=checked]:bg-orange-500"
+        />
+        <span className="font-bold text-zinc-700">Selecionar página <span className="font-normal text-zinc-500">({arts.length} artes)</span></span>
+        {totalArts > arts.length && !allSelection && (
+          <button type="button" disabled={artsQ.isFetching} className="font-bold text-orange-600 underline-offset-2 hover:underline disabled:opacity-50"
+            onClick={() => { setAllSelection({ filters: { ...filters }, count: totalArts, excludedIds: new Set() }); setSelectedIds(new Set()) }}>
+            Selecionar todos os {totalArts.toLocaleString('pt-BR')} resultados{hasActiveAdminArtFilters(filters) ? ' filtrados' : ' do acervo'}
+          </button>
+        )}
+        {allSelection && <span className="font-bold text-orange-700">Todos os resultados selecionados{allSelection.excludedIds.size ? `, exceto ${allSelection.excludedIds.size}` : ''}</span>}
+        <div className="ml-auto flex flex-wrap items-center gap-2">
+          {selectionCount > 0 && <span className="rounded-lg bg-white px-2.5 py-1.5 font-black text-orange-600">{selectionCount.toLocaleString('pt-BR')} selecionadas</span>}
+          {selectionCount > 0 && <Button size="sm" variant="ghost" className="h-8 rounded-lg text-zinc-500" onClick={clearBulkSelection}>Limpar seleção</Button>}
+          <Button size="sm" disabled={selectionCount === 0} className="h-9 rounded-lg bg-orange-500 px-3.5 font-black hover:bg-orange-600" onClick={() => setEditBulkOpen(true)}>
+            <Layers3 className="mr-1.5 h-4 w-4" /> Editar em lote
+          </Button>
+        </div>
+      </div>
+
+      <BulkEditArtsDialog
+        open={editBulkOpen} onOpenChange={setEditBulkOpen}
+        selection={bulkSelection}
+        categories={catQ.data?.categories || []}
+        events={evtQ.data?.events || []}
+        onApplied={onBulkApplied}
+      />
+
       <BulkUploadDialog
         open={bulkOpen}
         onOpenChange={setBulkOpen}
@@ -308,16 +486,23 @@ export function AdminArtsSection() {
       <div className="overflow-hidden rounded-2xl border border-zinc-200 bg-white">
         <div className="divide-y divide-zinc-100">
           {artsQ.isLoading && <div className="p-6 text-sm text-zinc-400">Carregando artes...</div>}
+          {artsQ.isError && <div className="p-6 text-sm text-red-500">Falha ao carregar as artes. <button className="font-bold underline" onClick={() => artsQ.refetch()}>Tentar novamente</button></div>}
           {arts.map((art) => (
-            <div key={art.id} className="flex items-center gap-4 p-3.5 transition-colors hover:bg-zinc-50">
-              <div className="h-12 w-28 shrink-0 overflow-hidden rounded-lg border border-zinc-200 bg-zinc-50">
-                { }
+            <div key={art.id} className={cn('flex items-center gap-2.5 p-3 transition-colors hover:bg-zinc-50 sm:gap-4 sm:p-3.5', isSelectedForBulk(art.id) && 'bg-orange-50/50')}>
+              <Checkbox
+                disabled={artsQ.isFetching}
+                checked={isSelectedForBulk(art.id)}
+                onCheckedChange={(v) => toggleArtInBulk(art.id, v === true)}
+                aria-label={`Selecionar arte ${formatArtCode(art.code)} para edição em lote`}
+                className="border-zinc-300 data-[state=checked]:border-orange-500 data-[state=checked]:bg-orange-500"
+              />
+              <div className="h-10 w-16 shrink-0 overflow-hidden rounded-lg border border-zinc-200 bg-zinc-50 sm:h-12 sm:w-28">
                 <img src={art.imageUrl} alt={art.title} className="h-full w-full object-contain" />
               </div>
               <div className="min-w-0 flex-1">
-                <p className="flex items-center gap-2 truncate text-sm font-bold text-zinc-900">
+                <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm font-bold text-zinc-900">
                   <span className="shrink-0 rounded-md bg-zinc-900 px-1.5 py-0.5 font-mono text-[10px] font-bold text-orange-300">{formatArtCode(art.code)}</span>
-                  {art.title}
+                  <span className="min-w-0 truncate">{art.title}</span>
                   {art.isLaunch && <Badge className="bg-orange-100 text-[9px] font-black uppercase text-orange-600">Novo</Badge>}
                   {art.isSelected && <Badge className="bg-amber-100 text-[9px] font-black uppercase text-amber-700">⭐ Selecionada</Badge>}
                   {art.seasonalEvent && <Badge variant="outline" className="text-[9px] font-black text-zinc-500">{art.seasonalEvent.emoji} {art.seasonalEvent.name}</Badge>}
@@ -339,6 +524,17 @@ export function AdminArtsSection() {
                   className="h-8 w-8 rounded-lg text-zinc-300 hover:bg-amber-50 hover:text-amber-500"
                 >
                   <Star className={art.isSelected ? 'h-4 w-4 fill-amber-400 text-amber-500' : 'h-4 w-4'} />
+                </Button>
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  disabled={toggleLaunch.isPending}
+                  onClick={() => toggleLaunch.mutate(art)}
+                  aria-label={art.isLaunch ? 'Remover dos lançamentos' : 'Marcar como lançamento'}
+                  title={art.isLaunch ? 'Remover dos lançamentos' : 'Marcar como lançamento'}
+                  className="h-8 w-8 rounded-lg text-zinc-300 hover:bg-orange-50 hover:text-orange-500"
+                >
+                  <Sparkles className={art.isLaunch ? 'h-4 w-4 fill-orange-400 text-orange-500' : 'h-4 w-4'} />
                 </Button>
                 <Button size="icon" variant="ghost" className="h-8 w-8 rounded-lg text-zinc-400 hover:bg-orange-50 hover:text-orange-600" onClick={() => openEdit(art)} aria-label="Editar arte">
                   <Pencil className="h-4 w-4" />

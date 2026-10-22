@@ -1,6 +1,6 @@
 import { db } from '@/lib/db'
 import { getSessionUser, jsonError } from '@/lib/auth'
-import { queryArts } from '@/lib/arts'
+import { adminArtFiltersFromParams, buildAdminArtWhere } from '@/lib/admin-art-filters'
 
 async function requireAdmin() {
   const session = await getSessionUser()
@@ -12,9 +12,29 @@ export async function GET(req: Request) {
   if (!(await requireAdmin())) return jsonError('Não autorizado', 401)
   const url = new URL(req.url)
   const page = parseInt(url.searchParams.get('page') || '1', 10) || 1
-  const q = (url.searchParams.get('q') || '').trim()
-  const result = await queryArts({ userId: null, tab: 'todas', q, page, pageSize: 40 })
-  return Response.json(result)
+  const pageSize = 40
+  const where = buildAdminArtWhere(adminArtFiltersFromParams(url.searchParams))
+  const [rows, total] = await Promise.all([
+    db.art.findMany({
+      where,
+      orderBy: [{ createdAt: 'desc' }, { id: 'asc' }],
+      skip: (Math.max(1, page) - 1) * pageSize,
+      take: pageSize,
+      include: { category: true, seasonalEvent: true, tags: { include: { tag: true } } },
+    }),
+    db.art.count({ where }),
+  ])
+  return Response.json({
+    arts: rows.map((a) => ({
+      id: a.id, code: a.code, title: a.title, imageUrl: a.imageUrl,
+      isLaunch: a.isLaunch, isSelected: a.isSelected, downloadsCount: a.downloadsCount,
+      createdAt: a.createdAt.toISOString(),
+      category: a.category ? { id: a.category.id, name: a.category.name, emoji: a.category.emoji } : null,
+      seasonalEvent: a.seasonalEvent ? { id: a.seasonalEvent.id, name: a.seasonalEvent.name, emoji: a.seasonalEvent.emoji } : null,
+      tags: a.tags.map((t) => ({ id: t.tag.id, name: t.tag.name })), favorited: false,
+    })),
+    total, page: Math.max(1, page), pageSize, hasMore: Math.max(1, page) * pageSize < total,
+  })
 }
 
 export async function POST(req: Request) {
