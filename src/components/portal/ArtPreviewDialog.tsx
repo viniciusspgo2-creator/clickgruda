@@ -1,6 +1,8 @@
 'use client'
 
-import { CalendarHeart, Check, Copy, Download, EyeOff, Flame, Heart, Loader2, Star, Tag } from 'lucide-react'
+import { useEffect, useState } from 'react'
+
+import { CalendarHeart, Check, Copy, Download, EyeOff, Flame, Heart, Loader2, Star, Tag, ZoomIn, ZoomOut, RotateCcw, ExternalLink } from 'lucide-react'
 import { toast } from 'sonner'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
@@ -23,15 +25,26 @@ export function ArtPreviewDialog({
   onTag: (id: string) => void
   onSeasonal: (id: string) => void
 }) {
+  const [zoom, setZoom] = useState(1)
+  useEffect(() => { setZoom(1) }, [art?.id, open])
   if (!art) return null
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="cg-premium-preview flex max-h-[95dvh] w-[calc(100vw-1.5rem)] max-w-5xl flex-col overflow-y-auto rounded-2xl border-white/10 bg-[#121a2a] p-0 text-slate-100 sm:rounded-3xl">
+      <DialogContent className="cg-premium-preview flex max-h-[96dvh] w-[calc(100vw-1rem)] max-w-[min(96vw,1480px)] flex-col overflow-y-auto rounded-2xl border-white/10 bg-[#121a2a] p-0 text-slate-100 sm:rounded-3xl">
         <DialogHeader className="sr-only"><DialogTitle>{art.title}</DialogTitle><DialogDescription>Pré-visualização da estampa original, sem mockups</DialogDescription></DialogHeader>
-        <div className="grid min-h-0 gap-0 lg:grid-cols-[minmax(0,1.8fr)_minmax(275px,1fr)]">
-          <div className="flex min-h-[230px] items-center justify-center overflow-hidden bg-[radial-gradient(circle_at_center,#f7f2ec,#d9dde4)] p-3 sm:min-h-[390px] sm:p-6">
-            <img src={art.imageUrl} alt={`Estampa completa: ${art.title}`} className={cn('block max-h-[63dvh] min-h-0 w-full object-contain', demo && 'blur-[8px] brightness-[0.7]')} />
-            {demo && <span className="absolute rounded-xl bg-zinc-950/90 px-4 py-2 text-xs font-bold text-white"><EyeOff className="mr-1 inline h-4 w-4" /> Prévia protegida</span>}
+        <div className="grid min-h-0 gap-0 lg:grid-cols-[minmax(0,2.45fr)_minmax(265px,.85fr)]">
+          <div className="cg-preview-visual relative flex min-h-[350px] flex-col overflow-hidden bg-[#e5e8ee] sm:min-h-[65dvh]">
+            <div className="absolute right-4 top-4 z-20 flex items-center gap-1 rounded-xl border border-slate-200 bg-white/95 p-1 shadow-lg" aria-label="Controles da ampliação">
+              <button type="button" onClick={() => setZoom((z) => Math.max(1, Number((z - 0.25).toFixed(2))))} disabled={zoom === 1} title="Diminuir zoom" aria-label="Diminuir zoom" className="rounded-lg p-2 text-slate-700 hover:bg-slate-100 disabled:opacity-35"><ZoomOut className="h-4 w-4" /></button>
+              <span className="w-12 text-center text-xs font-extrabold text-slate-800">{Math.round(zoom * 100)}%</span>
+              <button type="button" onClick={() => setZoom((z) => Math.min(3, Number((z + 0.25).toFixed(2))))} disabled={zoom >= 3} title="Aumentar zoom" aria-label="Aumentar zoom" className="rounded-lg p-2 text-slate-700 hover:bg-slate-100 disabled:opacity-35"><ZoomIn className="h-4 w-4" /></button>
+              <button type="button" onClick={() => setZoom(1)} title="Restaurar tamanho" aria-label="Restaurar tamanho" className="rounded-lg p-2 text-slate-700 hover:bg-slate-100"><RotateCcw className="h-4 w-4" /></button>
+            </div>
+            <div className="cg-preview-stage relative flex min-h-[350px] flex-1 items-center justify-center overflow-auto p-2 sm:min-h-[65dvh] sm:p-5">
+              <img src={art.imageUrl} alt={`Estampa completa: ${art.title}`} draggable={false} onDoubleClick={() => setZoom((z) => z === 1 ? 1.75 : 1)} style={{ transform: `scale(${zoom})` }} className={cn('cg-preview-art block max-h-[76dvh] w-full max-w-full select-none object-contain transition-transform duration-200', demo && 'blur-[8px] brightness-[0.7]')} />
+              {demo && <span className="pointer-events-none absolute rounded-xl bg-zinc-950/90 px-4 py-2 text-xs font-bold text-white"><EyeOff className="mr-1 inline h-4 w-4" /> Prévia protegida</span>}
+            </div>
+            {!demo && <a href={art.imageUrl} target="_blank" rel="noopener noreferrer" className="cg-preview-open absolute bottom-3 left-1/2 z-10 inline-flex -translate-x-1/2 items-center gap-1.5 rounded-lg border border-slate-200 bg-white/95 px-3 py-2 text-xs font-bold text-slate-800 shadow-sm hover:bg-white"><ExternalLink className="h-3.5 w-3.5"/> Abrir imagem em tamanho original</a>}
           </div>
           <div className="flex flex-col gap-4 p-5 sm:p-6">
             <div className="flex flex-wrap gap-1.5">

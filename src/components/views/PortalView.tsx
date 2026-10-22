@@ -53,7 +53,6 @@ import { DiscoveryShelf } from '@/components/portal/DiscoveryShelf'
 import { ArtPreviewDialog } from '@/components/portal/ArtPreviewDialog'
 import { NovidadesCard } from '@/components/portal/NovidadesCard'
 import { EnhanceRequestDialog } from '@/components/portal/EnhanceRequestDialog'
-import { BackupStrip } from '@/components/portal/BackupStrip'
 import { LoadMoreFooter } from '@/components/shared/LoadMoreFooter'
 import { ZipDownloadDialog } from '@/components/portal/ZipDownloadDialog'
 import { DailyLimitDialog } from '@/components/portal/DailyLimitDialog'
@@ -448,7 +447,7 @@ export function PortalView() {
               const count = item.id === 'todas' ? counts?.arts : item.id === 'lancamentos' ? counts?.lancamentos : item.id === 'selecionadas' ? counts?.selecionadas : item.id === 'favoritas' ? counts?.favoritas : item.id === 'downloads' ? counts?.minhasDownloads : undefined
               return (
                 <button key={item.id} type="button" aria-current={active ? 'page' : undefined}
-                  onClick={() => setFilter({ tab: item.id, ...(item.id !== 'sazonal' ? { seasonalEventId: null } : {}) })}
+                  onClick={() => setFilter({ tab: item.id, ...(item.id === 'todas' ? { sort: 'recentes' } : {}), ...(item.id !== 'sazonal' ? { seasonalEventId: null } : {}) })}
                   className={cn('cg-sidebar-link', active && 'cg-sidebar-link-active')}>
                   <item.icon className="h-[18px] w-[18px] shrink-0" />
                   <span className="min-w-0 flex-1 text-left">{item.label === 'Todas' ? 'Visão geral' : item.label}</span>
@@ -461,6 +460,7 @@ export function PortalView() {
           <nav className="cg-sidebar-nav" aria-label="Atalhos da plataforma">
             <button type="button" className="cg-sidebar-link" onClick={() => { setMenuOpen(true) }}><SlidersHorizontal className="h-[18px] w-[18px]"/><span>Categorias e filtros</span><ArrowUpRight className="ml-auto h-3.5 w-3.5 opacity-50"/></button>
             <button type="button" className="cg-sidebar-link" onClick={() => { navigateTab('todas', 'baixadas') }}><Flame className="h-[18px] w-[18px]"/><span>Mais baixadas</span></button>
+            {!user.isDemo && <button type="button" className="cg-sidebar-link" onClick={() => setZipOpen(true)}><Download className="h-[18px] w-[18px]"/><span>Baixar catálogo em ZIP</span></button>}
             <button type="button" className="cg-sidebar-link" onClick={openTools}><Wand2 className="h-[18px] w-[18px]"/><span>Ferramentas e novidades</span></button>
             <button type="button" className="cg-sidebar-link" onClick={() => { setSuggestionOpen(true) }}><Lightbulb className="h-[18px] w-[18px]"/><span>Sugerir uma arte</span></button>
             {user.role === 'ADMIN' && <button type="button" className="cg-sidebar-link" onClick={() => setView('admin')}><Settings2 className="h-[18px] w-[18px]"/><span>Painel Master</span></button>}
@@ -481,7 +481,7 @@ export function PortalView() {
             aria-label="Abrir categorias e filtros"
           >
             <Menu className="h-4.5 w-4.5" />
-            <span className="hidden sm:inline">Explorar</span>
+            <span className="hidden sm:inline">Categorias</span>
             {categoryIds.length + tagIds.length > 0 && <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-orange-500 px-1 text-[10px] font-black text-white">{categoryIds.length + tagIds.length}</span>}
           </Button>
 
@@ -654,8 +654,7 @@ export function PortalView() {
         </div>
       )}
 
-      {/* ================= FAIXA DE BACKUP ================= */}
-      {!user.isDemo && catalogQ.data && <BackupStrip onZip={() => setZipOpen(true)} limit={catalogQ.data.quota?.limit ?? 0} />}
+      {/* Download ZIP permanece disponível no menu lateral, sem faixa ocupando o topo. */}
 
       {/* ================= IMMERSIVE WELCOME ================= */}
       {tab === 'todas' && !q && categoryIds.length === 0 && tagIds.length === 0 && (
@@ -676,11 +675,11 @@ export function PortalView() {
                 <span><Sparkles className="h-4 w-4 text-orange-400"/>Novidades frequentes</span>
               </div>
             </div>
-            <div className="cg-welcome-gallery" aria-hidden="true">
-              <div className="cg-gallery-ambient" />
-              {arts.slice(0, 3).map((art, index) => <div key={art.id} className={`cg-gallery-frame cg-gallery-frame-${index + 1}`}><img src={art.imageUrl} alt="" loading={index === 0 ? 'eager' : 'lazy'} decoding="async" className={cn('cg-gallery-image', user.isDemo && 'blur-[9px] brightness-75')}/></div>)}
-              {arts.length === 0 && <div className="cg-gallery-placeholder"><Layers3 className="h-16 w-16 text-orange-400/70"/><span>Ideias que ganham forma.</span></div>}
-              <span className="cg-gallery-caption"><span className="cg-gallery-live"/> EXPLORE • CRIE • PERSONALIZE</span>
+            <div className="cg-welcome-gallery cg-mascot-gallery" aria-hidden="true">
+              <div className="cg-mascot-halo" />
+              <div className="cg-mascot-stage" />
+              <img src="/uploads/cg-mascote-premium.png" alt="" className="cg-mascot-image" loading="eager" decoding="async" />
+              <span className="cg-mascot-statement">CRIE <b>•</b> PERSONALIZE <b>•</b> SURPREENDA</span>
             </div>
           </div>
         </section>
@@ -767,27 +766,27 @@ export function PortalView() {
         {tab !== 'compartilhar' && (
           <div className="cg-member-toolbar mb-5 flex flex-col gap-3 rounded-2xl p-3 sm:flex-row sm:items-center sm:justify-between" aria-label="Ações e informações da biblioteca">
             <div className="flex min-w-0 items-center gap-3">
-              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-orange-50 text-orange-600"><ShieldCheck className="h-4.5 w-4.5" /></span>
+              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-orange-500/15 text-orange-400"><ShieldCheck className="h-4.5 w-4.5" /></span>
               <div>
-                <p className="text-xs font-extrabold text-zinc-800">Sua biblioteca, sempre à mão</p>
-                <p className="text-[11px] leading-relaxed text-zinc-500">{catalogQ.data?.quota?.limit ? `Downloads hoje: ${catalogQ.data.quota.used} de ${catalogQ.data.quota.limit}` : 'Encontre, favorite e baixe suas artes'} · Não achou o que queria? Peça uma arte.</p>
+                <p className="text-xs font-extrabold text-slate-100">Sua biblioteca, sempre à mão</p>
+                <p className="text-[11px] leading-relaxed text-slate-300">{catalogQ.data?.quota?.limit ? `Downloads hoje: ${catalogQ.data.quota.used} de ${catalogQ.data.quota.limit}` : 'Encontre, favorite e baixe suas artes'} · Não achou o que queria? Peça uma arte.</p>
               </div>
             </div>
             <div className="flex shrink-0 flex-wrap gap-2">
-              <button onClick={() => setSuggestionOpen(true)} className="inline-flex h-9 flex-1 items-center justify-center gap-1.5 rounded-xl bg-orange-50 px-3 text-xs font-bold text-orange-700 transition-colors hover:bg-orange-100 sm:flex-none"><Lightbulb className="h-3.5 w-3.5" /> Sugerir arte</button>
-              <button onClick={() => (user.isDemo ? toast.info('Disponível após a ativação do acesso.') : setEnhanceOpen(true))} className="inline-flex h-9 flex-1 items-center justify-center gap-1.5 rounded-xl bg-zinc-950 px-3 text-xs font-bold text-white transition-colors hover:bg-zinc-800 sm:flex-none"><Wand2 className="h-3.5 w-3.5" /> Melhorar minha arte</button>
+              <button onClick={() => setSuggestionOpen(true)} className="inline-flex h-9 flex-1 items-center justify-center gap-1.5 rounded-xl border border-orange-400/30 bg-orange-500/15 px-3 text-xs font-bold text-orange-200 transition-colors hover:bg-orange-500/25 sm:flex-none"><Lightbulb className="h-3.5 w-3.5" /> Sugerir arte</button>
+              <button onClick={() => (user.isDemo ? toast.info('Disponível após a ativação do acesso.') : setEnhanceOpen(true))} className="inline-flex h-9 flex-1 items-center justify-center gap-1.5 rounded-xl border border-white/15 bg-[#0b1423] px-3 text-xs font-bold text-slate-100 transition-colors hover:bg-[#253550] sm:flex-none"><Wand2 className="h-3.5 w-3.5" /> Melhorar minha arte</button>
             </div>
           </div>
         )}
 
         {tab !== 'compartilhar' && (
-          <div className="sticky top-[110px] z-20 mb-4 flex flex-wrap items-center gap-2 rounded-2xl border border-zinc-200/90 bg-white/95 p-2.5 shadow-sm backdrop-blur-lg sm:top-[118px]" aria-label="Barra de navegação das artes">
-            <button type="button" onClick={() => setMenuOpen(true)} className="inline-flex h-9 items-center gap-2 rounded-xl border border-orange-200 bg-orange-50 px-3 text-xs font-bold text-orange-700 hover:bg-orange-100"><SlidersHorizontal className="h-4 w-4" /> Categorias e filtros{categoryIds.length + tagIds.length > 0 ? ` (${categoryIds.length + tagIds.length})` : ''}</button>
-            <span className="hidden text-xs font-medium text-zinc-400 sm:inline">{total.toLocaleString('pt-BR')} {total === 1 ? 'resultado' : 'resultados'}</span>
+          <div className="cg-filter-toolbar sticky top-[82px] z-20 mb-4 flex flex-wrap items-center gap-2 rounded-2xl p-2.5 sm:top-[82px]" aria-label="Barra de navegação das artes">
+            <button type="button" onClick={() => setMenuOpen(true)} className="cg-filter-button inline-flex h-9 items-center gap-2 rounded-xl px-3 text-xs font-bold"><SlidersHorizontal className="h-4 w-4" /> Categorias e filtros{categoryIds.length + tagIds.length > 0 ? ` (${categoryIds.length + tagIds.length})` : ''}</button>
+            <span className="hidden text-xs font-semibold text-slate-300 sm:inline">{total.toLocaleString('pt-BR')} {total === 1 ? 'resultado' : 'resultados'}</span>
             <div className="ml-auto flex items-center gap-2">
-              <span className="hidden text-xs font-semibold text-zinc-500 sm:inline">Ordenar</span>
+              <span className="hidden text-xs font-semibold text-slate-300 sm:inline">Ordenar por</span>
               <Select value={sort} onValueChange={(value) => setFilter({ sort: value as typeof sort })}>
-                <SelectTrigger className="h-9 w-[157px] rounded-xl border-zinc-200 bg-white text-xs font-bold text-zinc-700 sm:w-[172px]"><SelectValue /></SelectTrigger>
+                <SelectTrigger className="cg-sort-trigger h-9 w-[157px] rounded-xl text-xs font-bold sm:w-[172px]"><SelectValue /></SelectTrigger>
                 <SelectContent><SelectItem value="recentes">Mais recentes</SelectItem><SelectItem value="baixadas">Mais baixadas</SelectItem><SelectItem value="nome">Nome (A–Z)</SelectItem></SelectContent>
               </Select>
             </div>
@@ -844,7 +843,7 @@ export function PortalView() {
             {tab === 'downloads' && 'Baixadas por você'}
             {tab === 'compartilhar' && 'Compartilhar catálogo'}
           </h1>
-          <span className="text-sm font-semibold text-zinc-400">
+          <span className="text-sm font-semibold text-slate-300">
             {total} {total === 1 ? 'arte' : 'artes'}
           </span>
         </div>
@@ -1006,6 +1005,12 @@ export function PortalView() {
                 )
               })}
             </div>
+
+            {!user.isDemo && (
+              <button type="button" onClick={() => { setMenuOpen(false); setZipOpen(true) }} className="mt-6 flex w-full items-center justify-center gap-2 rounded-xl border border-orange-300/60 bg-orange-50 px-3 py-3 text-xs font-bold text-orange-700 hover:bg-orange-100">
+                <Download className="h-4 w-4" /> Baixar catálogo em ZIP (opcional)
+              </button>
+            )}
 
             {catalogQ.isError && <p role="alert" className="mt-3 rounded-xl bg-rose-50 p-3 text-xs text-rose-700">Falha ao carregar os filtros. <button type="button" onClick={() => catalogQ.refetch()} className="font-bold underline">Tentar de novo</button></p>}
             <TagFilterPanel tags={catalogQ.data?.tags ?? []} selected={tagIds} onChange={(ids) => setFilter({ tagIds: ids })} />

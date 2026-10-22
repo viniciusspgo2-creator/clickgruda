@@ -1,9 +1,8 @@
 'use client'
 
-import { ArrowRight, CalendarHeart, Flame, LayoutGrid, Sparkles, Star, TrendingUp } from 'lucide-react'
+import { ArrowRight, CalendarHeart, Flame, Sparkles, Star, TrendingUp } from 'lucide-react'
 import type { CatalogData } from '@/lib/types'
 import type { PortalTab, SortMode } from '@/lib/store'
-import { cn } from '@/lib/utils'
 
 /** Atalhos reais para filtros existentes. Não cria "coleções" fictícias nem mockups. */
 export function DiscoveryShelf({
@@ -19,8 +18,6 @@ export function DiscoveryShelf({
   onSeasonal: (eventId: string) => void
   activeCategories: string[]
 }) {
-  const categories = [...(catalog?.categories || [])].filter((c) => c.artCount > 0)
-    .sort((a, b) => b.artCount - a.artCount || a.name.localeCompare(b.name, 'pt-BR')).slice(0, 10)
   const event = catalog?.nextEvent
   const shortcuts = [
     { label: 'Lançamentos', detail: 'Artes com selo NOVO', Icon: Flame, onClick: () => onTab('lancamentos') },
@@ -47,22 +44,7 @@ export function DiscoveryShelf({
           </button>
         ))}
       </div>
-      {categories.length > 0 && (
-        <div className="cg-category-panel rounded-2xl p-4 shadow-sm sm:p-5">
-          <div className="mb-3 flex items-center gap-2"><LayoutGrid className="h-4 w-4 text-orange-500" /><h3 className="text-sm font-extrabold text-white">Explorar por categoria</h3><span className="ml-auto text-[11px] font-medium text-slate-400">{catalog?.categories.length || 0} categorias</span></div>
-          <div className="flex flex-wrap gap-2">
-            {categories.map((category) => {
-              const active = activeCategories.includes(category.id)
-              return (
-                <button key={category.id} type="button" onClick={() => onCategory(category.id)} aria-pressed={active} className={cn('inline-flex items-center gap-2 rounded-xl border px-3 py-2 text-xs font-bold transition-colors', active ? 'border-orange-400 bg-orange-500 text-white' : 'border-white/10 bg-white/[.045] text-slate-200 hover:border-orange-400/50 hover:bg-orange-400/10')}>
-                  <span className="text-base" aria-hidden="true">{category.emoji}</span> {category.name}
-                  <span className={cn('text-[10px]', active ? 'text-white/80' : 'text-slate-400')}>{category.artCount}</span>
-                </button>
-              )
-            })}
-          </div>
-        </div>
-      )}
+
     </section>
   )
 }

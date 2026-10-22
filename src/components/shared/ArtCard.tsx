@@ -37,7 +37,7 @@ export function ArtCard({ art, locked = false, demo = false, downloadState = 'id
         )}
       >
         {/* ---------- Art area: 21 x 9.5 ---------- */}
-        <div className="cg-art-visual relative aspect-[16/9] w-full overflow-hidden bg-[radial-gradient(circle_at_50%_40%,#fdf7f2,#f6f3f0)]">
+        <div className="cg-art-visual relative aspect-[21/9.5] w-full overflow-hidden bg-[radial-gradient(circle_at_50%_40%,#fdf7f2,#f6f3f0)]">
           { }
           <img
             src={art.imageUrl}
@@ -45,7 +45,7 @@ export function ArtCard({ art, locked = false, demo = false, downloadState = 'id
             loading="lazy"
             decoding="async"
             className={cn(
-              'absolute inset-0 h-full w-full object-contain p-1.5 transition-transform duration-500 ease-out group-hover:scale-[1.035]',
+              'absolute inset-0 h-full w-full object-contain p-0 transition-transform duration-300 ease-out group-hover:scale-[1.012]',
               (locked || demo) && 'scale-105 blur-[7px] brightness-[0.72]'
             )}
           />
