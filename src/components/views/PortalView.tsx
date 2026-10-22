@@ -23,6 +23,8 @@ import {
   MessageCircle,
   Box,
   Store,
+  SunMedium,
+  MoonStar,
   ExternalLink,
   RotateCcw,
   Search,
@@ -40,6 +42,7 @@ import {
 } from 'lucide-react'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet'
@@ -50,11 +53,9 @@ import { ArtCard } from '@/components/shared/ArtCard'
 import { ChipScroller } from '@/components/shared/ChipScroller'
 import { ShareCatalogSection } from '@/components/portal/ShareCatalogSection'
 import { ThemeSuggestionDialog } from '@/components/portal/ThemeSuggestionDialog'
-import { MockupToolCard } from '@/components/portal/MockupToolCard'
 import { TagFilterPanel } from '@/components/portal/TagFilterPanel'
 import { DiscoveryShelf } from '@/components/portal/DiscoveryShelf'
 import { ArtPreviewDialog } from '@/components/portal/ArtPreviewDialog'
-import { NovidadesCard } from '@/components/portal/NovidadesCard'
 import { EnhanceRequestDialog } from '@/components/portal/EnhanceRequestDialog'
 import { LoadMoreFooter } from '@/components/shared/LoadMoreFooter'
 import { ZipDownloadDialog } from '@/components/portal/ZipDownloadDialog'
@@ -191,7 +192,6 @@ export function PortalView() {
   const [searchInput, setSearchInput] = useState(q)
   const searchRef = useRef<HTMLInputElement>(null)
   const resultsRef = useRef<HTMLDivElement>(null)
-  const toolsSectionRef = useRef<HTMLDetailsElement>(null)
   const [searchFocused, setSearchFocused] = useState(false)
   const [previewId, setPreviewId] = useState<string | null>(null)
   const [downloadStates, setDownloadStates] = useState<DownloadStates>({})
@@ -199,9 +199,23 @@ export function PortalView() {
   const [enhanceOpen, setEnhanceOpen] = useState(false)
   const [zipOpen, setZipOpen] = useState(false)
   const [limitDialog, setLimitDialog] = useState<number | null>(null)
+  const [portalTheme, setPortalTheme] = useState<'dark' | 'light'>('dark')
+  const [mockupDialogOpen, setMockupDialogOpen] = useState(false)
+  const [shopDialogOpen, setShopDialogOpen] = useState(false)
 
   // O campo acompanha mudanças externas (logo, limpar filtros, troca de página).
   useEffect(() => { setSearchInput(q) }, [q])
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    const savedTheme = window.localStorage.getItem('cg-portal-theme')
+    if (savedTheme === 'light' || savedTheme === 'dark') setPortalTheme(savedTheme)
+  }, [])
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    window.localStorage.setItem('cg-portal-theme', portalTheme)
+  }, [portalTheme])
 
   // Atalho de produtividade: Ctrl/⌘ + K abre a busca; Esc fecha o foco.
   useEffect(() => {
@@ -428,18 +442,14 @@ export function PortalView() {
     setSearchInput('')
     scrollToResults()
   }
-  const openTools = () => {
-    // A seção agora fica acima do catálogo, fora da rolagem infinita.
-    // Não alteramos o filtro nem fazemos a lista reiniciar ao abrir ferramentas.
-    const section = toolsSectionRef.current
-    if (!section) return
-    section.open = true
-    requestAnimationFrame(() => {
-      section.scrollIntoView({
-        behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
-        block: 'start',
-      })
-    })
+  const toggleTheme = () => setPortalTheme((current) => (current === 'dark' ? 'light' : 'dark'))
+
+  const mockupSupportMessage = 'Olá! Sou assinante da Click & Gruda e quero solicitar o meu código grátis para acessar o gerador de mockups 3D.'
+  const shopSupportMessage = 'Olá! Quero solicitar o meu voucher vitalício da Loja Online da Click & Gruda.'
+
+  const openExternal = (url: string, source: string) => {
+    track(source, { source: 'portal' })
+    window.open(url, '_blank', 'noopener,noreferrer')
   }
   const toggleCategory = (id: string) => {
     setFilter({ tab: 'todas', categoryIds: categoryIds.includes(id) ? categoryIds.filter((value) => value !== id) : [id], tagIds: [], seasonalEventId: null })
@@ -488,7 +498,7 @@ export function PortalView() {
   }
 
   return (
-    <div className="cg-portal relative flex min-h-screen flex-col bg-[#080d18] text-slate-100 lg:pl-[248px]">
+    <div className={cn("cg-portal relative flex min-h-screen flex-col bg-[#080d18] text-slate-100 lg:pl-[248px]", portalTheme === 'light' && 'cg-theme-light')}>
       {/* Navegação fixa de desktop. Todos os destinos usam os filtros originais da biblioteca. */}
       <aside className="cg-portal-sidebar fixed inset-y-0 left-0 z-50 hidden w-[248px] flex-col lg:flex" aria-label="Navegação principal da Click&Gruda">
         <button type="button" className="cg-sidebar-brand" onClick={() => { resetFilters(); setSearchInput(''); window.scrollTo({ top: 0, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' }) }} aria-label="Ir para a página inicial da biblioteca">
@@ -519,7 +529,6 @@ export function PortalView() {
             <button type="button" className="cg-sidebar-link" onClick={() => { setMenuOpen(true) }}><SlidersHorizontal className="h-[18px] w-[18px]"/><span>Categorias e filtros</span><ArrowUpRight className="ml-auto h-3.5 w-3.5 opacity-50"/></button>
             <button type="button" className="cg-sidebar-link" onClick={() => { navigateTab('todas', 'baixadas') }}><Flame className="h-[18px] w-[18px]"/><span>Mais baixadas</span></button>
             {!user.isDemo && <button type="button" className="cg-sidebar-link" onClick={() => setZipOpen(true)}><Download className="h-[18px] w-[18px]"/><span>Baixar catálogo em ZIP</span></button>}
-            <button type="button" className="cg-sidebar-link" onClick={openTools}><Wand2 className="h-[18px] w-[18px]"/><span>Ferramentas e novidades</span></button>
             <button type="button" className="cg-sidebar-link" onClick={() => { setSuggestionOpen(true) }}><Lightbulb className="h-[18px] w-[18px]"/><span>Sugerir uma arte</span></button>
             {user.role === 'ADMIN' && <button type="button" className="cg-sidebar-link" onClick={() => setView('admin')}><Settings2 className="h-[18px] w-[18px]"/><span>Painel Master</span></button>}
           </nav>
@@ -592,32 +601,32 @@ export function PortalView() {
 
           {/* Acessos rápidos: mesmos destinos dos cards já existentes. */}
           <div className="cg-header-quicklinks hidden shrink-0 items-center gap-2 md:flex" aria-label="Acessos rápidos">
-            <a
-              href="https://clicktools.vercel.app/"
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="Abrir Gerador de Mockup em nova aba"
+            <button
+              type="button"
+              aria-label="Abrir informações do Gerador de Mockup"
               title="Gerador de Mockup"
-              onClick={() => track('mockup_platform_open', { source: 'portal_header' })}
+              onClick={() => setMockupDialogOpen(true)}
               className="cg-header-quicklink"
             >
               <Box className="h-4 w-4 shrink-0" />
               <span className="cg-header-quicklabel">Gerador de Mockup</span>
               <ExternalLink className="cg-header-external h-3 w-3 shrink-0" />
-            </a>
-            <a
-              href="https://www.clickgruda.com.br"
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="Abrir Loja Online em nova aba"
+            </button>
+            <button
+              type="button"
+              aria-label="Abrir informações da Loja Online"
               title="Loja Online"
-              onClick={() => track('catalog_store_open', { source: 'portal_header' })}
+              onClick={() => setShopDialogOpen(true)}
               className="cg-header-quicklink cg-header-quicklink-shop"
             >
               <Store className="h-4 w-4 shrink-0" />
               <span className="cg-header-quicklabel">Loja Online</span>
               <ExternalLink className="cg-header-external h-3 w-3 shrink-0" />
-            </a>
+            </button>
+            <button type="button" onClick={toggleTheme} className="cg-theme-toggle" aria-label={portalTheme === 'dark' ? 'Ativar tema claro' : 'Ativar tema escuro'} title={portalTheme === 'dark' ? 'Tema claro' : 'Tema escuro'}>
+              {portalTheme === 'dark' ? <SunMedium className="h-4 w-4" /> : <MoonStar className="h-4 w-4" />}
+              <span className="cg-header-quicklabel">{portalTheme === 'dark' ? 'Light' : 'Dark'}</span>
+            </button>
           </div>
 
           {/* Admin quick access */}
@@ -677,12 +686,15 @@ export function PortalView() {
 
         {/* Atalhos próprios do mobile — mantêm a busca legível no cabeçalho. */}
         <nav className="cg-mobile-quicklinks mx-auto flex w-full max-w-[1600px] items-center gap-2 px-4 pb-2.5 md:hidden sm:px-7" aria-label="Ferramentas rápidas">
-          <a href="https://clicktools.vercel.app/" target="_blank" rel="noopener noreferrer" onClick={() => track('mockup_platform_open', { source: 'portal_mobile_header' })} className="cg-header-quicklink flex-1 justify-center">
+          <button type="button" onClick={() => setMockupDialogOpen(true)} className="cg-header-quicklink flex-1 justify-center">
             <Box className="h-4 w-4" /> Gerador de Mockup <ExternalLink className="h-3 w-3" />
-          </a>
-          <a href="https://www.clickgruda.com.br" target="_blank" rel="noopener noreferrer" onClick={() => track('catalog_store_open', { source: 'portal_mobile_header' })} className="cg-header-quicklink cg-header-quicklink-shop flex-1 justify-center">
+          </button>
+          <button type="button" onClick={() => setShopDialogOpen(true)} className="cg-header-quicklink cg-header-quicklink-shop flex-1 justify-center">
             <Store className="h-4 w-4" /> Loja Online <ExternalLink className="h-3 w-3" />
-          </a>
+          </button>
+          <button type="button" onClick={toggleTheme} className="cg-theme-toggle flex-none px-3">
+            {portalTheme === 'dark' ? <SunMedium className="h-4 w-4" /> : <MoonStar className="h-4 w-4" />}
+          </button>
         </nav>
 
         {/* Tabs */}
@@ -773,18 +785,8 @@ export function PortalView() {
                 <span><Sparkles className="h-4 w-4 text-orange-400"/>Novidades frequentes</span>
               </div>
             </div>
-            <div className="cg-welcome-gallery cg-mascot-gallery" aria-hidden="true">
-              <div className="cg-mascot-halo" />
-              <div className="cg-mascot-stage" />
-              <div className="cg-hero-right-badge">Click&amp;Gruda</div>
-              <div className="cg-hero-script">
-                <span>Artes</span>
-                <strong>que inspiram<br/>negócios</strong>
-              </div>
-              <div className="cg-mascot-card-frame">
-                <img src="/uploads/cg-mascote-premium.png" alt="" className="cg-mascot-image" loading="eager" decoding="async" />
-              </div>
-              <span className="cg-mascot-statement">CRIE <b>•</b> PERSONALIZE <b>•</b> SURPREENDA</span>
+            <div className="cg-welcome-gallery cg-hero-banner-panel" aria-hidden="true">
+              <img src="/uploads/cg-portal-hero-premium-banner.png" alt="" className="cg-hero-banner-image" loading="eager" decoding="async" />
             </div>
           </div>
         </section>
@@ -864,22 +866,10 @@ export function PortalView() {
       {/* ================= CONTENT ================= */}
       <main className="cg-portal-main mx-auto w-full max-w-[1600px] flex-1 px-4 py-6 sm:px-7 lg:py-8">
         {tab === 'todas' && !q && (
-          <div className="cg-overview-row mb-7 grid gap-4 xl:grid-cols-[minmax(0,1.5fr)_minmax(300px,.9fr)] xl:items-start">
+          <div className="cg-overview-row mb-7">
             <DiscoveryShelf catalog={catalogQ.data} onTab={navigateTab} onCategory={toggleCategory} onSeasonal={viewSeasonal} activeCategories={categoryIds} />
-            <SeasonalHighlights catalog={catalogQ.data} onOpenAll={() => navigateTab('sazonal')} onSelect={viewSeasonal} />
           </div>
         )}
-
-        {/* Ferramentas antes da grade: o carregamento infinito nunca empurra esta área para longe. */}
-        <details ref={toolsSectionRef} id="cg-portal-tools" className="cg-portal-tools cg-tools-access group/tools mb-5 scroll-mt-28 overflow-hidden rounded-2xl border border-white/10 shadow-sm">
-          <summary className="flex cursor-pointer list-none items-center gap-2.5 px-4 py-3.5 text-sm font-extrabold text-slate-100 marker:hidden hover:bg-white/5 sm:px-5">
-            <Sparkles className="h-[18px] w-[18px] shrink-0 text-orange-400" />
-            <span>Ferramentas e novidades da Click&Gruda</span>
-            <span className="ml-auto hidden text-xs font-medium text-slate-400 sm:inline">Mockups 3D · Loja Online</span>
-            <ChevronDown className="h-4 w-4 shrink-0 text-orange-300 transition-transform group-open/tools:rotate-180" />
-          </summary>
-          <div className="grid gap-4 border-t border-white/10 p-3.5 lg:grid-cols-2"><MockupToolCard /><NovidadesCard /></div>
-        </details>
 
         {/* Informações de assinatura ocupam apenas uma linha e não empurram a grade. */}
         {tab !== 'compartilhar' && (
@@ -1163,6 +1153,32 @@ export function PortalView() {
         </span>
         <span className="hidden text-sm font-black sm:inline">Suporte</span>
       </a>
+
+      <Dialog open={mockupDialogOpen} onOpenChange={setMockupDialogOpen}>
+        <DialogContent className="cg-access-dialog rounded-3xl border-white/10 bg-[#121a2a] text-slate-100 sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-xl font-black text-white"><Box className="h-5 w-5 text-orange-400" /> Gerador de Mockups 3D</DialogTitle>
+            <DialogDescription className="text-sm leading-relaxed text-slate-300">O mockup é <strong className="text-white">premium</strong>, e você assinante tem acesso gratuito. Se ainda não tem o código de acesso, solicite ao suporte o seu código grátis.</DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="mt-2 flex-col gap-2 sm:flex-row sm:justify-between">
+            <Button type="button" variant="outline" onClick={() => window.open(WHATSAPP.link(mockupSupportMessage), '_blank', 'noopener,noreferrer')} className="border-white/15 bg-white/5 text-slate-100 hover:bg-white/10">Solicitar código grátis</Button>
+            <Button type="button" onClick={() => { setMockupDialogOpen(false); openExternal('https://clicktools.vercel.app/', 'mockup_platform_open') }} className="bg-orange-500 text-white hover:bg-orange-600">Continuar para o gerador</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={shopDialogOpen} onOpenChange={setShopDialogOpen}>
+        <DialogContent className="cg-access-dialog rounded-3xl border-white/10 bg-[#121a2a] text-slate-100 sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-xl font-black text-white"><Store className="h-5 w-5 text-orange-400" /> Loja Online</DialogTitle>
+            <DialogDescription className="text-sm leading-relaxed text-slate-300">Para acessar a loja online, solicite ao suporte o seu <strong className="text-white">voucher vitalício</strong>. Assim que ele for liberado, você pode entrar normalmente pela plataforma.</DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="mt-2 flex-col gap-2 sm:flex-row sm:justify-between">
+            <Button type="button" variant="outline" onClick={() => window.open(WHATSAPP.link(shopSupportMessage), '_blank', 'noopener,noreferrer')} className="border-white/15 bg-white/5 text-slate-100 hover:bg-white/10">Solicitar voucher</Button>
+            <Button type="button" onClick={() => { setShopDialogOpen(false); openExternal('https://www.clickgruda.com.br', 'catalog_store_open') }} className="bg-orange-500 text-white hover:bg-orange-600">Ir para a Loja Online</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* ================= SUGESTÃO DE TEMA (envia ao Admin Master) ================= */}
       <ArtPreviewDialog art={previewArt} open={!!previewArt} onOpenChange={(open) => !open && setPreviewId(null)} demo={!!user.isDemo} downloadState={previewArt ? downloadStates[previewArt.id] || 'idle' : 'idle'} onDownload={handleDownload} onFavorite={toggleFavorite} onCategory={toggleCategory} onTag={viewTag} onSeasonal={viewSeasonal} />
