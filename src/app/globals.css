@@ -1100,3 +1100,71 @@
 @media (max-width:767px) {
   .cg-mobile-quicklinks .cg-theme-toggle {min-height:36px;padding:0 10px;}
 }
+
+/* Experience 3.5 — approved one-piece hero: preserve the FULL original artwork */
+.cg-portal .cg-complete-hero-shell {width:100%;}
+.cg-portal .cg-hero-full-artwork {
+  position:relative;
+  width:100%;
+  aspect-ratio:2172 / 724;
+  overflow:hidden;
+  border-radius:24px;
+  border:1px solid rgba(170,190,220,.17);
+  background:#0c1421;
+  box-shadow:0 18px 45px rgba(0,0,0,.18);
+}
+.cg-portal .cg-hero-full-image {
+  display:block;
+  width:100%;
+  height:auto;
+  aspect-ratio:2172 / 724;
+  max-width:100%;
+  object-fit:contain;
+  object-position:center center;
+}
+.cg-hero-click-target {
+  position:absolute;z-index:3;
+  border-radius:18px;
+  background:transparent;
+  cursor:pointer;
+  outline-offset:3px;
+}
+.cg-hero-click-target:focus-visible {
+  outline:3px solid #ffb36c;
+  background:rgba(255,154,61,.13);
+}
+.cg-hero-click-explore {left:5.15%;top:59.8%;width:16.8%;height:13.7%;}
+.cg-hero-click-releases {left:22.65%;top:59.8%;width:17.1%;height:13.7%;}
+.cg-hero-mobile-actions {display:none;}
+.cg-premium-preview .cg-preview-download-notice {
+  box-shadow:inset 0 1px rgba(255,255,255,.08);
+  border-color:rgba(251,146,60,.35);
+  background:linear-gradient(120deg,rgba(251,146,60,.12),rgba(249,115,22,.045));
+}
+.cg-premium-preview .cg-preview-notice-description {
+  font-size:14px;line-height:1.65;letter-spacing:0;
+  color:#e6edf8;
+}
+.cg-premium-preview .cg-preview-notice-title {font-size:16px;line-height:1.35;}
+@media (max-width:767px) {
+  .cg-portal .cg-hero-full-artwork {border-radius:16px;}
+  .cg-hero-click-target {display:none;}
+  .cg-hero-mobile-actions {
+    display:flex;align-items:center;justify-content:center;flex-wrap:wrap;
+    gap:9px;margin-top:12px;
+  }
+  .cg-hero-mobile-actions .cg-primary-action,
+  .cg-hero-mobile-actions .cg-secondary-action {min-height:42px;flex:1;white-space:nowrap;}
+  .cg-portal.cg-theme-light .cg-hero-mobile-actions .cg-secondary-action {
+    background:#fff;border:1px solid #d7e0ec;color:#172435;
+  }
+  .cg-premium-preview .cg-preview-notice-description {font-size:14px;line-height:1.62;}
+}
+
+.cg-hero-mobile-context {display:none;}
+@media (max-width:767px) {
+  .cg-hero-mobile-context {display:block;margin-top:12px;color:#dce7f6;font-size:14px;line-height:1.5;}
+  .cg-hero-mobile-context strong {display:block;font-size:17px;line-height:1.3;color:#fff;}
+  .cg-theme-light .cg-hero-mobile-context {color:#4d5d72;}
+  .cg-theme-light .cg-hero-mobile-context strong {color:#15253c;}
+}

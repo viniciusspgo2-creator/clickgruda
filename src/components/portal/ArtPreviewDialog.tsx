@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 
-import { CalendarHeart, Check, Copy, Download, EyeOff, Flame, Heart, Loader2, Star, Tag, ZoomIn, ZoomOut, RotateCcw, ExternalLink, Info, ShieldCheck } from 'lucide-react'
+import { CalendarHeart, Check, Copy, Download, EyeOff, Flame, Heart, Loader2, Star, Tag, ZoomIn, ZoomOut, RotateCcw, ExternalLink, Info } from 'lucide-react'
 import { toast } from 'sonner'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
@@ -55,11 +55,15 @@ export function ArtPreviewDialog({
               {art.isSelected && <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2.5 py-1 text-[10px] font-black uppercase text-amber-800"><Star className="h-3 w-3" /> Selecionada</span>}
             </div>
             <div><h2 className="pr-5 text-xl font-black leading-tight tracking-tight text-white">{art.title}</h2><p className="mt-2 text-xs text-slate-400">Confira a composição e os detalhes da arte antes de baixar.</p></div>
-            <div className="cg-preview-download-notice flex items-start gap-2.5 rounded-xl border border-orange-400/25 bg-orange-400/[.075] p-3.5" role="note">
-              <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-orange-300" />
-              <div>
-                <p className="text-xs font-extrabold text-orange-200">Esta imagem é apenas uma prévia!</p>
-                <p className="mt-1 text-[12px] leading-relaxed text-slate-300">Salvar a imagem exibida pelo navegador pode gerar um arquivo otimizado ou de qualidade inferior. Para obter <strong className="font-extrabold text-white">a arte disponibilizada para download</strong>, utilize o botão <strong className="font-extrabold text-orange-200">Baixar arte</strong> abaixo.</p>
+            <div className="cg-preview-download-notice flex items-start gap-3 rounded-2xl border border-orange-400/35 bg-orange-400/[.085] p-4" role="note" aria-label="Aviso importante sobre a qualidade da prévia">
+              <Info className="cg-preview-notice-icon mt-0.5 h-5 w-5 shrink-0 text-orange-300" aria-hidden="true" />
+              <div className="min-w-0">
+                <p className="cg-preview-notice-title text-base font-extrabold leading-snug text-orange-200">Prévia de visualização — NÃO utilizar na produção</p>
+                <p className="cg-preview-notice-description mt-2 text-sm leading-relaxed text-slate-100">
+                  A imagem exibida aqui serve somente para conferir a estampa e <strong className="font-extrabold text-white">pode estar em baixa resolução.</strong>
+                  {' '}<strong className="font-extrabold text-orange-200">Não use a prévia para impressão ou personalização.</strong>
+                  {' '}Para obter o arquivo disponibilizado para produção, clique no botão <strong className="font-extrabold text-white">Baixar arte</strong> abaixo.
+                </p>
               </div>
             </div>
             <button type="button" onClick={async () => { try { await navigator.clipboard.writeText(formatArtCode(art.code)); toast.success('Código copiado!') } catch { toast.error('Não foi possível copiar o código.') } }} className="flex w-fit items-center gap-2 rounded-lg bg-zinc-950 px-3 py-2 font-mono text-xs font-bold text-orange-300" title="Copiar código da arte"><Copy className="h-3.5 w-3.5" /> {formatArtCode(art.code)}</button>

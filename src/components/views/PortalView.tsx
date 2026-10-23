@@ -766,28 +766,51 @@ export function PortalView() {
 
       {/* Download ZIP permanece disponível no menu lateral, sem faixa ocupando o topo. */}
 
-      {/* ================= IMMERSIVE WELCOME ================= */}
+      {/* ================= HERO COMPLETA / EXPERIÊNCIA 3.5 =================
+          A imagem foi composta como uma peça única e não deve ser recortada.
+          CTA invisível sobre as áreas desenhadas: a arte preserva o layout aprovado
+          e os botões continuam funcionais para mouse, teclado e leitores de tela. */}
       {tab === 'todas' && !q && categoryIds.length === 0 && tagIds.length === 0 && (
-        <section className="cg-welcome-shell mx-auto w-full max-w-[1600px] px-4 pt-6 sm:px-7 lg:pt-8" aria-label="Boas-vindas à biblioteca">
-          <div className="cg-welcome-hero cg-welcome-hero-premium">
-            <div className="cg-welcome-glow" aria-hidden="true" />
-            <div className="cg-welcome-copy">
-              <div className="cg-eyebrow"><span className="cg-eyebrow-dot"/> SUA BIBLIOTECA, SEU PRÓXIMO PROJETO</div>
-              <p className="cg-welcome-hello">Olá, {user.name.split(' ')[0]} <span aria-hidden="true">✦</span></p>
-              <h1>Sua criatividade<br/><em>em outro nível.</em></h1>
-              <p className="cg-welcome-description">Mais de {counts?.arts?.toLocaleString('pt-BR') || 'milhares de'} artes para você produzir mais rápido, com visual premium, organização e praticidade no dia a dia.</p>
-              <div className="cg-welcome-actions">
-                <button type="button" className="cg-primary-action" onClick={() => { navigateTab('lancamentos') }}><Flame className="h-4 w-4"/> Explorar artes <ArrowRight className="h-4 w-4"/></button>
-                <button type="button" className="cg-secondary-action" onClick={() => { navigateTab('lancamentos') }}><Flame className="h-4 w-4"/> Ver lançamentos</button>
-              </div>
-              <div className="cg-welcome-proof">
-                <span><Layers3 className="h-4 w-4 text-orange-400"/>{counts?.arts != null ? `${counts.arts.toLocaleString('pt-BR')} artes no acervo` : 'Biblioteca em constante evolução'}</span>
-                <span><Sparkles className="h-4 w-4 text-orange-400"/>Novidades frequentes</span>
-              </div>
-            </div>
-            <div className="cg-welcome-gallery cg-hero-banner-panel" aria-hidden="true">
-              <img src="/uploads/cg-portal-hero-premium-banner.png" alt="" className="cg-hero-banner-image" loading="eager" decoding="async" />
-            </div>
+        <section className="cg-welcome-shell cg-complete-hero-shell mx-auto w-full max-w-[1600px] px-4 pt-6 sm:px-7 lg:pt-8" aria-label="Boas-vindas à biblioteca">
+          <div className="cg-hero-full-artwork">
+            <img
+              src="/uploads/cg-hero-completo-aprovado.webp"
+              alt="Sua criatividade em outro nível. Click&Gruda: artes que inspiram negócios. Explore artes e lançamentos na biblioteca."
+              className="cg-hero-full-image"
+              width={2172}
+              height={724}
+              fetchPriority="high"
+              decoding="async"
+            />
+            <button
+              type="button"
+              className="cg-hero-click-target cg-hero-click-explore"
+              onClick={() => navigateTab('todas', 'recentes')}
+              aria-label="Explorar todas as artes disponíveis"
+              title="Explorar artes"
+            >
+              <span className="sr-only">Explorar artes</span>
+            </button>
+            <button
+              type="button"
+              className="cg-hero-click-target cg-hero-click-releases"
+              onClick={() => navigateTab('lancamentos', 'recentes')}
+              aria-label="Ver os lançamentos mais recentes da Click&Gruda"
+              title="Ver lançamentos"
+            >
+              <span className="sr-only">Ver lançamentos</span>
+            </button>
+          </div>
+          <p className="cg-hero-mobile-context">
+            <strong>Sua criatividade em outro nível.</strong> Explore {counts?.arts != null ? counts.arts.toLocaleString('pt-BR') : 'milhares de'} artes organizadas para seus projetos.
+          </p>
+          <div className="cg-hero-mobile-actions" aria-label="Ações da biblioteca">
+            <button type="button" className="cg-primary-action" onClick={() => navigateTab('todas', 'recentes')}>
+              <Layers3 className="h-4 w-4" /> Explorar artes <ArrowRight className="h-4 w-4" />
+            </button>
+            <button type="button" className="cg-secondary-action" onClick={() => navigateTab('lancamentos', 'recentes')}>
+              <Flame className="h-4 w-4" /> Ver lançamentos
+            </button>
           </div>
         </section>
       )}
