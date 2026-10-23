@@ -766,14 +766,24 @@ export function PortalView() {
 
       {/* Download ZIP permanece disponível no menu lateral, sem faixa ocupando o topo. */}
 
-      {/* ================= HERO COMPLETA / EXPERIÊNCIA 3.5 =================
-          A imagem foi composta como uma peça única e não deve ser recortada.
-          CTA invisível sobre as áreas desenhadas: a arte preserva o layout aprovado
-          e os botões continuam funcionais para mouse, teclado e leitores de tela. */}
+      {/* ================= HERO PANORÂMICA / EXPERIÊNCIA 3.8 =================
+          Um único fundo sem recortes. Títulos, CTAs e números são HTML interativo
+          sobre a área escura livre da imagem. Em telas estreitas ficam abaixo. */}
       {tab === 'todas' && !q && categoryIds.length === 0 && tagIds.length === 0 && (
         <section className="cg-welcome-shell cg-complete-hero-shell mx-auto w-full max-w-[1600px] px-4 pt-6 sm:px-7 lg:pt-8" aria-label="Boas-vindas à biblioteca">
-          <div className="cg-hero-split-layout">
-            <div className="cg-hero-copy-panel">
+          <div className="cg-hero-seamless">
+            {/* A composição de fundo é UMA imagem inteira: sem colunas, cortes ou zoom. */}
+            <img
+              src="/uploads/cg-hero-fundo-limpo.webp"
+              alt=""
+              className="cg-hero-seamless-image"
+              width={2048}
+              height={682}
+              fetchPriority="high"
+              decoding="async"
+            />
+            <div className="cg-hero-seamless-shade" aria-hidden="true" />
+            <div className="cg-hero-seamless-copy">
               <p className="cg-hero-kicker">SUA BIBLIOTECA, SEU PRÓXIMO PROJETO</p>
               <p className="cg-hero-greeting">Olá, {user.name.split(' ')[0]}<span aria-hidden="true"> ✦</span></p>
               <h1 className="cg-hero-title">Sua criatividade <span>em outro nível.</span></h1>
@@ -791,7 +801,7 @@ export function PortalView() {
               <div className="cg-hero-metrics" aria-label="Indicadores da plataforma">
                 <div className="cg-hero-metric">
                   <Layers3 className="h-[18px] w-[18px] text-orange-400" />
-                  <span><strong>{counts?.arts != null ? counts.arts.toLocaleString('pt-BR') : '3.500+'}</strong>artes no acervo</span>
+                  <span><strong aria-live="polite">{counts?.arts != null ? counts.arts.toLocaleString('pt-BR') : '…'}</strong>artes no acervo</span>
                 </div>
                 <div className="cg-hero-metric">
                   <Star className="h-[18px] w-[18px] text-orange-400" />
@@ -802,17 +812,6 @@ export function PortalView() {
                   <span><strong>Novidades</strong>toda semana</span>
                 </div>
               </div>
-            </div>
-            <div className="cg-hero-art-panel">
-              <img
-                src="/uploads/cg-hero-direita-limpa.png"
-                alt="Click&Gruda: artes que inspiram negócios"
-                className="cg-hero-right-image"
-                width={2048}
-                height={857}
-                fetchPriority="high"
-                decoding="async"
-              />
             </div>
           </div>
           <p className="cg-hero-mobile-context">

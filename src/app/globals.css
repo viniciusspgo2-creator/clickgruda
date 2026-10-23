@@ -1169,184 +1169,189 @@
   .cg-theme-light .cg-hero-mobile-context strong {color:#15253c;}
 }
 
-/* Experience 3.6 — approved hero with dynamic HTML left panel */
-.cg-portal .cg-hero-full-artwork {
-  position: relative;
-}
-.cg-hero-dynamic-panel {
-  position:absolute;
-  left:0; top:0; bottom:0;
-  width:44.75%;
-  z-index:1;
-  background:
-    linear-gradient(90deg, rgba(7,14,27,0.98) 0%, rgba(10,22,40,0.96) 34%, rgba(13,29,52,0.92) 73%, rgba(13,29,52,0.68) 88%, rgba(13,29,52,0.14) 100%),
-    linear-gradient(145deg, rgba(255,255,255,0.03), rgba(255,255,255,0));
-}
-.cg-hero-dynamic-copy {
-  position:absolute;
-  inset:0 auto 0 0;
-  z-index:2;
-  width:42.6%;
-  padding:4.2% 3.3% 3.2% 3.8%;
-  display:flex;
-  flex-direction:column;
-  justify-content:center;
-  color:#fff;
-}
-.cg-hero-kicker {
-  margin:0 0 18px;
-  color:#ff9a4a;
-  font-size:11px;
-  font-weight:900;
-  letter-spacing:.18em;
-  text-transform:uppercase;
-}
-.cg-hero-greeting {
-  margin:0 0 12px;
-  color:#d8e4f3;
-  font-size:15px;
-  font-weight:700;
-}
-.cg-hero-title {
-  margin:0;
-  color:#fff;
-  font-size:clamp(2rem, 3.7vw, 4rem);
-  line-height:.94;
-  font-weight:900;
-  letter-spacing:-.045em;
-  max-width:95%;
-}
-.cg-hero-title span {display:block; color:#ff9b40; margin-top:10px;}
-.cg-hero-description {
-  margin:18px 0 0;
-  max-width:92%;
-  color:#dce7f6;
-  font-size:clamp(14px,1.05vw,19px);
-  line-height:1.45;
-}
-.cg-hero-dynamic-actions {
-  display:flex;
-  flex-wrap:wrap;
-  gap:12px;
-  margin-top:28px;
-}
-.cg-hero-dynamic-actions .cg-primary-action,
-.cg-hero-dynamic-actions .cg-secondary-action {
-  min-height:58px;
-  padding-inline:28px;
-  border-radius:18px;
-  font-size:clamp(14px,1vw,16px);
-  box-shadow:0 12px 24px rgba(0,0,0,.15);
-}
-.cg-hero-dynamic-actions .cg-secondary-action {background:rgba(17,26,42,.86); backdrop-filter:blur(2px);}
-.cg-hero-metrics {
-  display:flex;
-  flex-wrap:wrap;
-  gap:18px 22px;
-  margin-top:22px;
-}
-.cg-hero-metric {
-  display:flex;
-  align-items:flex-start;
-  gap:9px;
-  color:#e7eef8;
-  min-width:110px;
-}
-.cg-hero-metric span {
-  display:flex;
-  flex-direction:column;
-  font-size:14px;
-  line-height:1.1;
-}
-.cg-hero-metric strong {
-  color:#fff;
-  font-size:clamp(18px,1.35vw,24px);
-  font-weight:900;
-  line-height:1.05;
-  letter-spacing:-.03em;
-  margin-bottom:4px;
-}
-.cg-theme-light .cg-hero-dynamic-panel {
-  background:linear-gradient(90deg, rgba(236,244,252,0.99) 0%, rgba(231,239,248,0.97) 42%, rgba(228,236,247,0.88) 74%, rgba(228,236,247,0.55) 88%, rgba(228,236,247,0.1) 100%);
-}
-.cg-theme-light .cg-hero-greeting,
-.cg-theme-light .cg-hero-description,
-.cg-theme-light .cg-hero-metric,
-.cg-theme-light .cg-hero-metric strong {color:#15253c;}
-.cg-theme-light .cg-hero-title {color:#122036;}
-.cg-theme-light .cg-hero-title span {color:#ef7f2d;}
-.cg-theme-light .cg-hero-kicker {color:#ef7f2d;}
-.cg-theme-light .cg-hero-dynamic-actions .cg-secondary-action {background:rgba(255,255,255,.95);}
 
-@media (max-width: 1279px) {
-  .cg-hero-dynamic-copy {width:46%; padding:3.4% 2.8% 3.2% 3.1%;}
-  .cg-hero-kicker {margin-bottom:14px; font-size:10px;}
-  .cg-hero-greeting {margin-bottom:8px; font-size:14px;}
-  .cg-hero-description {margin-top:14px; max-width:95%;}
-  .cg-hero-dynamic-actions {margin-top:22px; gap:10px;}
-  .cg-hero-dynamic-actions .cg-primary-action,
-  .cg-hero-dynamic-actions .cg-secondary-action {min-height:50px; padding-inline:18px; font-size:14px;}
-  .cg-hero-metrics {gap:14px 18px; margin-top:18px;}
-  .cg-hero-metric span {font-size:13px;}
-  .cg-hero-metric strong {font-size:18px;}
-}
-@media (max-width: 767px) {
-  .cg-hero-dynamic-panel,
-  .cg-hero-dynamic-copy {display:none;}
-}
-
-/* Experience 3.7 — clean split hero with dynamic system copy on the left */
-.cg-hero-split-layout {
-  display:grid;
-  grid-template-columns:minmax(0, 44%) minmax(0, 56%);
-  align-items:stretch;
+/* Experience 3.8 — seamless panoramic hero: one full image, zero cropping.
+   The clean art includes the entire room, mascot and brand slogan;
+   the left-side copy and live art counter remain real HTML. */
+.cg-complete-hero-shell { container: cgHero / inline-size; }
+.cg-portal .cg-hero-seamless {
+  position:relative;
+  display:block;
+  width:100%;
+  aspect-ratio:2048 / 682;
   overflow:hidden;
+  isolation:isolate;
+  border:1px solid rgba(170,190,220,.18);
   border-radius:24px;
-  border:1px solid rgba(170,190,220,.17);
-  background:linear-gradient(135deg,#12233d 0%, #0e1a2f 100%);
+  background:#0a1422;
   box-shadow:0 18px 45px rgba(0,0,0,.18);
 }
-.cg-hero-copy-panel {
-  padding:34px 28px 28px 28px;
-  background:
-    radial-gradient(circle at top left, rgba(255,255,255,.04), transparent 38%),
-    linear-gradient(145deg, rgba(255,255,255,0.02), rgba(255,255,255,0)),
-    linear-gradient(180deg, #142744 0%, #0e1d34 100%);
-  display:flex;
-  flex-direction:column;
-  justify-content:center;
-}
-.cg-hero-art-panel {
-  position:relative;
-  background:#0c1421;
-  min-height:100%;
-}
-.cg-hero-right-image {
+.cg-portal .cg-hero-seamless-image {
+  position:absolute;
+  inset:0;
   display:block;
   width:100%;
   height:100%;
-  min-height:100%;
-  object-fit:cover;
-  object-position:center center;
+  object-fit:contain; /* never cover: preserve every pixel of the panorama */
+  object-position:center;
 }
-.cg-theme-light .cg-hero-split-layout {
-  background:linear-gradient(135deg,#f2f6fb 0%, #e8eef7 100%);
-  border-color:#d7e0ec;
+.cg-portal .cg-hero-seamless-shade {
+  position:absolute;
+  inset:0;
+  z-index:1;
+  pointer-events:none;
+  /* Gentle darkening only behind the HTML, no solid panel or sharp seam. */
+  background:linear-gradient(90deg,
+    rgba(3,10,19,.32) 0%,
+    rgba(3,10,19,.25) 22%,
+    rgba(3,10,19,.13) 39%,
+    rgba(3,10,19,.025) 54%,
+    transparent 67%);
 }
-.cg-theme-light .cg-hero-copy-panel {
-  background:
-    radial-gradient(circle at top left, rgba(255,255,255,.72), transparent 38%),
-    linear-gradient(180deg, #eef4fb 0%, #e5edf7 100%);
+.cg-portal .cg-hero-seamless-copy {
+  position:absolute;
+  inset:0 auto 0 0;
+  z-index:2;
+  width:46%;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  min-width:0;
+  padding:clamp(14px,2cqw,30px) 10px clamp(14px,2cqw,30px) 4.15%;
+  background:transparent;
+  color:#fff;
 }
-@media (max-width: 1279px) {
-  .cg-hero-split-layout {grid-template-columns:minmax(0, 46%) minmax(0, 54%);}
-  .cg-hero-copy-panel {padding:28px 22px 24px;}
+.cg-portal .cg-hero-seamless-copy .cg-hero-kicker {
+  margin:0 0 clamp(6px,.7cqw,12px);
+  font-size:clamp(9px,.75cqw,11px);
+  letter-spacing:.14em;
+  line-height:1.15;
 }
-@media (max-width: 767px) {
-  .cg-hero-split-layout {grid-template-columns:1fr; border-radius:16px;}
-  .cg-hero-copy-panel {padding:22px 18px 18px;}
-  .cg-hero-art-panel {order:-1; aspect-ratio:16 / 8;}
-  .cg-hero-right-image {height:100%;}
-  .cg-hero-dynamic-actions,
-  .cg-hero-metrics {display:none;}
+.cg-portal .cg-hero-seamless-copy .cg-hero-greeting {
+  margin:0 0 clamp(5px,.55cqw,9px);
+  font-size:clamp(11px,.95cqw,14px);
+  line-height:1.15;
+}
+.cg-portal .cg-hero-seamless-copy .cg-hero-title {
+  margin:0;
+  max-width:100%;
+  font-size:clamp(28px,3.25cqw,52px);
+  line-height:.98;
+  letter-spacing:-.044em;
+  color:#fff;
+}
+.cg-portal .cg-hero-seamless-copy .cg-hero-title span {
+  display:block;
+  margin-top:clamp(4px,.45cqw,8px);
+  color:#ff963f;
+}
+.cg-portal .cg-hero-seamless-copy .cg-hero-description {
+  margin:clamp(9px,.85cqw,15px) 0 0;
+  max-width:95%;
+  font-size:clamp(11px,1.08cqw,16px);
+  line-height:1.45;
+  color:#eef3fa;
+}
+.cg-portal .cg-hero-seamless-copy .cg-hero-dynamic-actions {
+  display:flex;
+  flex-wrap:wrap;
+  gap:clamp(6px,.7cqw,11px);
+  margin-top:clamp(11px,1.35cqw,21px);
+}
+.cg-portal .cg-hero-seamless-copy .cg-hero-dynamic-actions .cg-primary-action,
+.cg-portal .cg-hero-seamless-copy .cg-hero-dynamic-actions .cg-secondary-action {
+  display:inline-flex;
+  justify-content:center;
+  align-items:center;
+  min-height:clamp(36px,3.5cqw,52px);
+  padding:0 clamp(10px,1.2cqw,20px);
+  border-radius:clamp(9px,.9cqw,15px);
+  gap:clamp(5px,.5cqw,8px);
+  font-size:clamp(10px,.95cqw,14px);
+  white-space:nowrap;
+}
+.cg-portal .cg-hero-seamless-copy .cg-secondary-action {
+  background:rgba(11,20,34,.72);
+  border-color:rgba(196,209,226,.28);
+}
+.cg-portal .cg-hero-seamless-copy .cg-hero-metrics {
+  display:flex;
+  flex-wrap:wrap;
+  gap:clamp(8px,1.1cqw,17px);
+  margin-top:clamp(11px,1.3cqw,20px);
+  border-top:0;
+  padding:0;
+}
+.cg-portal .cg-hero-seamless-copy .cg-hero-metric {
+  min-width:0;
+  display:flex;
+  align-items:flex-start;
+  gap:clamp(5px,.55cqw,8px);
+  color:#eaf0f8;
+}
+.cg-portal .cg-hero-seamless-copy .cg-hero-metric svg {width:clamp(13px,1.2cqw,18px);height:clamp(13px,1.2cqw,18px);flex-shrink:0;}
+.cg-portal .cg-hero-seamless-copy .cg-hero-metric span {
+  display:flex;
+  flex-direction:column;
+  font-size:clamp(9px,.78cqw,12px);
+  line-height:1.2;
+}
+.cg-portal .cg-hero-seamless-copy .cg-hero-metric strong {
+  color:#fff;
+  font-size:clamp(13px,1.25cqw,19px);
+  line-height:1.12;
+  margin-bottom:3px;
+  font-weight:900;
+}
+/* Keep the cinematic art dark in both themes; this maintains text contrast. */
+.cg-portal.cg-theme-light .cg-hero-seamless-copy :is(.cg-hero-greeting,.cg-hero-title,.cg-hero-description,.cg-hero-metric,.cg-hero-metric strong) {color:#fff!important;}
+.cg-portal.cg-theme-light .cg-hero-seamless-copy .cg-hero-title span {color:#ff963f!important;}
+.cg-portal.cg-theme-light .cg-hero-seamless-copy .cg-secondary-action {background:rgba(11,20,34,.80); color:#fff;}
+
+/* On narrow cards, present the COMPLETE image above the copy rather than
+   covering the mascot/slogan with text. Neither image nor text is clipped. */
+@container cgHero (max-width:1080px) {
+  .cg-portal .cg-hero-seamless {
+    aspect-ratio:auto;
+    display:flex;
+    flex-direction:column;
+    border-radius:18px;
+  }
+  .cg-portal .cg-hero-seamless-image {
+    position:relative;
+    order:0;
+    width:100%;
+    height:auto;
+    aspect-ratio:2048 / 682;
+    object-fit:contain;
+  }
+  .cg-portal .cg-hero-seamless-shade {display:none;}
+  .cg-portal .cg-hero-seamless-copy {
+    position:relative;
+    inset:auto;
+    order:1;
+    width:100%;
+    padding:22px;
+    background:linear-gradient(135deg,#172942,#0c1729);
+  }
+  .cg-portal .cg-hero-seamless-copy .cg-hero-kicker {font-size:10px; margin-bottom:10px;}
+  .cg-portal .cg-hero-seamless-copy .cg-hero-greeting {font-size:12px; margin-bottom:8px;}
+  .cg-portal .cg-hero-seamless-copy .cg-hero-title {font-size:clamp(29px,4.9cqw,48px);}
+  .cg-portal .cg-hero-seamless-copy .cg-hero-description {font-size:14px;max-width:58ch;margin-top:14px;}
+  .cg-portal .cg-hero-seamless-copy .cg-hero-dynamic-actions {margin-top:18px;}
+  .cg-portal .cg-hero-seamless-copy .cg-hero-dynamic-actions .cg-primary-action,
+  .cg-portal .cg-hero-seamless-copy .cg-hero-dynamic-actions .cg-secondary-action {min-height:44px;font-size:12px;padding:0 16px;}
+  .cg-portal .cg-hero-seamless-copy .cg-hero-metrics {margin-top:18px;gap:16px;}
+  .cg-portal .cg-hero-seamless-copy .cg-hero-metric strong {font-size:17px;}
+  .cg-portal .cg-hero-seamless-copy .cg-hero-metric span {font-size:11px;}
+  .cg-portal.cg-theme-light .cg-hero-seamless-copy {background:linear-gradient(135deg,#172942,#0c1729);}
+}
+@media (max-width:767px) {
+  /* The HTML already includes real actions and counts in the stacked layout. */
+  .cg-portal .cg-hero-mobile-context,
+  .cg-portal .cg-hero-mobile-actions {display:none!important;}
+}
+@media (prefers-reduced-motion:reduce) {
+  .cg-portal .cg-hero-seamless-copy .cg-primary-action,
+  .cg-portal .cg-hero-seamless-copy .cg-secondary-action {transition:none!important;transform:none!important;}
 }
