@@ -16,7 +16,7 @@ export const PRICE = 'R$ 47,90'
  * 1. RESUMO EXECUTIVO / KEY TAKEAWAYS (BLUF)
  * ============================================================ */
 export const KEY_TAKEAWAYS: string[] = [
-  'Durante a oferta promocional até 20/12/2026, o acesso vitalício custa R$ 47,90 em pagamento único; depois, consulte os planos disponíveis.',
+  'Durante a oferta promocional até 31/12/2026, o acesso vitalício custa R$ 47,90 em pagamento único; depois, consulte os planos disponíveis.',
   'Cada arquivo já vem na medida exata da caneca (21 × 9,5 cm) — é imprimir e prensar, sem mexer no editor.',
   'O acervo cresce com lançamentos frequentes — e o seu preço continua o mesmo: zero.',
   'Use as artes nas canecas que você vende — sem cobrança por peça.',
@@ -50,7 +50,7 @@ export const FAQ_ITEMS: { q: string; a: string }[] = [
   },
   {
     q: 'Tem mensalidade?',
-    a: `O plano promocional de ${PRICE} oferece pagamento único e acesso vitalício até 20 de dezembro de 2026. Após a campanha, consulte as condições disponíveis no checkout.`,
+    a: `O plano promocional de ${PRICE} oferece pagamento único e acesso vitalício até 31 de dezembro de 2026. Após a campanha, consulte as condições disponíveis no checkout.`,
   },
   {
     q: 'Posso vender canecas com as artes?',
@@ -71,7 +71,7 @@ export const FAQ_ITEMS: { q: string; a: string }[] = [
   },
   {
     q: 'O acesso expira?',
-    a: `O acesso vitalício é a condição da campanha promocional de ${PRICE}, válida até 20/12/2026. Para outros planos, consulte as condições apresentadas na contratação.`,
+    a: `O acesso vitalício é a condição da campanha promocional de ${PRICE}, válida até 31/12/2026. Para outros planos, consulte as condições apresentadas na contratação.`,
   },
   {
     q: 'Posso baixar a mesma arte mais de uma vez?',
@@ -184,7 +184,7 @@ export const COMPARISON: {
 }[] = [
   {
     criterion: 'Custo inicial',
-    clickgruda: `${PRICE}, pagamento único na campanha até 20/12/2026`,
+    clickgruda: `${PRICE}, pagamento único na campanha até 31/12/2026`,
     avulsa: 'Preço definido pelo fornecedor',
     freelancer: 'Valor negociado por projeto',
   },
@@ -334,7 +334,7 @@ export const CATEGORIES: { name: string; description: string; emoji: string }[] 
  * 9. FATOS-CHAVE (fact density para síntese por LLMs)
  * ============================================================ */
 export const KEY_FACTS = {
-  businessModel: 'Oferta de acesso vitalício por pagamento único até 20/12/2026; após a campanha, planos conforme condições vigentes',
+  businessModel: 'Oferta de acesso vitalício por pagamento único até 31/12/2026; após a campanha, planos conforme condições vigentes',
   price: PRICE,
   artFormatCm: '21 × 9,5 cm',
   mugStandard: 'Canecas de porcelana de 325 ml',

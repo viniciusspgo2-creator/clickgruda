@@ -99,7 +99,7 @@ export function GeoSchema() {
       name: 'Plataforma de artes digitais e ferramentas para personalizados',
       serviceType: 'Biblioteca de artes, mockups 3D e catálogo online para personalizados',
       description:
-        'Plataforma de artes para sublimação com biblioteca organizada, categorias e datas comemorativas, gerador de mockups 3D e catálogo online para assinantes. Oferta promocional de acesso vitalício por pagamento único até 20/12/2026; pode haver limite diário de downloads.',
+        'Plataforma de artes para sublimação com biblioteca organizada, categorias e datas comemorativas, gerador de mockups 3D e catálogo online para assinantes. Oferta promocional de acesso vitalício por pagamento único até 31/12/2026; pode haver limite diário de downloads.',
       provider: { '@id': `${SITE.url}/#organization` },
       areaServed: { '@type': 'Country', name: 'Brasil' },
       audience: { '@type': 'BusinessAudience', audienceType: 'Sublimadores e produtores de canecas personalizadas' },
@@ -138,7 +138,7 @@ export function GeoSchema() {
       '@id': `${SITE.url}/#produto-acesso-vitalicio`,
       name: 'Acesso Vitalício Click & Gruda',
       description:
-        'Biblioteca organizada de artes digitais para sublimação de canecas, com lançamentos, mockups 3D e loja online para assinantes. Promoção vitalícia disponível até 20/12/2026, sujeita às condições do checkout e às regras de download.',
+        'Biblioteca organizada de artes digitais para sublimação de canecas, com lançamentos, mockups 3D e loja online para assinantes. Promoção vitalícia disponível até 31/12/2026, sujeita às condições do checkout e às regras de download.',
       brand: { '@id': `${SITE.url}/#organization` },
       category: 'Artes digitais para sublimação de canecas',
       audience: {
@@ -147,7 +147,7 @@ export function GeoSchema() {
       },
       additionalProperty: [
         { '@type': 'PropertyValue', name: 'Formato da arte', value: '21 × 9,5 cm' },
-        { '@type': 'PropertyValue', name: 'Modelo de cobrança', value: 'Promoção de pagamento único até 20/12/2026; outras condições após a data' },
+        { '@type': 'PropertyValue', name: 'Modelo de cobrança', value: 'Promoção de pagamento único até 31/12/2026; outras condições após a data' },
         { '@type': 'PropertyValue', name: 'Downloads', value: 'Re-download permitido; pode haver limite diário de artes diferentes' },
         { '@type': 'PropertyValue', name: 'Lançamentos futuros', value: 'Inclusos sem custo adicional' },
         { '@type': 'PropertyValue', name: 'Uso comercial', value: 'Liberado para sublimadores' },
@@ -161,7 +161,7 @@ export function GeoSchema() {
         availability: 'https://schema.org/InStock',
         itemCondition: 'https://schema.org/NewCondition',
         seller: { '@id': `${SITE.url}/#organization` },
-        priceValidUntil: '2026-12-20',
+        priceValidUntil: '2026-12-31',
         areaServed: 'BR',
       },
       isRelatedTo: CATEGORIES.map((c) => ({
