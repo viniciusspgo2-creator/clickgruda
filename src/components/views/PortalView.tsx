@@ -775,34 +775,47 @@ export function PortalView() {
           <div className="cg-hero-full-artwork">
             <img
               src="/uploads/cg-hero-completo-aprovado.webp"
-              alt="Sua criatividade em outro nível. Click&Gruda: artes que inspiram negócios. Explore artes e lançamentos na biblioteca."
+              alt="Click&Gruda: artes que inspiram negócios. Explore artes e lançamentos na biblioteca."
               className="cg-hero-full-image"
               width={2172}
               height={724}
               fetchPriority="high"
               decoding="async"
             />
-            <button
-              type="button"
-              className="cg-hero-click-target cg-hero-click-explore"
-              onClick={() => navigateTab('todas', 'recentes')}
-              aria-label="Explorar todas as artes disponíveis"
-              title="Explorar artes"
-            >
-              <span className="sr-only">Explorar artes</span>
-            </button>
-            <button
-              type="button"
-              className="cg-hero-click-target cg-hero-click-releases"
-              onClick={() => navigateTab('lancamentos', 'recentes')}
-              aria-label="Ver os lançamentos mais recentes da Click&Gruda"
-              title="Ver lançamentos"
-            >
-              <span className="sr-only">Ver lançamentos</span>
-            </button>
+            <div className="cg-hero-dynamic-panel" aria-hidden="true" />
+            <div className="cg-hero-dynamic-copy">
+              <p className="cg-hero-kicker">SUA BIBLIOTECA, SEU PRÓXIMO PROJETO</p>
+              <p className="cg-hero-greeting">Olá, {user.name.split(' ')[0]}<span aria-hidden="true"> ✦</span></p>
+              <h1 className="cg-hero-title">Sua criatividade <span>em outro nível.</span></h1>
+              <p className="cg-hero-description">
+                Artes para personalizados, ferramentas exclusivas e muito mais para você produzir com agilidade, praticidade e visual profissional.
+              </p>
+              <div className="cg-hero-dynamic-actions" aria-label="Ações da biblioteca">
+                <button type="button" className="cg-primary-action" onClick={() => navigateTab('todas', 'recentes')}>
+                  <Layers3 className="h-4 w-4" /> Explorar artes <ArrowRight className="h-4 w-4" />
+                </button>
+                <button type="button" className="cg-secondary-action" onClick={() => navigateTab('lancamentos', 'recentes')}>
+                  <Flame className="h-4 w-4" /> Ver lançamentos
+                </button>
+              </div>
+              <div className="cg-hero-metrics" aria-label="Indicadores da plataforma">
+                <div className="cg-hero-metric">
+                  <Layers3 className="h-[18px] w-[18px] text-orange-400" />
+                  <span><strong>{counts?.arts != null ? counts.arts.toLocaleString('pt-BR') : '3.500+'}</strong>artes no acervo</span>
+                </div>
+                <div className="cg-hero-metric">
+                  <Star className="h-[18px] w-[18px] text-orange-400" />
+                  <span><strong>45+</strong>ferramentas</span>
+                </div>
+                <div className="cg-hero-metric">
+                  <Sparkles className="h-[18px] w-[18px] text-orange-400" />
+                  <span><strong>Novidades</strong>toda semana</span>
+                </div>
+              </div>
+            </div>
           </div>
           <p className="cg-hero-mobile-context">
-            <strong>Sua criatividade em outro nível.</strong> Explore {counts?.arts != null ? counts.arts.toLocaleString('pt-BR') : 'milhares de'} artes organizadas para seus projetos.
+            <strong>Sua criatividade em outro nível.</strong> Artes para personalizados, ferramentas exclusivas e muito mais para você produzir mais rápido.
           </p>
           <div className="cg-hero-mobile-actions" aria-label="Ações da biblioteca">
             <button type="button" className="cg-primary-action" onClick={() => navigateTab('todas', 'recentes')}>
