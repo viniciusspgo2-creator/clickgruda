@@ -1294,3 +1294,59 @@
   .cg-hero-dynamic-panel,
   .cg-hero-dynamic-copy {display:none;}
 }
+
+/* Experience 3.7 — clean split hero with dynamic system copy on the left */
+.cg-hero-split-layout {
+  display:grid;
+  grid-template-columns:minmax(0, 44%) minmax(0, 56%);
+  align-items:stretch;
+  overflow:hidden;
+  border-radius:24px;
+  border:1px solid rgba(170,190,220,.17);
+  background:linear-gradient(135deg,#12233d 0%, #0e1a2f 100%);
+  box-shadow:0 18px 45px rgba(0,0,0,.18);
+}
+.cg-hero-copy-panel {
+  padding:34px 28px 28px 28px;
+  background:
+    radial-gradient(circle at top left, rgba(255,255,255,.04), transparent 38%),
+    linear-gradient(145deg, rgba(255,255,255,0.02), rgba(255,255,255,0)),
+    linear-gradient(180deg, #142744 0%, #0e1d34 100%);
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+}
+.cg-hero-art-panel {
+  position:relative;
+  background:#0c1421;
+  min-height:100%;
+}
+.cg-hero-right-image {
+  display:block;
+  width:100%;
+  height:100%;
+  min-height:100%;
+  object-fit:cover;
+  object-position:center center;
+}
+.cg-theme-light .cg-hero-split-layout {
+  background:linear-gradient(135deg,#f2f6fb 0%, #e8eef7 100%);
+  border-color:#d7e0ec;
+}
+.cg-theme-light .cg-hero-copy-panel {
+  background:
+    radial-gradient(circle at top left, rgba(255,255,255,.72), transparent 38%),
+    linear-gradient(180deg, #eef4fb 0%, #e5edf7 100%);
+}
+@media (max-width: 1279px) {
+  .cg-hero-split-layout {grid-template-columns:minmax(0, 46%) minmax(0, 54%);}
+  .cg-hero-copy-panel {padding:28px 22px 24px;}
+}
+@media (max-width: 767px) {
+  .cg-hero-split-layout {grid-template-columns:1fr; border-radius:16px;}
+  .cg-hero-copy-panel {padding:22px 18px 18px;}
+  .cg-hero-art-panel {order:-1; aspect-ratio:16 / 8;}
+  .cg-hero-right-image {height:100%;}
+  .cg-hero-dynamic-actions,
+  .cg-hero-metrics {display:none;}
+}

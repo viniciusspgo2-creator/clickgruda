@@ -772,18 +772,8 @@ export function PortalView() {
           e os botões continuam funcionais para mouse, teclado e leitores de tela. */}
       {tab === 'todas' && !q && categoryIds.length === 0 && tagIds.length === 0 && (
         <section className="cg-welcome-shell cg-complete-hero-shell mx-auto w-full max-w-[1600px] px-4 pt-6 sm:px-7 lg:pt-8" aria-label="Boas-vindas à biblioteca">
-          <div className="cg-hero-full-artwork">
-            <img
-              src="/uploads/cg-hero-completo-aprovado.webp"
-              alt="Click&Gruda: artes que inspiram negócios. Explore artes e lançamentos na biblioteca."
-              className="cg-hero-full-image"
-              width={2172}
-              height={724}
-              fetchPriority="high"
-              decoding="async"
-            />
-            <div className="cg-hero-dynamic-panel" aria-hidden="true" />
-            <div className="cg-hero-dynamic-copy">
+          <div className="cg-hero-split-layout">
+            <div className="cg-hero-copy-panel">
               <p className="cg-hero-kicker">SUA BIBLIOTECA, SEU PRÓXIMO PROJETO</p>
               <p className="cg-hero-greeting">Olá, {user.name.split(' ')[0]}<span aria-hidden="true"> ✦</span></p>
               <h1 className="cg-hero-title">Sua criatividade <span>em outro nível.</span></h1>
@@ -812,6 +802,17 @@ export function PortalView() {
                   <span><strong>Novidades</strong>toda semana</span>
                 </div>
               </div>
+            </div>
+            <div className="cg-hero-art-panel">
+              <img
+                src="/uploads/cg-hero-direita-limpa.png"
+                alt="Click&Gruda: artes que inspiram negócios"
+                className="cg-hero-right-image"
+                width={2048}
+                height={857}
+                fetchPriority="high"
+                decoding="async"
+              />
             </div>
           </div>
           <p className="cg-hero-mobile-context">
