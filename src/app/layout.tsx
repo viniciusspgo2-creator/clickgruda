@@ -23,7 +23,7 @@ export const metadata: Metadata = {
     template: "%s | Click & Gruda",
   },
   description:
-    "Plataforma de artes para sublimação com biblioteca organizada, categorias, datas especiais, atualizações semanais, gerador de mockups 3D e loja online para assinantes. Conheça as condições de acesso.",
+    "Mais de 8 mil artes para canecas selecionadas e organizadas, novidades semanais, gerador de mockups 3D, loja online e mais de 45 ferramentas. Conheça a Click&Gruda.",
   keywords: [
     "artes para canecas",
     "sublimação de canecas",
@@ -60,7 +60,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Click&Gruda — Biblioteca de Artes para Sublimação de Canecas",
     description:
-      "Biblioteca de artes selecionadas e organizadas por tema, com atualizações semanais. Mockups 3D e loja online inclusos na assinatura.",
+      "Mais de 8 mil artes para canecas organizadas por tema. Novidades semanais, mockups 3D, loja online e ferramentas para quem vive de personalizados.",
     siteName: SITE.name,
     locale: "pt_BR",
     type: "website",
@@ -78,7 +78,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Click & Gruda — Artes Prontas para Sublimação de Canecas",
     description:
-      "Biblioteca de artes com curadoria, atualizações semanais, mockups 3D e loja online para assinantes. Confira a oferta atual.",
+      "Mais de 8 mil artes para canecas com curadoria, atualizações semanais, mockups 3D e loja online. Confira a oferta atual.",
     images: ["/uploads/hero-mug.png"],
   },
   other: {

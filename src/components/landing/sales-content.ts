@@ -7,7 +7,7 @@ export const SALES = {
   brand: 'Click&Gruda',
   promoEndsAt: '2026-12-31T23:59:59-03:00',
   promoEndsLabel: '31 de dezembro de 2026',
-  estimatedArtCount: 3500,
+  estimatedArtCount: 8000,
   defaultPriceCents: 4790,
   /** Opcional: informe URL externa SOMENTE se trocar o checkout próprio. Deixe null para o fluxo atual de cadastro/checkout. */
   CHECKOUT_URL: null as string | null,
