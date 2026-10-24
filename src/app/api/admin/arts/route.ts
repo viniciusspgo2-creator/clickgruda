@@ -27,7 +27,7 @@ export async function GET(req: Request) {
   return Response.json({
     arts: rows.map((a) => ({
       id: a.id, code: a.code, title: a.title, imageUrl: a.imageUrl,
-      isLaunch: a.isLaunch, isSelected: a.isSelected, downloadsCount: a.downloadsCount,
+      isLaunch: a.isLaunch, isSelected: a.isSelected, isRejected: a.isRejected, downloadsCount: a.downloadsCount,
       createdAt: a.createdAt.toISOString(),
       category: a.category ? { id: a.category.id, name: a.category.name, emoji: a.category.emoji } : null,
       seasonalEvent: a.seasonalEvent ? { id: a.seasonalEvent.id, name: a.seasonalEvent.name, emoji: a.seasonalEvent.emoji } : null,
@@ -55,6 +55,7 @@ export async function POST(req: Request) {
       originalKey: typeof body.originalKey === 'string' && body.originalKey.startsWith('originals/') ? body.originalKey : null,
       isLaunch: Boolean(body.isLaunch),
       isSelected: Boolean(body.isSelected),
+      isRejected: Boolean(body.isRejected),
       categoryId: body.categoryId || null,
       seasonalEventId: body.seasonalEventId || null,
       tags: {

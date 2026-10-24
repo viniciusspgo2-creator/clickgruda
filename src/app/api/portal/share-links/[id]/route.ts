@@ -5,6 +5,7 @@ import { getSessionUser, jsonError } from '@/lib/auth'
 export async function DELETE(_req: Request, { params }: { params: Promise<{ id: string }> }) {
   const session = await getSessionUser()
   if (!session) return jsonError('Faça login para continuar', 401)
+  if (session.isDemo) return jsonError('Conta Preview: operação indisponível.', 403)
   const { id } = await params
 
   const link = await db.shareLink.findUnique({ where: { id } })

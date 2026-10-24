@@ -13,6 +13,7 @@ import { createMercadoPagoPix, createAsaasPix } from '@/lib/payments'
 export async function POST(req: Request) {
   const session = await getSessionUser()
   if (!session) return jsonError('Faça login para assinar', 401)
+  if (session.isDemo) return jsonError('Conta Preview: operação indisponível.', 403)
 
   const body = await req.json().catch(() => ({}))
   const settings = await getSettings()

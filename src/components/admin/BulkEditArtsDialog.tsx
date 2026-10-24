@@ -31,6 +31,7 @@ export function BulkEditArtsDialog({ open, onOpenChange, selection, categories, 
   const [seasonal, setSeasonal] = useState('keep')
   const [launch, setLaunch] = useState('keep')
   const [selected, setSelected] = useState('keep')
+  const [rejected, setRejected] = useState('keep')
   const [tagText, setTagText] = useState('')
   const [tagMode, setTagMode] = useState<'add' | 'remove'>('add')
   const [review, setReview] = useState(false)
@@ -39,7 +40,7 @@ export function BulkEditArtsDialog({ open, onOpenChange, selection, categories, 
 
   useEffect(() => {
     if (!open) return
-    setCategory('keep'); setSeasonal('keep'); setLaunch('keep'); setSelected('keep')
+    setCategory('keep'); setSeasonal('keep'); setLaunch('keep'); setSelected('keep'); setRejected('keep'); setRejected('keep')
     setTagText(''); setTagMode('add'); setReview(false); setConfirmation('')
   }, [open])
 
@@ -50,6 +51,7 @@ export function BulkEditArtsDialog({ open, onOpenChange, selection, categories, 
       seasonalEventId?: string | null
       isLaunch?: boolean
       isSelected?: boolean
+      isRejected?: boolean
       tagNames?: string[]
       tagMode?: 'add' | 'remove'
     } = {}
@@ -57,9 +59,10 @@ export function BulkEditArtsDialog({ open, onOpenChange, selection, categories, 
     if (seasonal !== 'keep') result.seasonalEventId = seasonal === 'none' ? null : seasonal
     if (selectionValue(launch) !== undefined) result.isLaunch = selectionValue(launch)
     if (selectionValue(selected) !== undefined) result.isSelected = selectionValue(selected)
+    if (selectionValue(rejected) !== undefined) result.isRejected = selectionValue(rejected)
     if (tagNames.length) { result.tagNames = tagNames; result.tagMode = tagMode }
     return result
-  }, [category, seasonal, launch, selected, tagNames, tagMode])
+  }, [category, seasonal, launch, selected, rejected, tagNames, tagMode])
   const hasChanges = Object.keys(changes).length > 0
   const needsStrongConfirmation = selection.count > 100 || (selection.scope === 'filter' && !hasActiveAdminArtFilters(selection.filters))
 
@@ -67,6 +70,7 @@ export function BulkEditArtsDialog({ open, onOpenChange, selection, categories, 
     category === 'keep' ? null : `Categoria: ${category === 'none' ? 'remover' : categories.find((c) => c.id === category)?.name || 'desconhecida'}`,
     seasonal === 'keep' ? null : `Data sazonal: ${seasonal === 'none' ? 'remover' : events.find((e) => e.id === seasonal)?.name || 'desconhecida'}`,
     launch === 'keep' ? null : `Lançamento: ${launch === 'yes' ? 'marcar' : 'desmarcar'}`,
+    rejected === 'keep' ? null : `Biblioteca: ${rejected === 'yes' ? 'artes reprovadas' : 'principal'}`,
     selected === 'keep' ? null : `Selecionada: ${selected === 'yes' ? 'marcar' : 'desmarcar'}`,
     tagNames.length ? `${tagMode === 'add' ? 'Adicionar' : 'Remover'} tags: ${tagNames.map((t) => `#${t}`).join(', ')}` : null,
   ].filter(Boolean)
@@ -157,6 +161,7 @@ export function BulkEditArtsDialog({ open, onOpenChange, selection, categories, 
                 </Select>
               </div>
             </div>
+            <div className="space-y-1.5 rounded-xl border border-red-200 bg-red-50/50 p-3"><Label className="font-bold text-red-800">Mover para sub-biblioteca</Label><Select value={rejected} onValueChange={setRejected}><SelectTrigger className="rounded-xl"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="keep">Manter biblioteca atual</SelectItem><SelectItem value="yes">Marcar design reprovado</SelectItem><SelectItem value="no">Voltar para biblioteca principal</SelectItem></SelectContent></Select></div>
             <div className="space-y-2 rounded-xl border border-zinc-200 p-3">
               <Label className="flex items-center gap-2 font-bold"><Tags className="h-4 w-4 text-orange-500" /> Tags em lote <span className="font-normal text-zinc-400">(opcional)</span></Label>
               <div className="flex flex-col gap-2 sm:flex-row">

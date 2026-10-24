@@ -37,6 +37,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ token: s
   // Filtro no banco (o acervo pode ter milhares de artes)
   const where: Prisma.ArtWhereInput = {
     AND: [
+      { isRejected: false },
       ...(category ? [{ category: { is: { name: category } } }] : []),
       ...(q
         ? [
@@ -71,7 +72,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ token: s
   if (page === 1) {
     const [cats, catGroups] = await Promise.all([
       db.category.findMany({ select: { id: true, name: true, emoji: true, icon: true } }),
-      db.art.groupBy({ by: ['categoryId'], _count: true }),
+      db.art.groupBy({ by: ['categoryId'], where: { isRejected: false }, _count: true }),
     ])
     const counts = new Map(catGroups.map((g) => [g.categoryId, g._count]))
     categories = cats

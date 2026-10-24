@@ -74,6 +74,7 @@ const TABS: { id: PortalTab; label: string; icon: React.ElementType }[] = [
   { id: 'todas', label: 'Todas', icon: LayoutGrid },
   { id: 'lancamentos', label: 'Lançamentos', icon: Flame },
   { id: 'selecionadas', label: 'Selecionadas', icon: Star },
+  { id: 'reprovadas', label: 'Artes reprovadas', icon: EyeOff },
   { id: 'sazonal', label: 'Sazonal', icon: CalendarHeart },
   { id: 'favoritas', label: 'Favoritas', icon: Heart },
   { id: 'downloads', label: 'Meus downloads', icon: Download },
@@ -202,6 +203,20 @@ export function PortalView() {
   const [portalTheme, setPortalTheme] = useState<'dark' | 'light'>('dark')
   const [mockupDialogOpen, setMockupDialogOpen] = useState(false)
   const [shopDialogOpen, setShopDialogOpen] = useState(false)
+  const [previewWelcomeOpen, setPreviewWelcomeOpen] = useState(false)
+  useEffect(() => {
+    if (!user?.isPreview) return
+    try {
+      if (sessionStorage.getItem(`cg-preview-welcome-${user.id}`) !== '1') setPreviewWelcomeOpen(true)
+    } catch { setPreviewWelcomeOpen(true) }
+  }, [user?.id, user?.isPreview])
+  function dismissPreviewWelcome() {
+    setPreviewWelcomeOpen(false)
+    try { if (user?.id) sessionStorage.setItem(`cg-preview-welcome-${user.id}`, '1') } catch { /* private browsing */ }
+  }
+  const openMockup = () => user?.isPreview ? openExternal('https://clicktools.vercel.app/', 'preview_mockup_open') : setMockupDialogOpen(true)
+  const openShop = () => user?.isPreview ? openExternal('https://www.clickgruda.com.br', 'preview_store_open') : setShopDialogOpen(true)
+
 
   // O campo acompanha mudanças externas (logo, limpar filtros, troca de página).
   useEffect(() => { setSearchInput(q) }, [q])
@@ -492,13 +507,14 @@ export function PortalView() {
 
   const logout = async () => {
     await fetch('/api/auth/logout', { method: 'POST' })
+    try { if (user?.isPreview) sessionStorage.removeItem(`cg-preview-welcome-${user.id}`) } catch { /* ignore */ }
     setUser(null)
     resetFilters()
     setView('landing')
   }
 
   return (
-    <div className={cn("cg-portal relative flex min-h-screen flex-col bg-[#080d18] text-slate-100 lg:pl-[248px]", portalTheme === 'light' && 'cg-theme-light')}>
+    <div onContextMenu={user.isDemo ? (event) => event.preventDefault() : undefined} className={cn("cg-portal relative flex min-h-screen flex-col bg-[#080d18] text-slate-100 lg:pl-[248px]", portalTheme === 'light' && 'cg-theme-light')}>
       {/* Navegação fixa de desktop. Todos os destinos usam os filtros originais da biblioteca. */}
       <aside className="cg-portal-sidebar fixed inset-y-0 left-0 z-50 hidden w-[248px] flex-col lg:flex" aria-label="Navegação principal da Click&Gruda">
         <button type="button" className="cg-sidebar-brand" onClick={() => { resetFilters(); setSearchInput(''); window.scrollTo({ top: 0, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' }) }} aria-label="Ir para a página inicial da biblioteca">
@@ -512,7 +528,7 @@ export function PortalView() {
           <nav className="cg-sidebar-nav" aria-label="Explorar a biblioteca">
             {TABS.map((item) => {
               const active = tab === item.id
-              const count = item.id === 'todas' ? counts?.arts : item.id === 'lancamentos' ? counts?.lancamentos : item.id === 'selecionadas' ? counts?.selecionadas : item.id === 'favoritas' ? counts?.favoritas : item.id === 'downloads' ? counts?.minhasDownloads : undefined
+              const count = item.id === 'todas' ? counts?.arts : item.id === 'lancamentos' ? counts?.lancamentos : item.id === 'selecionadas' ? counts?.selecionadas : item.id === 'reprovadas' ? counts?.reprovadas : item.id === 'favoritas' ? counts?.favoritas : item.id === 'downloads' ? counts?.minhasDownloads : undefined
               return (
                 <button key={item.id} type="button" aria-current={active ? 'page' : undefined}
                   onClick={() => setFilter({ tab: item.id, ...(item.id === 'todas' ? { sort: 'recentes' } : {}), ...(item.id !== 'sazonal' ? { seasonalEventId: null } : {}) })}
@@ -529,7 +545,7 @@ export function PortalView() {
             <button type="button" className="cg-sidebar-link" onClick={() => { setMenuOpen(true) }}><SlidersHorizontal className="h-[18px] w-[18px]"/><span>Categorias e filtros</span><ArrowUpRight className="ml-auto h-3.5 w-3.5 opacity-50"/></button>
             <button type="button" className="cg-sidebar-link" onClick={() => { navigateTab('todas', 'baixadas') }}><Flame className="h-[18px] w-[18px]"/><span>Mais baixadas</span></button>
             {!user.isDemo && <button type="button" className="cg-sidebar-link" onClick={() => setZipOpen(true)}><Download className="h-[18px] w-[18px]"/><span>Baixar catálogo em ZIP</span></button>}
-            <button type="button" className="cg-sidebar-link" onClick={() => { setSuggestionOpen(true) }}><Lightbulb className="h-[18px] w-[18px]"/><span>Sugerir uma arte</span></button>
+            <button type="button" className="cg-sidebar-link" onClick={() => user.isDemo ? toast.info('Sugestões liberadas após a assinatura.') : setSuggestionOpen(true)}><Lightbulb className="h-[18px] w-[18px]"/><span>Sugerir uma arte</span></button>
             {user.role === 'ADMIN' && <button type="button" className="cg-sidebar-link" onClick={() => setView('admin')}><Settings2 className="h-[18px] w-[18px]"/><span>Painel Master</span></button>}
           </nav>
         </div>
@@ -605,7 +621,7 @@ export function PortalView() {
               type="button"
               aria-label="Abrir informações do Gerador de Mockup"
               title="Gerador de Mockup"
-              onClick={() => setMockupDialogOpen(true)}
+              onClick={openMockup}
               className="cg-header-quicklink"
             >
               <Box className="h-4 w-4 shrink-0" />
@@ -616,7 +632,7 @@ export function PortalView() {
               type="button"
               aria-label="Abrir informações da Loja Online"
               title="Loja Online"
-              onClick={() => setShopDialogOpen(true)}
+              onClick={openShop}
               className="cg-header-quicklink cg-header-quicklink-shop"
             >
               <Store className="h-4 w-4 shrink-0" />
@@ -673,7 +689,7 @@ export function PortalView() {
               <DropdownMenuItem onClick={() => setView('landing')}>
                 <Sparkles className="mr-2 h-4 w-4" /> Ver landing page
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setSuggestionOpen(true)} className="font-bold text-orange-600">
+              <DropdownMenuItem onClick={() => user.isDemo ? toast.info('Sugestões liberadas após a assinatura.') : setSuggestionOpen(true)} className="font-bold text-orange-600">
                 <Lightbulb className="mr-2 h-4 w-4" /> Sugerir uma nova arte
               </DropdownMenuItem>
               <DropdownMenuSeparator />
@@ -686,10 +702,10 @@ export function PortalView() {
 
         {/* Atalhos próprios do mobile — mantêm a busca legível no cabeçalho. */}
         <nav className="cg-mobile-quicklinks mx-auto flex w-full max-w-[1600px] items-center gap-2 px-4 pb-2.5 md:hidden sm:px-7" aria-label="Ferramentas rápidas">
-          <button type="button" onClick={() => setMockupDialogOpen(true)} className="cg-header-quicklink flex-1 justify-center">
+          <button type="button" onClick={openMockup} className="cg-header-quicklink flex-1 justify-center">
             <Box className="h-4 w-4" /> Gerador de Mockup <ExternalLink className="h-3 w-3" />
           </button>
-          <button type="button" onClick={() => setShopDialogOpen(true)} className="cg-header-quicklink cg-header-quicklink-shop flex-1 justify-center">
+          <button type="button" onClick={openShop} className="cg-header-quicklink cg-header-quicklink-shop flex-1 justify-center">
             <Store className="h-4 w-4" /> Loja Online <ExternalLink className="h-3 w-3" />
           </button>
           <button type="button" onClick={toggleTheme} className="cg-theme-toggle flex-none px-3">
@@ -709,7 +725,9 @@ export function PortalView() {
                     ? counts?.lancamentos
                     : t.id === 'selecionadas'
                       ? counts?.selecionadas
-                      : t.id === 'favoritas'
+                      : t.id === 'reprovadas'
+                    ? counts?.reprovadas
+                    : t.id === 'favoritas'
                       ? counts?.favoritas
                       : t.id === 'downloads'
                         ? counts?.minhasDownloads
@@ -918,7 +936,7 @@ export function PortalView() {
               </div>
             </div>
             <div className="flex shrink-0 flex-wrap gap-2">
-              <button onClick={() => setSuggestionOpen(true)} className="inline-flex h-9 flex-1 items-center justify-center gap-1.5 rounded-xl border border-orange-400/30 bg-orange-500/15 px-3 text-xs font-bold text-orange-200 transition-colors hover:bg-orange-500/25 sm:flex-none"><Lightbulb className="h-3.5 w-3.5" /> Sugerir arte</button>
+              <button onClick={() => user.isDemo ? toast.info('Sugestões liberadas após a assinatura.') : setSuggestionOpen(true)} className="inline-flex h-9 flex-1 items-center justify-center gap-1.5 rounded-xl border border-orange-400/30 bg-orange-500/15 px-3 text-xs font-bold text-orange-200 transition-colors hover:bg-orange-500/25 sm:flex-none"><Lightbulb className="h-3.5 w-3.5" /> Sugerir arte</button>
               <button onClick={() => (user.isDemo ? toast.info('Disponível após a ativação do acesso.') : setEnhanceOpen(true))} className="inline-flex h-9 flex-1 items-center justify-center gap-1.5 rounded-xl border border-white/15 bg-[#0b1423] px-3 text-xs font-bold text-slate-100 transition-colors hover:bg-[#253550] sm:flex-none"><Wand2 className="h-3.5 w-3.5" /> Melhorar minha arte</button>
             </div>
           </div>
@@ -978,6 +996,7 @@ export function PortalView() {
                 Lançamentos <span className="rounded-full bg-orange-500 px-2 py-0.5 text-[10px] font-black uppercase text-white">novo</span>
               </span>
             )}
+            {tab === 'reprovadas' && 'Sub-biblioteca · Artes com design reprovado'}
             {tab === 'selecionadas' && (
               <span className="flex items-center gap-2">
                 Artes selecionadas <Star className="h-4.5 w-4.5 fill-amber-400 text-amber-500" />
@@ -995,7 +1014,7 @@ export function PortalView() {
 
         {/* Grid */}
         {tab === 'compartilhar' ? (
-          <ShareCatalogSection />
+          user.isDemo ? <div className="rounded-2xl border border-orange-200 bg-orange-50 p-6 text-center text-sm font-bold text-orange-800">A criação de catálogos compartilhados está bloqueada na conta de avaliação.</div> : <ShareCatalogSection />
         ) : artsQ.isError ? (
           <div role="alert" className="rounded-3xl border border-rose-200 bg-white px-5 py-12 text-center shadow-sm">
             <SearchX className="mx-auto h-9 w-9 text-rose-400" />
@@ -1075,7 +1094,7 @@ export function PortalView() {
           <span>© {new Date().getFullYear()} Click &amp; Gruda · Acesso ativo</span>
           <div className="flex items-center gap-4">
             <button
-              onClick={() => setSuggestionOpen(true)}
+              onClick={() => user.isDemo ? toast.info('Sugestões liberadas após a assinatura.') : setSuggestionOpen(true)}
               className="inline-flex items-center gap-1.5 font-bold text-zinc-400 transition-colors hover:text-orange-600"
             >
               <Lightbulb className="h-3.5 w-3.5" /> Sugerir uma nova arte
@@ -1213,6 +1232,30 @@ export function PortalView() {
             <Button type="button" variant="outline" onClick={() => window.open(WHATSAPP.link(shopSupportMessage), '_blank', 'noopener,noreferrer')} className="border-white/15 bg-white/5 text-slate-100 hover:bg-white/10">Solicitar voucher</Button>
             <Button type="button" onClick={() => { setShopDialogOpen(false); openExternal('https://www.clickgruda.com.br', 'catalog_store_open') }} className="bg-orange-500 text-white hover:bg-orange-600">Ir para a Loja Online</Button>
           </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Popup comercial exclusivo da conta universal Preview. */}
+      <Dialog open={previewWelcomeOpen && !!user.isPreview} onOpenChange={(value) => { if (!value) dismissPreviewWelcome() }}>
+        <DialogContent className="max-h-[92dvh] max-w-lg overflow-y-auto rounded-3xl border border-orange-500/25 bg-[#121a2a] p-6 text-white sm:p-8">
+          <DialogHeader>
+            <span className="mb-2 w-fit rounded-full border border-orange-400/30 bg-orange-500/15 px-3 py-1 text-[10px] font-black uppercase tracking-wider text-orange-300">Bem-vindo à Click & Gruda</span>
+            <DialogTitle className="text-left text-2xl font-black leading-tight text-white sm:text-3xl">Explore por dentro. Imagine o que você pode criar.</DialogTitle>
+            <DialogDescription className="pt-2 text-left text-sm leading-7 text-slate-300">
+              Esta é uma demonstração da nossa biblioteca, pensada para quem trabalha com personalizados e não quer perder tempo em pastas desorganizadas. Aqui, qualidade vem antes de quantidade.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-3 rounded-2xl border border-white/10 bg-white/5 p-4 text-sm leading-6 text-slate-200">
+            <p><strong className="text-orange-300">Novas artes toda semana.</strong> Nosso acervo cresce com curadoria, e evitamos adicionar arquivos apenas para inflar números.</p>
+            <p><strong className="text-orange-300">Estamos em expansão.</strong> Queremos trazer mais novidades, cursos e dicas práticas para quem cria e vende personalizados.</p>
+            <p><strong className="text-orange-300">Nossa meta:</strong> chegar à virada de 2026 para 2027 com 15 mil artes selecionadas. É um objetivo de crescimento, não uma quantidade já disponível.</p>
+          </div>
+          <p className="text-xs leading-5 text-slate-400">Neste modo você pode conhecer a biblioteca e explorar os recursos, mas downloads, gravações e edições não estão liberados. As estampas aparecem em prévias protegidas.</p>
+          <div className="grid gap-2 sm:grid-cols-2">
+            <Button onClick={dismissPreviewWelcome} className="h-12 rounded-xl bg-orange-500 font-black text-white hover:bg-orange-600">Começar a navegar <ArrowRight className="ml-1.5 h-4 w-4" /></Button>
+            <Button onClick={dismissPreviewWelcome} variant="outline" className="h-12 rounded-xl border-white/25 bg-white/5 font-bold text-slate-100 hover:bg-white/10">Fechar</Button>
+          </div>
+          <a href={WHATSAPP.link('Olá! Conheci a versão Preview da Click & Gruda e quero saber como liberar meu acesso completo.')} target="_blank" rel="noopener noreferrer" className="text-center text-xs font-bold text-orange-300 underline underline-offset-4">Gostou da plataforma? Saiba como ter acesso completo</a>
         </DialogContent>
       </Dialog>
 

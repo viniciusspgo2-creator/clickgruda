@@ -43,6 +43,8 @@ export function ArtCard({ art, locked = false, demo = false, downloadState = 'id
             src={art.imageUrl}
             alt={art.title}
             loading="lazy"
+            draggable={false}
+            onDragStart={demo ? (event) => event.preventDefault() : undefined}
             decoding="async"
             className={cn(
               'absolute inset-0 h-full w-full object-contain p-0 transition-transform duration-300 ease-out group-hover:scale-[1.012]',

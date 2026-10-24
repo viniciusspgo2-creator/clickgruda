@@ -123,6 +123,7 @@ type ArtFormState = {
   tagNames: string[]
   isLaunch: boolean
   isSelected: boolean
+  isRejected: boolean
 }
 
 const emptyForm: ArtFormState = {
@@ -133,6 +134,7 @@ const emptyForm: ArtFormState = {
   tagNames: [],
   isLaunch: true,
   isSelected: false,
+  isRejected: false,
 }
 
 export function AdminArtsSection() {
@@ -140,6 +142,10 @@ export function AdminArtsSection() {
   const [formOpen, setFormOpen] = useState(false)
   const [bulkOpen, setBulkOpen] = useState(false)
   const [editBulkOpen, setEditBulkOpen] = useState(false)
+  const [deleteBulkOpen, setDeleteBulkOpen] = useState(false)
+  const [deleteConfirmation, setDeleteConfirmation] = useState('')
+  const [deletingBulk, setDeletingBulk] = useState(false)
+  const [creatingTag, setCreatingTag] = useState(false)
   const [selectedIds, setSelectedIds] = useState<Set<string>>(() => new Set())
   const [allSelection, setAllSelection] = useState<{ filters: AdminArtFilters; count: number; excludedIds: Set<string> } | null>(null)
   const [filterCategory, setFilterCategory] = useState('all')
@@ -205,6 +211,7 @@ export function AdminArtsSection() {
       tagNames: art.tags.map((t) => t.name),
       isLaunch: art.isLaunch,
       isSelected: art.isSelected,
+      isRejected: Boolean(art.isRejected),
     })
     setFormOpen(true)
   }
@@ -236,6 +243,7 @@ export function AdminArtsSection() {
         tagNames: form.tagNames,
         isLaunch: form.isLaunch,
         isSelected: form.isSelected,
+        isRejected: form.isRejected,
       }
       const res = await fetch(form.id ? `/api/admin/arts/${form.id}` : '/api/admin/arts', {
         method: form.id ? 'PATCH' : 'POST',
@@ -255,6 +263,40 @@ export function AdminArtsSection() {
     } finally {
       setSaving(false)
     }
+  }
+
+  const createTagHere = async () => {
+    const name = tagInput.trim().toLowerCase().slice(0, 60)
+    if (!name) return toast.error('Escreva o nome da nova tag.')
+    if (form.tagNames.includes(name)) { setTagInput(''); return }
+    setCreatingTag(true)
+    try {
+      const exists = (tagsQ.data?.tags || []).some((t) => t.name === name)
+      if (!exists) {
+        const res = await fetch('/api/admin/tags', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name }) })
+        if (!res.ok && res.status !== 409) throw new Error((await res.json()).error || 'Falha ao criar tag')
+        await queryClient.invalidateQueries({ queryKey: ['admin-tags'] })
+      }
+      setForm((f) => ({ ...f, tagNames: [...new Set([...f.tagNames, name])] }))
+      setTagInput('')
+      toast.success(exists ? 'Tag adicionada à arte.' : 'Nova tag criada e adicionada!')
+    } catch (error) { toast.error(error instanceof Error ? error.message : 'Erro ao criar tag.') }
+    finally { setCreatingTag(false) }
+  }
+
+  async function deleteSelectedArts() {
+    if (deletingBulk || selectionCount === 0 || deleteConfirmation !== 'EXCLUIR') return
+    setDeletingBulk(true)
+    try {
+      const res = await fetch('/api/admin/arts/bulk', { method: 'DELETE', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...bulkSelection, expectedCount: bulkSelection.count, confirmation: 'EXCLUIR' }) })
+      const result = await res.json()
+      if (!res.ok) throw new Error(result.error || 'Falha ao excluir as artes selecionadas.')
+      toast.success(`${result.deleted} arte(s) excluída(s) do banco de dados.`)
+      setDeleteBulkOpen(false); setDeleteConfirmation(''); onBulkApplied()
+      setPage(1)
+    } catch (error) { toast.error(error instanceof Error ? error.message : 'Falha na exclusão.') }
+    finally { setDeletingBulk(false) }
   }
 
   // Estrela rápida: marca/desmarca a arte como "Selecionada" direto na lista
@@ -430,6 +472,10 @@ export function AdminArtsSection() {
             <SelectItem value="no">Não selecionadas</SelectItem>
           </SelectContent>
         </Select>
+        <Select value={filterQuality} onValueChange={(v) => changeFilter(setFilterQuality, v)}>
+          <SelectTrigger className="h-9 w-[170px] rounded-xl text-xs"><SelectValue /></SelectTrigger>
+          <SelectContent><SelectItem value="all">Ambas bibliotecas</SelectItem><SelectItem value="approved">Biblioteca principal</SelectItem><SelectItem value="rejected">Artes reprovadas</SelectItem><SelectItem value="no-tags">Sem tags</SelectItem></SelectContent>
+        </Select>
         {(hasActiveAdminArtFilters(filters) || search) && (
           <Button variant="ghost" size="sm" onClick={() => {
             setSearch(''); setDebouncedSearch(''); setFilterCategory('all'); setFilterSeasonal('all')
@@ -442,6 +488,7 @@ export function AdminArtsSection() {
       <div className="flex flex-wrap items-center gap-2 rounded-2xl border border-zinc-200 bg-white p-3 shadow-sm">
         <span className="mr-1 inline-flex items-center gap-1.5 text-xs font-extrabold text-zinc-700"><ImageOff className="h-4 w-4 text-orange-500" /> Revisar cadastros</span>
         <button type="button" aria-pressed={filterCategory === 'none'} onClick={() => { changeFilter(setFilterCategory, filterCategory === 'none' ? 'all' : 'none'); setFilterQuality('all') }} className={cn('rounded-lg border px-3 py-2 text-xs font-bold transition-colors', filterCategory === 'none' ? 'border-orange-400 bg-orange-500 text-white' : 'border-zinc-200 bg-zinc-50 text-zinc-600 hover:border-orange-300 hover:text-orange-700')}>Sem categoria</button>
+        <button type="button" aria-pressed={filterQuality === 'rejected'} onClick={() => changeFilter(setFilterQuality, filterQuality === 'rejected' ? 'all' : 'rejected')} className={cn('rounded-lg border px-3 py-2 text-xs font-bold', filterQuality === 'rejected' ? 'bg-orange-500 text-white' : 'border-zinc-200 bg-zinc-50 text-zinc-600')}>Artes reprovadas</button>
         <button type="button" aria-pressed={filterQuality === 'no-tags'} onClick={() => { changeFilter(setFilterQuality, filterQuality === 'no-tags' ? 'all' : 'no-tags'); setFilterCategory('all') }} className={cn('rounded-lg border px-3 py-2 text-xs font-bold transition-colors', filterQuality === 'no-tags' ? 'border-orange-400 bg-orange-500 text-white' : 'border-zinc-200 bg-zinc-50 text-zinc-600 hover:border-orange-300 hover:text-orange-700')}>Sem tags</button>
         <div className="ml-auto inline-flex shrink-0 gap-1 rounded-xl bg-zinc-100 p-1" role="group" aria-label="Visualização das artes">
           <button type="button" aria-pressed={viewMode === 'list'} aria-label="Visualizar artes em lista" title="Modo lista" onClick={() => setViewMode('list')} className={cn('flex h-8 items-center gap-1.5 rounded-lg px-2.5 text-xs font-bold', viewMode === 'list' ? 'bg-white text-orange-600 shadow-sm' : 'text-zinc-500 hover:text-zinc-800')}><List className="h-4 w-4" /><span className="hidden sm:inline">Lista</span></button>
@@ -468,11 +515,22 @@ export function AdminArtsSection() {
         <div className="ml-auto flex flex-wrap items-center gap-2">
           {selectionCount > 0 && <span className="rounded-lg bg-white px-2.5 py-1.5 font-black text-orange-600">{selectionCount.toLocaleString('pt-BR')} selecionadas</span>}
           {selectionCount > 0 && <Button size="sm" variant="ghost" className="h-8 rounded-lg text-zinc-500" onClick={clearBulkSelection}>Limpar seleção</Button>}
+          <Button size="sm" disabled={selectionCount === 0} variant="outline" className="h-9 rounded-lg border-red-300 font-black text-red-600 hover:bg-red-50" onClick={() => { setDeleteConfirmation(''); setDeleteBulkOpen(true) }}><Trash2 className="mr-1.5 h-4 w-4" /> Excluir selecionadas</Button>
           <Button size="sm" disabled={selectionCount === 0} className="h-9 rounded-lg bg-orange-500 px-3.5 font-black hover:bg-orange-600" onClick={() => setEditBulkOpen(true)}>
             <Layers3 className="mr-1.5 h-4 w-4" /> Editar em lote
           </Button>
         </div>
       </div>
+
+      <AlertDialog open={deleteBulkOpen} onOpenChange={(v) => { if (!deletingBulk) setDeleteBulkOpen(v) }}>
+        <AlertDialogContent><AlertDialogHeader><AlertDialogTitle>Excluir {selectionCount.toLocaleString('pt-BR')} artes permanentemente?</AlertDialogTitle>
+          <AlertDialogDescription>Esta ação remove as artes selecionadas, favoritos e registros de download relacionados do banco de dados. Não tem desfazer. Os arquivos no R2 não serão apagados automaticamente.</AlertDialogDescription></AlertDialogHeader>
+          <Label htmlFor="confirm-delete-bulk" className="font-bold text-red-700">Digite EXCLUIR para confirmar</Label>
+          <Input id="confirm-delete-bulk" value={deleteConfirmation} onChange={(e) => setDeleteConfirmation(e.target.value)} placeholder="EXCLUIR" autoComplete="off" />
+          <AlertDialogFooter><AlertDialogCancel disabled={deletingBulk}>Cancelar</AlertDialogCancel>
+            <Button disabled={deletingBulk || deleteConfirmation !== 'EXCLUIR'} onClick={deleteSelectedArts} className="bg-red-600 font-bold hover:bg-red-700">{deletingBulk ? 'Excluindo...' : 'Excluir definitivamente'}</Button>
+          </AlertDialogFooter></AlertDialogContent>
+      </AlertDialog>
 
       <BulkEditArtsDialog
         open={editBulkOpen} onOpenChange={setEditBulkOpen}
@@ -513,6 +571,7 @@ export function AdminArtsSection() {
                 <div className="flex min-h-6 flex-wrap gap-1">
                   {art.category ? <Badge className="bg-orange-50 text-[10px] font-bold text-orange-700">{art.category.emoji} {art.category.name}</Badge> : <Badge className="bg-rose-50 text-[10px] text-rose-600">Sem categoria</Badge>}
                   {art.seasonalEvent && <Badge variant="outline" className="text-[10px] text-zinc-600">{art.seasonalEvent.emoji} {art.seasonalEvent.name}</Badge>}
+                  {art.isRejected && <Badge className="bg-red-100 text-[10px] text-red-700">Design reprovado</Badge>}
                   {art.tags.length === 0 && <Badge className="bg-amber-50 text-[10px] text-amber-700">Sem tags</Badge>}
                 </div>
                 <p className="line-clamp-1 text-[11px] text-zinc-500">{art.tags.map((tag) => `#${tag.name}`).join(' · ') || 'Adicione tags para facilitar a busca'}</p>
@@ -540,6 +599,7 @@ export function AdminArtsSection() {
                 <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm font-bold text-zinc-900">
                   <span className="shrink-0 rounded-md bg-zinc-900 px-1.5 py-0.5 font-mono text-[10px] font-bold text-orange-300">{formatArtCode(art.code)}</span>
                   <span className="min-w-0 truncate">{art.title}</span>
+                  {art.isRejected && <Badge className="bg-red-100 text-[9px] text-red-700">Reprovada</Badge>}
                   {art.isLaunch && <Badge className="bg-orange-100 text-[9px] font-black uppercase text-orange-600">Novo</Badge>}
                   {art.isSelected && <Badge className="bg-amber-100 text-[9px] font-black uppercase text-amber-700">⭐ Selecionada</Badge>}
                   {art.seasonalEvent && <Badge variant="outline" className="text-[9px] font-black text-zinc-500">{art.seasonalEvent.emoji} {art.seasonalEvent.name}</Badge>}
@@ -738,6 +798,8 @@ export function AdminArtsSection() {
                   className="min-w-24 flex-1 bg-transparent text-sm outline-none placeholder:text-zinc-300"
                 />
               </div>
+              <Button size="sm" variant="outline" type="button" disabled={!tagInput.trim() || creatingTag} onClick={createTagHere} className="mt-2 h-9 rounded-xl font-bold text-orange-600"><Plus className="mr-1 h-3.5 w-3.5" />{creatingTag ? 'Criando tag...' : 'Criar/usar tag agora'}</Button>
+              <p className="text-xs text-zinc-500">A tag será registrada sem sair deste cadastro.</p>
               {(tagsQ.data?.tags || []).filter((t) => !form.tagNames.includes(t.name)).length > 0 && (
                 <div className="flex flex-wrap gap-1 pt-1">
                   {(tagsQ.data?.tags || []).filter((t) => !form.tagNames.includes(t.name)).slice(0, 10).map((t) => (
@@ -751,6 +813,11 @@ export function AdminArtsSection() {
                   ))}
                 </div>
               )}
+            </div>
+
+            <div className="flex items-center justify-between rounded-xl border border-red-200 bg-red-50/70 px-3.5 py-3">
+              <div><p className="text-sm font-extrabold text-red-800">Design reprovado · sub-biblioteca</p><p className="text-xs text-zinc-600">Fica disponível apenas na coleção Artes reprovadas. Não aparece na biblioteca principal.</p></div>
+              <Switch checked={form.isRejected} onCheckedChange={(v) => setForm((f) => ({ ...f, isRejected: v }))} />
             </div>
 
             <div className="flex items-center justify-between rounded-xl border border-zinc-200 bg-zinc-50 px-3.5 py-3">

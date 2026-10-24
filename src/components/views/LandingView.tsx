@@ -76,6 +76,7 @@ export function LandingView() {
   const setView = useStore(s => s.setView)
   const setAuthMode = useStore(s => s.setAuthMode)
   const setPendingIntent = useStore(s => s.setPendingIntent)
+  useEffect(() => { track('landing_view', { location: 'home' }) }, [])
   const [menuOpen, setMenuOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const reduced = useReducedMotion()
@@ -100,7 +101,7 @@ export function LandingView() {
     setPendingIntent('checkout')
     setView('auth')
   }
-  const goLogin = () => { setMenuOpen(false); setAuthMode('login'); setView('auth') }
+  const goLogin = () => { track('cta_click', { location: 'login', intent: 'auth' }); setMenuOpen(false); setAuthMode('login'); setView('auth') }
   const scrollTo = (id: string) => {
     setMenuOpen(false)
     track('cta_click', { location: 'navigation', intent: id })
@@ -227,7 +228,7 @@ export function LandingView() {
       </div></section>
 
       <section id="perguntas" className="scroll-mt-24 px-4 py-20 sm:px-6 lg:py-24"><div id="faq" className="relative -top-24" aria-hidden="true"/><div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[.85fr_1.15fr] lg:px-8"><Reveal><span className="text-xs font-black uppercase tracking-[.24em] text-[#ff913f]">Sem dúvidas na hora de escolher</span><h2 className="mt-4 text-3xl font-black sm:text-4xl">Perguntas frequentes</h2><p className="mt-5 text-base leading-8 text-white/66">Confira os detalhes sobre pagamento, downloads e utilização das artes. Se precisar, nossa equipe também atende pelo WhatsApp.</p><a href={WHATSAPP.link(WHATSAPP_MESSAGES.support)} target="_blank" rel="noopener noreferrer" onClick={() => track('cta_click', {location:'faq_support'})} className="mt-7 inline-flex items-center gap-2 rounded-full border border-white/15 px-5 py-3 font-bold text-white/85 hover:border-[#ff913f]/40"><MessageCircle size={17} className="text-[#ff913f]"/> Conversar no WhatsApp <ArrowUpRight size={16}/></a></Reveal>
-        <Reveal delay={.08}><div className="rounded-[27px] border border-white/10 bg-white/[.045] px-5 sm:px-7"><Accordion type="single" collapsible>{[0,1,2,3,6,8,9,11,14].map(idx => {const f=FAQ_ITEMS[idx];return <AccordionItem key={f.q} value={`faq-${idx}`} className="border-white/10"><AccordionTrigger className="py-5 text-base font-bold leading-6 text-white/90 hover:text-[#ffb27a] hover:no-underline">{f.q}</AccordionTrigger><AccordionContent className="text-sm leading-7 text-white/64">{f.a}</AccordionContent></AccordionItem>})}</Accordion><div className="border-t border-white/10 py-5 text-sm text-white/60">Ainda tem alguma dúvida? <Link className="font-bold text-[#ffb27a] hover:underline" href="/guia">Veja nosso guia completo.</Link></div></div></Reveal>
+        <Reveal delay={.08}><div className="rounded-[27px] border border-white/10 bg-white/[.045] px-5 sm:px-7"><Accordion type="single" collapsible onValueChange={(value) => { if (value) track('faq_open', { location: value }) }}>{[0,1,2,3,6,8,9,11,14].map(idx => {const f=FAQ_ITEMS[idx];return <AccordionItem key={f.q} value={`faq-${idx}`} className="border-white/10"><AccordionTrigger className="py-5 text-base font-bold leading-6 text-white/90 hover:text-[#ffb27a] hover:no-underline">{f.q}</AccordionTrigger><AccordionContent className="text-sm leading-7 text-white/64">{f.a}</AccordionContent></AccordionItem>})}</Accordion><div className="border-t border-white/10 py-5 text-sm text-white/60">Ainda tem alguma dúvida? <Link className="font-bold text-[#ffb27a] hover:underline" href="/guia">Veja nosso guia completo.</Link></div></div></Reveal>
       </div></section>
 
       <section className="px-4 pb-20 sm:px-6 lg:pb-24"><div className="mx-auto max-w-7xl"><Reveal><div className="relative isolate overflow-hidden rounded-[32px] border border-[#ff913f]/25 bg-[radial-gradient(ellipse_at_top,rgba(255,128,31,.24),transparent_65%),#191116] px-6 py-12 text-center sm:px-10 sm:py-16"><span className="text-xs font-black uppercase tracking-[.24em] text-[#ffb27a]">Sua próxima criação começa aqui</span><h2 className="mx-auto mt-5 max-w-3xl text-3xl font-black leading-tight sm:text-4xl lg:text-5xl">Você cuida das suas vendas. <span className="text-[#ff913f]">A gente facilita suas artes.</span></h2><p className="mx-auto mt-5 max-w-2xl text-base leading-8 text-white/71">Entre para a Click&Gruda e tenha uma biblioteca organizada, atualizada e pronta para acompanhar os seus próximos projetos.</p><button onClick={() => goPurchase('final_cta')} className="mt-8 inline-flex min-h-14 w-full max-w-[380px] items-center justify-center gap-2 rounded-full bg-[#ff7b22] px-7 py-4 text-base font-black transition hover:bg-[#ff9445]">{buyLabel}<ArrowUpRight size={19}/></button>{campaignActive && <p className="mt-4 text-xs font-medium text-white/56">{price} · pagamento único · oferta promocional até 31/12/2026</p>}</div></Reveal></div></section>

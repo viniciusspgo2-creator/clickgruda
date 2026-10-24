@@ -22,7 +22,7 @@ export function normalizeAdminArtFilters(input: Partial<AdminArtFilters>): Admin
     seasonalEventId: typeof input.seasonalEventId === 'string' && input.seasonalEventId ? input.seasonalEventId.slice(0, 100) : 'all',
     launch: input.launch === 'yes' || input.launch === 'no' ? input.launch : 'all',
     selected: input.selected === 'yes' || input.selected === 'no' ? input.selected : 'all',
-    quality: input.quality === 'no-tags' ? 'no-tags' : 'all',
+    quality: ['no-tags', 'rejected', 'approved'].includes(input.quality || '') ? input.quality! : 'all',
   }
 }
 
@@ -38,7 +38,7 @@ export function adminArtFiltersFromParams(params: URLSearchParams): AdminArtFilt
 }
 
 export function buildAdminArtWhere(filters: AdminArtFilters): Prisma.ArtWhereInput {
-  const AND: Prisma.ArtWhereInput[] = [buildArtWhere({ q: filters.q })]
+  const AND: Prisma.ArtWhereInput[] = [buildArtWhere({ q: filters.q, includeRejected: true })]
   if (filters.categoryId !== 'all') {
     AND.push({ categoryId: filters.categoryId === 'none' ? null : filters.categoryId })
   }
@@ -48,6 +48,8 @@ export function buildAdminArtWhere(filters: AdminArtFilters): Prisma.ArtWhereInp
   if (filters.launch !== 'all') AND.push({ isLaunch: filters.launch === 'yes' })
   if (filters.selected !== 'all') AND.push({ isSelected: filters.selected === 'yes' })
   if (filters.quality === 'no-tags') AND.push({ tags: { none: {} } })
+  if (filters.quality === 'rejected') AND.push({ isRejected: true })
+  if (filters.quality === 'approved') AND.push({ isRejected: false })
   return { AND }
 }
 

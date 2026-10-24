@@ -21,16 +21,17 @@ export async function GET(req: Request) {
 
   if ((scope === 'category' || scope === 'event') && !id) return jsonError('Escolha uma categoria ou data.', 400)
 
+  const rejected = scope === 'rejected'
   const base =
     scope === 'category'
-      ? { categoryId: id }
+      ? { categoryId: id, isRejected: false }
       : scope === 'event'
-        ? { seasonalEventId: id }
+        ? { seasonalEventId: id, isRejected: false }
         : scope === 'launch'
-          ? { isLaunch: true }
+          ? { isLaunch: true, isRejected: false }
           : scope === 'selected'
-            ? { isSelected: true }
-            : {}
+            ? { isSelected: true, isRejected: false }
+            : { isRejected: rejected }
 
   const [arts, alreadyHad, quota] = await Promise.all([
     db.art.findMany({

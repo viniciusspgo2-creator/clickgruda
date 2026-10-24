@@ -18,6 +18,7 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
   if (typeof body.originalKey === 'string' && body.originalKey.startsWith('originals/')) data.originalKey = body.originalKey
   if (typeof body.isLaunch === 'boolean') data.isLaunch = body.isLaunch
   if (typeof body.isSelected === 'boolean') data.isSelected = body.isSelected
+  if (typeof body.isRejected === 'boolean') data.isRejected = body.isRejected
   if ('categoryId' in body) data.categoryId = body.categoryId || null
   if ('seasonalEventId' in body) data.seasonalEventId = body.seasonalEventId || null
 

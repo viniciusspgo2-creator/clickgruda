@@ -14,6 +14,7 @@ import { getSettings } from '@/lib/settings'
 export async function POST() {
   const session = await getSessionUser()
   if (!session) return jsonError('Faça login para continuar', 401)
+  if (session.isDemo) return jsonError('Conta Preview: operação indisponível.', 403)
 
   const settings = await getSettings()
   const manualEnabled = settings.pix_manual_enabled === 'true' && Boolean((settings.pix_key || '').trim())

@@ -5,6 +5,7 @@ import { getSessionUser, jsonError } from '@/lib/auth'
 export async function GET() {
   const session = await getSessionUser()
   if (!session) return jsonError('Faça login para continuar', 401)
+  if (session.isDemo) return jsonError('Catálogos compartilhados indisponíveis no Preview.', 403)
 
   const links = await db.shareLink.findMany({
     where: { userId: session.id },
@@ -31,7 +32,9 @@ const VALID_DAYS = [1, 3, 7]
 export async function POST(req: Request) {
   const session = await getSessionUser()
   if (!session) return jsonError('Faça login para continuar', 401)
+  if (session.isDemo) return jsonError('Catálogos compartilhados indisponíveis no Preview.', 403)
   if (!session.hasAccess) return jsonError('Assine o acesso vitalício para compartilhar o catálogo.', 403)
+  if (session.isDemo) return jsonError('Conta Preview: operação indisponível.', 403)
 
   const body = await req.json().catch(() => ({}))
   const whatsapp = typeof body.whatsapp === 'string' ? body.whatsapp.replace(/[^\d+]/g, '').slice(0, 20) : ''

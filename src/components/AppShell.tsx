@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { ArrowUp } from 'lucide-react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { useStore, type View } from '@/lib/store'
@@ -34,6 +35,13 @@ export function AppShell() {
       })
   )
 
+  const [showBackToTop, setShowBackToTop] = useState(false)
+  useEffect(() => {
+    const onScroll = () => setShowBackToTop(window.scrollY > 520)
+    window.addEventListener('scroll', onScroll, { passive: true })
+    onScroll()
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
   const view = useStore((s) => s.view)
   const setView = useStore((s) => s.setView)
   const setUser = useStore((s) => s.setUser)
@@ -162,6 +170,7 @@ export function AppShell() {
             {view === 'catalogo' && <SharedCatalogView />}
           </motion.div>
         </AnimatePresence>
+        {showBackToTop && <button type="button" title="Voltar ao topo" aria-label="Voltar ao topo da página" onClick={() => window.scrollTo({ top: 0, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' })} className="fixed bottom-24 right-5 z-[65] flex h-11 w-11 items-center justify-center rounded-full border border-white/20 bg-zinc-950 text-orange-400 shadow-xl transition hover:-translate-y-1 hover:bg-orange-600 hover:text-white focus-visible:outline-2 focus-visible:outline-orange-500 sm:bottom-24"><ArrowUp className="h-5 w-5"/></button>}
       </div>
     </QueryClientProvider>
   )

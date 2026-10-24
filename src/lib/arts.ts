@@ -10,6 +10,7 @@ export type ArtDTO = {
   imageUrl: string
   isLaunch: boolean
   isSelected: boolean
+  isRejected: boolean
   downloadsCount: number
   createdAt: string
   category: { id: string; name: string; emoji: string } | null
@@ -20,6 +21,7 @@ export type ArtDTO = {
 
 export type ArtQuery = {
   userId?: string | null
+  includeRejected?: boolean // usado pelo admin: busca inclui ambas as bibliotecas
   /** todas | lancamentos | selecionadas | sazonal | favoritas | downloads */
   tab?: string
   q?: string
@@ -49,6 +51,7 @@ function toDTO(a: ArtRow, favSet: Set<string>): ArtDTO {
     imageUrl: a.imageUrl,
     isLaunch: a.isLaunch,
     isSelected: a.isSelected,
+    isRejected: a.isRejected,
     downloadsCount: a.downloadsCount,
     createdAt: a.createdAt.toISOString(),
     category: a.category ? { id: a.category.id, name: a.category.name, emoji: a.category.emoji } : null,
@@ -62,6 +65,8 @@ function toDTO(a: ArtRow, favSet: Set<string>): ArtDTO {
 export function buildArtWhere(o: ArtQuery): Prisma.ArtWhereInput {
   const AND: Prisma.ArtWhereInput[] = []
   const tab = o.tab || 'todas'
+  // Sub-biblioteca separada por padrão; busca e destaques nunca misturam artes reprovadas.
+  if (!o.includeRejected) AND.push({ isRejected: tab === 'reprovadas' })
 
   if (tab === 'lancamentos') AND.push({ isLaunch: true })
   if (tab === 'selecionadas') AND.push({ isSelected: true })
@@ -69,7 +74,11 @@ export function buildArtWhere(o: ArtQuery): Prisma.ArtWhereInput {
   if (tab === 'favoritas') AND.push({ favorites: { some: { userId: o.userId || '__none__' } } })
 
   if (o.eventId) AND.push({ seasonalEventId: o.eventId })
-  if (o.categoryIds?.length) AND.push({ categoryId: { in: o.categoryIds } })
+  if (o.categoryIds?.length) {
+    const hasNone = o.categoryIds.includes('__none__')
+    const ids = o.categoryIds.filter((id) => id !== '__none__')
+    AND.push(hasNone ? { OR: [{ categoryId: null }, ...(ids.length ? [{ categoryId: { in: ids } }] : [])] } : { categoryId: { in: ids } })
+  }
   if (o.tagIds?.length) AND.push({ tags: { some: { tagId: { in: o.tagIds } } } })
 
   const q = (o.q || '').trim().slice(0, 160)

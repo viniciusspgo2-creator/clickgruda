@@ -19,6 +19,7 @@ export type SessionUser = {
   role: string
   hasAccess: boolean
   isDemo: boolean
+  isPreview: boolean
   /** ACTIVE | PENDING_MANUAL (cadastro pré-aprovado aguardando liberação do PIX manual) */
   status: string
 }
@@ -93,7 +94,8 @@ export async function resolveSession(): Promise<SessionResolution> {
         email: user.email,
         role: user.role,
         hasAccess: user.hasAccess,
-        isDemo: user.isDemo,
+        isDemo: user.isDemo || user.isPreview,
+        isPreview: user.isPreview,
         status: user.status,
       },
       revoked: false,

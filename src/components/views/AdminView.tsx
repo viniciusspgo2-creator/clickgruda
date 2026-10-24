@@ -45,6 +45,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sh
 import { Logo } from '@/components/shared/Logo'
 import { AdminArtsSection, AdminCategoriesSection, AdminSuggestionsSection, AdminTagsSection, AdminSeasonalSection, AdminSettingsSection } from '@/components/views/AdminSections'
 import { NewUserDialog } from '@/components/admin/NewUserDialog'
+import { PreviewAccountDialog } from '@/components/admin/PreviewAccountDialog'
 import { AdminEnhanceSection, AdminSearchMissesSection, AdminSecuritySection, AdminWaitlistSection } from '@/components/views/AdminGrowthSections'
 import { useStore } from '@/lib/store'
 import { formatBRL } from '@/lib/types'
@@ -311,6 +312,11 @@ function DashboardSection({ onNavigate }: { onNavigate?: (s: AdminSection) => vo
     onError: () => toast.error('Erro ao liberar a conta.'),
   })
 
+  const analyticsQ = useQuery<{ period: string; views: number; uniqueVisitors: number; clicks: number; faq: number; topClicks: { location: string; count: number }[] }>({
+    queryKey: ['admin-analytics'], queryFn: async () => { const response = await fetch('/api/admin/analytics'); if (!response.ok) throw new Error('Falha nas métricas'); return response.json() }, staleTime: 60_000,
+  })
+  const analytics = analyticsQ.data
+
   if (isError) {
     return <div role="alert" className="rounded-2xl border border-rose-200 bg-white p-8 text-center"><ShieldAlert className="mx-auto h-8 w-8 text-rose-500" /><h2 className="mt-3 font-black text-zinc-800">Não foi possível carregar os indicadores</h2><p className="mt-1 text-sm text-zinc-500">Verifique sua conexão e tente novamente.</p><Button onClick={() => refetch()} className="mt-4 rounded-xl bg-orange-500 hover:bg-orange-600"><RefreshCw className="mr-2 h-4 w-4" /> Atualizar indicadores</Button></div>
   }
@@ -329,6 +335,16 @@ function DashboardSection({ onNavigate }: { onNavigate?: (s: AdminSection) => vo
 
   return (
     <div className="space-y-6">
+      <section className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm" aria-label="Analytics da landing page">
+        <h3 className="flex items-center gap-2 text-sm font-black text-zinc-900"><TrendingUp className="h-4 w-4 text-orange-500"/> Visitas e cliques na landing <span className="font-normal text-zinc-500">· últimos 30 dias</span></h3>
+        <div className="mt-4 grid grid-cols-2 gap-3 lg:grid-cols-4">
+          {([['Visitas', analytics?.views], ['Visitantes únicos (estimados)', analytics?.uniqueVisitors], ['Cliques em CTAs', analytics?.clicks], ['Dúvidas abertas', analytics?.faq]] as const).map(([label, value]) => (
+            <div key={label} className="rounded-xl border border-zinc-200 bg-zinc-50 p-3"><p className="text-xs font-semibold text-zinc-500">{label}</p><p className="mt-1 text-2xl font-black text-zinc-900">{value?.toLocaleString('pt-BR') ?? '—'}</p></div>
+          ))}
+        </div>
+        <div className="mt-4 flex flex-wrap items-start gap-2 text-xs text-zinc-500"><span className="font-bold text-zinc-700">Botões mais clicados:</span>{analytics?.topClicks.length ? analytics.topClicks.slice(0, 8).map((item) => <span key={item.location} className="rounded-lg bg-orange-50 px-2 py-1 font-semibold text-orange-700">{item.location}: {item.count}</span>) : 'Ainda não há dados para exibir.'}</div>
+        <p className="mt-2 text-[11px] text-zinc-400">Contagem própria de eventos (não inclui visitas anteriores à instalação e pode variar com bloqueadores de rastreamento).</p>
+      </section>
       {/* Aguardando liberação (PIX manual) */}
       {(data.pendingManualUsers?.length ?? 0) > 0 && (
         <div className="rounded-2xl border-2 border-orange-300 bg-orange-50/70 p-5">
@@ -506,6 +522,8 @@ type AdminUser = {
   hasAccess: boolean
   status: string
   isDemo?: boolean
+  isPreview?: boolean
+  previewMaxSessions?: number
   createdAt: string
   downloadsCount: number
   favoritesCount: number
@@ -562,7 +580,7 @@ function UsersSection() {
     <div className="space-y-4">
     <div className="flex flex-wrap items-center justify-between gap-3">
       <p className="text-sm font-semibold text-zinc-500">{data?.users.length ?? 0} contas cadastradas</p>
-      <NewUserDialog />
+      <div className="flex flex-wrap gap-2"><PreviewAccountDialog /><NewUserDialog /></div>
     </div>
     <div className="overflow-hidden rounded-2xl border border-zinc-200 bg-white">
       <Table>
@@ -585,7 +603,7 @@ function UsersSection() {
                   </span>
                   <div className="min-w-0">
                     <p className="truncate text-sm font-bold text-zinc-900">
-                      {u.name} {u.role === 'ADMIN' && <Badge className="ml-1 bg-orange-100 text-[9px] font-black text-orange-600">MASTER</Badge>}
+                      {u.name} {u.isPreview && <Badge className="ml-1 bg-violet-100 text-[9px] font-black text-violet-700">PREVIEW · {u.previewMaxSessions ?? 10} acessos</Badge>} {u.role === 'ADMIN' && <Badge className="ml-1 bg-orange-100 text-[9px] font-black text-orange-600">MASTER</Badge>}
                     </p>
                     <p className="truncate text-xs text-zinc-400">{u.email}</p>
                   </div>
@@ -610,7 +628,7 @@ function UsersSection() {
               </TableCell>
               <TableCell>
                 <div className="flex items-center justify-end gap-1.5">
-                  <Button
+                  {!u.isPreview && <Button
                     size="sm"
                     variant="outline"
                     className={cn(
@@ -620,22 +638,23 @@ function UsersSection() {
                     onClick={() => patchUser.mutate({ id: u.id, body: { hasAccess: !u.hasAccess } })}
                   >
                     {u.hasAccess ? 'Revogar' : 'Liberar'}
-                  </Button>
-                  <Button
+                  </Button>}
+                  {!u.isPreview && <Button
                     size="sm"
                     variant="outline"
                     className="h-8 rounded-lg text-xs font-bold text-zinc-500"
                     onClick={() => patchUser.mutate({ id: u.id, body: { role: u.role === 'ADMIN' ? 'USER' : 'ADMIN' } })}
                   >
                     {u.role === 'ADMIN' ? 'Tornar cliente' : 'Tornar master'}
-                  </Button>
-                  <ResetPasswordDialog
+                  </Button>}
+                  {u.isPreview && <PreviewAccountDialog user={u} />}
+                  {!u.isPreview && <ResetPasswordDialog
                     user={{ id: u.id, name: u.name }}
                     onSaved={(msg) => {
                       toast.success(msg)
                       queryClient.invalidateQueries({ queryKey: ['admin-users'] })
                     }}
-                  />
+                  />}
                   <AlertDialog>
                     <AlertDialogTrigger asChild>
                       <Button size="icon" variant="ghost" className="h-8 w-8 rounded-lg text-red-400 hover:bg-red-50 hover:text-red-600">

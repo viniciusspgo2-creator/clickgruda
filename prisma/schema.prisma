@@ -16,6 +16,8 @@ model User {
   role         String      @default("USER") // USER | ADMIN
   hasAccess    Boolean     @default(false)
   isDemo       Boolean     @default(false) // conta demo: navega no portal com artes embaçadas, sem download
+  isPreview    Boolean     @default(false) // conta universal de apresentação; nunca permite downloads ou gravações
+  previewMaxSessions Int  @default(10) // limite de acessos simultâneos dessa conta (1..100)
   accessSource String? // PURCHASE | ADMIN_GRANT
   status       String      @default("ACTIVE") // ACTIVE | PENDING_MANUAL (pré-aprovado, aguardando liberação do PIX manual)
   createdAt    DateTime    @default(now())
@@ -65,6 +67,7 @@ model Art {
   title           String
   imageUrl        String // URL pública da PRÉVIA (WebP leve) — é o que aparece no site
   originalKey     String? // chave do PNG ORIGINAL no R2 (privado) — nunca enviada ao navegador
+  isRejected      Boolean        @default(false) // biblioteca separada: design reprovado
   isSelected      Boolean        @default(false) // arte "especial" — aparece na aba Selecionadas do portal
   isLaunch        Boolean        @default(false)
   downloadsCount  Int            @default(0)
@@ -78,6 +81,7 @@ model Art {
   createdAt       DateTime       @default(now())
 
   @@index([code])
+  @@index([isRejected, createdAt])
 }
 
 model ArtTag {
@@ -237,6 +241,18 @@ model DownloadLimitHit {
  * O assinante envia a própria arte (pixelizada / baixa qualidade) e a equipe
  * devolve em alta resolução. O arquivo cai direto no Painel Admin Master.
  */
+/** Contagem interna de visitas e interações da landing; não guarda IP ou dados pessoais. */
+model SiteEvent {
+  id        String   @id @default(cuid())
+  name      String
+  visitorId String
+  location  String   @default("")
+  createdAt DateTime @default(now())
+
+  @@index([name, createdAt])
+  @@index([visitorId, createdAt])
+}
+
 model ArtEnhanceRequest {
   id        String   @id @default(cuid())
   userId    String

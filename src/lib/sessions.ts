@@ -52,10 +52,10 @@ export function clientIp(req: Request): string {
  * (e gera um alerta no painel quando isso acontece várias vezes).
  * Admin e conta demo ficam fora do limite.
  */
-export async function startSession(user: { id: string; role: string; isDemo: boolean }, req: Request): Promise<string> {
+export async function startSession(user: { id: string; role: string; isDemo: boolean; isPreview?: boolean; previewMaxSessions?: number }, req: Request): Promise<string> {
   const settings = await getSettings(['max_devices'])
-  const limit = intSetting(settings.max_devices, DEFAULT_MAX_DEVICES) // 0 = sem limite
-  const enforced = limit > 0 && user.role !== 'ADMIN' && !user.isDemo
+  const limit = user.isPreview ? Math.max(1, Math.min(100, user.previewMaxSessions || 10)) : intSetting(settings.max_devices, DEFAULT_MAX_DEVICES)
+  const enforced = limit > 0 && user.role !== 'ADMIN' && (!user.isDemo || user.isPreview)
 
   if (enforced) {
     const since = new Date(Date.now() - SESSION_ACTIVE_DAYS * DAY)
@@ -70,7 +70,7 @@ export async function startSession(user: { id: string; role: string; isDemo: boo
         where: { id: { in: ids } },
         data: { revokedAt: new Date(), revokedReason: 'LIMIT' },
       })
-      await flagDeviceChurn(user.id, limit)
+      if (!user.isPreview) await flagDeviceChurn(user.id, limit)
     }
   }
 

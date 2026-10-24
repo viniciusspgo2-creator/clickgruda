@@ -20,7 +20,7 @@ export async function POST(req: Request) {
     await setSessionCookie(token)
 
     return Response.json({
-      user: { id: user.id, name: user.name, email: user.email, role: user.role, hasAccess: user.hasAccess, isDemo: user.isDemo, status: user.status },
+      user: { id: user.id, name: user.name, email: user.email, role: user.role, hasAccess: user.hasAccess, isDemo: user.isDemo || user.isPreview, isPreview: user.isPreview, status: user.status },
     })
   } catch {
     return jsonError('Erro ao entrar. Tente novamente.', 500)

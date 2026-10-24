@@ -13,15 +13,16 @@ export async function GET() {
       getSettings(),
       db.category.findMany({ orderBy: { name: 'asc' } }),
       db.tag.findMany({ orderBy: { name: 'asc' } }),
-      db.art.count(),
-      db.art.count({ where: { isLaunch: true } }),
-      db.art.count({ where: { isSelected: true } }),
-      db.art.groupBy({ by: ['categoryId'], _count: true }),
-      db.artTag.groupBy({ by: ['tagId'], _count: true }),
-      db.art.groupBy({ by: ['seasonalEventId'], _count: true }),
+      db.art.count({ where: { isRejected: false } }),
+      db.art.count({ where: { isRejected: false, isLaunch: true } }),
+      db.art.count({ where: { isRejected: false, isSelected: true } }),
+      db.art.groupBy({ by: ['categoryId'], where: { isRejected: false }, _count: true }),
+      db.artTag.groupBy({ by: ['tagId'], where: { art: { isRejected: false } }, _count: true }),
+      db.art.groupBy({ by: ['seasonalEventId'], where: { isRejected: false }, _count: true }),
       db.seasonalEvent.findMany(),
     ])
 
+  const [rejectedCount] = await Promise.all([db.art.count({ where: { isRejected: true } })])
   const catCountMap = new Map(catCounts.map((c) => [c.categoryId, c._count]))
   const tagCountMap = new Map(tagCounts.map((t) => [t.tagId, t._count]))
   const eventCountMap = new Map(eventCounts.map((e) => [e.seasonalEventId, e._count]))
@@ -57,18 +58,19 @@ export async function GET() {
 
   return Response.json({
     session,
-    categories: categories.map((c) => ({
+    categories: [...categories.map((c) => ({
       id: c.id,
       name: c.name,
       emoji: c.emoji,
       icon: c.icon,
       artCount: catCountMap.get(c.id) || 0,
-    })),
+    })), { id: '__none__', name: 'Sem categorias', emoji: '📂', icon: '', artCount: catCountMap.get(null) || 0 }],
     tags: tags.map((t) => ({ id: t.id, name: t.name, artCount: tagCountMap.get(t.id) || 0 })),
     events: eventsWithMeta,
     nextEvent: eventsWithMeta[0] || null,
     counts: {
       arts: artsCount,
+      reprovadas: rejectedCount,
       lancamentos: launchesCount,
       selecionadas: selectedCount,
       favoritas: favCount,

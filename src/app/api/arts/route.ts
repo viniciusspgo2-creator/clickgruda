@@ -17,7 +17,7 @@ export async function GET(req: Request) {
   if (!session) return jsonError('Entre na sua conta para consultar o acervo', 401)
   if (!session.hasAccess && session.role !== 'ADMIN') return jsonError('Acesso necessário para consultar o acervo', 403)
 
-  const allowedTabs = new Set(['todas', 'lancamentos', 'selecionadas', 'sazonal', 'favoritas', 'downloads'])
+  const allowedTabs = new Set(['todas', 'lancamentos', 'selecionadas', 'sazonal', 'favoritas', 'downloads', 'reprovadas'])
   const tabParam = url.searchParams.get('tab') || 'todas'
   const tab = allowedTabs.has(tabParam) ? tabParam : 'todas'
   const q = (url.searchParams.get('q') || '').trim().slice(0, 160)
@@ -32,6 +32,9 @@ export async function GET(req: Request) {
   const pageSize = Number.isSafeInteger(requestedSize) ? Math.min(Math.max(requestedSize, 1), 100) : 48
 
   const result = await queryArts({ userId: session?.id ?? null, tab, q, categoryIds, tagIds, eventId, sort, page, pageSize })
+  if (session.isDemo) {
+    for (const art of result.arts) art.imageUrl = `/api/arts/${art.id}/preview`
+  }
 
   // Busca livre sem nenhum resultado = tema que o acervo ainda não tem → fila de temas do admin
   if (q && page === 1 && result.total === 0 && tab === 'todas' && !categoryIds.length && !tagIds.length && !eventId) {

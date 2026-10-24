@@ -29,6 +29,22 @@ export function track(event: string, params: EventParams = {}) {
     window.dataLayer = window.dataLayer || []
     window.dataLayer.push({ event, ...params })
     window.gtag?.('event', event, params)
+    // Métrica interna persistida no PostgreSQL (não depende de GA4 ou GTM).
+    if (['landing_view', 'cta_click', 'faq_open', 'scroll_depth', 'feature_click'].includes(event)) {
+      let visitorId = window.localStorage.getItem('cg-anon-visitor')
+      if (!visitorId) {
+        visitorId = crypto.randomUUID()
+        window.localStorage.setItem('cg-anon-visitor', visitorId)
+      }
+      const payload = JSON.stringify({ event, visitorId, location: String(params.location || (event === 'scroll_depth' ? `depth_${params.percent}` : '')) })
+      if (navigator.sendBeacon) {
+        const accepted = navigator.sendBeacon('/api/analytics/track', new Blob([payload], { type: 'application/json' }))
+        if (!accepted) fetch('/api/analytics/track', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: payload, keepalive: true }).catch(() => {})
+      } else {
+        fetch('/api/analytics/track', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: payload, keepalive: true }).catch(() => {})
+      }
+    }
+
   } catch {
     /* analytics nunca deve quebrar a UX */
   }

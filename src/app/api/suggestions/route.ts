@@ -30,6 +30,7 @@ export async function POST(req: Request) {
   // Enviado de dentro do portal → vincula à conta (rastreio no Admin Master)
   const session = await getSessionUser()
 
+  if (session?.isDemo) return Response.json({ error: 'Demonstração somente leitura.' }, { status: 403 })
   const suggestion = await db.themeSuggestion.create({
     data: { message, name, contact, userId: session?.id || null },
   })

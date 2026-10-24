@@ -25,6 +25,8 @@ export async function GET() {
       hasAccess: u.hasAccess,
       status: u.status,
       isDemo: u.isDemo,
+      isPreview: u.isPreview,
+      previewMaxSessions: u.previewMaxSessions,
       accessSource: u.accessSource,
       createdAt: u.createdAt.toISOString(),
       downloadsCount: dlMap.get(u.id) || 0,
