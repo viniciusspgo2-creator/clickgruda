@@ -1,20 +1,13 @@
-# Click & Gruda — correção de carregamento da biblioteca (sem Bocão)
+# Click & Gruda — deploy corrigido / projeto mais leve
 
-Esta versão remove a funcionalidade Bocão inteiramente do código, incluindo:
+**Problema anterior:** erros TS2339/TS2724 em `src/app/api/**/bocoes` ocorrem quando arquivos antigos continuam no repositório GitHub, embora não existam no ZIP de substituição.
 
-- Modelo Bocao e vínculo no `schema.prisma`;
-- Consultas ao Bocão nas APIs de artes, admin e catálogo;
-- Rotas de Bocão para o portal e para o administrador;
-- Menus, componentes, cards e botões relacionados ao Bocão;
-- Tipos e testes exclusivos da funcionalidade removida.
+**Correção:** `npm run build` agora executa `scripts/cleanup-legacy-bocao.cjs` antes de gerar o Prisma e compilar o Next.js. O script remove apenas os caminhos legados do Bocão do diretório de build. Também executa testes automatizados sobre a remoção.
 
-## Publicação na Vercel
+**Para remoção permanente no GitHub:** além de atualizar os arquivos existentes, exclua os diretórios `src/app/api/bocoes` e `src/app/api/admin/bocoes` no repositório. Em uma cópia Git local, use `git add -A` antes do commit para registrar as exclusões. Apenas sobrepor arquivos do ZIP não apaga caminhos antigos.
 
-1. Publique este projeto como novo deploy no mesmo projeto Vercel existente.
-2. **Não execute** SQL de migração Bocão, `prisma db push` ou `prisma migrate reset`. A remoção é apenas no código.
-3. Mantenha as variáveis de ambiente, a integração Neon e o bucket Cloudflare R2 já configurados.
-4. Após o deploy, confirme as listas em Admin > Artes e Portal > Todas, e verifique os logs `/api/arts`, `/api/admin/arts` e `/api/catalog`.
+**Arquivos removidos para reduzir o peso:** duplicatas PNG da pasta `public/uploads/rebrand` (o site já utiliza as versões `.webp`), hero antigo sem referência no código, documentos históricos, exemplos e artefatos de execução que não são utilizados no deploy Vercel. Preservei as artes estáticas restantes, áudios utilizados, todas as imagens `.webp` e o `package-lock.json`.
 
-## Nota sobre dados
+**Cuidado:** links externos antigos que apontassem diretamente para os PNG duplicados removidos poderão retornar 404, embora o site atual utilize as versões WebP. Não apague arquivos do banco Neon ou bucket R2.
 
-Nenhuma tabela ou arquivo foi removido diretamente do Neon ou Cloudflare R2. O ZIP não contém dados de produção. O erro P2021 devido à tabela `public.Bocao` deixa de acontecer nas consultas removidas. Outros erros independentes de produção ainda exigirão análise de logs.
+**Validação:** os testes locais estáticos verificam a inexistência de Bocão e a consistência das principais APIs. Execute o deploy na Vercel para confirmar a compilação completa com dependências instaladas.
