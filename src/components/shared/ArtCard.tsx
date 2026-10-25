@@ -48,7 +48,8 @@ export function ArtCard({ art, locked = false, demo = false, downloadState = 'id
             decoding="async"
             className={cn(
               'absolute inset-0 h-full w-full object-contain p-0 transition-transform duration-300 ease-out group-hover:scale-[1.012]',
-              (locked || demo) && 'scale-105 blur-[7px] brightness-[0.72]'
+              locked && 'scale-105 blur-[7px] brightness-[0.72]',
+              demo && 'blur-[0.5px] brightness-[0.99]'
             )}
           />
 
@@ -112,14 +113,11 @@ export function ArtCard({ art, locked = false, demo = false, downloadState = 'id
             </div>
           )}
 
-          {/* Demo overlay: pré-visualização protegida (embaçada, sem download) */}
+          {/* Identificação discreta da demo: não cobrir a arte com uma película escura. */}
           {demo && (
-            <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-zinc-950/40">
-              <div className="flex h-11 w-11 items-center justify-center rounded-full bg-white shadow-xl">
-                <EyeOff className="h-5 w-5 text-orange-500" />
-              </div>
-              <span className="rounded-full bg-zinc-950/80 px-3 py-1 text-[10px] font-black uppercase tracking-wider text-orange-300 backdrop-blur">
-                Modo demonstração
+            <div className="pointer-events-none absolute bottom-2.5 left-2.5 z-[2]">
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-zinc-950/85 px-3 py-1.5 text-[10px] font-black uppercase tracking-wider text-orange-200 shadow-lg">
+                <EyeOff className="h-3.5 w-3.5" /> Prévia protegida
               </span>
             </div>
           )}

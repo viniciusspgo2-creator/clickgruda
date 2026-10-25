@@ -6,7 +6,8 @@ import { readLocalFile } from '@/lib/storage'
 
 export const runtime = 'nodejs'
 
-/** Imagem demonstrativa: devolve SOMENTE amostra pequena, borrada e carimbada.
+/** Prévia da demo: exibe composição e cores sem fornecer o arquivo de impressão.
+ * Imagem reduzida, levemente suavizada e com marca-d’água.
  * Os originais R2 permanecem privados e nunca são enviados a esta sessão. */
 export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
   const user = await getSessionUser()
@@ -33,11 +34,19 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
     }
     if (!buffer || buffer.length > 12 * 1024 * 1024) return jsonError('Prévia indisponível.', 404)
 
-    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="560" height="300"><g transform="rotate(-17 280 150)" fill="#ffffff" fill-opacity=".7" font-family="Arial,sans-serif" font-size="29" font-weight="900" text-anchor="middle"><text x="280" y="55">CLICK &amp; GRUDA</text><text x="280" y="155">SOMENTE PREVIEW</text><text x="280" y="255">SEM DOWNLOAD</text></g></svg>`
+    // Uma única suavização leve na imagem gerada; evitar acumular blurs fortes no CSS.
+    // A grade de marcas protege a amostra sem esconder o tema/composição da arte.
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="900" height="420" viewBox="0 0 900 420">
+      <g transform="rotate(-15 450 210)" fill="#ffffff" fill-opacity=".30" stroke="#152033" stroke-opacity=".32" stroke-width=".65" paint-order="stroke" font-family="Arial,sans-serif" font-size="23" font-weight="900" text-anchor="middle">
+        <text x="140" y="65">CLICK &amp; GRUDA</text><text x="450" y="65">SOMENTE PRÉVIA</text><text x="760" y="65">CLICK &amp; GRUDA</text>
+        <text x="140" y="205">SOMENTE PRÉVIA</text><text x="450" y="205">CLICK &amp; GRUDA</text><text x="760" y="205">SEM DOWNLOAD</text>
+        <text x="140" y="345">CLICK &amp; GRUDA</text><text x="450" y="345">SEM DOWNLOAD</text><text x="760" y="345">SOMENTE PRÉVIA</text>
+      </g>
+    </svg>`
     const image = await sharp(buffer, { limitInputPixels: 30000000 })
-      .rotate().resize({ width: 560, height: 300, fit: 'contain', background: '#dedee3' })
-      .blur(9).composite([{ input: Buffer.from(svg), gravity: 'center' }])
-      .webp({ quality: 38 }).toBuffer()
+      .rotate().resize({ width: 900, height: 420, fit: 'contain', background: '#e5e7eb' })
+      .blur(1.8).composite([{ input: Buffer.from(svg), gravity: 'center' }])
+      .webp({ quality: 62 }).toBuffer()
     return new Response(new Uint8Array(image), { headers: {
       'Content-Type': 'image/webp', 'Cache-Control': 'private, no-store, max-age=0',
       'X-Content-Type-Options': 'nosniff', 'Content-Disposition': 'inline',

@@ -11,7 +11,10 @@ test('segurança: download original não permitido na demo', () => {
   assert.match(f('src/app/api/arts/[id]/download/route.ts'), /isDemo/)
   assert.match(f('src/app/api/arts/route.ts'), /session\.isDemo/)
   assert.match(f('src/app/api/arts/[id]/preview/route.ts'), /sharp\(buffer/)
-  assert.match(f('src/app/api/arts/[id]/preview/route.ts'), /\.blur\(9\)/)
+  assert.match(f('src/app/api/arts/[id]/preview/route.ts'), /\.blur\(1\.8\)/)
+  assert.match(f('src/app/api/arts/[id]/preview/route.ts'), /width: 900, height: 420/)
+  assert.match(f('src/components/portal/ArtPreviewDialog.tsx'), /blur-\[1px\] brightness-\[0\.98\]/)
+  assert.match(f('src/components/shared/ArtCard.tsx'), /demo && 'blur-\[0\.5px\] brightness-\[0\.99\]'/)
   assert.match(f('src/app/api/arts/[id]/preview/route.ts'), /SEM DOWNLOAD/)
 })
 test('gestão: exclusão em lote, filtro e edição reprovadas', () => {

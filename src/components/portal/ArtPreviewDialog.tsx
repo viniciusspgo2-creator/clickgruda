@@ -44,8 +44,8 @@ export function ArtPreviewDialog({
               <button type="button" onClick={() => setZoom(1)} title="Restaurar tamanho" aria-label="Restaurar tamanho" className="rounded-lg p-2 text-slate-700 hover:bg-slate-100"><RotateCcw className="h-4 w-4" /></button>
             </div>
             <div className="cg-preview-stage relative flex min-h-[350px] flex-1 items-center justify-center overflow-auto p-2 sm:min-h-[65dvh] sm:p-5">
-              <img src={art.imageUrl} alt={`Estampa completa: ${art.title}`} draggable={false} onDoubleClick={() => setZoom((z) => z === 1 ? 1.75 : 1)} style={{ transform: `scale(${zoom})` }} className={cn('cg-preview-art block max-h-[76dvh] w-full max-w-full select-none object-contain transition-transform duration-200', demo && 'blur-[8px] brightness-[0.7]')} />
-              {demo && <span className="pointer-events-none absolute rounded-xl bg-zinc-950/90 px-4 py-2 text-xs font-bold text-white"><EyeOff className="mr-1 inline h-4 w-4" /> Prévia protegida</span>}
+              <img src={art.imageUrl} alt={`Estampa completa: ${art.title}`} draggable={false} onDoubleClick={() => setZoom((z) => z === 1 ? 1.75 : 1)} style={{ transform: `scale(${zoom})` }} className={cn('cg-preview-art block max-h-[76dvh] w-full max-w-full select-none object-contain transition-transform duration-200', demo && 'blur-[1px] brightness-[0.98]')} />
+              {demo && <span className="pointer-events-none absolute bottom-4 left-1/2 z-10 -translate-x-1/2 rounded-xl bg-zinc-950/85 px-4 py-2 text-xs font-bold text-white shadow-lg"><EyeOff className="mr-1 inline h-4 w-4" /> Prévia protegida</span>}
             </div>
             {!demo && <a href={art.imageUrl} target="_blank" rel="noopener noreferrer" className="cg-preview-open absolute bottom-3 left-1/2 z-10 inline-flex -translate-x-1/2 items-center gap-1.5 rounded-lg border border-slate-200 bg-white/95 px-3 py-2 text-xs font-bold text-slate-800 shadow-sm hover:bg-white"><ExternalLink className="h-3.5 w-3.5"/> Abrir esta prévia em outra aba</a>}
           </div>
