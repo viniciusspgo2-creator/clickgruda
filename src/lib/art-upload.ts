@@ -6,7 +6,8 @@
  * direto do navegador (URLs assinadas). Sem R2 (dev): upload simples pelo servidor.
  */
 
-export const MAX_ART_SIZE = 10 * 1024 * 1024 // 10MB
+import { MAX_ART_SIZE, MAX_ART_SIZE_LABEL } from './upload-limits'
+export { MAX_ART_SIZE } from './upload-limits'
 export const ALLOWED_ART_EXT = ['png', 'jpg', 'jpeg', 'webp']
 
 export type UploadedArt = { imageUrl: string; originalKey?: string; r2: boolean }
@@ -43,13 +44,13 @@ export function makePreview(file: File): Promise<Blob> {
 export async function uploadArtFile(file: File): Promise<UploadedArt> {
   const ext = (file.name.split('.').pop() || 'png').toLowerCase()
   if (!ALLOWED_ART_EXT.includes(ext)) throw new Error('Formato não suportado. Use PNG, JPG ou WEBP.')
-  if (file.size > MAX_ART_SIZE) throw new Error('Arquivo muito grande. Máximo: 10MB.')
+  if (file.size > MAX_ART_SIZE) throw new Error(`Arquivo muito grande. Máximo: ${MAX_ART_SIZE_LABEL}.`)
 
   try {
     const signRes = await fetch('/api/admin/upload/sign', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ originalExt: ext }),
+      body: JSON.stringify({ originalExt: ext, fileSize: file.size }),
     })
     const sign = await signRes.json()
     if (!signRes.ok) throw new Error(sign.error || 'Erro ao preparar o upload.')
@@ -78,6 +79,11 @@ export async function uploadArtFile(file: File): Promise<UploadedArt> {
       return { imageUrl: sign.previewUrl, originalKey: sign.originalKey, r2: true }
     }
 
+    // Na Vercel, formulários multipart enviados a funções têm limite de 4,5 MB.
+    // Arquivos maiores precisam ir direto para o R2, por meio da URL assinada.
+    if (sign.requiresR2ForLargeFiles && file.size > 4 * 1024 * 1024) {
+      throw new Error('Para enviar artes acima de 4 MB na Vercel, ative o Cloudflare R2 no Admin Master (Configurações).')
+    }
     const fd = new FormData()
     fd.append('file', file)
     const res = await fetch('/api/admin/upload', { method: 'POST', body: fd })

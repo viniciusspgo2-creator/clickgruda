@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { BadgeCheck, CalendarHeart, Check, Copy, Download, Eye, EyeOff, Flame, Heart, Loader2, Lock, Star } from 'lucide-react'
+import { BadgeCheck, CalendarHeart, Check, Copy, Download, Eye, EyeOff, Flame, Heart, Loader2, Lock, Star, Link2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
@@ -151,6 +151,7 @@ export function ArtCard({ art, locked = false, demo = false, downloadState = 'id
             <button type="button" title="Copiar código da arte" aria-label={`Copiar código ${formatArtCode(art.code)}`} onClick={async () => { try { await navigator.clipboard.writeText(formatArtCode(art.code)); toast.success('Código copiado! Cole na busca para encontrar esta arte.'); } catch { toast.error('Não foi possível copiar o código.'); } }} className="inline-flex items-center gap-1 rounded-md bg-zinc-900 px-2 py-1 font-mono text-[10px] font-bold tracking-wide text-orange-300 transition-colors hover:bg-orange-600 hover:text-white focus-visible:outline-2 focus-visible:outline-orange-400">
               {formatArtCode(art.code)} <Copy className="h-3 w-3" />
             </button>
+            {art.bocaoId && <span className="inline-flex items-center gap-1 rounded-md bg-orange-100 px-2 py-1 text-[10px] font-extrabold text-orange-700"><Link2 className="h-3 w-3"/> Com bocão</span>}
             {art.tags.slice(0, 2).map((t) => (
               <span key={t.id} className="max-w-[120px] truncate rounded-full bg-zinc-100 px-2 py-0.5 text-[10px] font-medium text-zinc-500" title={`#${t.name}`}>
                 #{t.name}

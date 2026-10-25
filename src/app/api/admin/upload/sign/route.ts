@@ -1,9 +1,10 @@
 import { getSessionUser, jsonError } from '@/lib/auth'
 import { getR2Config, presignPut } from '@/lib/storage'
 import { randomUUID } from 'crypto'
+import { MAX_ART_SIZE, MAX_ART_SIZE_LABEL } from '@/lib/upload-limits'
 
 /**
- * POST /api/admin/upload/sign  { originalExt: 'png' | 'jpg' | 'jpeg' | 'webp' }
+ * POST /api/admin/upload/sign  { originalExt: 'png' | 'jpg' | 'jpeg' | 'webp', fileSize: number }
  *
  * Devolve URLs assinadas para o navegador enviar DIRETO ao Cloudflare R2:
  *  - ORIGINAL (PNG em alta) -> bucket de originais (privado). A chave NUNCA vai para o público.
@@ -17,9 +18,12 @@ export async function POST(req: Request) {
   const body = await req.json().catch(() => ({}))
   const ext = String(body.originalExt || 'png').toLowerCase()
   if (!['png', 'jpg', 'jpeg', 'webp'].includes(ext)) return jsonError('Formato não suportado. Use PNG, JPG ou WEBP.', 400)
+  const fileSize = Number(body.fileSize)
+  if (!Number.isSafeInteger(fileSize) || fileSize <= 0) return jsonError('Tamanho de arquivo inválido.', 400)
+  if (fileSize > MAX_ART_SIZE) return jsonError(`Arquivo muito grande. Máximo: ${MAX_ART_SIZE_LABEL}.`, 400)
 
   const cfg = await getR2Config()
-  if (!cfg) return Response.json({ r2: false })
+  if (!cfg) return Response.json({ r2: false, requiresR2ForLargeFiles: Boolean(process.env.VERCEL) })
 
   const id = randomUUID()
   const originalKey = `originals/${id}.${ext}`

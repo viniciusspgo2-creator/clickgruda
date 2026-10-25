@@ -96,7 +96,7 @@ export function BulkUploadDialog({
     }
     const accepted = valid.slice(0, room)
     const overflow = valid.length - accepted.length
-    if (rejected) toast.error(`${rejected} arquivo(s) ignorado(s): use PNG, JPG ou WEBP de até 10MB.`)
+    if (rejected) toast.error(`${rejected} arquivo(s) ignorado(s): use PNG, JPG ou WEBP de até 15 MB.`)
     if (overflow > 0) toast.error(`Limite de ${BULK_MAX} por vez: ${overflow} arquivo(s) ficaram de fora.`)
     if (!accepted.length) return
     setItems((list) => [
@@ -213,7 +213,7 @@ export function BulkUploadDialog({
         <DialogHeader>
           <DialogTitle className="text-lg font-black text-zinc-950">Enviar várias artes de uma vez</DialogTitle>
           <DialogDescription className="text-xs text-zinc-500">
-            Até {BULK_MAX} por vez (PNG, JPG ou WEBP · 10MB cada). Preencha título, categoria e tags de cada arte — ou use “Aplicar em todas”.
+            Até {BULK_MAX} por vez (PNG, JPG ou WEBP · 15 MB cada). Preencha título, categoria e tags de cada arte — ou use “Aplicar em todas”.
           </DialogDescription>
         </DialogHeader>
 

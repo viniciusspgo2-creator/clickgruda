@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 
-import { CalendarHeart, Check, Copy, Download, EyeOff, Flame, Heart, Loader2, Star, Tag, ZoomIn, ZoomOut, RotateCcw, ExternalLink, Info } from 'lucide-react'
+import { CalendarHeart, Check, Copy, Download, EyeOff, Flame, Heart, Loader2, Star, Tag, ZoomIn, ZoomOut, RotateCcw, ExternalLink, Info, Link2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
@@ -12,7 +12,7 @@ import { cn } from '@/lib/utils'
 
 /** Mostra a prévia já cadastrada: sem mockups, cortes ou geração de arquivos. */
 export function ArtPreviewDialog({
-  art, open, onOpenChange, demo, downloadState, onDownload, onFavorite, onCategory, onTag, onSeasonal,
+  art, open, onOpenChange, demo, downloadState, onDownload, onFavorite, onCategory, onTag, onSeasonal, onBocao,
 }: {
   art: ArtItem | null
   open: boolean
@@ -24,6 +24,7 @@ export function ArtPreviewDialog({
   onCategory: (id: string) => void
   onTag: (id: string) => void
   onSeasonal: (id: string) => void
+  onBocao: (code: number) => void
 }) {
   const [zoom, setZoom] = useState(1)
   useEffect(() => { setZoom(1) }, [art?.id, open])
@@ -72,6 +73,7 @@ export function ArtPreviewDialog({
               {art.seasonalEvent && <button onClick={() => { onSeasonal(art.seasonalEvent!.id); onOpenChange(false) }} className="inline-flex items-center gap-1 rounded-lg border border-white/15 px-3 py-2 text-xs font-bold text-slate-300 hover:bg-white/10"><CalendarHeart className="h-3.5 w-3.5" /> {art.seasonalEvent.name}</button>}
               {art.tags.map((tag) => <button key={tag.id} onClick={() => { onTag(tag.id); onOpenChange(false) }} className="inline-flex items-center gap-1 rounded-lg border border-white/15 px-2.5 py-1.5 text-[11px] font-semibold text-slate-400 hover:border-orange-200 hover:bg-orange-50 hover:text-orange-700"><Tag className="h-3 w-3" /> {tag.name}</button>)}
             </div>
+            {art.bocaoId && <Button type="button" variant="outline" onClick={() => { onBocao(art.code); onOpenChange(false) }} className="min-h-11 w-full rounded-xl border-orange-400/50 bg-orange-500/10 font-extrabold text-orange-200 hover:bg-orange-500/20"><Link2 className="mr-2 h-4 w-4"/> Ver bocão correspondente · {formatArtCode(art.code)}</Button>}
             <div className="mt-auto flex gap-2 border-t border-white/10 pt-4">
               <Button disabled={demo || downloadState === 'loading'} onClick={() => onDownload(art)} className="h-12 flex-1 rounded-xl bg-orange-500 font-black text-white hover:bg-orange-600">{demo ? <><EyeOff className="mr-2 h-4 w-4" /> Demo</> : downloadState === 'loading' ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Preparando...</> : downloadState === 'done' ? <><Check className="mr-2 h-4 w-4" /> Baixar novamente</> : <><Download className="mr-2 h-4 w-4" /> Baixar arte</>}</Button>
               {!demo && <Button variant="outline" aria-label={art.favorited ? 'Remover dos favoritos' : 'Adicionar aos favoritos'} title={art.favorited ? 'Remover dos favoritos' : 'Adicionar aos favoritos'} onClick={() => onFavorite(art)} className="h-11 w-11 rounded-xl border-white/15 p-0"><Heart className={cn('h-4 w-4', art.favorited ? 'fill-rose-500 text-rose-500' : 'text-slate-400')} /></Button>}

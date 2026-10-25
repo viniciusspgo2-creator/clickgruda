@@ -14,6 +14,7 @@ import {
   Image,
   KeyRound,
   LayoutDashboard,
+  Link2,
   Lightbulb,
   LogOut,
   Menu,
@@ -44,8 +45,10 @@ import { Label } from '@/components/ui/label'
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet'
 import { Logo } from '@/components/shared/Logo'
 import { AdminArtsSection, AdminCategoriesSection, AdminSuggestionsSection, AdminTagsSection, AdminSeasonalSection, AdminSettingsSection } from '@/components/views/AdminSections'
+import { AdminBocoesSection } from '@/components/views/AdminBocoesSection'
 import { NewUserDialog } from '@/components/admin/NewUserDialog'
 import { PreviewAccountDialog } from '@/components/admin/PreviewAccountDialog'
+import { LandingAnalyticsPanel } from '@/components/admin/LandingAnalyticsPanel'
 import { AdminEnhanceSection, AdminSearchMissesSection, AdminSecuritySection, AdminWaitlistSection } from '@/components/views/AdminGrowthSections'
 import { useStore } from '@/lib/store'
 import { formatBRL } from '@/lib/types'
@@ -54,6 +57,7 @@ import { cn } from '@/lib/utils'
 export type AdminSection =
   | 'dashboard'
   | 'arts'
+  | 'bocoes'
   | 'categories'
   | 'tags'
   | 'seasonal'
@@ -69,6 +73,7 @@ export type AdminSection =
 const SECTIONS: { id: AdminSection; label: string; icon: React.ElementType }[] = [
   { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { id: 'arts', label: 'Artes', icon: Image },
+  { id: 'bocoes', label: 'Bocão', icon: Link2 },
   { id: 'categories', label: 'Categorias', icon: ShoppingBag },
   { id: 'tags', label: 'Tags', icon: Tag },
   { id: 'seasonal', label: 'Datas Sazonais', icon: CalendarHeart },
@@ -227,6 +232,7 @@ export function AdminView() {
           <motion.div key={section} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.25 }}>
             {section === 'dashboard' && <DashboardSection onNavigate={setSection} />}
             {section === 'arts' && <AdminArtsSection />}
+            {section === 'bocoes' && <AdminBocoesSection />}
             {section === 'categories' && <AdminCategoriesSection />}
             {section === 'tags' && <AdminTagsSection />}
             {section === 'seasonal' && <AdminSeasonalSection />}
@@ -312,11 +318,6 @@ function DashboardSection({ onNavigate }: { onNavigate?: (s: AdminSection) => vo
     onError: () => toast.error('Erro ao liberar a conta.'),
   })
 
-  const analyticsQ = useQuery<{ period: string; views: number; uniqueVisitors: number; clicks: number; faq: number; topClicks: { location: string; count: number }[] }>({
-    queryKey: ['admin-analytics'], queryFn: async () => { const response = await fetch('/api/admin/analytics'); if (!response.ok) throw new Error('Falha nas métricas'); return response.json() }, staleTime: 60_000,
-  })
-  const analytics = analyticsQ.data
-
   if (isError) {
     return <div role="alert" className="rounded-2xl border border-rose-200 bg-white p-8 text-center"><ShieldAlert className="mx-auto h-8 w-8 text-rose-500" /><h2 className="mt-3 font-black text-zinc-800">Não foi possível carregar os indicadores</h2><p className="mt-1 text-sm text-zinc-500">Verifique sua conexão e tente novamente.</p><Button onClick={() => refetch()} className="mt-4 rounded-xl bg-orange-500 hover:bg-orange-600"><RefreshCw className="mr-2 h-4 w-4" /> Atualizar indicadores</Button></div>
   }
@@ -335,16 +336,7 @@ function DashboardSection({ onNavigate }: { onNavigate?: (s: AdminSection) => vo
 
   return (
     <div className="space-y-6">
-      <section className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm" aria-label="Analytics da landing page">
-        <h3 className="flex items-center gap-2 text-sm font-black text-zinc-900"><TrendingUp className="h-4 w-4 text-orange-500"/> Visitas e cliques na landing <span className="font-normal text-zinc-500">· últimos 30 dias</span></h3>
-        <div className="mt-4 grid grid-cols-2 gap-3 lg:grid-cols-4">
-          {([['Visitas', analytics?.views], ['Visitantes únicos (estimados)', analytics?.uniqueVisitors], ['Cliques em CTAs', analytics?.clicks], ['Dúvidas abertas', analytics?.faq]] as const).map(([label, value]) => (
-            <div key={label} className="rounded-xl border border-zinc-200 bg-zinc-50 p-3"><p className="text-xs font-semibold text-zinc-500">{label}</p><p className="mt-1 text-2xl font-black text-zinc-900">{value?.toLocaleString('pt-BR') ?? '—'}</p></div>
-          ))}
-        </div>
-        <div className="mt-4 flex flex-wrap items-start gap-2 text-xs text-zinc-500"><span className="font-bold text-zinc-700">Botões mais clicados:</span>{analytics?.topClicks.length ? analytics.topClicks.slice(0, 8).map((item) => <span key={item.location} className="rounded-lg bg-orange-50 px-2 py-1 font-semibold text-orange-700">{item.location}: {item.count}</span>) : 'Ainda não há dados para exibir.'}</div>
-        <p className="mt-2 text-[11px] text-zinc-400">Contagem própria de eventos (não inclui visitas anteriores à instalação e pode variar com bloqueadores de rastreamento).</p>
-      </section>
+      <LandingAnalyticsPanel />
       {/* Aguardando liberação (PIX manual) */}
       {(data.pendingManualUsers?.length ?? 0) > 0 && (
         <div className="rounded-2xl border-2 border-orange-300 bg-orange-50/70 p-5">

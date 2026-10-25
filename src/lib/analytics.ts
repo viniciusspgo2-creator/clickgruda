@@ -26,6 +26,7 @@ export const GTM_ID = process.env.NEXT_PUBLIC_GTM_ID
 export function track(event: string, params: EventParams = {}) {
   if (typeof window === 'undefined') return
   try {
+    if (window.localStorage.getItem('cg-analytics-opt-out') === '1') return
     window.dataLayer = window.dataLayer || []
     window.dataLayer.push({ event, ...params })
     window.gtag?.('event', event, params)

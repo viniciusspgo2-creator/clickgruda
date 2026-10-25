@@ -11,6 +11,7 @@ export type ArtDTO = {
   isLaunch: boolean
   isSelected: boolean
   isRejected: boolean
+  bocaoId: string | null
   downloadsCount: number
   createdAt: string
   category: { id: string; name: string; emoji: string } | null
@@ -39,6 +40,7 @@ const INCLUDE = {
   category: true,
   seasonalEvent: true,
   tags: { include: { tag: true } },
+  bocao: { select: { id: true } },
 } satisfies Prisma.ArtInclude
 
 type ArtRow = Prisma.ArtGetPayload<{ include: typeof INCLUDE }>
@@ -52,6 +54,7 @@ function toDTO(a: ArtRow, favSet: Set<string>): ArtDTO {
     isLaunch: a.isLaunch,
     isSelected: a.isSelected,
     isRejected: a.isRejected,
+    bocaoId: a.bocao?.id ?? null,
     downloadsCount: a.downloadsCount,
     createdAt: a.createdAt.toISOString(),
     category: a.category ? { id: a.category.id, name: a.category.name, emoji: a.category.emoji } : null,

@@ -1,7 +1,7 @@
 import { getSessionUser, jsonError } from '@/lib/auth'
 import { putImage, isAllowedImageExt } from '@/lib/storage'
 
-const MAX_SIZE = 10 * 1024 * 1024 // 10MB
+import { MAX_ART_SIZE, MAX_ART_SIZE_LABEL } from '@/lib/upload-limits'
 
 /**
  * POST /api/admin/upload — upload de imagem de arte (multipart/form-data, campo "file").
@@ -25,7 +25,7 @@ export async function POST(req: Request) {
 
   const ext = (file.name.split('.').pop() || '').toLowerCase()
   if (!isAllowedImageExt(ext)) return jsonError('Formato não suportado. Use PNG, JPG ou WEBP.', 400)
-  if (file.size > MAX_SIZE) return jsonError('Arquivo muito grande. Máximo: 10MB.', 400)
+  if (file.size > MAX_ART_SIZE) return jsonError(`Arquivo muito grande. Máximo: ${MAX_ART_SIZE_LABEL}.`, 400)
   if (file.size === 0) return jsonError('Arquivo vazio.', 400)
 
   try {

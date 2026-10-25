@@ -6,6 +6,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 import {
   CalendarHeart,
   ArrowRight,
+  Link2,
   ChevronDown,
   Check,
   RefreshCw,
@@ -56,6 +57,7 @@ import { ThemeSuggestionDialog } from '@/components/portal/ThemeSuggestionDialog
 import { TagFilterPanel } from '@/components/portal/TagFilterPanel'
 import { DiscoveryShelf } from '@/components/portal/DiscoveryShelf'
 import { ArtPreviewDialog } from '@/components/portal/ArtPreviewDialog'
+import { BocoesSection } from '@/components/portal/BocoesSection'
 import { EnhanceRequestDialog } from '@/components/portal/EnhanceRequestDialog'
 import { LoadMoreFooter } from '@/components/shared/LoadMoreFooter'
 import { ZipDownloadDialog } from '@/components/portal/ZipDownloadDialog'
@@ -75,6 +77,7 @@ const TABS: { id: PortalTab; label: string; icon: React.ElementType }[] = [
   { id: 'lancamentos', label: 'Lançamentos', icon: Flame },
   { id: 'selecionadas', label: 'Selecionadas', icon: Star },
   { id: 'reprovadas', label: 'Artes reprovadas', icon: EyeOff },
+  { id: 'bocao', label: 'Bocão', icon: Link2 },
   { id: 'sazonal', label: 'Sazonal', icon: CalendarHeart },
   { id: 'favoritas', label: 'Favoritas', icon: Heart },
   { id: 'downloads', label: 'Meus downloads', icon: Download },
@@ -328,7 +331,7 @@ export function PortalView() {
       return res.json()
     },
     getNextPageParam: (last) => (last.hasMore ? last.page + 1 : undefined),
-    enabled: !!user?.hasAccess && tab !== 'compartilhar',
+    enabled: !!user?.hasAccess && tab !== 'compartilhar' && tab !== 'bocao',
     staleTime: 15_000,
     retry: 1,
   })
@@ -457,6 +460,18 @@ export function PortalView() {
     setSearchInput('')
     scrollToResults()
   }
+  const openBocaoByCode = (code: number) => {
+    const codeText = `CG-${String(code).padStart(4, '0')}`
+    setFilter({ tab: 'bocao', q: codeText, categoryIds: [], tagIds: [], seasonalEventId: null })
+    setSearchInput(codeText)
+    scrollToResults()
+  }
+  const openOriginalByCode = (bocao: { code: number; isRejected: boolean }) => {
+    const codeText = `CG-${String(bocao.code).padStart(4, '0')}`
+    setFilter({ tab: bocao.isRejected ? 'reprovadas' : 'todas', q: codeText, categoryIds: [], tagIds: [], seasonalEventId: null })
+    setSearchInput(codeText)
+    scrollToResults()
+  }
   const toggleTheme = () => setPortalTheme((current) => (current === 'dark' ? 'light' : 'dark'))
 
   const mockupSupportMessage = 'Olá! Sou assinante da Click & Gruda e quero solicitar o meu código grátis para acessar o gerador de mockups 3D.'
@@ -528,7 +543,7 @@ export function PortalView() {
           <nav className="cg-sidebar-nav" aria-label="Explorar a biblioteca">
             {TABS.map((item) => {
               const active = tab === item.id
-              const count = item.id === 'todas' ? counts?.arts : item.id === 'lancamentos' ? counts?.lancamentos : item.id === 'selecionadas' ? counts?.selecionadas : item.id === 'reprovadas' ? counts?.reprovadas : item.id === 'favoritas' ? counts?.favoritas : item.id === 'downloads' ? counts?.minhasDownloads : undefined
+              const count = item.id === 'todas' ? counts?.arts : item.id === 'lancamentos' ? counts?.lancamentos : item.id === 'selecionadas' ? counts?.selecionadas : item.id === 'reprovadas' ? counts?.reprovadas : item.id === 'bocao' ? counts?.bocoes : item.id === 'favoritas' ? counts?.favoritas : item.id === 'downloads' ? counts?.minhasDownloads : undefined
               return (
                 <button key={item.id} type="button" aria-current={active ? 'page' : undefined}
                   onClick={() => setFilter({ tab: item.id, ...(item.id === 'todas' ? { sort: 'recentes' } : {}), ...(item.id !== 'sazonal' ? { seasonalEventId: null } : {}) })}
@@ -729,6 +744,8 @@ export function PortalView() {
                     ? counts?.reprovadas
                     : t.id === 'favoritas'
                       ? counts?.favoritas
+                      : t.id === 'bocao'
+                      ? counts?.bocoes
                       : t.id === 'downloads'
                         ? counts?.minhasDownloads
                         : null
@@ -919,6 +936,8 @@ export function PortalView() {
 
       {/* ================= CONTENT ================= */}
       <main className="cg-portal-main mx-auto w-full max-w-[1600px] flex-1 px-4 py-6 sm:px-7 lg:py-8">
+        {tab === 'bocao' ? <div ref={resultsRef} className="scroll-mt-36"><BocoesSection search={q} demo={!!user.isDemo} onSeeArt={openOriginalByCode}/></div> : <>
+
         {tab === 'todas' && !q && (
           <div className="cg-overview-row mb-7">
             <DiscoveryShelf catalog={catalogQ.data} onTab={navigateTab} onCategory={toggleCategory} onSeasonal={viewSeasonal} activeCategories={categoryIds} />
@@ -1087,6 +1106,7 @@ export function PortalView() {
           />
         )}
 
+        </>}
       </main>
 
       <footer className="cg-portal-footer mt-auto border-t border-white/10 py-5">
@@ -1260,7 +1280,7 @@ export function PortalView() {
       </Dialog>
 
       {/* ================= SUGESTÃO DE TEMA (envia ao Admin Master) ================= */}
-      <ArtPreviewDialog art={previewArt} open={!!previewArt} onOpenChange={(open) => !open && setPreviewId(null)} demo={!!user.isDemo} downloadState={previewArt ? downloadStates[previewArt.id] || 'idle' : 'idle'} onDownload={handleDownload} onFavorite={toggleFavorite} onCategory={toggleCategory} onTag={viewTag} onSeasonal={viewSeasonal} />
+      <ArtPreviewDialog art={previewArt} open={!!previewArt} onOpenChange={(open) => !open && setPreviewId(null)} demo={!!user.isDemo} downloadState={previewArt ? downloadStates[previewArt.id] || 'idle' : 'idle'} onDownload={handleDownload} onFavorite={toggleFavorite} onCategory={toggleCategory} onTag={viewTag} onSeasonal={viewSeasonal} onBocao={openBocaoByCode} />
       <ThemeSuggestionDialog open={suggestionOpen} onOpenChange={setSuggestionOpen} />
       <EnhanceRequestDialog open={enhanceOpen} onOpenChange={setEnhanceOpen} />
       <ZipDownloadDialog open={zipOpen} onOpenChange={setZipOpen} catalog={catalogQ.data} />

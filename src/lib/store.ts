@@ -3,7 +3,7 @@
 import { create } from 'zustand'
 
 export type View = 'landing' | 'auth' | 'checkout' | 'portal' | 'admin' | 'catalogo'
-export type PortalTab = 'todas' | 'lancamentos' | 'selecionadas' | 'reprovadas' | 'sazonal' | 'favoritas' | 'downloads' | 'compartilhar'
+export type PortalTab = 'todas' | 'lancamentos' | 'selecionadas' | 'reprovadas' | 'sazonal' | 'favoritas' | 'downloads' | 'compartilhar' | 'bocao'
 export type AuthMode = 'login' | 'register'
 export type SortMode = 'recentes' | 'baixadas' | 'nome'
 

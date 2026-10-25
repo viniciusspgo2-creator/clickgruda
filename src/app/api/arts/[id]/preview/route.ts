@@ -3,6 +3,7 @@ import { isIP } from 'node:net'
 import { db } from '@/lib/db'
 import { getSessionUser, jsonError } from '@/lib/auth'
 import { readLocalFile } from '@/lib/storage'
+import { MAX_ART_SIZE } from '@/lib/upload-limits'
 
 export const runtime = 'nodejs'
 
@@ -29,10 +30,10 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
       if (url.protocol !== 'https:' || url.username || url.password || isIP(url.hostname) || url.hostname === 'localhost' || url.hostname.endsWith('.local')) return jsonError('Prévia indisponível.', 400)
       const res = await fetch(url, { redirect: 'error', signal: AbortSignal.timeout(8000), cache: 'no-store' })
       const size = Number(res.headers.get('content-length') || 0)
-      if (!res.ok || size > 12 * 1024 * 1024 || !(res.headers.get('content-type') || '').startsWith('image/')) return jsonError('Prévia indisponível.', 404)
+      if (!res.ok || size > MAX_ART_SIZE || !(res.headers.get('content-type') || '').startsWith('image/')) return jsonError('Prévia indisponível.', 404)
       buffer = Buffer.from(await res.arrayBuffer())
     }
-    if (!buffer || buffer.length > 12 * 1024 * 1024) return jsonError('Prévia indisponível.', 404)
+    if (!buffer || buffer.length > MAX_ART_SIZE) return jsonError('Prévia indisponível.', 404)
 
     // Uma única suavização leve na imagem gerada; evitar acumular blurs fortes no CSS.
     // A grade de marcas protege a amostra sem esconder o tema/composição da arte.

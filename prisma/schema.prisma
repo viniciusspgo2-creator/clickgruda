@@ -78,10 +78,25 @@ model Art {
   tags            ArtTag[]
   favorites       Favorite[]
   downloads       Download[]
+  bocao           Bocao?          // complemento opcional com o MESMO código CG da arte
   createdAt       DateTime       @default(now())
 
   @@index([code])
   @@index([isRejected, createdAt])
+}
+
+/** O código exibido do bocão é SEMPRE Art.code, nunca um novo código. */
+model Bocao {
+  id          String   @id @default(cuid())
+  artId       String   @unique
+  art         Art      @relation(fields: [artId], references: [id], onDelete: Cascade)
+  imageUrl    String   // prévia leve, igual ao cadastro de arte
+  originalKey String?  // original privado no R2
+  note        String   @default("")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([createdAt])
 }
 
 model ArtTag {
