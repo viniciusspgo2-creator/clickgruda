@@ -74,7 +74,7 @@ export async function GET(req: Request) {
       GROUP BY 1 ORDER BY count DESC LIMIT 8`,
   ])
   const daily = new Map(byDay.map(d => [d.day, d]))
-  const trend = []
+  const trend: Array<{ day: string; views: number; uniqueVisitors: number; clicks: number }> = []
   for (let t = Date.parse(`${start}T12:00:00Z`); t <= Date.parse(`${end}T12:00:00Z`); t += DAY_MS) {
     const day = isoDay(new Date(t))
     const row = daily.get(day)

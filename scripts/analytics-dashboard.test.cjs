@@ -48,6 +48,11 @@ const admin = { id: 'test', role: 'ADMIN' }
 const req = (url, body, extras = {}) => new Request(url, { method: 'POST', headers: { origin: new URL(url).origin, 'content-type': 'application/json', ...extras }, body: JSON.stringify(body) })
 
 // Testa uma sequência real das rotas sem conectar ao Neon.
+test('Tipo do gráfico diário evita inferência never[] no build TypeScript', () => {
+  const source = fs.readFileSync(path.join(__dirname, '..', 'src/app/api/admin/analytics/route.ts'), 'utf8')
+  assert.match(source, /const trend:\s*Array<\{\s*day:\s*string;\s*views:\s*number;\s*uniqueVisitors:\s*number;\s*clicks:\s*number\s*\}>\s*=\s*\[\]/)
+})
+
 test('Admin ativa e desativa exclusão do navegador, com histórico corretamente filtrável', async () => {
   const { db, settings } = fakeDb()
   const cookieStore = fakeCookies()
