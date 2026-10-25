@@ -14,7 +14,6 @@ import {
   Image,
   KeyRound,
   LayoutDashboard,
-  Link2,
   Lightbulb,
   LogOut,
   Menu,
@@ -45,7 +44,6 @@ import { Label } from '@/components/ui/label'
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet'
 import { Logo } from '@/components/shared/Logo'
 import { AdminArtsSection, AdminCategoriesSection, AdminSuggestionsSection, AdminTagsSection, AdminSeasonalSection, AdminSettingsSection } from '@/components/views/AdminSections'
-import { AdminBocoesSection } from '@/components/views/AdminBocoesSection'
 import { NewUserDialog } from '@/components/admin/NewUserDialog'
 import { PreviewAccountDialog } from '@/components/admin/PreviewAccountDialog'
 import { LandingAnalyticsPanel } from '@/components/admin/LandingAnalyticsPanel'
@@ -57,7 +55,6 @@ import { cn } from '@/lib/utils'
 export type AdminSection =
   | 'dashboard'
   | 'arts'
-  | 'bocoes'
   | 'categories'
   | 'tags'
   | 'seasonal'
@@ -73,7 +70,6 @@ export type AdminSection =
 const SECTIONS: { id: AdminSection; label: string; icon: React.ElementType }[] = [
   { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { id: 'arts', label: 'Artes', icon: Image },
-  { id: 'bocoes', label: 'Bocão', icon: Link2 },
   { id: 'categories', label: 'Categorias', icon: ShoppingBag },
   { id: 'tags', label: 'Tags', icon: Tag },
   { id: 'seasonal', label: 'Datas Sazonais', icon: CalendarHeart },
@@ -232,7 +228,6 @@ export function AdminView() {
           <motion.div key={section} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.25 }}>
             {section === 'dashboard' && <DashboardSection onNavigate={setSection} />}
             {section === 'arts' && <AdminArtsSection />}
-            {section === 'bocoes' && <AdminBocoesSection />}
             {section === 'categories' && <AdminCategoriesSection />}
             {section === 'tags' && <AdminTagsSection />}
             {section === 'seasonal' && <AdminSeasonalSection />}

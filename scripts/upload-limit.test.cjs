@@ -101,15 +101,15 @@ test('API multipart de desenvolvimento aceita 15 MB e bloqueia 15 MB + 1 byte', 
   assert.equal(uploadCalls, 1)
 })
 
-test('interface em lote e de bocões informa 15 MB', () => {
-  for (const name of ['src/components/admin/BulkUploadDialog.tsx', 'src/components/views/AdminBocoesSection.tsx', 'src/components/views/AdminSections.tsx']) {
+test('interfaces de envio de artes informam 15 MB', () => {
+  for (const name of ['src/components/admin/BulkUploadDialog.tsx', 'src/components/views/AdminSections.tsx']) {
     const content = fs.readFileSync(path.join(root, name), 'utf8')
     assert.match(content, /15 MB/, name)
   }
 })
 
-test('prévia demo aceita leitura até o mesmo limite nas duas bibliotecas', () => {
-  for (const name of ['src/app/api/arts/[id]/preview/route.ts', 'src/app/api/bocoes/[id]/preview/route.ts']) {
+test('prévia demo aceita leitura até o limite de upload na biblioteca', () => {
+  for (const name of ['src/app/api/arts/[id]/preview/route.ts']) {
     const content = fs.readFileSync(path.join(root, name), 'utf8')
     assert.match(content, /size > MAX_ART_SIZE/, name)
     assert.match(content, /buffer.length > MAX_ART_SIZE/, name)

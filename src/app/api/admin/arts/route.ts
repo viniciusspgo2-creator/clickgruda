@@ -20,14 +20,14 @@ export async function GET(req: Request) {
       orderBy: [{ createdAt: 'desc' }, { id: 'asc' }],
       skip: (Math.max(1, page) - 1) * pageSize,
       take: pageSize,
-      include: { category: true, seasonalEvent: true, tags: { include: { tag: true } }, bocao: { select: { id: true } } },
+      include: { category: true, seasonalEvent: true, tags: { include: { tag: true } } },
     }),
     db.art.count({ where }),
   ])
   return Response.json({
     arts: rows.map((a) => ({
       id: a.id, code: a.code, title: a.title, imageUrl: a.imageUrl,
-      isLaunch: a.isLaunch, isSelected: a.isSelected, isRejected: a.isRejected, bocaoId: a.bocao?.id ?? null, downloadsCount: a.downloadsCount,
+      isLaunch: a.isLaunch, isSelected: a.isSelected, isRejected: a.isRejected, downloadsCount: a.downloadsCount,
       createdAt: a.createdAt.toISOString(),
       category: a.category ? { id: a.category.id, name: a.category.name, emoji: a.category.emoji } : null,
       seasonalEvent: a.seasonalEvent ? { id: a.seasonalEvent.id, name: a.seasonalEvent.name, emoji: a.seasonalEvent.emoji } : null,

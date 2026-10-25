@@ -572,7 +572,6 @@ export function AdminArtsSection() {
                   {art.category ? <Badge className="bg-orange-50 text-[10px] font-bold text-orange-700">{art.category.emoji} {art.category.name}</Badge> : <Badge className="bg-rose-50 text-[10px] text-rose-600">Sem categoria</Badge>}
                   {art.seasonalEvent && <Badge variant="outline" className="text-[10px] text-zinc-600">{art.seasonalEvent.emoji} {art.seasonalEvent.name}</Badge>}
                   {art.isRejected && <Badge className="bg-red-100 text-[10px] text-red-700">Design reprovado</Badge>}
-                  {art.bocaoId && <Badge className="bg-orange-100 text-[10px] text-orange-700">Com bocão</Badge>}
                   {art.tags.length === 0 && <Badge className="bg-amber-50 text-[10px] text-amber-700">Sem tags</Badge>}
                 </div>
                 <p className="line-clamp-1 text-[11px] text-zinc-500">{art.tags.map((tag) => `#${tag.name}`).join(' · ') || 'Adicione tags para facilitar a busca'}</p>

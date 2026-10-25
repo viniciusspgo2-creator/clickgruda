@@ -22,7 +22,7 @@ export async function GET() {
       db.seasonalEvent.findMany(),
     ])
 
-  const [rejectedCount, bocaoCount] = await Promise.all([db.art.count({ where: { isRejected: true } }), db.bocao.count()])
+  const rejectedCount = await db.art.count({ where: { isRejected: true } })
   const catCountMap = new Map(catCounts.map((c) => [c.categoryId, c._count]))
   const tagCountMap = new Map(tagCounts.map((t) => [t.tagId, t._count]))
   const eventCountMap = new Map(eventCounts.map((e) => [e.seasonalEventId, e._count]))
@@ -71,7 +71,6 @@ export async function GET() {
     counts: {
       arts: artsCount,
       reprovadas: rejectedCount,
-      bocoes: bocaoCount,
       lancamentos: launchesCount,
       selecionadas: selectedCount,
       favoritas: favCount,

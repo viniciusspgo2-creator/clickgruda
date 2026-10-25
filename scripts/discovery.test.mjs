@@ -48,7 +48,7 @@ test('sinônimos incluem variantes conhecidas e não fazem reclassificação aut
 
 test('código individual é buscado por igualdade', () => {
   const where = json(arts.buildArtWhere({ q: 'CG-0042' }))
-  assert.deepEqual(where, { AND: [{ code: 42 }] })
+  assert.deepEqual(where, { AND: [{ isRejected: false }, { code: 42 }] })
 })
 
 test('busca por palavras inclui termos relevantes e mantém a pesquisa no banco', () => {

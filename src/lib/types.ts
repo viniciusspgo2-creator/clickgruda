@@ -6,7 +6,6 @@ export type ArtItem = {
   isLaunch: boolean
   isSelected: boolean
   isRejected?: boolean
-  bocaoId?: string | null
   downloadsCount: number
   createdAt: string
   category: { id: string; name: string; emoji: string } | null
@@ -39,7 +38,7 @@ export type CatalogData = {
   tags: { id: string; name: string; artCount: number }[]
   events: CatalogEvent[]
   nextEvent: CatalogEvent | null
-  counts: { arts: number; lancamentos: number; selecionadas: number; favoritas: number; minhasDownloads: number; reprovadas: number; bocoes: number }
+  counts: { arts: number; lancamentos: number; selecionadas: number; favoritas: number; minhasDownloads: number; reprovadas: number }
   waitlisted?: boolean
   /** downloads de hoje (artes diferentes) e limite diário; limit 0 = sem limite */
   quota?: { used: number; limit: number } | null
