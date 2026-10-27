@@ -12,6 +12,52 @@ export const ALLOWED_ART_EXT = ['png', 'jpg', 'jpeg', 'webp']
 
 export type UploadedArt = { imageUrl: string; originalKey?: string; r2: boolean }
 
+type CorsDiagnosis = { ok?: boolean; error?: string; buckets?: { configured: boolean; label: string; message: string }[] }
+let corsRepair: Promise<CorsDiagnosis> | null = null
+
+/** Envios em lote compartilham uma verificação em andamento. Não transmite a imagem pela Vercel. */
+async function repairUploadCors(): Promise<CorsDiagnosis> {
+  if (!corsRepair) {
+    corsRepair = (async () => {
+      try {
+        const response = await fetch('/api/admin/upload/cors', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ mode: 'repair' }) })
+        const data = await response.json()
+        return response.ok ? data : { ok: false, error: data.error || 'Não foi possível verificar a permissão de envio.' }
+      } catch { return { ok: false, error: 'Não foi possível verificar o R2. Confira sua conexão e tente novamente.' } }
+    })().finally(() => { corsRepair = null })
+  }
+  return corsRepair
+}
+
+async function sendR2Files(parts: { label: string; url: string; type: string; body: Blob }[]) {
+  const send = (part: typeof parts[number]) => fetch(part.url, { method: 'PUT', headers: { 'Content-Type': part.type }, body: part.body })
+  const results = await Promise.allSettled(parts.map(send))
+  if (results.some(result => result.status === 'rejected')) {
+    // Falha de fetch também pode ser rede, DNS, extensão ou URL expirada. CORS exige verificação.
+    const diagnosis = await repairUploadCors()
+    if (!diagnosis.ok) {
+      const details = diagnosis.error || diagnosis.buckets?.filter(bucket => !bucket.configured).map(bucket => `${bucket.label}: ${bucket.message}`).join(' ') || 'Confira a configuração do R2.'
+      throw new Error(`Não foi possível enviar a arte. ${details} No master, abra Configurações → Cloudflare R2 → Verificar e corrigir upload.`)
+    }
+    await Promise.all(results.map(async (result, index) => {
+      if (result.status === 'rejected') {
+        try { results[index] = { status: 'fulfilled', value: await send(parts[index]) } }
+        catch { throw new Error(`A permissão de CORS foi confirmada, mas o envio de ${parts[index].label} ainda falhou. Confira a conexão, bloqueadores do navegador e as credenciais do R2; tente novamente.`) }
+      }
+    }))
+  }
+  for (let index = 0; index < results.length; index++) {
+    const result = results[index]
+    if (result.status !== 'fulfilled') throw new Error(`Falha de conexão no envio de ${parts[index].label}. Tente novamente.`)
+    if (!result.value.ok) {
+      const response = result.value
+      const detail = await response.text().catch(() => '')
+      const code = /<Code>([^<]+)<\/Code>/.exec(detail)?.[1]
+      throw new Error(`R2 recusou o envio (${response.status}${code ? ` · ${code}` : ''}) — ${parts[index].label}. Confira chaves, nomes dos buckets, permissões e tente enviar novamente.`)
+    }
+  }
+}
+
 /** Gera a prévia WebP (máx. 1000px de largura) no próprio navegador. */
 export function makePreview(file: File): Promise<Blob> {
   return new Promise((resolve, reject) => {
@@ -57,25 +103,10 @@ export async function uploadArtFile(file: File): Promise<UploadedArt> {
 
     if (sign.r2) {
       const preview = await makePreview(file)
-      let o: Response
-      let p: Response
-      try {
-        ;[o, p] = await Promise.all([
-          fetch(sign.originalPutUrl, { method: 'PUT', headers: { 'Content-Type': sign.originalType }, body: file }),
-          fetch(sign.previewPutUrl, { method: 'PUT', headers: { 'Content-Type': 'image/webp' }, body: preview }),
-        ])
-      } catch {
-        // fetch só "lança" quando o navegador bloqueia: na prática, CORS do bucket
-        throw new Error('O navegador bloqueou o envio ao R2 (CORS). Configure o CORS nos DOIS buckets permitindo este site.')
-      }
-      if (!o.ok || !p.ok) {
-        const bad = !o.ok ? o : p
-        const detail = await bad.text().catch(() => '')
-        const code = /<Code>([^<]+)<\/Code>/.exec(detail)?.[1]
-        throw new Error(
-          `R2 recusou o envio (${bad.status}${code ? ` · ${code}` : ''}) — ${!o.ok ? 'bucket dos originais' : 'bucket das prévias'}. Confira chaves, nomes dos buckets e permissões do token.`
-        )
-      }
+      await sendR2Files([
+        { label: 'bucket dos originais', url: sign.originalPutUrl, type: sign.originalType, body: file },
+        { label: 'bucket das prévias', url: sign.previewPutUrl, type: 'image/webp', body: preview },
+      ])
       return { imageUrl: sign.previewUrl, originalKey: sign.originalKey, r2: true }
     }
 

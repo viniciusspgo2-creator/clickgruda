@@ -137,7 +137,7 @@ export function AdminView() {
   }
 
   const nav = (
-    <nav className="min-h-0 flex-1 space-y-1 overflow-y-auto" aria-label="Seções do painel">
+    <nav className="no-scrollbar min-h-0 flex-1 space-y-1 overflow-y-auto" aria-label="Seções do painel">
       {SECTIONS.map((s) => {
         const active = section === s.id
         return (

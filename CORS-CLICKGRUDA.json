@@ -1,0 +1,12 @@
+[
+  {
+    "AllowedOrigins": [
+      "https://www.clickgruda.com.br",
+      "https://clickgruda.com.br"
+    ],
+    "AllowedMethods": ["GET", "PUT", "HEAD"],
+    "AllowedHeaders": ["*"],
+    "ExposeHeaders": ["ETag", "Content-Disposition"],
+    "MaxAgeSeconds": 3600
+  }
+]

@@ -1,6 +1,6 @@
 # Click & Gruda — sistema completo atualizado
 
-Este ZIP contém todo o projeto: demonstração pública, cadastro com WhatsApp, ativação com atendimento, controle de dispositivos, paginação numerada e todos os ajustes anteriores de SEO, cupons, Mercado Pago e downloads ilimitados. A Loja Online foi retirada desta oferta.
+Este ZIP contém todo o projeto: correção e diagnóstico de upload no R2, menu lateral sem a barra de rolagem aparente, demonstração pública, cadastro com WhatsApp, ativação com atendimento, controle de dispositivos, paginação numerada e todos os ajustes anteriores de SEO, cupons, Mercado Pago e downloads ilimitados. A Loja Online foi retirada desta oferta.
 
 ## Publicar tudo de uma vez
 
@@ -10,6 +10,28 @@ Este ZIP contém todo o projeto: demonstração pública, cadastro com WhatsApp,
 4. Envie a atualização do projeto completo para o repositório da conta correta da Vercel e aguarde o deploy.
 
 Não é uma entrega de arquivos avulsos. Não precisa recriar o banco, rodar seed ou executar nova migração para estas funções. Os dados novos usam a tabela de configurações existente e os campos de usuário e sessão que o sistema já possui. A rotina de build remove os componentes antigos da Loja Online que poderiam sobrar ao copiar por cima.
+
+## Correção do upload no Cloudflare R2
+
+A mensagem antiga chamava qualquer falha de conexão de CORS, sem confirmar a causa. O envio agora identifica qual parte falhou e verifica a permissão do domínio no R2. Se faltar CORS e a chave cadastrada permitir editar a configuração do bucket, completa a regra preservando as anteriores e repete uma vez apenas a parte que falhou. Uma falha de rede persistente ou uma recusa explícita do R2 recebe uma mensagem própria.
+
+Depois de publicar o sistema completo, abra **Master → Configurações → Cloudflare R2 → Verificar e corrigir upload**. Salve qualquer alteração de endpoint ou buckets antes de verificar. O teste consulta as permissões dos dois buckets sem criar artes nem arquivos de teste. Se originais e prévias usam o mesmo bucket, verifica uma vez.
+
+Chaves com permissão somente para ler e escrever objetos podem enviar artes sem poder editar CORS. Nesse caso, o painel identifica a restrição e oferece a regra para copiar. Não é necessário trocar uma chave válida por uma chave administrativa só para isso.
+
+Para ajustar diretamente na Cloudflare, inclusive antes de publicar este ZIP:
+
+1. Entre na Cloudflare e abra **R2 Object Storage**.
+2. Abra o bucket das prévias usado no master → **Settings → CORS Policy → Edit/Add CORS Policy → JSON**.
+3. Se ainda não houver regras, cole o conteúdo de `CORS-CLICKGRUDA.json` e salve. Se já houver regras para outros serviços, acrescente o objeto da nova regra ao array existente, preservando as outras regras.
+4. Repita no bucket dos originais. Os nomes exatos são os que estão salvos no master; se ambos usam o mesmo bucket, basta uma vez.
+5. Aguarde a aplicação, volte ao painel e tente enviar uma arte novamente. Confira o diagnóstico se o erro continuar.
+
+A regra permite os domínios com e sem `www`, sem barra no final. Não coloque URL de página ou de bucket em `AllowedOrigins`. Para subir por um endereço de preview, acrescente o domínio exato desse deploy ou use o botão no master desse ambiente. O diagnóstico inclui automaticamente os endereços Vercel válidos informados pelo ambiente.
+
+**Não ative acesso público no bucket dos originais.** CORS permite a comunicação do navegador; o acesso aos originais continua exigindo uma URL assinada. O limite de 15 MB foi mantido, com upload direto ao R2; o arquivo não é redirecionado pela função da Vercel.
+
+Referência técnica: https://developers.cloudflare.com/r2/buckets/cors/
 
 ## Demonstração pública
 
@@ -68,6 +90,8 @@ O controle usa sessões autenticadas do navegador. O IP é informação de apoio
 
 O master mostra botões numerados na paginação de artes, com primeira e última páginas sempre disponíveis e páginas próximas à atual. É possível clicar diretamente na última página.
 
+A barra clara de rolagem do menu lateral do master foi ocultada no computador e no menu móvel. A rolagem por mouse, toque e navegação pelos botões continua disponível; os itens inferiores não foram cortados.
+
 Foram retirados os botões de Loja Online do computador e celular, o popup da loja e as chamadas de catálogo digital. A imagem da landing que mostrava uma loja foi substituída por uma imagem da biblioteca. Os registros históricos permanecem no banco, sem a oferta aparecer nesta plataforma.
 
 ## Validação
@@ -75,8 +99,8 @@ Foram retirados os botões de Loja Online do computador e celular, o popup da lo
 Verificações concluídas nesta entrega:
 
 - Compilação de produção com Webpack, conferência dos arquivos-fonte e TypeScript aprovadas.
-- 63 testes de regressão aprovados, cobrindo experiência da conta, pagamentos, cupons, SEO, prévias, descoberta de artes, uploads, analytics e remoção de componentes antigos.
-- 14 fluxos de integração aprovados com banco SQL local temporário. Incluem cadastro, contato privado, ativação manual, demo assinada, prévia processada, download bloqueado, troca de dispositivo, adicionais e bloqueio de conta. O último fluxo usa o servidor compilado de produção por HTTP, com cookies reais e leitura/gravação no banco de teste.
+- 78 testes de regressão aprovados, cobrindo experiência da conta, pagamentos, cupons, SEO, prévias, descoberta de artes, uploads, analytics e remoção de componentes antigos. Os 15 casos novos de R2 incluem preflight, preservação de regras, permissão negada, repetição do envio, erro de assinatura e comunicação HTTP com o SDK S3 real.
+- 15 fluxos de integração aprovados com banco SQL local temporário. Incluem cadastro, contato privado, ativação manual, demo assinada, prévia processada, download bloqueado, troca de dispositivo, adicionais e bloqueio de conta. A integração HTTP usa o servidor compilado de produção, com cookies reais e leitura/gravação no banco de teste. O diagnóstico de R2 também foi exercitado pela API compilada, com endpoint S3 local de teste e o SDK real, verificando os dois buckets, preservação de regras e restrições de administrador/origem.
 - 10 páginas públicas aprovadas em canonical, Open Graph, H1, dados estruturados, sitemap com vídeo, robots, textos para IA, respostas 404/410, redirecionamentos e restrições das APIs.
 - Tema e contraste da landing conferidos no HTML/CSS compilado para larguras de 360, 768 e 1440 pixels. A correção do conflito de cores anterior foi preservada.
 
@@ -87,6 +111,7 @@ npm ci
 npm run check:source
 npm run check:types
 npm run test:account-experience
+npm run test:r2-upload
 npm run test:commerce
 npm run test:seo
 npm run build
@@ -101,4 +126,4 @@ Para incluir a integração HTTP do servidor compilado, após o build execute:
 CLICKGRUDA_TEST_HTTP=1 npm run test:member-flow
 ```
 
-Esta entrega é o código completo pronto para publicar. Não foi publicada automaticamente na sua outra conta da Vercel. A confirmação visual final no domínio deve usar o novo deploy; o ZIP não certifica uma compra real com credenciais de produção.
+Esta entrega é o código completo pronto para publicar. Não foi publicada automaticamente na sua outra conta da Vercel. Não houve acesso nem alteração dos buckets reais da Cloudflare; a permissão deles deve ser conferida pelo novo botão ou diretamente no painel da Cloudflare. A confirmação visual final no domínio deve usar o novo deploy; o ZIP não certifica uma compra real com credenciais de produção.

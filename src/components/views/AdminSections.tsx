@@ -6,6 +6,7 @@ import { CalendarHeart, Check, Sparkles, Layers3, FilterX, LayoutGrid, List, Ima
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { NumberedPagination } from '@/components/admin/NumberedPagination'
+import { R2UploadDiagnostics } from '@/components/admin/R2UploadDiagnostics'
 import { Input } from '@/components/ui/input'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Label } from '@/components/ui/label'
@@ -1398,7 +1399,7 @@ export function AdminSettingsSection() {
         <h3 className="flex items-center gap-2 text-sm font-black uppercase tracking-wide text-zinc-700">
           <Cloud className="h-4.5 w-4.5 text-orange-500" /> Cloudflare R2 (armazenamento das artes)
         </h3>
-        <p className="mt-1 text-xs text-zinc-400">Com R2: o PNG original vai pro bucket privado (só baixa quem pagou, por link temporário) e o WebP leve vira a prévia pública. Requer CORS (PUT) no bucket.</p>
+        <p className="mt-1 text-xs text-zinc-500">O original fica no bucket privado e a prévia WebP no público. O domínio usado no painel precisa ter permissão de envio nos dois buckets.</p>
 
         <div className="mt-4 flex items-center justify-between rounded-xl border border-zinc-200 bg-zinc-50 px-3.5 py-3">
           <div>
@@ -1425,6 +1426,7 @@ export function AdminSettingsSection() {
             ))}
           </div>
         )}
+        {form.r2_enabled === 'true' && <R2UploadDiagnostics disabled={save.isPending || !loaded || ['r2_enabled', 'r2_endpoint', 'r2_access_key_id', 'r2_secret_access_key', 'r2_bucket', 'r2_originals_bucket', 'r2_public_url'].some(key => (form[key] || '') !== (settingsQ.data?.settings[key] || ''))} />}
       </div>
 
       <Button onClick={() => save.mutate()} disabled={save.isPending} className="h-12 w-full max-w-xs rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 font-black shadow-md shadow-orange-500/25">

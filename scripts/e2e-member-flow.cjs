@@ -265,6 +265,37 @@ async function main() {
         assert.equal((await http(`/api/arts/${art.id}/download`, null, memberCookie, 'GET')).status, 200)
         const takeover = await (await http('/api/auth/login', { ...signup, email: 'http@test.invalid' })).json(); assert.equal(takeover.sessionNotice, 'NEW_LOGIN')
         const old = await (await http('/api/auth/me', null, memberCookie, 'GET')).json(); assert.equal(old.reason, 'SESSION_REVOKED')
+        await check('upload: API compilada testa e corrige CORS nos dois buckets via S3, preservando regras e acesso privado', async () => {
+          const configured = new Set(), writes = []
+          let unexpected = ''
+          const r2 = require('node:http').createServer(async (request, response) => {
+            const url = new URL(request.url, 'http://localhost'), bucket = url.pathname.split('/')[1]
+            if (request.method === 'OPTIONS') {
+              if (!configured.has(bucket)) { response.writeHead(403); response.end(); return }
+              response.writeHead(204, { 'Access-Control-Allow-Origin': 'https://www.clickgruda.com.br', 'Access-Control-Allow-Methods': 'PUT, GET, HEAD', 'Access-Control-Allow-Headers': 'content-type' }); response.end(); return
+            }
+            if (!url.searchParams.has('cors')) { unexpected = request.method + ' ' + url.pathname; response.writeHead(400); response.end(); return }
+            if (request.method === 'GET') {
+              response.writeHead(200, { 'Content-Type': 'application/xml' }); response.end('<CORSConfiguration><CORSRule><ID>legacy-test</ID><AllowedOrigin>https://legacy.test.invalid</AllowedOrigin><AllowedMethod>GET</AllowedMethod></CORSRule></CORSConfiguration>'); return
+            }
+            let body = ''; for await (const chunk of request) body += chunk
+            writes.push({ bucket, body }); configured.add(bucket); response.writeHead(200); response.end()
+          })
+          await new Promise(resolve => r2.listen(0, '127.0.0.1', resolve))
+          try {
+            const saved = await http('/api/admin/settings', { r2_enabled: 'true', r2_endpoint: `http://127.0.0.1:${r2.address().port}`, r2_access_key_id: 'http-test-only', r2_secret_access_key: 'not-a-real-secret', r2_bucket: 'previas', r2_originals_bucket: 'originais', r2_public_url: 'https://preview.test.invalid' }, ownerCookie, 'PUT')
+            assert.equal(saved.status, 200)
+            const call = (cookie, origin = 'https://www.clickgruda.com.br') => fetch(base + '/api/admin/upload/cors', { method: 'POST', headers: { Cookie: cookie, Origin: origin, 'Content-Type': 'application/json' }, body: JSON.stringify({ mode: 'repair' }) })
+            assert.equal((await call(demoCookie)).status, 401)
+            assert.equal((await call(ownerCookie, 'https://external.test.invalid')).status, 403)
+            const repaired = await call(ownerCookie); assert.equal(repaired.status, 200)
+            const data = await repaired.json(); assert.equal(data.ok, true); assert.equal(data.buckets.length, 2)
+            assert.equal(JSON.stringify(data).includes('not-a-real-secret'), false)
+            assert.equal(writes.length, 2); assert.equal(unexpected, '')
+            for (const write of writes) { assert.match(write.body, /legacy-test/); assert.match(write.body, /clickgruda-browser-upload/); assert.match(write.body, /https:\/\/www.clickgruda.com.br/) }
+            const checked = await (await call(ownerCookie)).json(); assert.equal(checked.ok, true); assert.equal(writes.length, 2)
+          } finally { await new Promise(resolve => r2.close(resolve)) }
+        })
       } finally {
         web.kill('SIGTERM'); await new Promise(resolve => { web.once('exit', resolve); setTimeout(() => { web.kill('SIGKILL'); resolve() }, 5000).unref() })
         fs.writeFileSync(path.join(folder, 'next-http.log'), logs)
