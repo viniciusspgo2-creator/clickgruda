@@ -21,7 +21,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
   const { id } = await params
   const art = await db.art.findUnique({ where: { id }, select: { imageUrl: true } })
   if (!art) return jsonError('Arte não encontrada.', 404)
-  const cacheKey = `${id}:${art.imageUrl}`
+  const cacheKey = `demo-v2:${id}:${art.imageUrl}`
   const cached = cachedProtectedPreview(cacheKey)
   if (cached) return imageResponse(cached)
 
@@ -43,19 +43,19 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
     }
     if (!buffer || buffer.length > MAX_ART_SIZE) return jsonError('Prévia indisponível.', 404)
 
-    // Uma única suavização leve na imagem gerada; evitar acumular blurs fortes no CSS.
+    // Prévia DEMO propositalmente desfocada no servidor; o navegador nunca recebe a versão nítida por esta rota.
     // A grade de marcas protege a amostra sem esconder o tema/composição da arte.
-    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="900" height="420" viewBox="0 0 900 420">
-      <g transform="rotate(-15 450 210)" fill="#ffffff" fill-opacity=".30" stroke="#152033" stroke-opacity=".32" stroke-width=".65" paint-order="stroke" font-family="Arial,sans-serif" font-size="23" font-weight="900" text-anchor="middle">
-        <text x="140" y="65">CLICK &amp; GRUDA</text><text x="450" y="65">SOMENTE PRÉVIA</text><text x="760" y="65">CLICK &amp; GRUDA</text>
-        <text x="140" y="205">SOMENTE PRÉVIA</text><text x="450" y="205">CLICK &amp; GRUDA</text><text x="760" y="205">SEM DOWNLOAD</text>
-        <text x="140" y="345">CLICK &amp; GRUDA</text><text x="450" y="345">SEM DOWNLOAD</text><text x="760" y="345">SOMENTE PRÉVIA</text>
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="760" height="355" viewBox="0 0 760 355">
+      <g transform="rotate(-15 380 177.5)" fill="#ffffff" fill-opacity=".30" stroke="#152033" stroke-opacity=".32" stroke-width=".65" paint-order="stroke" font-family="Arial,sans-serif" font-size="20" font-weight="900" text-anchor="middle">
+        <text x="120" y="55">CLICK &amp; GRUDA</text><text x="380" y="55">SOMENTE PRÉVIA</text><text x="640" y="55">CLICK &amp; GRUDA</text>
+        <text x="120" y="175">SOMENTE PRÉVIA</text><text x="380" y="175">CLICK &amp; GRUDA</text><text x="640" y="175">SEM DOWNLOAD</text>
+        <text x="120" y="295">CLICK &amp; GRUDA</text><text x="380" y="295">SEM DOWNLOAD</text><text x="640" y="295">SOMENTE PRÉVIA</text>
       </g>
     </svg>`
     const image = await sharp(buffer, { limitInputPixels: 30000000 })
-      .rotate().resize({ width: 900, height: 420, fit: 'contain', background: '#e5e7eb' })
-      .blur(1.8).composite([{ input: Buffer.from(svg), gravity: 'center' }])
-      .webp({ quality: 62 }).toBuffer()
+      .rotate().resize({ width: 760, height: 355, fit: 'contain', background: '#e5e7eb' })
+      .blur(3.2).composite([{ input: Buffer.from(svg), gravity: 'center' }])
+      .webp({ quality: 53 }).toBuffer()
     cacheProtectedPreview(cacheKey, image)
     return imageResponse(image)
   } catch (e) {
