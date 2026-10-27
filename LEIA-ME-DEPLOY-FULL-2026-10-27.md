@@ -6,7 +6,7 @@ Este pacote é o **projeto inteiro**, já ajustado sobre a atualização visual 
 
 1. **Venda sem esconder demonstração:** a ação primária da Home leva ao checkout/cadastro real. A demo gratuita e o vídeo continuam disponíveis, mas em hierarquia secundária. O menu permanece acessível entre 1024 e 1279 px de largura.
 2. **Preço e ofertas:** o valor apresentado vem de `/api/catalog`; caso a API falhe, a página manda conferir o checkout, sem divulgar valor potencialmente desatualizado. A oferta vitalícia é exibida apenas quando a condição já existente no projeto está ativa. Confirmar os termos comerciais cadastrados antes da campanha.
-3. **Mobile:** botões de toque dos cards divididos em uma ação principal para mockup e uma linha de ações compactas (prévia, download e favoritos); download bloqueado não finge estar disponível. Nenhuma ação depende exclusivamente de hover.
+3. **Mobile e revisão posterior:** botões de **Baixar arte** e **Favoritar** agora ficam visíveis em todos os dispositivos; somente **Abrir Studio 3D** e **Visualizar arte maior** ficam no hover do desktop. Em telas touch, há atalho fixo para Studio e a imagem abre prévia ampliada. Consulte também `LEIA-ME-CORRECOES-CARDS-FILTROS-MOCKUP-2026-10-27.md`.
 4. **Tema claro:** cartões e seus textos, tags, botões e overlays passam a obedecer ao contraste adequado, preservando os painéis de prévia e filtros escuros onde intencional.
 5. **Copy:** substituída a frase autorreferencial por uma promessa de utilidade sem números de vendas, depoimentos ou garantias inventadas. CTA adicional próximo aos benefícios.
 6. **Studio externo:** permanece o fluxo real baixar arte → abrir Studio → enviar arquivo. Não há importação automática. O banner do dashboard não foi editado.

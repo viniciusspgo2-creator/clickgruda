@@ -59,6 +59,7 @@ import { EnhanceRequestDialog } from '@/components/portal/EnhanceRequestDialog'
 import { LoadMoreFooter } from '@/components/shared/LoadMoreFooter'
 import { ZipDownloadDialog } from '@/components/portal/ZipDownloadDialog'
 import { WHATSAPP, WHATSAPP_MESSAGES } from '@/lib/site'
+import { formatArtTitle } from '@/lib/format-art-title'
 import { getCategoryIcon } from '@/lib/category-icons'
 import { useStore, type PortalTab } from '@/lib/store'
 import type { ArtItem, CatalogData } from '@/lib/types'
@@ -1101,7 +1102,7 @@ export function PortalView() {
             </div>
 
             {!user.isDemo && (
-              <button type="button" onClick={() => { setMenuOpen(false); setZipOpen(true) }} className="mt-6 flex w-full items-center justify-center gap-2 rounded-xl border border-orange-300/60 bg-orange-50 px-3 py-3 text-xs font-bold text-orange-700 hover:bg-orange-100">
+              <button type="button" onClick={() => { setMenuOpen(false); setZipOpen(true) }} className="cg-filter-zip mt-6 flex w-full items-center justify-center gap-2 rounded-xl border border-orange-400/45 bg-orange-400/10 px-3 py-3 text-xs font-bold text-orange-200 hover:bg-orange-400/20">
                 <Download className="h-4 w-4" /> Baixar catálogo em ZIP (opcional)
               </button>
             )}
@@ -1116,14 +1117,14 @@ export function PortalView() {
                 setMenuOpen(false)
               }}
               variant="outline"
-              className="mt-7 w-full rounded-xl border-zinc-200 font-bold text-zinc-600"
+              className="cg-filter-clear mt-7 w-full rounded-xl border border-slate-500/40 bg-slate-800/60 font-bold text-slate-100 hover:border-orange-400/45 hover:bg-slate-700/80"
             >
               <RotateCcw className="mr-1.5 h-4 w-4" /> Limpar filtros
             </Button>
           </div>
           <div className="shrink-0 border-t border-white/10 bg-[#101a2b] p-4 shadow-[0_-8px_24px_rgba(0,0,0,.22)]">
             <Button onClick={() => setMenuOpen(false)} className="h-11 w-full rounded-xl bg-orange-500 font-bold text-white hover:bg-orange-600">
-              <Check className="mr-2 h-4 w-4 text-orange-400" />
+              <Check className="mr-2 h-4 w-4 text-white" />
               Ver {artsQ.isFetching ? 'resultados' : `${total.toLocaleString('pt-BR')} artes`}
             </Button>
           </div>
@@ -1146,17 +1147,18 @@ export function PortalView() {
       </a>
 
       <Dialog open={mockupDialogOpen} onOpenChange={setMockupDialogOpen}>
-        <DialogContent className="cg-access-dialog rounded-3xl border-white/10 bg-[#121a2a] text-slate-100 sm:max-w-lg">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-xl font-black text-white"><Box className="h-5 w-5 text-orange-400" /> Gerador de Mockups 3D</DialogTitle>
-            <DialogDescription className="text-sm leading-relaxed text-slate-300">{user.isDemo ? 'O gerador de mockups 3D é um recurso para membros. A demonstração permite conhecer a biblioteca; o uso do gerador depende da ativação do seu acesso.' : <>O mockup é <strong className="text-white">premium</strong>, e você assinante tem acesso gratuito. Se ainda não tem o código de acesso, solicite ao suporte o seu código grátis.</>}</DialogDescription>
+        <DialogContent className="cg-access-dialog w-[calc(100vw-24px)] max-w-[610px] sm:max-w-[610px] min-w-0 max-h-[min(90dvh,750px)] gap-4 overflow-x-hidden overflow-y-auto rounded-2xl border-white/10 bg-[#121a2a] p-4 text-slate-100 shadow-2xl sm:p-6" >
+          <DialogHeader className="min-w-0 gap-3 pr-7 text-left">
+            <DialogTitle className="flex min-w-0 flex-wrap items-center gap-2 text-lg font-black leading-snug text-white sm:text-xl"><Box className="h-5 w-5 shrink-0 text-orange-400" /> Gerador de Mockups 3D</DialogTitle>
+            <DialogDescription className="max-w-full text-left text-[13px] leading-relaxed text-slate-300 sm:text-sm">{user.isDemo ? 'O gerador de mockups 3D é um recurso para membros. A demonstração permite conhecer a biblioteca; o uso do gerador depende da ativação do seu acesso.' : <>O mockup é <strong className="text-white">premium</strong> e você, assinante, tem acesso gratuito. Se ainda não recebeu seu código de acesso, solicite gratuitamente ao suporte.</>}</DialogDescription>
           </DialogHeader>
-          {mockupArt && <div className="rounded-xl border border-orange-400/20 bg-orange-400/[.07] p-3 text-xs leading-5 text-slate-200"><strong className="block text-orange-200">Arte selecionada: {mockupArt.title}</strong>O Studio não importa esta estampa automaticamente. {user.isDemo ? "Na demonstração, conheça o acervo. Após ativar seu acesso, baixe a arte e envie o arquivo ao Studio." : "Baixe a arte pelo botão abaixo e, no gerador, envie o arquivo para visualizar a caneca em 3D."}</div>}
-          <DialogFooter className="mt-2 flex-col gap-2 sm:flex-row sm:justify-between">
-            {user.isDemo ? <DemoConversionActions /> : <>
-            <Button type="button" variant="outline" onClick={() => window.open(WHATSAPP.link(mockupSupportMessage), '_blank', 'noopener,noreferrer')} className="border-white/15 bg-white/5 text-slate-100 hover:bg-white/10">Solicitar código grátis</Button>
-            {mockupArt && <Button type="button" variant="outline" disabled={downloadStates[mockupArt.id] === 'loading'} onClick={() => handleDownload(mockupArt)} className="border-white/15 bg-white/5 text-white hover:bg-white/10"><Download className="mr-1.5 h-4 w-4" /> Baixar esta arte</Button>}
-            <Button type="button" onClick={() => { setMockupDialogOpen(false); openExternal('https://clicktools.vercel.app/', 'mockup_platform_open') }} className="bg-orange-500 text-white hover:bg-orange-600">Abrir Studio Mockup 3D</Button></>}
+          {mockupArt && <div className="min-w-0 max-w-full rounded-xl border border-orange-400/25 bg-orange-400/[.07] p-3 text-xs leading-relaxed text-slate-200 sm:p-4"><strong className="mb-1 block break-words text-orange-200">Arte selecionada: {formatArtTitle(mockupArt.title)}</strong><p>O Studio não importa a estampa automaticamente. {user.isDemo ? 'Na demonstração, conheça o acervo. Após ativar seu acesso, baixe a arte e envie o arquivo ao Studio.' : 'Baixe a arte pelo botão abaixo e envie o arquivo ao Studio para visualizar a caneca em 3D.'}</p></div>}
+          <DialogFooter className="cg-access-actions mt-1 grid min-w-0 grid-cols-1 gap-2 sm:grid-cols-2">
+            {user.isDemo ? <div className="min-w-0 sm:col-span-2"><DemoConversionActions /></div> : <>
+              <Button type="button" variant="outline" onClick={() => window.open(WHATSAPP.link(mockupSupportMessage), '_blank', 'noopener,noreferrer')} className="min-h-11 h-auto min-w-0 whitespace-normal rounded-xl border-white/20 bg-white/5 px-3 py-2 text-center text-slate-100 hover:bg-white/10 hover:text-white">Solicitar código grátis</Button>
+              {mockupArt && <Button type="button" variant="outline" disabled={downloadStates[mockupArt.id] === 'loading'} onClick={() => handleDownload(mockupArt)} className="min-h-11 h-auto min-w-0 whitespace-normal rounded-xl border-white/20 bg-white/5 px-3 py-2 text-center text-slate-100 hover:bg-white/10 hover:text-white"><Download className="mr-1.5 h-4 w-4 shrink-0" /> Baixar esta arte</Button>}
+              <Button type="button" onClick={() => { setMockupDialogOpen(false); openExternal('https://clicktools.vercel.app/', 'mockup_platform_open') }} className="min-h-11 h-auto min-w-0 whitespace-normal rounded-xl bg-orange-500 px-3 py-2 text-center font-bold text-white hover:bg-orange-600 sm:col-span-2">Abrir Studio Mockup 3D</Button>
+            </>}
           </DialogFooter>
         </DialogContent>
       </Dialog>

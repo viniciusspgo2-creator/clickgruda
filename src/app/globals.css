@@ -1553,3 +1553,101 @@
 @media (hover:none), (pointer:coarse) {
   .cg-portal .cg-member-artcard .cg-art-info .cg-art-mockup-touch {font-size:11px;}
 }
+
+
+/* 2026-10-27 • Fix visual: ações essenciais fixas, painéis sem overflow e contraste consistente.
+   Não modificar o banner do dashboard. */
+.cg-portal .cg-member-grid {min-width:0;}
+.cg-portal .cg-member-grid > * {min-width:0;}
+.cg-portal .cg-member-artcard {min-width:0;}
+.cg-portal .cg-member-artcard .cg-art-card-surface {max-width:100%;isolation:isolate;}
+.cg-portal .cg-member-artcard .cg-art-info {min-width:0;}
+.cg-portal .cg-member-artcard .cg-art-info h3 {overflow-wrap:anywhere;}
+.cg-portal .cg-member-artcard .cg-art-meta > * {min-width:0;}
+.cg-portal .cg-member-artcard .cg-art-info .cg-art-download:not(:disabled) {
+  background:linear-gradient(115deg,#ff832f,#f36a12)!important;
+  border:1px solid rgba(255,190,135,.28)!important;
+  color:#fff!important;
+  box-shadow:0 4px 12px rgba(223,88,12,.17);
+}
+.cg-portal .cg-member-artcard .cg-art-info .cg-art-download:not(:disabled):hover {background:#ff903a!important;}
+.cg-portal .cg-member-artcard .cg-art-info .cg-art-download:disabled {background:#26364d!important;color:#d5deec!important;}
+.cg-portal .cg-member-artcard .cg-art-favorite {flex-shrink:0;}
+.cg-portal .cg-art-hover-actions {display:flex;opacity:0;visibility:hidden;transition:opacity .2s ease-out,visibility .2s ease-out;}
+.cg-portal .cg-member-artcard:hover .cg-art-hover-actions,
+.cg-portal .cg-member-artcard:focus-within .cg-art-hover-actions {opacity:1;visibility:visible;}
+.cg-portal .cg-member-artcard .cg-art-info .cg-art-studio-touch {display:none;}
+@media (hover:none), (pointer:coarse) {
+  .cg-portal .cg-member-artcard .cg-art-hover-actions {display:none!important;}
+  .cg-portal .cg-member-artcard .cg-art-info .cg-art-studio-touch {display:inline-flex;}
+  .cg-portal .cg-member-artcard .cg-art-card-surface:hover {transform:none!important;}
+}
+@media (max-width:540px) {
+  .cg-portal .cg-member-artcard .cg-art-info {padding:9px;gap:7px;}
+  .cg-portal .cg-member-artcard .cg-art-info h3 {font-size:11px;min-height:32px;}
+  .cg-portal .cg-member-artcard .cg-art-favorite {width:32px;height:32px;border-radius:10px;}
+  .cg-portal .cg-member-artcard .cg-art-info .cg-art-download {min-height:40px;font-size:11px;}
+  .cg-portal .cg-member-artcard .cg-art-info .cg-art-studio-touch {font-size:10px;}
+  .cg-portal .cg-member-artcard .cg-art-meta {gap:4px;}
+}
+/* Light mode: non-interactive labels + fixed actions stay legible. */
+.cg-portal.cg-theme-light .cg-member-artcard .cg-art-info .cg-art-download:not(:disabled) {color:#fff!important;}
+.cg-portal.cg-theme-light .cg-member-artcard .cg-art-info .cg-art-download:disabled {background:#e9edf3!important;color:#53637a!important;}
+.cg-portal.cg-theme-light .cg-member-artcard .cg-art-info .cg-art-favorite {
+  color:#4a5872!important;background:#f6f8fb!important;border-color:#dee4ee!important;
+}
+.cg-portal.cg-theme-light .cg-member-artcard .cg-art-info .cg-art-favorite[aria-pressed="true"] {
+  color:#be185d!important;background:#ffe5ef!important;border-color:#f8a9c5!important;
+}
+.cg-portal.cg-theme-light .cg-member-artcard .cg-art-info .cg-art-code {
+  color:#556680!important;background:#f3f6fa!important;border-color:#dde4ed!important;
+}
+.cg-portal.cg-theme-light .cg-member-artcard .cg-art-info .cg-art-meta > span:first-child {
+  color:#99440a!important;background:#ffeadb!important;border-color:#ffdbbf!important;
+}
+.cg-portal.cg-theme-light .cg-member-artcard .cg-art-info .cg-art-meta > span:last-child:not(:first-child) {
+  color:#657389!important;background:#f4f6fa!important;
+}
+.cg-portal.cg-theme-light .cg-member-artcard .cg-art-info .cg-art-studio-touch {
+  color:#9c430b!important;background:#fff0e2!important;border-color:#fbd4b2!important;
+}
+/* Sheet independente do tema do dashboard: elimina o botão branco com texto ilegível. */
+.cg-filter-drawer {min-width:0;max-width:100vw;overflow-x:hidden;}
+.cg-filter-drawer .cg-filter-drawer-scroll {min-width:0;scrollbar-gutter:stable;}
+.cg-filter-drawer .cg-filter-drawer-scroll button {min-width:0;}
+.cg-filter-drawer .cg-filter-clear {
+  background:#263850!important;border:1px solid #4b5d78!important;color:#f4f7ff!important;
+  box-shadow:none!important;opacity:1!important;
+}
+.cg-filter-drawer .cg-filter-clear:hover {background:#314966!important;border-color:#fb923c!important;color:#fff!important;}
+.cg-filter-drawer .cg-filter-zip {
+  background:rgba(249,115,22,.11)!important;border-color:rgba(251,146,60,.55)!important;color:#ffbd8a!important;
+}
+.cg-filter-drawer .cg-filter-zip:hover {background:rgba(249,115,22,.2)!important;}
+.cg-filter-drawer .cg-filter-drawer-scroll [role="radio"] {overflow:hidden;}
+.cg-filter-drawer .cg-filter-drawer-scroll [role="radio"] > span:nth-child(2) {min-width:0;overflow-wrap:anywhere;}
+.cg-filter-drawer .cg-filter-drawer-scroll .bg-orange-100 {background:rgba(251,139,55,.19)!important;}
+.cg-filter-drawer .cg-filter-drawer-scroll .text-orange-700 {color:#ffc08b!important;}
+.cg-filter-drawer .cg-filter-drawer-scroll .bg-orange-500.text-white,
+.cg-filter-drawer .cg-filter-drawer-scroll [role="radio"][aria-checked="true"] {color:#fff!important;}
+.cg-filter-drawer .cg-filter-drawer-scroll input {color:#fff!important;}
+.cg-filter-drawer [data-slot="sheet-close"] {color:#dbe5f5;}
+/* Modal Studio: textos e ações dentro dos limites em qualquer largura. */
+.cg-access-dialog {box-sizing:border-box!important;overflow-wrap:break-word;overscroll-behavior:contain;}
+.cg-access-dialog > * {min-width:0;max-width:100%;}
+.cg-access-dialog [data-slot="dialog-close"] {color:#cbd5e1;}
+.cg-access-dialog [data-slot="dialog-close"]:hover {color:white;}
+.cg-access-dialog .cg-access-actions {display:grid;min-width:0;max-width:100%;}
+.cg-access-dialog .cg-access-actions > * {min-width:0;max-width:100%;}
+.cg-access-dialog .cg-access-actions button {max-width:100%;min-width:0;white-space:normal;overflow-wrap:break-word;line-height:1.25;}
+@media (max-width:420px) {
+  .cg-access-dialog {padding:16px!important;}
+  .cg-access-dialog .cg-access-actions {grid-template-columns:minmax(0,1fr)!important;}
+  .cg-access-dialog .cg-access-actions button {width:100%;}
+}
+
+/* Evitar que o card ampliado cubra controles do card vizinho. */
+.cg-portal .cg-member-artcard .cg-art-card-surface:hover,
+.cg-portal .cg-member-artcard .cg-art-card-surface:focus-within {transform:translateY(-3px)!important;}
+/* Neutraliza o sm:max-w-lg herdado do Dialog base. */
+.cg-access-dialog {width:min(610px,calc(100vw - 24px))!important;max-width:min(610px,calc(100vw - 24px))!important;}
