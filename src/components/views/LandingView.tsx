@@ -56,7 +56,7 @@ export function LandingView() {
   const goLogin = () => { track('cta_click', { location: 'login', intent: 'auth' }); setMenuOpen(false); setAuthMode('login'); setView('auth') }
   const scrollTo = (id: string) => { setMenuOpen(false); track('cta_click', { location: 'navigation', intent: id }); document.getElementById(id)?.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth' }) }
 
-  return <div className="cg-sales min-h-screen overflow-x-clip bg-[#0c0b0e] pb-20 text-white lg:pb-0">
+  return <div className="cg-sales-page min-h-screen overflow-x-clip pb-20 lg:pb-0">
     <header className="sticky top-0 z-50 border-b border-white/10 bg-[#0c0b0e]/95 backdrop-blur-xl">
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-5 px-5 py-4 sm:px-8">
         <button type="button" aria-label="Voltar ao início" onClick={() => window.scrollTo({ top: 0, behavior: reduced ? 'auto' : 'smooth' })}><Logo dark /></button>
