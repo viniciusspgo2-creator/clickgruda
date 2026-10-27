@@ -36,7 +36,7 @@ function memoryDb() {
       update: async ({where,data}) => {Object.assign(payments.get(where.id),data);return {...payments.get(where.id)}},
       updateMany: async ({where,data}) => { const p=payments.get(where.id); if(!p || (typeof where.status==='string' ? p.status!==where.status : where.status?.not===p.status))return {count:0};Object.assign(p,data);return {count:1} },
     },
-    user: { update:async ({where,data})=>{grants++;const user={...users.get(where.id),...data};users.set(where.id,user);return user} },
+    user: { findUnique:async ({where})=>users.get(where.id)||null, update:async ({where,data})=>{grants++;const user={...users.get(where.id),...data};users.set(where.id,user);return user} },
     $transaction: async action => typeof action==='function'?action(db):Promise.all(action),
   }
   settings.set('price_cents','4790');settings.set('mercadopago_access_token','test-access-token');settings.set('payment_provider','MERCADOPAGO')

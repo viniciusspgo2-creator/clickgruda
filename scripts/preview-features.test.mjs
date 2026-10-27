@@ -27,8 +27,8 @@ test('gestão: exclusão em lote, filtro e edição reprovadas', () => {
 test('preview: múltiplas sessões, popup e criação no admin', () => {
   assert.match(f('src/lib/sessions.ts'), /user\.isPreview/)
   assert.match(f('src/app/api/admin/preview/route.ts'), /previewMaxSessions/)
-  assert.match(f('src/components/views/PortalView.tsx'), /Começar a navegar/)
-  assert.match(f('src/components/views/PortalView.tsx'), /15 mil artes/)
+  assert.match(f('src/components/shared/DemoAccessButton.tsx'), /Conhecer por dentro/)
+  assert.match(f('src/app/api/auth/demo/route.ts'), /createPublicDemoSession/)
   assert.match(f('src/components/admin/PreviewAccountDialog.tsx'), /Criar usuário Preview/)
 })
 test('landing: contagem interna de interações', () => {

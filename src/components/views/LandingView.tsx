@@ -4,12 +4,15 @@ import { useEffect, useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { motion, useReducedMotion } from 'framer-motion'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { ArrowRight, ArrowUpRight, BadgeCheck, CalendarDays, Check, Download, Layers3, Menu, MessageCircle, Play, Search, ShieldCheck, Sparkles, Star, WandSparkles, X } from 'lucide-react'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
 import { ShowcaseCarousel } from '@/components/landing/ShowcaseCarousel'
 import { SALES } from '@/components/landing/sales-content'
 import { Logo } from '@/components/shared/Logo'
+import { DemoAccessButton } from '@/components/shared/DemoAccessButton'
+import { leaveDemoForAccount } from '@/lib/demo-client'
+import { toast } from 'sonner'
 import { FAQ_ITEMS, LANDING_FAQ_INDICES } from '@/lib/knowledge'
 import { track } from '@/lib/analytics'
 import { WHATSAPP, WHATSAPP_MESSAGES } from '@/lib/site'
@@ -33,6 +36,7 @@ function Picture({ src, alt }: { src: string; alt: string }) {
 
 export function LandingView() {
   const user = useStore(s => s.user)
+  const queryClient = useQueryClient()
   const setView = useStore(s => s.setView)
   const setAuthMode = useStore(s => s.setAuthMode)
   const setPendingIntent = useStore(s => s.setPendingIntent)
@@ -42,18 +46,19 @@ export function LandingView() {
   const priceCents = catalog?.priceCents ?? SALES.defaultPriceCents
   const price = formatBRL(priceCents)
   const campaignActive = priceCents === SALES.defaultPriceCents && Date.now() <= new Date(SALES.promoEndsAt).getTime()
-  const hasAccess = Boolean(user?.hasAccess)
+  const hasAccess = Boolean(user?.hasAccess && !user.isDemo)
   const buyLabel = hasAccess ? 'Acessar minha plataforma' : campaignActive ? 'Quero meu acesso vitalício' : 'Ver condições de acesso'
   useEffect(() => { track('landing_view', { location: 'home' }) }, [])
-  const goPurchase = (location: string) => {
+  const goPurchase = async (location: string) => {
     track('cta_click', { location, intent: 'checkout', price_cents: priceCents })
     setMenuOpen(false)
+    if (user?.isDemo) { try { await leaveDemoForAccount(queryClient, 'register') } catch (e) { toast.error((e as Error).message) }; return }
     if (hasAccess) { setView('portal'); return }
     if (SALES.CHECKOUT_URL) { window.location.assign(SALES.CHECKOUT_URL); return }
     if (user) { setView('checkout'); return }
     setAuthMode('register'); setPendingIntent('checkout'); setView('auth')
   }
-  const goLogin = () => { track('cta_click', { location: 'login', intent: 'auth' }); setMenuOpen(false); setAuthMode('login'); setView('auth') }
+  const goLogin = async () => { track('cta_click', { location: 'login', intent: 'auth' }); setMenuOpen(false); if (user?.isDemo) { try { await leaveDemoForAccount(queryClient, 'login', false) } catch (e) { toast.error((e as Error).message) }; return }; setAuthMode('login'); setView('auth') }
   const scrollTo = (id: string) => { setMenuOpen(false); track('cta_click', { location: 'navigation', intent: id }); document.getElementById(id)?.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth' }) }
 
   return <div className="cg-sales-page min-h-screen overflow-x-clip pb-20 lg:pb-0">
@@ -74,7 +79,8 @@ export function LandingView() {
             <h1 className="cg-sales-title mt-6"><span className="block">Artes prontas para</span><span className="block text-[#ff913f]">suas próximas vendas.</span></h1>
             <p className="mt-6 max-w-[580px] text-base leading-[1.85] text-white/75 sm:text-[17px]">Um acervo para explorar, com <strong className="font-semibold text-white">curadoria e novidades toda semana</strong>. Encontre o estilo do seu cliente, baixe suas artes e apresente suas ideias — com tudo organizado para facilitar a sua produção.</p>
             <div className="mt-6 flex flex-wrap gap-2">{['Downloads ilimitados', 'Novas artes toda semana', 'Mockups 3D inclusos'].map(text => <span key={text} className="inline-flex items-center gap-1.5 rounded-full border border-white/10 px-3 py-2 text-[11px] font-medium text-white/80"><Check size={13} className="text-[#ffab70]" />{text}</span>)}</div>
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row"><button onClick={() => goPurchase('hero')} className="cg-sales-button px-6 py-4 text-sm sm:text-[15px]">{buyLabel}<ArrowUpRight size={18} /></button><button onClick={() => scrollTo('video')} className="inline-flex min-h-13 items-center justify-center gap-2 rounded-full border border-white/20 px-6 py-4 text-sm font-semibold text-white/85 transition hover:bg-white/5"><Play size={16} /> Veja por dentro</button></div>
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row"><button onClick={() => goPurchase('hero')} className="cg-sales-button px-6 py-4 text-sm sm:text-[15px]">{buyLabel}<ArrowUpRight size={18} /></button><DemoAccessButton location="landing_demo" className="min-h-13 border-white/20 bg-transparent text-white hover:bg-white/5" /></div>
+            <button type="button" onClick={() => scrollTo('video')} className="mt-4 inline-flex min-h-11 items-center gap-2 text-sm font-semibold text-white/75 underline underline-offset-4 hover:text-white"><Play size={15} /> Assistir à apresentação</button>
             <p className="mt-5 flex items-start gap-2 text-xs leading-relaxed text-white/60"><ShieldCheck size={15} className="mt-0.5 shrink-0 text-[#ffab70]" />{campaignActive ? `${price} · pagamento único na oferta de acesso vitalício.` : 'Consulte os planos e as condições disponíveis no checkout.'}</p>
           </div>
           <div className="mx-auto w-full max-w-[510px]">
@@ -93,7 +99,7 @@ export function LandingView() {
 
       <section id="video" className="cg-sales-section bg-[#131015] px-5 py-16 sm:px-8 lg:py-20"><div className="mx-auto max-w-5xl"><div className="mx-auto max-w-3xl text-center"><p className="cg-sales-eyebrow">Veja antes de decidir</p><h2 className="cg-sales-heading mt-4">Conheça a sua próxima biblioteca de artes.</h2><p className="mt-5 text-base leading-8 text-white/65">Assista à demonstração e veja como é explorar a plataforma. A melhor forma de entender o que você recebe é vendo tudo funcionar.</p></div><div className="mt-8 overflow-hidden rounded-[26px] border border-white/15 bg-black p-2"><div className="relative aspect-video overflow-hidden rounded-[19px]"><iframe title="Conheça a Click&Gruda — apresentação em vídeo" src="https://player.vimeo.com/video/1238613293?title=0&byline=0&portrait=0&dnt=1&loop=1&autopause=0" allow="autoplay; fullscreen; picture-in-picture; encrypted-media" allowFullScreen loading="lazy" referrerPolicy="strict-origin-when-cross-origin" className="absolute inset-0 h-full w-full border-0" /></div></div><div className="mt-7 text-center"><button onClick={() => goPurchase('after_video')} className="cg-sales-button px-7 py-4 text-sm">{buyLabel} <ArrowRight size={17} /></button></div></div></section>
 
-      <section id="biblioteca" className="cg-sales-section py-16 lg:py-24"><div className="mx-auto grid max-w-7xl items-center gap-10 px-5 sm:px-8 lg:grid-cols-2 lg:gap-16"><Reveal><p className="cg-sales-eyebrow">Um acervo de possibilidades</p><h2 className="cg-sales-heading mt-4">Do pedido de hoje à ideia que você ainda vai ter.</h2><p className="mt-5 text-base leading-8 text-white/70">Frases, profissões, fé, humor, amizade e datas especiais. Explore estilos para diferentes clientes e deixe suas favoritas à mão para o próximo pedido.</p><div className="mt-6 flex flex-wrap gap-2">{SALES.categories.slice(1).map(category => <span key={category} className="rounded-full border border-white/10 bg-white/[.04] px-3 py-2 text-xs font-medium text-white/75">{category}</span>)}</div><p className="mt-6 flex items-center gap-2 text-sm font-medium text-[#ffb17c]"><Sparkles size={16} /> O acervo cresce. Suas possibilidades também.</p></Reveal><Picture src="/uploads/rebrand/ecossistema-completo.webp" alt="Recursos e biblioteca de artes da Click & Gruda reunidos em uma plataforma" /></div><div className="mx-auto mt-14 max-w-7xl px-5 sm:px-8"><h3 className="text-xl font-bold tracking-tight sm:text-2xl">Uma prévia dos estilos que você encontra.</h3><p className="mt-2 text-xs text-white/55">Exemplos do acervo para conhecer a proposta visual.</p></div><ShowcaseCarousel /></section>
+      <section id="biblioteca" className="cg-sales-section py-16 lg:py-24"><div className="mx-auto grid max-w-7xl items-center gap-10 px-5 sm:px-8 lg:grid-cols-2 lg:gap-16"><Reveal><p className="cg-sales-eyebrow">Um acervo de possibilidades</p><h2 className="cg-sales-heading mt-4">Do pedido de hoje à ideia que você ainda vai ter.</h2><p className="mt-5 text-base leading-8 text-white/70">Frases, profissões, fé, humor, amizade e datas especiais. Explore estilos para diferentes clientes e deixe suas favoritas à mão para o próximo pedido.</p><div className="mt-6 flex flex-wrap gap-2">{SALES.categories.slice(1).map(category => <span key={category} className="rounded-full border border-white/10 bg-white/[.04] px-3 py-2 text-xs font-medium text-white/75">{category}</span>)}</div><p className="mt-6 flex items-center gap-2 text-sm font-medium text-[#ffb17c]"><Sparkles size={16} /> O acervo cresce. Suas possibilidades também.</p></Reveal><Picture src="/uploads/rebrand/busca-acervo.webp" alt="Busca, categorias e coleções da biblioteca de artes Click & Gruda" /></div><div className="mx-auto mt-14 max-w-7xl px-5 sm:px-8"><h3 className="text-xl font-bold tracking-tight sm:text-2xl">Uma prévia dos estilos que você encontra.</h3><p className="mt-2 text-xs text-white/55">Exemplos do acervo para conhecer a proposta visual.</p></div><ShowcaseCarousel /></section>
 
       <section id="recursos" className="cg-sales-section bg-[#131015] px-5 py-16 sm:px-8 lg:py-24"><div className="mx-auto max-w-7xl"><div className="mx-auto mb-10 max-w-3xl text-center"><p className="cg-sales-eyebrow">Da escolha à apresentação</p><h2 className="cg-sales-heading mt-4">Uma rotina mais prática começa com tudo no lugar.</h2></div><div className="space-y-7">{FEATURES.map((feature, i) => <Reveal key={feature.id}><article className="grid items-center gap-7 rounded-[28px] border border-white/10 bg-[#19151c] p-5 sm:p-8 lg:grid-cols-2 lg:gap-12"><div className={i % 2 ? 'lg:order-2' : ''}><p className="cg-sales-eyebrow">{feature.label}</p><h3 className="mt-4 text-[clamp(1.65rem,2.6vw,2.35rem)] font-bold leading-[1.16] tracking-[-.025em]">{feature.title}</h3><p className="mt-5 text-[15px] leading-8 text-white/70">{feature.text}</p><ul className="mt-6 space-y-3">{feature.points.map(point => <li key={point} className="flex gap-2.5 text-sm leading-relaxed text-white/80"><Check size={17} className="mt-0.5 shrink-0 text-[#ff9b50]" />{point}</li>)}</ul><button onClick={() => goPurchase(`feature_${feature.id}`)} className="mt-7 inline-flex items-center gap-2 text-sm font-bold text-[#ffb17c] underline underline-offset-8">Conhecer meu acesso <ArrowUpRight size={16} /></button></div><div className={i % 2 ? 'lg:order-1' : ''}><Picture src={feature.image} alt={feature.alt} /></div></article></Reveal>)}</div></div></section>
 

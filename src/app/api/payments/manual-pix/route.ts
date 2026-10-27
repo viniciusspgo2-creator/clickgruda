@@ -1,36 +1,34 @@
 import { db } from '@/lib/db'
 import { getSessionUser, jsonError } from '@/lib/auth'
 import { getSettings } from '@/lib/settings'
-import { createCheckoutOrder, getCheckoutContext } from '@/lib/coupons'
+import { createCheckoutOrder, getCheckoutContext, quoteCheckout } from '@/lib/coupons'
 
-/**
- * POST /api/payments/manual-pix
- *
- * Fluxo do PIX manual: o cliente se cadastra, escolhe "PIX direto (manual)"
- * no checkout e declara que vai pagar a chave PIX exibida. O cadastro fica
- * PRÉ-APROVADO (status PENDING_MANUAL) e um pagamento PENDING do provider
- * MANUAL_PIX é registrado — o Admin Master vê na lista de pagamentos e faz
- * a liberação da conta após conferir o comprovante recebido no WhatsApp.
- */
+/** Solicitação de atendimento com valor e cupom conferidos no servidor.
+ * Não declara pagamento e nunca libera o acesso sem a confirmação da equipe. */
 export async function POST(req: Request) {
   const session = await getSessionUser()
   if (!session) return jsonError('Faça login para continuar', 401)
   if (session.isDemo) return jsonError('Conta Preview: operação indisponível.', 403)
 
   const settings = await getSettings()
-  const manualEnabled = settings.pix_manual_enabled === 'true' && Boolean((settings.pix_key || '').trim())
-  if (!manualEnabled) return jsonError('O pagamento por PIX manual não está disponível agora.', 400)
+  // Solicitação de atendimento e ativação; não exige PIX cadastrado nem declara pagamento.
 
   if (session.hasAccess) return jsonError('Você já tem acesso ativo.', 400)
 
   const body = await req.json().catch(() => ({}))
   if (!body || typeof body !== 'object' || Array.isArray(body)) return jsonError('Dados inválidos.', 400)
   let order: Awaited<ReturnType<typeof createCheckoutOrder>>
-  try { order = await createCheckoutOrder(session.id, 'MANUAL_PIX', Number(settings.price_cents || 4790), body.couponCode) }
+  try {
+    const quote = await quoteCheckout(Number(settings.price_cents || 4790), body.couponCode)
+    const pending = await db.payment.findFirst({ where: { userId: session.id, provider: 'MANUAL_PIX', status: 'PENDING' }, orderBy: { createdAt: 'desc' } })
+    const context = pending ? await getCheckoutContext(pending.id) : null
+    if (pending && context && pending.amountCents === quote.amountCents && context.subtotalCents === quote.subtotalCents && context.coupon?.code === quote.coupon?.code) order = { payment: pending, quote }
+    else order = await createCheckoutOrder(session.id, 'MANUAL_PIX', Number(settings.price_cents || 4790), body.couponCode)
+  }
   catch (error) { return jsonError(error instanceof Error ? error.message : 'Cupom inválido.', 400) }
   const { payment, quote } = order
 
-  // Cadastro pré-aprovado: aguardando apenas a conferência do comprovante.
+  // Solicitação pendente de atendimento e confirmação do pagamento.
   await db.user.update({
     where: { id: session.id },
     data: { status: 'PENDING_MANUAL' },

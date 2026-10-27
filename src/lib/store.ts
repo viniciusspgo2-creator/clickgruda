@@ -15,6 +15,7 @@ export type SessionUser = {
   hasAccess: boolean
   isDemo?: boolean
   isPreview?: boolean
+  isPublicDemo?: boolean
   /** ACTIVE | PENDING_MANUAL (aguardando liberação do PIX manual) */
   status?: string
 }
@@ -34,6 +35,10 @@ interface AppState {
   setReady: (b: boolean) => void
 
   user: SessionUser | null
+  sessionRevision: number
+  sessionNotice: 'NEW_LOGIN' | 'SESSION_REVOKED' | 'ACCOUNT_BLOCKED' | null
+  sessionDeviceLimit: number
+  setSessionNotice: (notice: AppState['sessionNotice'], limit?: number) => void
   setUser: (u: SessionUser | null) => void
 
   authMode: AuthMode
@@ -70,7 +75,11 @@ export const useStore = create<AppState>((set) => ({
   setReady: (b) => set({ ready: b }),
 
   user: null,
-  setUser: (u) => set({ user: u }),
+  sessionRevision: 0,
+  sessionNotice: null,
+  sessionDeviceLimit: 1,
+  setSessionNotice: (sessionNotice, limit = 1) => set({ sessionNotice, sessionDeviceLimit: Math.max(1, limit) }),
+  setUser: (u) => set(state => ({ user: u, sessionRevision: state.sessionRevision + 1 })),
 
   authMode: 'login',
   setAuthMode: (m) => set({ authMode: m }),

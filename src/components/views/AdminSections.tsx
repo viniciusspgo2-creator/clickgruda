@@ -5,6 +5,7 @@ import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tansta
 import { CalendarHeart, Check, Sparkles, Layers3, FilterX, LayoutGrid, List, ImageOff, Images, Cloud, CreditCard, Eye, Image as ImageIcon, Lightbulb, Loader2, Pencil, Plus, QrCode, RotateCcw, Save, Search, Smile, Star, Tag as TagIcon, Trash2, Upload, X } from 'lucide-react'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
+import { NumberedPagination } from '@/components/admin/NumberedPagination'
 import { Input } from '@/components/ui/input'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Label } from '@/components/ui/label'
@@ -664,17 +665,9 @@ export function AdminArtsSection() {
           )}
         </div>
         {totalArts > 0 && (
-          <div className="flex items-center justify-between gap-3 border-t border-zinc-100 bg-zinc-50 px-4 py-2.5 text-xs font-semibold text-zinc-500">
+          <div className="flex flex-wrap items-center justify-between gap-3 border-t border-zinc-100 bg-zinc-50 px-4 py-2.5 text-xs font-semibold text-zinc-500">
             <span>{totalArts} {totalArts === 1 ? 'arte' : 'artes'}</span>
-            <div className="flex items-center gap-2">
-              <Button variant="outline" size="sm" disabled={page <= 1} onClick={() => setPage((p) => Math.max(1, p - 1))} className="h-8 rounded-lg">
-                Anterior
-              </Button>
-              <span>Página {page} de {totalPages}</span>
-              <Button variant="outline" size="sm" disabled={!artsQ.data?.hasMore} onClick={() => setPage((p) => p + 1)} className="h-8 rounded-lg">
-                Próxima
-              </Button>
-            </div>
+            <NumberedPagination page={page} totalPages={totalPages} onChange={setPage} busy={artsQ.isFetching} />
           </div>
         )}
       </div>

@@ -1,6 +1,6 @@
 # Click & Gruda — Biblioteca + Conta Preview + Analytics
 
-> Documento histórico da versão 2. Para a atualização atual, siga primeiro `LEIA-ME-ATUALIZACAO-CURADORIA-E-PAGAMENTOS.md`. A migração abaixo só se aplica a instalações antigas que ainda não receberam esses campos; os novos cupons e pagamentos não exigem outra migração.
+> Documento histórico da versão 2. Para esta entrega, siga `00-LEIA-ME-SISTEMA-COMPLETO.md`. As instruções abaixo descrevem a instalação antiga e não são o procedimento da atualização atual. A migração só se aplica a instalações que ainda não receberam esses campos; esta atualização não exige outra migração.
 
 ## Aviso importante sobre o banco de dados
 
@@ -15,7 +15,7 @@ Este projeto usa três campos novos (`User.isPreview`, `User.previewMaxSessions`
 3. Aguarde a confirmação de sucesso da consulta SQL. Só depois atualize os arquivos no repositório GitHub que a Vercel publica.
 4. Na Vercel, abra seu projeto → **Deployments** e acompanhe a publicação. Faça inicialmente um teste na URL de *Preview*, se possível.
 5. Entre no **Admin Master** → **Usuários** → **Criar usuário Preview**, cadastre nome, e-mail, senha e limite simultâneo (ex.: 10 ou 20). **A nova conta não existe automaticamente**: ela deve ser criada pelo admin.
-6. Teste em janela anônima: login Preview → popup de apresentação → navegar nas artes → bloquear download, salvar, favoritos e formulários → ampliar com borrão → conferir Mockup 3D e Loja Online. Confira também a categoria **Sem categorias**, a biblioteca **Artes reprovadas** e os indicadores do Admin Master.
+6. O fluxo Preview desta versão antiga foi substituído pela demonstração pública descrita no guia atual. Confira também a categoria **Sem categorias**, a biblioteca **Artes reprovadas** e os indicadores do Admin Master.
 7. Confira o relatório de analytics após visitar a landing e interagir com um botão. O relatório cobre os **últimos 30 dias a partir da publicação**: não recupera visitas antigas.
 
 Alternativa técnica: com as variáveis corretas de conexão no ambiente, `npx prisma db push` sincroniza o esquema; não execute sobre o banco de produção sem antes verificar as alterações propostas pelo Prisma. Prefira o SQL aditivo incluído.

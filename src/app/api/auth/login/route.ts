@@ -15,11 +15,14 @@ export async function POST(req: Request) {
 
     const ok = await verifyPassword(password, user.password)
     if (!ok) return jsonError('E-mail ou senha incorretos', 401)
+    if (user.status === 'BLOCKED') return jsonError('Esta conta está bloqueada. Entre em contato com o suporte pelo WhatsApp.', 403)
 
-    const token = await startSession(user, req)
-    await setSessionCookie(token)
+    const session = await startSession(user, req)
+    await setSessionCookie(session.token)
 
     return Response.json({
+      sessionNotice: session.displaced && !user.isPreview ? 'NEW_LOGIN' : null,
+      deviceLimit: session.limit,
       user: { id: user.id, name: user.name, email: user.email, role: user.role, hasAccess: user.hasAccess, isDemo: user.isDemo || user.isPreview, isPreview: user.isPreview, status: user.status },
     })
   } catch {

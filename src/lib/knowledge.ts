@@ -10,7 +10,7 @@
  */
 import { SITE } from '@/lib/site'
 
-export const LANDING_FAQ_INDICES = [0, 1, 2, 3, 6, 8, 9, 11, 14] as const
+export const LANDING_FAQ_INDICES = [16, 0, 1, 2, 3, 6, 8, 9, 11, 17, 14] as const
 
 export const PRICE = 'R$ 47,90'
 
@@ -36,7 +36,7 @@ export const KEY_TAKEAWAYS: string[] = [
 export const ENTITY_DEFINITION = SITE.description
 
 export const ENTITY_PRACTICAL =
-  'Na prática, você cria sua conta, escolhe o plano vigente e navega pela biblioteca por categorias e tags. É possível favoritar, acompanhar os lançamentos e baixar artes para produzir personalizados, com downloads ilimitados enquanto a conta tem acesso ativo.'
+  'Na prática, você pode conhecer a demonstração sem cadastro. Para contratar, cadastre seus dados e WhatsApp e conclua o pagamento e a ativação com a equipe. Após a ativação, navegue pela biblioteca por categorias e tags. É possível favoritar, acompanhar os lançamentos e baixar artes para produzir personalizados, com downloads ilimitados enquanto a conta tem acesso ativo.'
 
 /* ============================================================
  * 3. FAQ — 13 perguntas consolidadas + 3 objeções de conversão (edição, liberação do PIX, exclusividade)
@@ -44,7 +44,7 @@ export const ENTITY_PRACTICAL =
 export const FAQ_ITEMS: { q: string; a: string }[] = [
   {
     q: 'Como recebo meu acesso?',
-    a: 'Depende da forma de pagamento: no PIX automático (Mercado Pago ou Asaas, QR Code no checkout), o acesso libera na hora da confirmação. No "PIX direto (chave)", você envia o comprovante para o nosso WhatsApp — o cadastro fica pré-aprovado e a equipe libera o acesso após conferir o comprovante.',
+    a: 'Crie sua conta com o WhatsApp e fale com nossa equipe pelo canal oficial para combinar o pagamento e solicitar a ativação. O cadastro não libera o acesso automaticamente. A equipe confere o pagamento e confirma a liberação. Se houver pagamento automático habilitado no checkout, a ativação ocorre após a confirmação do gateway.',
   },
   {
     q: 'Qual o formato das artes?',
@@ -64,7 +64,7 @@ export const FAQ_ITEMS: { q: string; a: string }[] = [
   },
   {
     q: 'Quais formas de pagamento aceitam?',
-    a: 'Trabalhamos com PIX, Mercado Pago e Asaas — e também com pagamento manual por chave PIX: após criar a sua conta, escolha "PIX direto (chave)" no checkout, pague a chave exibida e envie o comprovante para o nosso WhatsApp oficial +55 62 9838-7816 — o seu cadastro fica pré-aprovado e a equipe libera o acesso após conferir o comprovante. Com gateway, o acesso libera assim que o pagamento é confirmado.',
+    a: 'Você pode conversar com a equipe pelo WhatsApp oficial +55 62 9838-7816 antes de pagar. O suporte informa os dados de pagamento e orienta o envio do comprovante para conferir e ativar a conta. Opções automáticas aparecem no checkout somente quando estiverem habilitadas.',
   },
   // ---- FAQs hiper-específicas (consideração e objeções de compra) ----
   {
@@ -85,7 +85,7 @@ export const FAQ_ITEMS: { q: string; a: string }[] = [
   },
   {
     q: 'E se o PIX não liberar o meu acesso?',
-    a: 'Fale com a gente no WhatsApp oficial +55 62 9838-7816. No PIX automático, a confirmação normalmente cai em segundos; no PIX direto (chave), o seu cadastro fica pré-aprovado e o acesso é liberado após a conferência do comprovante — envie o recibo e a gente resolve.',
+    a: 'Envie o comprovante pelo WhatsApp oficial +55 62 9838-7816 e informe o e-mail cadastrado. A equipe verifica o pagamento e confirma a ativação. Você também pode usar o botão Conferir se meu acesso foi ativado na tela de atendimento.',
   },
   {
     q: 'As artes são exclusivas? Outros sublimadores usam as mesmas?',
@@ -107,6 +107,8 @@ export const FAQ_ITEMS: { q: string; a: string }[] = [
     q: 'Posso sugerir uma nova arte?',
     a: 'Sim! Dentro do portal (menu da sua conta ou botão "Sugerir uma nova arte" no topo e no fim da página) você envia a sua ideia — um tema, uma frase ou um estilo — e ela vai direto para a nossa equipe de criação no painel interno. Os temas mais pedidos entram no cronograma do acervo.',
   },
+  { q: 'Posso conhecer a plataforma antes de comprar?', a: 'Sim. Use Conhecer por dentro na página inicial ou no login. A demonstração dispensa cadastro e permite explorar a busca, as categorias e as datas sazonais. As imagens são prévias protegidas, com nitidez limitada e marca-d’água. Downloads e ações de membro ficam bloqueados.' },
+  { q: 'Posso acessar em vários aparelhos ao mesmo tempo?', a: 'O acesso é individual e permite um dispositivo conectado por vez. Ao entrar em outro aparelho, a sessão anterior é encerrada. Para usar mais dispositivos simultaneamente, solicite um acesso adicional (IP adicional) de R$ 14,90 ao suporte, que informa as condições e habilita o adicional após a confirmação.' },
 ]
 
 /* ============================================================
@@ -344,7 +346,7 @@ export const KEY_FACTS = {
   commercialUse: 'Para produzir e vender as suas canecas',
   newArtsFrequency: 'Lançamentos frequentes inclusos no acesso',
   payment:
-    'PIX, Mercado Pago ou Asaas — além de pagamento manual por chave PIX (após o cadastro, no checkout) com comprovante enviado ao WhatsApp oficial +55 62 9838-7816 (ativação pela equipe)',
+    'Pagamento e ativação com atendimento pelo WhatsApp oficial +55 62 9838-7816; opções automáticas somente quando habilitadas no checkout',
   portalFeatures:
     'Busca com filtros, tags, favoritos, abas Lançamentos e Sazonal com contagem regressiva da próxima data comemorativa',
 }

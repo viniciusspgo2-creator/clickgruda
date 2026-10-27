@@ -18,14 +18,6 @@ function generatePassword() {
   return 'gruda-' + Array.from(bytes, (b) => chars[b % chars.length]).join('')
 }
 
-function maskPhone(v: string) {
-  const d = v.replace(/\D/g, '').slice(0, 11)
-  if (d.length <= 2) return d
-  if (d.length <= 6) return `(${d.slice(0, 2)}) ${d.slice(2)}`
-  if (d.length <= 10) return `(${d.slice(0, 2)}) ${d.slice(2, 6)}-${d.slice(6)}`
-  return `(${d.slice(0, 2)}) ${d.slice(2, 7)}-${d.slice(7)}`
-}
-
 type Created = { name: string; email: string; password: string; hasAccess: boolean; whatsapp: string }
 
 /** Cadastro manual de cliente — para quem fechou a compra pelo WhatsApp. */
@@ -36,7 +28,7 @@ export function NewUserDialog() {
   const [email, setEmail] = useState('')
   const [whatsapp, setWhatsapp] = useState('')
   const [password, setPassword] = useState('')
-  const [grantAccess, setGrantAccess] = useState(true)
+  const [grantAccess, setGrantAccess] = useState(false)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
   const [created, setCreated] = useState<Created | null>(null)
@@ -46,7 +38,7 @@ export function NewUserDialog() {
     setEmail('')
     setWhatsapp('')
     setPassword(generatePassword())
-    setGrantAccess(true)
+    setGrantAccess(false)
     setError('')
     setCreated(null)
   }
@@ -58,14 +50,14 @@ export function NewUserDialog() {
       const res = await fetch('/api/admin/users', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, email, password, grantAccess }),
+        body: JSON.stringify({ name, email, password, grantAccess, whatsapp }),
       })
       const data = await res.json().catch(() => ({}))
       if (!res.ok) {
         setError(data.error || 'Não foi possível cadastrar.')
         return
       }
-      setCreated({ name: data.user.name, email: data.user.email, password, hasAccess: data.user.hasAccess, whatsapp })
+      setCreated({ name: data.user.name, email: data.user.email, password, hasAccess: data.user.hasAccess, whatsapp: data.user.whatsapp || whatsapp })
       queryClient.invalidateQueries({ queryKey: ['admin-users'] })
       queryClient.invalidateQueries({ queryKey: ['admin-stats'] })
     } catch {
@@ -84,7 +76,7 @@ export function NewUserDialog() {
     : ''
 
   const waDigits = created?.whatsapp.replace(/\D/g, '') || ''
-  const waUrl = waDigits.length >= 10 ? `https://wa.me/${waDigits.startsWith('55') ? waDigits : `55${waDigits}`}?text=${encodeURIComponent(message)}` : ''
+  const waUrl = waDigits.length >= 10 ? `https://wa.me/${waDigits}?text=${encodeURIComponent(message)}` : ''
 
   return (
     <>
@@ -176,9 +168,9 @@ export function NewUserDialog() {
                 </div>
                 <div className="space-y-1">
                   <Label htmlFor="nu-wa" className="text-xs font-bold uppercase tracking-wide text-zinc-500">
-                    WhatsApp <span className="font-medium normal-case text-zinc-400">(opcional — só para enviar o acesso)</span>
+                    WhatsApp com DDD <span className="font-medium normal-case text-zinc-400">(obrigatório)</span>
                   </Label>
-                  <Input id="nu-wa" inputMode="tel" value={whatsapp} onChange={(e) => setWhatsapp(maskPhone(e.target.value))} placeholder="(62) 99999-9999" className="h-11 rounded-xl" />
+                  <Input id="nu-wa" type="tel" autoComplete="tel" value={whatsapp} onChange={(e) => setWhatsapp(e.target.value)} maxLength={24} placeholder="(62) 99999-9999" className="h-11 rounded-xl" />
                 </div>
                 <div className="space-y-1">
                   <Label htmlFor="nu-pass" className="text-xs font-bold uppercase tracking-wide text-zinc-500">Senha</Label>

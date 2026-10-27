@@ -1,5 +1,7 @@
 # Click & Gruda — curadoria, Mercado Pago e cupons
 
+> Histórico da versão anterior. As instruções atuais estão em `00-LEIA-ME-SISTEMA-COMPLETO.md`, incluindo o novo atendimento manual e a demonstração pública.
+
 Esta atualização reúne os ajustes da landing, pagamentos, cupons e categorias. Inclui as configurações anteriores de SEO/GEO, downloads ilimitados e remoção do compartilhamento de catálogo.
 
 ## Atualizar o sistema existente

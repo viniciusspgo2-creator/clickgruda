@@ -16,7 +16,9 @@
     "test:analytics": "node --test scripts/analytics-dashboard.test.cjs",
     "test:upload-limit": "node --test scripts/upload-limit.test.cjs",
     "test:seo": "node --test scripts/seo-integrations.test.cjs",
-    "test:commerce": "node --test scripts/commerce.test.cjs"
+    "test:commerce": "node --test scripts/commerce.test.cjs",
+    "test:account-experience": "node --test scripts/account-experience.test.cjs",
+    "test:member-flow": "node scripts/e2e-member-flow.cjs --prisma-dev"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1145.0",

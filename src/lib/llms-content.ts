@@ -21,7 +21,6 @@ Idioma: português do Brasil. Público: sublimadores e produtores de canecas per
 - O acesso vitalício contratado durante a campanha não expira quando a campanha acaba.
 - Formato de referência das artes: 21 × 9,5 cm. Confira a área de impressão da sua caneca e os ajustes do equipamento antes de produzir.
 - O compartilhamento temporário de catálogo foi descontinuado.
-- Não confundir a vitrine comercial futura divulgada no portal com o recurso de compartilhamento removido.
 
 ## Páginas oficiais
 

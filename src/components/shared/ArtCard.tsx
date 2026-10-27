@@ -44,6 +44,7 @@ export function ArtCard({ art, locked = false, demo = false, downloadState = 'id
             alt={art.title}
             loading="lazy"
             draggable={false}
+            onContextMenu={demo ? event => event.preventDefault() : undefined}
             onDragStart={demo ? (event) => event.preventDefault() : undefined}
             decoding="async"
             className={cn(
@@ -174,7 +175,7 @@ export function ArtCard({ art, locked = false, demo = false, downloadState = 'id
           >
             {demo ? (
               <>
-                <EyeOff className="h-4 w-4" /> Bloqueado na demo
+                <Lock className="h-4 w-4" /> Download bloqueado
               </>
             ) : downloadState === 'loading' ? (
               <>

@@ -4,8 +4,13 @@ import { db } from '@/lib/db'
 import { getSessionUser, jsonError } from '@/lib/auth'
 import { readLocalFile } from '@/lib/storage'
 import { MAX_ART_SIZE } from '@/lib/upload-limits'
+import { cachedProtectedPreview, cacheProtectedPreview } from '@/lib/protected-preview-cache'
 
 export const runtime = 'nodejs'
+const imageResponse = (bytes: Buffer) => new Response(new Uint8Array(bytes), { headers: {
+  'Content-Type': 'image/webp', 'Cache-Control': 'private, no-store, max-age=0',
+  'X-Content-Type-Options': 'nosniff', 'Content-Disposition': 'inline',
+} })
 
 /** Prévia da demo: exibe composição e cores sem fornecer o arquivo de impressão.
  * Imagem reduzida, levemente suavizada e com marca-d’água.
@@ -16,6 +21,9 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
   const { id } = await params
   const art = await db.art.findUnique({ where: { id }, select: { imageUrl: true } })
   if (!art) return jsonError('Arte não encontrada.', 404)
+  const cacheKey = `${id}:${art.imageUrl}`
+  const cached = cachedProtectedPreview(cacheKey)
+  if (cached) return imageResponse(cached)
 
   try {
     let buffer: Buffer | null = null
@@ -48,10 +56,8 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
       .rotate().resize({ width: 900, height: 420, fit: 'contain', background: '#e5e7eb' })
       .blur(1.8).composite([{ input: Buffer.from(svg), gravity: 'center' }])
       .webp({ quality: 62 }).toBuffer()
-    return new Response(new Uint8Array(image), { headers: {
-      'Content-Type': 'image/webp', 'Cache-Control': 'private, no-store, max-age=0',
-      'X-Content-Type-Options': 'nosniff', 'Content-Disposition': 'inline',
-    } })
+    cacheProtectedPreview(cacheKey, image)
+    return imageResponse(image)
   } catch (e) {
     console.error('Erro na prévia protegida:', e)
     return jsonError('Prévia indisponível neste momento.', 502)

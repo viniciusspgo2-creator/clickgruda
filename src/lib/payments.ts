@@ -154,7 +154,8 @@ export async function approvePayment(paymentId: string) {
       data: { status: 'APPROVED', approvedAt: new Date() },
     })
     if (!claimed.count) return false
-    await tx.user.update({ where: { id: payment.userId }, data: { hasAccess: true, accessSource: 'PURCHASE', status: 'ACTIVE' } })
+    const user = await tx.user.findUnique({ where: { id: payment.userId }, select: { status: true } })
+    await tx.user.update({ where: { id: payment.userId }, data: { hasAccess: true, accessSource: 'PURCHASE', status: user?.status === 'BLOCKED' ? 'BLOCKED' : 'ACTIVE' } })
     return true
   })
 }

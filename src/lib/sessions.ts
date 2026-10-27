@@ -1,17 +1,13 @@
 import { db } from '@/lib/db'
-import { createSessionToken } from '@/lib/auth'
-import { getSettings } from '@/lib/settings'
+import { Prisma } from '@prisma/client'
+import { createSessionToken, getCurrentSessionId } from '@/lib/auth'
+import { getMemberProfile } from '@/lib/member-profile'
 
 const DAY = 86400000
 /** Mesma validade do cookie (30 dias): tudo que ainda "vale" conta como aparelho ativo. */
 export const SESSION_ACTIVE_DAYS = 30
 
-export const DEFAULT_MAX_DEVICES = 2
-
-function intSetting(v: string | undefined, fallback: number) {
-  const n = parseInt(v ?? '', 10)
-  return Number.isFinite(n) && n >= 0 ? n : fallback
-}
+export const DEFAULT_MAX_DEVICES = 1
 
 /** "Chrome · Windows" a partir do user-agent. */
 export function describeDevice(ua: string): string {
@@ -50,35 +46,39 @@ export function clientIp(req: Request): string {
  * Se a conta já está no limite de aparelhos, o MENOS usado é desconectado — quem tem o
  * login "rodando" entre várias pessoas fica sendo derrubado, o que desestimula o compartilhamento
  * (e gera um alerta no painel quando isso acontece várias vezes).
- * Admin e conta demo ficam fora do limite.
+ * Administradores e demonstrações públicas ficam fora da regra individual; Preview privado usa seu limite próprio.
  */
-export async function startSession(user: { id: string; role: string; isDemo: boolean; isPreview?: boolean; previewMaxSessions?: number }, req: Request): Promise<string> {
-  const settings = await getSettings(['max_devices'])
-  const limit = user.isPreview ? Math.max(1, Math.min(100, user.previewMaxSessions || 10)) : intSetting(settings.max_devices, DEFAULT_MAX_DEVICES)
-  const enforced = limit > 0 && user.role !== 'ADMIN' && (!user.isDemo || user.isPreview)
-
-  if (enforced) {
-    const since = new Date(Date.now() - SESSION_ACTIVE_DAYS * DAY)
-    const active = await db.userSession.findMany({
-      where: { userId: user.id, revokedAt: null, lastSeenAt: { gte: since } },
-      orderBy: { lastSeenAt: 'asc' },
-    })
-    const excess = active.length - (limit - 1)
-    if (excess > 0) {
-      const ids = active.slice(0, excess).map((s) => s.id)
-      await db.userSession.updateMany({
-        where: { id: { in: ids } },
-        data: { revokedAt: new Date(), revokedReason: 'LIMIT' },
-      })
-      if (!user.isPreview) await flagDeviceChurn(user.id, limit)
+export async function startSession(user: { id: string; role: string; isDemo: boolean; isPreview?: boolean; previewMaxSessions?: number }, req: Request): Promise<{ token: string; displaced: boolean; limit: number }> {
+  const currentSid = await getCurrentSessionId()
+  const ua = req.headers.get('user-agent') || ''
+  for (let attempt = 0; attempt < 3; attempt++) {
+    try {
+      const result = await db.$transaction(async tx => {
+        const profile = await getMemberProfile(user.id, tx)
+        const limit = user.isPreview ? Math.max(1, Math.min(100, user.previewMaxSessions || 10)) : DEFAULT_MAX_DEVICES + profile.extraDevices
+        const enforced = user.role !== 'ADMIN' && (!user.isDemo || user.isPreview)
+        // Refazer login no mesmo navegador substitui apenas a sua sessão.
+        if (currentSid) await tx.userSession.updateMany({ where: { id: currentSid, userId: user.id, revokedAt: null }, data: { revokedAt: new Date(), revokedReason: 'RELOGIN' } })
+        let displaced = false
+        if (enforced) {
+          const active = await tx.userSession.findMany({ where: { userId: user.id, revokedAt: null, lastSeenAt: { gte: new Date(Date.now() - SESSION_ACTIVE_DAYS * DAY) } }, orderBy: [{ lastSeenAt: 'asc' }, { id: 'asc' }] })
+          const excess = active.length - (limit - 1)
+          if (excess > 0) {
+            displaced = true
+            await tx.userSession.updateMany({ where: { id: { in: active.slice(0, excess).map(s => s.id) } }, data: { revokedAt: new Date(), revokedReason: 'LIMIT' } })
+          }
+        }
+        const session = await tx.userSession.create({ data: { userId: user.id, device: describeDevice(ua).slice(0, 80), ip: clientIp(req) } })
+        return { session, displaced, limit }
+      }, { isolationLevel: Prisma.TransactionIsolationLevel.Serializable })
+      if (result.displaced && !user.isPreview) await flagDeviceChurn(user.id, result.limit)
+      return { token: await createSessionToken(user.id, result.session.id), displaced: result.displaced, limit: result.limit }
+    } catch (error) {
+      if (attempt < 2 && (error as { code?: string }).code === 'P2034') continue
+      throw error
     }
   }
-
-  const ua = req.headers.get('user-agent') || ''
-  const session = await db.userSession.create({
-    data: { userId: user.id, device: describeDevice(ua).slice(0, 80), ip: clientIp(req) },
-  })
-  return createSessionToken(user.id, session.id)
+  throw new Error('Não foi possível abrir a sessão.')
 }
 
 /** 3+ aparelhos derrubados pelo limite em 7 dias = forte indício de login compartilhado. */

@@ -43,11 +43,11 @@ export async function GET() {
     })
     .sort((a, b) => new Date(a.nextDate).getTime() - new Date(b.nextDate).getTime())
 
-  const waitlisted = session
+  const waitlisted = session && !session.isDemo
     ? Boolean(await db.catalogoWaitlist.findFirst({ where: { userId: session.id }, select: { id: true } }))
     : false
 
-  const [favCount, dlCount] = session
+  const [favCount, dlCount] = session && !session.isDemo
     ? await Promise.all([
         db.favorite.count({ where: { userId: session.id } }),
         db.download.findMany({ where: { userId: session.id }, select: { artId: true } }).then((rows) => new Set(rows.map((r) => r.artId)).size),
@@ -84,9 +84,9 @@ export async function GET() {
     },
     /* A chave PIX é informação pós-cadastro: só vai ao cliente autenticado. */
     manualPix: {
-      enabled: settings.pix_manual_enabled === 'true' && Boolean((settings.pix_key || '').trim()),
-      key: session && settings.pix_manual_enabled === 'true' ? settings.pix_key || '' : '',
-      holder: session ? settings.pix_holder || '' : '',
+      enabled: true,
+      key: '',
+      holder: '',
     },
   })
 }

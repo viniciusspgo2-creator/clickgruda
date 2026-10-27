@@ -10,6 +10,10 @@ const obsolete = [
   'src/components/portal/ShareCatalogSection.tsx',
   'src/components/views/SharedCatalogView.tsx',
   'src/lib/download-quota.ts',
+  'src/lib/portal-news.ts',
+  'src/components/portal/NovidadesCard.tsx',
+  'src/components/portal/CatalogoDigitalNews.tsx',
+  'src/components/portal/WaitlistDialog.tsx',
 ]
 for (const relative of obsolete) {
   const target = path.resolve(__dirname, '..', relative)

@@ -10,6 +10,7 @@ import { track } from '@/lib/analytics'
 import { toast } from 'sonner'
 import { formatArtCode } from '@/lib/art-code'
 import { LandingView } from '@/components/views/LandingView'
+import { SessionAccessDialog } from '@/components/shared/SessionAccessDialog'
 const AuthView = dynamic(() => import('@/components/views/AuthView').then(module => module.AuthView))
 const CheckoutView = dynamic(() => import('@/components/views/CheckoutView').then(module => module.CheckoutView))
 const PortalView = dynamic(() => import('@/components/views/PortalView').then(module => module.PortalView))
@@ -45,6 +46,8 @@ export function AppShell() {
   const view = useStore((s) => s.view)
   const setView = useStore((s) => s.setView)
   const setUser = useStore((s) => s.setUser)
+  const userId = useStore(s => s.user?.id)
+  const publicDemo = useStore(s => Boolean(s.user?.isPublicDemo))
 
   useEffect(() => {
     // Link direto da arte (?arte=42) — vem na mensagem do WhatsApp do cliente.
@@ -59,14 +62,15 @@ export function AppShell() {
     }
 
     let cancelled = false
+    const sessionRevision = useStore.getState().sessionRevision
     ;(async () => {
       try {
         const res = await fetch('/api/auth/me')
         const data = await res.json()
-        if (cancelled) return
+        if (cancelled || useStore.getState().sessionRevision !== sessionRevision) return
         setUser(data.user || null)
-        if (data.reason === 'SESSION_REVOKED') {
-          toast.info('Sua conta foi aberta em outro aparelho e este foi desconectado. Entre novamente para continuar.')
+        if (data.reason === 'SESSION_REVOKED' || data.reason === 'ACCOUNT_BLOCKED') {
+          useStore.getState().setSessionNotice(data.reason, data.deviceLimit)
         }
         if (arteParam) {
           useStore.getState().setFilter({ tab: 'todas', q: formatArtCode(arteParam), seasonalEventId: null })
@@ -101,6 +105,39 @@ export function AppShell() {
       cancelled = true
     }
   }, [setView, setUser])
+
+  useEffect(() => {
+    if (!userId) return
+    let cancelled = false, running = false, lastCheck = 0
+    const check = async () => {
+      if (cancelled || running || document.visibilityState === 'hidden' || Date.now() - lastCheck < 10000) return
+      running = true; lastCheck = Date.now()
+      const revision = useStore.getState().sessionRevision
+      try {
+        const response = await fetch('/api/auth/me', { cache: 'no-store' })
+        if (!response.ok) return
+        const data = await response.json()
+        if (cancelled || useStore.getState().sessionRevision !== revision) return
+        if (!data.user) {
+          queryClient.clear()
+          const state = useStore.getState()
+          state.setUser(null); state.resetFilters(); state.setAuthMode('login'); state.setPendingIntent(null); state.setView(publicDemo ? 'landing' : 'auth')
+          if (data.reason === 'SESSION_REVOKED' || data.reason === 'ACCOUNT_BLOCKED') state.setSessionNotice(data.reason, data.deviceLimit)
+          else toast.info(publicDemo ? 'Esta visita terminou. Use Conhecer por dentro para abrir a demonstração novamente.' : 'Sua sessão terminou. Entre novamente para continuar.')
+        } else {
+          const current = useStore.getState().user
+          if (current?.id !== data.user.id || current?.isDemo !== data.user.isDemo || current?.role !== data.user.role || current?.hasAccess !== data.user.hasAccess || current?.status !== data.user.status) {
+            queryClient.clear(); setUser(data.user)
+          }
+        }
+      } catch { /* Falha de conexão não encerra uma sessão válida. */ }
+      finally { running = false }
+    }
+    const interval = window.setInterval(check, publicDemo ? 60000 : 30000)
+    window.addEventListener('focus', check)
+    document.addEventListener('visibilitychange', check)
+    return () => { cancelled = true; window.clearInterval(interval); window.removeEventListener('focus', check); document.removeEventListener('visibilitychange', check) }
+  }, [userId, publicDemo, queryClient, setUser])
 
   useEffect(() => {
     // Preserve internal deep links from blog/guia (/#preco, /#faq, /#artes).
@@ -152,6 +189,7 @@ export function AppShell() {
             {view === 'admin' && <AdminView />}
           </motion.div>
         </AnimatePresence>
+        <SessionAccessDialog />
         {showBackToTop && <button type="button" title="Voltar ao topo" aria-label="Voltar ao topo da página" onClick={() => window.scrollTo({ top: 0, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' })} className="fixed bottom-24 right-5 z-[65] flex h-11 w-11 items-center justify-center rounded-full border border-white/20 bg-zinc-950 text-orange-400 shadow-xl transition hover:-translate-y-1 hover:bg-orange-600 hover:text-white focus-visible:outline-2 focus-visible:outline-orange-500 sm:bottom-24"><ArrowUp className="h-5 w-5"/></button>}
       </div>
     </QueryClientProvider>

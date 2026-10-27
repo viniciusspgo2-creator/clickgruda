@@ -55,7 +55,7 @@ export async function GET() {
 
   return Response.json({
     settings: {
-      max_devices: settings.max_devices ?? String(DEFAULT_MAX_DEVICES),
+      max_devices: String(DEFAULT_MAX_DEVICES),
     },
     alerts: alerts.map((a) => ({
       id: a.id,

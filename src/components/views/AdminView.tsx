@@ -17,7 +17,6 @@ import {
   Lightbulb,
   LogOut,
   Menu,
-  ClipboardList,
   Receipt,
   RefreshCw,
   FileDown,
@@ -47,12 +46,13 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sh
 import { Logo } from '@/components/shared/Logo'
 import { AdminArtsSection, AdminCategoriesSection, AdminSuggestionsSection, AdminTagsSection, AdminSeasonalSection, AdminSettingsSection } from '@/components/views/AdminSections'
 import { NewUserDialog } from '@/components/admin/NewUserDialog'
+import { MemberAccessDialog } from '@/components/admin/MemberAccessDialog'
 import { PreviewAccountDialog } from '@/components/admin/PreviewAccountDialog'
 import { LandingAnalyticsPanel } from '@/components/admin/LandingAnalyticsPanel'
 import { AdminSeoSection } from '@/components/admin/AdminSeoSection'
 import { AdminCouponsSection } from '@/components/admin/AdminCouponsSection'
 import { AdminMercadoPagoSection } from '@/components/admin/AdminMercadoPagoSection'
-import { AdminEnhanceSection, AdminSearchMissesSection, AdminSecuritySection, AdminWaitlistSection } from '@/components/views/AdminGrowthSections'
+import { AdminEnhanceSection, AdminSearchMissesSection, AdminSecuritySection } from '@/components/views/AdminGrowthSections'
 import { useStore } from '@/lib/store'
 import { formatBRL } from '@/lib/types'
 import { cn } from '@/lib/utils'
@@ -68,7 +68,6 @@ export type AdminSection =
   | 'sugestoes'
   | 'buscas'
   | 'melhorias'
-  | 'espera'
   | 'seguranca'
   | 'settings'
   | 'seo'
@@ -88,7 +87,6 @@ const SECTIONS: { id: AdminSection; label: string; icon: React.ElementType }[] =
   { id: 'sugestoes', label: 'Sugestões de Tema', icon: Lightbulb },
   { id: 'buscas', label: 'Buscas sem resultado', icon: SearchX },
   { id: 'melhorias', label: 'Melhorias de Arte', icon: Wand2 },
-  { id: 'espera', label: 'Lista de espera', icon: ClipboardList },
   { id: 'seguranca', label: 'Segurança', icon: ShieldAlert },
   { id: 'settings', label: 'Configurações', icon: Settings },
   { id: 'seo', label: 'SEO e Integrações', icon: Globe },
@@ -115,7 +113,6 @@ export function AdminView() {
     sugestoes: newSuggestions,
     buscas: statsQ.data?.stats?.searchMissesNew ?? 0,
     melhorias: statsQ.data?.stats?.enhanceNew ?? 0,
-    espera: statsQ.data?.stats?.waitlistTotal ?? 0,
     seguranca: statsQ.data?.stats?.alertsOpen ?? 0,
   }
 
@@ -247,7 +244,6 @@ export function AdminView() {
             {section === 'sugestoes' && <AdminSuggestionsSection />}
             {section === 'buscas' && <AdminSearchMissesSection />}
             {section === 'melhorias' && <AdminEnhanceSection />}
-            {section === 'espera' && <AdminWaitlistSection />}
             {section === 'seguranca' && <AdminSecuritySection />}
             {section === 'seo' && <AdminSeoSection />}
             {section === 'mercadopago' && <AdminMercadoPagoSection />}
@@ -381,7 +377,7 @@ function DashboardSection({ onNavigate }: { onNavigate?: (s: AdminSection) => vo
             ))}
           </div>
           <p className="mt-2 text-[11px] leading-relaxed text-orange-700/80">
-            Cadastros pré-aprovados no checkout do PIX manual — libere após conferir o comprovante no WhatsApp.
+            Solicitações de atendimento e ativação. Confirme o pagamento com o cliente pelo WhatsApp antes de liberar o acesso.
           </p>
         </div>
       )}
@@ -420,7 +416,7 @@ function DashboardSection({ onNavigate }: { onNavigate?: (s: AdminSection) => vo
                 <div className="min-w-0">
                   <p className="truncate text-sm font-bold text-zinc-800">{p.userName}</p>
                   <p className="truncate text-xs text-zinc-400">
-                    {p.provider === 'MANUAL_PIX' ? 'PIX Manual' : p.provider} · {new Date(p.createdAt).toLocaleDateString('pt-BR')}
+                    {p.provider === 'MANUAL_PIX' ? 'Atendimento WhatsApp' : p.provider} · {new Date(p.createdAt).toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo', dateStyle: 'short', timeStyle: 'short' })}
                   </p>
                 </div>
                 <div className="shrink-0 text-right">
@@ -454,6 +450,7 @@ function DashboardSection({ onNavigate }: { onNavigate?: (s: AdminSection) => vo
                   <div className="min-w-0">
                     <p className="truncate text-sm font-bold text-zinc-800">{u.name}</p>
                     <p className="truncate text-xs text-zinc-400">{u.email}</p>
+                    <p className="mt-1 text-[11px] text-zinc-500">{new Date(u.createdAt).toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo', dateStyle: 'short', timeStyle: 'short' })}</p>
                   </div>
                 </div>
                 <Badge
@@ -525,6 +522,8 @@ type AdminUser = {
   isDemo?: boolean
   isPreview?: boolean
   previewMaxSessions?: number
+  whatsapp?: string
+  extraDevices?: number
   createdAt: string
   downloadsCount: number
   favoritesCount: number
@@ -607,31 +606,35 @@ function UsersSection() {
                       {u.name} {u.isPreview && <Badge className="ml-1 bg-violet-100 text-[9px] font-black text-violet-700">PREVIEW · {u.previewMaxSessions ?? 10} acessos</Badge>} {u.role === 'ADMIN' && <Badge className="ml-1 bg-orange-100 text-[9px] font-black text-orange-600">MASTER</Badge>}
                     </p>
                     <p className="truncate text-xs text-zinc-400">{u.email}</p>
+                    {u.whatsapp && <a href={`https://wa.me/${u.whatsapp}?text=${encodeURIComponent(`Olá, ${u.name.split(' ')[0]}! Sou da equipe Click & Gruda. Vi seu cadastro e posso ajudar com o pagamento e a ativação da sua conta.`)}`} target="_blank" rel="noopener noreferrer" className="mt-1 inline-flex min-h-7 items-center gap-1 text-xs font-bold text-emerald-700 underline underline-offset-2">WhatsApp: +{u.whatsapp}</a>}
+                    <p className="mt-1 text-[11px] text-zinc-500 lg:hidden">Cadastro: {new Date(u.createdAt).toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo', dateStyle: 'short', timeStyle: 'short' })}</p>
                   </div>
                 </div>
               </TableCell>
               <TableCell>
-                {u.hasAccess ? (
+                {u.status === 'BLOCKED' ? <Badge className="bg-red-100 font-black uppercase text-red-700">Bloqueada</Badge> : u.hasAccess ? (
                   <Badge className="bg-emerald-100 font-black uppercase text-emerald-700">Ativo</Badge>
                 ) : u.status === 'PENDING_MANUAL' ? (
                   <Badge className="bg-orange-100 font-black uppercase text-orange-700">
-                    <Clock3 className="mr-1 h-3 w-3" /> Aguardando PIX
+                    <Clock3 className="mr-1 h-3 w-3" /> Aguardando ativação
                   </Badge>
                 ) : (
-                  <Badge className="bg-zinc-100 font-black uppercase text-zinc-500">Sem acesso</Badge>
+                  <Badge className="bg-zinc-100 font-black uppercase text-zinc-500">Cadastro pendente de ativação</Badge>
                 )}
               </TableCell>
               <TableCell className="hidden text-sm text-zinc-500 md:table-cell">
                 {u.downloadsCount} downloads · {u.favoritesCount} favoritas
               </TableCell>
               <TableCell className="hidden text-sm text-zinc-500 lg:table-cell">
-                {new Date(u.createdAt).toLocaleDateString('pt-BR')}
+                {new Date(u.createdAt).toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo', dateStyle: 'short', timeStyle: 'short' })}<span className="block text-[10px] text-zinc-400">Horário de Brasília</span>
               </TableCell>
               <TableCell>
                 <div className="flex items-center justify-end gap-1.5">
+                  {!u.isPreview && u.role !== 'ADMIN' && <MemberAccessDialog user={u} />}
                   {!u.isPreview && <Button
                     size="sm"
                     variant="outline"
+                    disabled={u.status === 'BLOCKED'}
                     className={cn(
                       'h-8 rounded-lg text-xs font-bold',
                       u.hasAccess ? 'border-red-200 text-red-500 hover:bg-red-50' : 'border-emerald-200 text-emerald-600 hover:bg-emerald-50'

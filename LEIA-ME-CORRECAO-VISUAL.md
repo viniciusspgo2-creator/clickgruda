@@ -1,5 +1,7 @@
 # Correção visual da landing
 
+> Histórico da correção visual. Para a atualização atual, use TODO o projeto do ZIP e siga `00-LEIA-ME-SISTEMA-COMPLETO.md`. A orientação de dois arquivos abaixo se refere apenas à correção anterior.
+
 A classe da landing nova coincidia com a da versão antiga. Uma regra antiga fora das camadas do Tailwind aplicava fundo creme e texto escuro, sobrescrevendo o fundo escuro planejado. Com isso, os parágrafos brancos ficavam ilegíveis sobre o fundo claro e alguns títulos escuros sumiam nas faixas escuras.
 
 A landing atual agora tem seu próprio escopo `cg-sales-page`, com fundo e cor de texto definidos explicitamente. A alteração corrige a herança de cores em todas as seções da página.

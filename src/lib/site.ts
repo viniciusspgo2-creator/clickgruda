@@ -10,7 +10,7 @@
 // voltar a publicar canonicals/sitemaps para clickgruda.vercel.app.
 // A hospedagem já redireciona o domínio sem www para esta versão.
 export const SITE_URL = 'https://www.clickgruda.com.br'
-export const CONTENT_UPDATED_ISO = '2026-10-26'
+export const CONTENT_UPDATED_ISO = '2026-10-27'
 export const SOCIAL_IMAGE = '/uploads/rebrand/mascote-principal.webp'
 
 export const SITE = {
