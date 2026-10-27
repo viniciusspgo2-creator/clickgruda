@@ -2,6 +2,8 @@
 
 Data: 26/10/2026. Base: ata(1).zip, PARA SEO DO SITE.txt, PARA GEO DO SITE.txt e respostas públicas do domínio.
 
+> Relatório histórico. A entrega atual está descrita em `00-LEIA-ME-SISTEMA-COMPLETO.md`: a home usa Service/Offer para o acesso digital, e a consulta pública de 27/10 encontrou um registro de verificação Google no DNS. O trecho Product/Offer abaixo descreve a versão anterior.
+
 ## Diagnóstico do site publicado antes da atualização
 
 | Item | Evidência encontrada | Correção no pacote |

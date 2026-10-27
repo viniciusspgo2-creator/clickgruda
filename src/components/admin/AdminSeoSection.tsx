@@ -15,7 +15,7 @@ import { MARKETING_KEYS, type MarketingKey, type PublicMarketingConfig } from '@
 type ResponseData = { settings: Record<string, string>; marketing: PublicMarketingConfig; siteUrl: string }
 
 const FIELDS: { key: MarketingKey; label: string; placeholder: string; hint: string }[] = [
-  { key: 'gsc_verification', label: 'Google Search Console — código de verificação', placeholder: 'Token ou meta tag google-site-verification', hint: 'No Search Console, adicione https://www.clickgruda.com.br/ como Prefixo do URL e escolha Tag HTML. Cole a tag, salve e depois clique em Verificar no Google.' },
+  { key: 'gsc_verification', label: 'Google Search Console — código de verificação', placeholder: 'Token ou meta tag google-site-verification', hint: 'Use este campo se escolher o método Tag HTML. Salvar publica a tag no cabeçalho do site. Propriedades já verificadas pelo DNS dispensam essa tag; preserve o registro TXT do Google.' },
   { key: 'bing_verification', label: 'Bing Webmaster Tools — código de verificação', placeholder: 'Token ou meta tag msvalidate.01', hint: 'Opcional. Cole o código da tag HTML fornecida pelo Bing.' },
   { key: 'meta_domain_verification', label: 'Meta Business — verificação do domínio', placeholder: 'Token ou meta tag facebook-domain-verification', hint: 'Opcional. A verificação do domínio é diferente do ID do Pixel.' },
   { key: 'meta_pixel_id', label: 'Meta Pixel — ID', placeholder: 'Somente os números do Pixel', hint: 'Gerenciador de Eventos da Meta → sua fonte de dados → Configurações → ID do conjunto de dados/Pixel. Após salvar, use Testar eventos e aceite os cookies no site.' },
@@ -79,6 +79,7 @@ export function AdminSeoSection() {
       <h2 className="flex items-center gap-2 text-lg font-black text-zinc-950"><Globe className="h-5 w-5 text-orange-600" /> SEO, GEO e integrações</h2>
       <p className="mt-2 break-all text-sm text-zinc-700">Endereço principal: <strong>{query.data?.siteUrl || SITE_URL}</strong></p>
       <p className="mt-2 text-xs leading-relaxed text-zinc-600">Sitemap, canonical e dados estruturados usam este domínio. Salvar um código aqui instala a tag; a confirmação da propriedade acontece na ferramenta do Google, Bing ou Meta.</p>
+      <div className="mt-4 rounded-xl border border-orange-100 bg-white p-4 text-xs leading-6 text-zinc-600"><p className="font-bold text-zinc-900">Tag HTML do Search Console: {effective?.gscVerification ? 'código salvo para publicação' : 'nenhum código HTML configurado'}</p><p>Essa indicação não consulta o status da propriedade no Google. Se a propriedade já estiver verificada pelo DNS, mantenha o registro TXT; o campo HTML pode ficar vazio. Confira em Search Console → Configurações → Verificação de propriedade.</p></div>
       <div className="mt-4 grid gap-2 sm:grid-cols-2">
         {['/sitemap.xml', '/robots.txt', '/llms.txt', '/llms-full.txt'].map(path => <div key={path} className="flex min-w-0 items-center gap-2 rounded-xl border border-orange-100 bg-white p-3">
           <a href={path} target="_blank" rel="noreferrer" className="min-w-0 flex-1 break-all text-xs font-bold text-orange-700">{path} <ExternalLink className="inline h-3 w-3" /></a>

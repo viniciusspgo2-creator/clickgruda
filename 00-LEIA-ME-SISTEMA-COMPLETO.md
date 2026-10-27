@@ -1,6 +1,6 @@
 # Click & Gruda — sistema completo atualizado
 
-Este ZIP contém todo o projeto: correção e diagnóstico de upload no R2, menu lateral sem a barra de rolagem aparente, demonstração pública, cadastro com WhatsApp, ativação com atendimento, controle de dispositivos, paginação numerada e todos os ajustes anteriores de SEO, cupons, Mercado Pago e downloads ilimitados. A Loja Online foi retirada desta oferta.
+Este ZIP contém todo o projeto: dados estruturados ajustados ao serviço digital, diagnóstico de upload no R2, menu lateral sem a barra de rolagem aparente, demonstração pública, cadastro com WhatsApp, ativação com atendimento, controle de dispositivos, paginação numerada e todos os ajustes anteriores de SEO, cupons, Mercado Pago e downloads ilimitados. A Loja Online foi retirada desta oferta.
 
 ## Publicar tudo de uma vez
 
@@ -10,6 +10,22 @@ Este ZIP contém todo o projeto: correção e diagnóstico de upload no R2, menu
 4. Envie a atualização do projeto completo para o repositório da conta correta da Vercel e aguarde o deploy.
 
 Não é uma entrega de arquivos avulsos. Não precisa recriar o banco, rodar seed ou executar nova migração para estas funções. Os dados novos usam a tabela de configurações existente e os campos de usuário e sessão que o sistema já possui. A rotina de build remove os componentes antigos da Loja Online que poderiam sobrar ao copiar por cima.
+
+## Search Console: dados estruturados e verificação
+
+A oferta da home passa a ser descrita como **Service**: acesso a uma plataforma digital, com biblioteca, ferramentas, marca e imagem próprias. A entidade duplicada **Product** foi retirada. A oferta promocional segue vinculada ao serviço, com o valor lido pelo sistema e o prazo da campanha; um valor ou plano diferente não herda uma promessa vitalícia indevida.
+
+Essa mudança representa corretamente o serviço e deixa de apresentar a home como candidata a listagens de mercadorias. Não é uma promessa de obter rich results de produto ou estrelas. Não foram inventadas avaliações, notas, frete, política de devolução ou uma data de início da oferta para preencher campos sugeridos pelo Google.
+
+Na inspeção pública de 27/10/2026, a home publicada já continha a imagem, e o arquivo respondeu HTTP 200 como WebP. O campo de público mencionado no alerta não estava presente no Product publicado. Portanto, parte do aviso pode corresponder a um rastreamento anterior ou a outra URL do domínio; confira as URLs e datas no relatório do Google.
+
+Também foi encontrado um registro **google-site-verification no DNS de clickgruda.com.br**. A tag HTML não apareceu no código da home inspecionada. Esses são métodos diferentes: uma propriedade já verificada pelo DNS não precisa de uma segunda tag HTML. Preserve o registro TXT existente. O status da conta precisa ser conferido em **Search Console → Configurações → Verificação de propriedade**; a presença do registro público, sozinha, não identifica qual conta o cadastrou.
+
+Se a sua propriedade exigir o método Tag HTML, copie a meta tag oficial e cole em **Master → SEO, GEO e integrações → Google Search Console — código de verificação → Salvar**. O sistema publica a tag no cabeçalho; não precisa editar arquivo. Não copie o token TXT do DNS para esse campo por suposição: utilize a tag HTML fornecida para a propriedade e a conta corretas.
+
+Depois de publicar esta versão, inspecione **https://www.clickgruda.com.br/** no Search Console, use **Testar URL publicada** e solicite a atualização da indexação. Nos relatórios dos avisos antigos, use **Validar correção** quando disponível. O Google precisa rastrear novamente para atualizar os relatórios; o agrupamento de produtos pode deixar de aparecer após a remoção da marcação Product.
+
+Referências: https://developers.google.com/search/docs/appearance/structured-data/product-snippet · https://support.google.com/webmasters/answer/9008080 · https://schema.org/Service
 
 ## Correção do upload no Cloudflare R2
 
@@ -99,7 +115,7 @@ Foram retirados os botões de Loja Online do computador e celular, o popup da lo
 Verificações concluídas nesta entrega:
 
 - Compilação de produção com Webpack, conferência dos arquivos-fonte e TypeScript aprovadas.
-- 78 testes de regressão aprovados, cobrindo experiência da conta, pagamentos, cupons, SEO, prévias, descoberta de artes, uploads, analytics e remoção de componentes antigos. Os 15 casos novos de R2 incluem preflight, preservação de regras, permissão negada, repetição do envio, erro de assinatura e comunicação HTTP com o SDK S3 real.
+- 80 testes de regressão aprovados, cobrindo experiência da conta, pagamentos, cupons, SEO, prévias, descoberta de artes, uploads, analytics e remoção de componentes antigos. Os casos de SEO conferem a entidade Service, imagem, marca, oferta, ausência de dados fictícios e fim da campanha. Os 15 casos de R2 incluem preflight, preservação de regras, permissão negada, repetição do envio, erro de assinatura e comunicação HTTP com o SDK S3 real.
 - 15 fluxos de integração aprovados com banco SQL local temporário. Incluem cadastro, contato privado, ativação manual, demo assinada, prévia processada, download bloqueado, troca de dispositivo, adicionais e bloqueio de conta. A integração HTTP usa o servidor compilado de produção, com cookies reais e leitura/gravação no banco de teste. O diagnóstico de R2 também foi exercitado pela API compilada, com endpoint S3 local de teste e o SDK real, verificando os dois buckets, preservação de regras e restrições de administrador/origem.
 - 10 páginas públicas aprovadas em canonical, Open Graph, H1, dados estruturados, sitemap com vídeo, robots, textos para IA, respostas 404/410, redirecionamentos e restrições das APIs.
 - Tema e contraste da landing conferidos no HTML/CSS compilado para larguras de 360, 768 e 1440 pixels. A correção do conflito de cores anterior foi preservada.

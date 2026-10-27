@@ -5,30 +5,33 @@ import { SALES } from '@/components/landing/sales-content'
 
 export function HomeSchema({ priceCents }: { priceCents: number }) {
   const promo = priceCents === SALES.defaultPriceCents && Date.now() <= new Date(SALES.promoEndsAt).getTime()
-  const productId = `${SITE_URL}/#plataforma`
+  // A oferta é acesso a um serviço digital. Não declarar mercadoria física
+  // nem acionar campos de Shopping (frete/devolução) que não descrevem o serviço.
+  const serviceId = `${SITE_URL}/#plataforma`
+  const image = { '@type': 'ImageObject', '@id': `${SITE_URL}/#imagem-plataforma`, url: `${SITE_URL}${SOCIAL_IMAGE}`, contentUrl: `${SITE_URL}${SOCIAL_IMAGE}`, width: 1122, height: 1402, caption: 'Click & Gruda — biblioteca digital de artes para canecas' }
   return <JsonLd id="home-schema" data={{ '@context': 'https://schema.org', '@graph': [
     {
       '@type': 'WebPage', '@id': `${SITE_URL}/#webpage`, url: `${SITE_URL}/`,
       name: 'Artes para canecas e mockup 3D — Click & Gruda',
       description: SITE.shortAnswer, inLanguage: 'pt-BR', dateModified: CONTENT_UPDATED_ISO,
       isPartOf: { '@id': `${SITE_URL}/#website` }, about: { '@id': `${SITE_URL}/#organization` },
-      mainEntity: { '@id': productId }, primaryImageOfPage: { '@type': 'ImageObject', url: `${SITE_URL}${SOCIAL_IMAGE}` },
+      mainEntity: { '@id': serviceId }, primaryImageOfPage: image,
     },
     {
-      '@type': 'Service', '@id': `${SITE_URL}/#servico`,
-      name: 'Biblioteca de artes, mockups 3D e ferramentas para sublimadores',
+      '@type': 'Service', '@id': serviceId,
+      name: promo ? 'Acesso Vitalício Click & Gruda' : 'Acesso à plataforma Click & Gruda',
+      alternateName: 'Biblioteca de artes, mockups 3D e ferramentas para sublimadores',
       serviceType: 'Plataforma digital de artes para sublimação de canecas',
       description: SITE.description, url: `${SITE_URL}/`,
       provider: { '@id': `${SITE_URL}/#organization` }, areaServed: { '@type': 'Country', name: 'Brasil' },
-    },
-    {
-      '@type': 'Product', '@id': productId,
-      name: promo ? 'Acesso Vitalício Click & Gruda' : 'Acesso à plataforma Click & Gruda',
-      description: 'Biblioteca de artes para canecas com busca, categorias, datas sazonais, novidades semanais e mockup 3D. Downloads ilimitados para contas com acesso ativo; consulte as condições do plano no portal.',
-      url: `${SITE_URL}/`, image: [`${SITE_URL}${SOCIAL_IMAGE}`], brand: { '@id': `${SITE_URL}/#organization` },
+      image,
+      brand: { '@type': 'Brand', name: SITE.name },
+      audience: { '@type': 'Audience', audienceType: 'Sublimadores e profissionais de personalizados' },
+      availableChannel: { '@type': 'ServiceChannel', serviceUrl: `${SITE_URL}/`, availableLanguage: 'pt-BR' },
       ...(promo ? { offers: {
-        '@type': 'Offer', url: `${SITE_URL}/#preco`, priceCurrency: 'BRL',
-        price: (priceCents / 100).toFixed(2), priceValidUntil: '2026-12-31',
+        '@type': 'Offer', '@id': `${SITE_URL}/#oferta-acesso`, url: `${SITE_URL}/#preco`, priceCurrency: 'BRL',
+        price: (priceCents / 100).toFixed(2), priceValidUntil: SALES.promoEndsAt.slice(0, 10),
+        itemOffered: { '@id': serviceId },
         availability: 'https://schema.org/InStock', seller: { '@id': `${SITE_URL}/#organization` },
       } } : {}),
     },

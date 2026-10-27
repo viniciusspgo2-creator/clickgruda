@@ -139,7 +139,37 @@ test('schemas refletem FAQ da página e não declaram preço antigo se o plano m
   assert.equal(data['@graph'].find(n=>n['@type']==='FAQPage').mainEntity.length,11)
   assert.ok(data['@graph'].find(n=>n['@type']==='FAQPage').mainEntity.some(item => item.name.includes('antes de comprar')))
   assert.equal(data['@graph'].find(n=>n['@type']==='HowTo'),undefined)
-  assert.equal(parse(9900)['@graph'].find(n=>n['@type']==='Product').offers,undefined)
+  assert.equal(parse(9900)['@graph'].find(n=>n['@type']==='Service').offers,undefined)
+})
+
+test('a plataforma é descrita como serviço digital com imagem, marca e oferta coerentes, sem dados fictícios de mercadoria', () => {
+  const {HomeSchema} = load('src/components/geo/HomeSchema.tsx')
+  const html = ReactDOM.renderToStaticMarkup(HomeSchema({priceCents:4790}))
+  const data = JSON.parse(html.match(/<script[^>]*>([\s\S]*)<\/script>/)[1])
+  assert.equal(data['@graph'].some(node => node['@type'] === 'Product'), false)
+  const services = data['@graph'].filter(node => node['@type'] === 'Service')
+  assert.equal(services.length, 1)
+  const service = services[0]
+  assert.equal(service.brand['@type'], 'Brand'); assert.equal(service.brand.name, 'Click & Gruda')
+  assert.equal(service.image['@type'], 'ImageObject'); assert.ok(service.image.url.startsWith('https://www.clickgruda.com.br/uploads/'))
+  assert.equal(service.image.width, 1122); assert.equal(service.image.height, 1402)
+  assert.equal(service.audience['@type'], 'Audience'); assert.equal(service.availableChannel['@type'], 'ServiceChannel')
+  assert.equal(service.offers.price, '47.90'); assert.equal(service.offers.priceCurrency, 'BRL')
+  assert.equal(service.offers.itemOffered['@id'], service['@id'])
+  assert.equal(data['@graph'].find(node => node['@type'] === 'WebPage').mainEntity['@id'], service['@id'])
+  for (const field of ['aggregateRating', 'review', 'shippingDetails', 'hasMerchantReturnPolicy', 'validFrom']) assert.equal(html.includes('"' + field + '"'), false)
+})
+
+test('oferta vitalícia não reaparece no schema depois do fim da campanha', () => {
+  const old = Date.now
+  Date.now = () => new Date('2027-01-01T12:00:00-03:00').getTime()
+  try {
+    const {HomeSchema} = load('src/components/geo/HomeSchema.tsx')
+    const html = ReactDOM.renderToStaticMarkup(HomeSchema({priceCents:4790}))
+    const data = JSON.parse(html.match(/<script[^>]*>([\s\S]*)<\/script>/)[1])
+    const service = data['@graph'].find(node => node['@type'] === 'Service')
+    assert.equal(service.offers, undefined); assert.equal(service.name, 'Acesso à plataforma Click & Gruda')
+  } finally { Date.now = old }
 })
 
 test('GEO publica downloads ilimitados e links atuais para guia e artigos', () => {
