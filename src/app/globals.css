@@ -1429,3 +1429,127 @@
 .cg-sales-button:focus-visible, .cg-sales-page a:focus-visible, .cg-sales-page button:focus-visible { outline: 2px solid #ffb17c; outline-offset: 4px; }
 @media (min-width: 1024px) { .cg-sales-title { font-size: clamp(2.8rem, 3.65vw, 3.65rem); } }
 @media (prefers-reduced-motion: reduce) { .cg-sales-button { transition: none; } .cg-sales-button:hover { transform: none; } }
+
+/* Click & Gruda — UI premium 2026-10-27. Banner original do dashboard é zona de exclusão. */
+.cg-portal .cg-header-mockup {
+  border:1px solid rgba(255,141,58,.62)!important;
+  background:linear-gradient(110deg,rgba(255,116,27,.2),rgba(31,42,58,.92))!important;
+  color:#ffbd85!important;
+  box-shadow:inset 0 1px rgba(255,255,255,.07),0 0 0 1px rgba(255,130,50,.09);
+}
+.cg-portal .cg-header-mockup:hover {background:rgba(255,128,41,.26)!important;box-shadow:0 0 22px rgba(255,115,30,.14)!important;}
+.cg-theme-light .cg-header-mockup {background:linear-gradient(110deg,#fff0e2,#fff7f0)!important;color:#a3480d!important;}
+
+/* Artwork cards: conteúdo em repouso, controles somente quando a interação permite. */
+.cg-portal .cg-member-artcard .cg-art-card-surface {background:#172338;border-radius:16px;}
+.cg-portal .cg-member-artcard .cg-art-card-surface:hover,
+.cg-portal .cg-member-artcard .cg-art-card-surface:focus-within {
+  transform:translateY(-4px) scale(1.02);
+  border-color:rgba(255,139,57,.52);
+  box-shadow:0 8px 30px rgba(255,107,0,.15),0 16px 30px rgba(0,0,0,.22);
+}
+.cg-portal .cg-art-hover-actions {display:flex;opacity:0;visibility:hidden;transition:opacity .2s ease-out,visibility .2s ease-out;}
+.cg-portal .cg-member-artcard:hover .cg-art-hover-actions,
+.cg-portal .cg-member-artcard:focus-within .cg-art-hover-actions {opacity:1;visibility:visible;}
+.cg-portal .cg-member-artcard .cg-art-info {border-top:1px solid rgba(255,255,255,.055);}
+.cg-portal .cg-member-artcard .cg-art-info h3 {font-weight:600!important;}
+/* Light mode: the SURFACE is light too; do not put dark text over a dark card. */
+.cg-portal.cg-theme-light .cg-member-artcard .cg-art-card-surface {
+  background:#ffffff; border-color:#dfe6ee;
+  box-shadow:0 6px 19px rgba(24,43,73,.05);
+}
+.cg-portal.cg-theme-light .cg-member-artcard .cg-art-info {border-top-color:#e9edf3;}
+.cg-portal.cg-theme-light .cg-member-artcard .cg-art-info h3 {color:#16253a!important;}
+.cg-portal.cg-theme-light .cg-member-artcard .cg-art-info .text-orange-200 {color:#9d4308!important;}
+.cg-portal.cg-theme-light .cg-member-artcard .cg-art-info .text-white\/60,
+.cg-portal.cg-theme-light .cg-member-artcard .cg-art-info .text-white\/45 {color:#51627a!important;}
+.cg-portal.cg-theme-light .cg-member-artcard .cg-art-info button {color:#4b5872;border-color:#dbe2ec;background:#f2f5f9;}
+.cg-portal.cg-theme-light .cg-member-artcard .cg-art-info .cg-art-touch-actions button:first-child {background:#fff0e2;color:#9c430b;}
+.cg-portal.cg-theme-light .cg-member-artcard .cg-art-info .cg-art-touch-actions button:not(:first-child) {color:#40516b;background:#f4f6fa;}
+.cg-portal.cg-theme-light .cg-member-artcard .cg-art-info .cg-art-touch-actions button:focus-visible {outline:2px solid #f97316;outline-offset:2px;}
+@media(hover:none) {
+  .cg-portal .cg-art-hover-actions {display:none;}
+  .cg-portal .cg-art-touch-actions {display:flex;}
+  .cg-portal .cg-member-artcard .cg-art-card-surface:hover {transform:none;}
+}
+@media(prefers-reduced-motion:reduce) {
+  .cg-portal .cg-member-artcard .cg-art-card-surface {transition:none!important;}
+  .cg-portal .cg-member-artcard .cg-art-card-surface:hover {transform:none!important;}
+  .cg-portal .cg-art-hover-actions {transition:none!important;}
+}
+
+/* Categorias horizontais com número real, sem rolagem vertical duplicada. */
+.cg-portal .cg-category-toolbar {border:1px solid rgba(154,180,218,.13);background:#121e30;padding:10px 12px;border-radius:16px;}
+.cg-portal .cg-category-pill {display:inline-flex;align-items:center;gap:7px;white-space:nowrap;flex-shrink:0;min-height:35px;padding:8px 13px;border-radius:999px;border:1px solid rgba(187,208,240,.13);background:rgba(255,255,255,.035);color:#c8d4e6;font-size:12px;font-weight:650;transition:background .16s,border-color .16s;}
+.cg-portal .cg-category-pill > span {font-size:10px;opacity:.72;font-variant-numeric:tabular-nums;}
+.cg-portal .cg-category-pill:hover {border-color:rgba(255,148,74,.5);background:rgba(255,130,45,.13);color:#fff;}
+.cg-portal .cg-category-pill-active {border-color:transparent;background:#f97316;color:#fff;}
+.cg-portal .cg-category-pill-active:hover {background:#fb923c;}
+.cg-theme-light .cg-category-toolbar {background:#fff;border-color:rgba(24,43,73,.1);}
+.cg-theme-light .cg-category-pill:not(.cg-category-pill-active) {color:#40516b;background:#f5f7fb;border-color:#e4e9f0;}
+.cg-theme-light .cg-category-pill-active {color:#fff;}
+.cg-portal .cg-inline-search input {color-scheme:dark;}
+.cg-theme-light .cg-inline-search input {background:#fff!important;color:#23364d!important;border-color:#d9e0e9!important;color-scheme:light;}
+@media(max-width:540px) {
+  .cg-portal .cg-filter-toolbar .cg-inline-search {order:3;flex-basis:100%;min-width:0;}
+  .cg-portal .cg-member-grid {gap:10px;}
+  .cg-portal .cg-member-artcard .cg-art-info {padding:9px;gap:7px;}
+  .cg-portal .cg-member-artcard .cg-art-info h3 {min-height:33px;font-size:11px;}
+  .cg-portal .cg-member-artcard .cg-art-touch-actions {gap:3px;}
+  .cg-portal .cg-member-artcard .cg-art-touch-actions button {min-width:25px;}
+  .cg-portal .cg-member-artcard .cg-art-touch-actions button:first-child {font-size:9px;}
+}
+
+/* Gaveta: todos os estados, incluindo tags, seguem a paleta noturna. */
+.cg-filter-drawer {background:#121d2f!important;color:#eff5ff!important;border-color:rgba(255,255,255,.1)!important;color-scheme:dark;}
+.cg-filter-drawer .text-zinc-900,.cg-filter-drawer .text-zinc-800 {color:#f4f7ff!important;}
+.cg-filter-drawer .text-zinc-700,.cg-filter-drawer .text-zinc-600 {color:#c3d1e4!important;}
+.cg-filter-drawer .text-zinc-500,.cg-filter-drawer .text-zinc-400 {color:#99abc6!important;}
+.cg-filter-drawer .border-zinc-200,.cg-filter-drawer .border-zinc-100 {border-color:rgba(163,189,222,.17)!important;}
+.cg-filter-drawer .bg-zinc-100,.cg-filter-drawer .bg-zinc-50\/70,.cg-filter-drawer .bg-zinc-50 {background:#1a2b43!important;}
+.cg-filter-drawer .bg-orange-50 {background:rgba(251,139,55,.15)!important;}
+.cg-filter-drawer .hover\:bg-orange-50:hover,.cg-filter-drawer .hover\:bg-zinc-50:hover {background:rgba(251,139,55,.12)!important;}
+.cg-filter-drawer input,.cg-filter-drawer [role="combobox"],.cg-filter-drawer [data-slot="select-trigger"] {background:#1b2c46!important;color:#f0f5ff!important;border-color:rgba(160,188,229,.22)!important;}
+.cg-filter-drawer input::placeholder {color:#9caeca;}
+.cg-filter-drawer .cg-filter-drawer-scroll {scrollbar-width:thin;scrollbar-color:#394c65 transparent;}
+.cg-filter-drawer .cg-filter-drawer-scroll::-webkit-scrollbar {width:6px;}
+.cg-filter-drawer .cg-filter-drawer-scroll::-webkit-scrollbar-thumb {border-radius:9px;background:#394c65;}
+.cg-filter-drawer .bg-white {background:#1d2d43!important;}
+.cg-filter-drawer [data-state="checked"],.cg-filter-drawer [aria-checked="true"] {color:#fff;}
+
+/* Painel de informações do modal: dark em todo o layout. Área da arte preservada clara. */
+.cg-premium-preview > div > div:last-child {background:#121a2a;color:#e9f1fb;}
+.cg-premium-preview > div > div:last-child .bg-orange-50 {background:rgba(251,141,59,.13)!important;color:#ffbd86!important;border-color:rgba(255,151,75,.3)!important;}
+.cg-premium-preview > div > div:last-child .bg-orange-100,.cg-premium-preview > div > div:last-child .bg-amber-100 {background:rgba(255,155,75,.13)!important;color:#ffd0a4!important;}
+.cg-premium-preview > div > div:last-child .hover\:bg-orange-50:hover {background:rgba(255,155,75,.2)!important;}
+
+/* Final polish — conversion first, accessible touch controls and motion safety. */
+.cg-sales-outline-button {display:inline-flex;align-items:center;justify-content:center;gap:.55rem;min-height:3rem;border:1px solid rgba(255,255,255,.32);border-radius:999px;background:rgba(255,255,255,.065);font-weight:700;color:#fff;transition:background .2s,border-color .2s;}
+.cg-sales-outline-button:hover {background:rgba(255,255,255,.13);border-color:rgba(255,173,113,.7);}
+.cg-portal .cg-member-artcard .cg-art-touch-actions {flex-wrap:wrap;}
+.cg-portal .cg-member-artcard .cg-art-touch-actions button {min-height:38px;min-width:36px;}
+@media (hover:none), (pointer:coarse) {
+  .cg-portal .cg-member-artcard .cg-art-hover-actions {display:none;}
+  .cg-portal .cg-member-artcard .cg-art-touch-actions {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px;}
+  .cg-portal .cg-member-artcard .cg-art-touch-actions button {width:100%;min-height:38px;min-width:0;}
+  .cg-portal .cg-member-artcard .cg-art-touch-actions button.cg-art-mockup-touch {grid-column:1/-1;min-height:40px;}
+  .cg-portal .cg-member-artcard .cg-art-card-surface:hover {transform:none;}
+}
+@media (hover:hover) and (pointer:fine) {
+  .cg-portal .cg-member-artcard:focus-within .cg-art-hover-actions {visibility:visible;opacity:1;}
+}
+@media(prefers-reduced-motion:reduce) {
+  .cg-sales-outline-button, .cg-portal .cg-member-artcard .cg-art-card-surface {transition:none!important;}
+}
+
+/* In light mode, intentional dark image overlays and orange badges must retain white labels.
+   The generic portal text normalization above must not override these contexts. */
+.cg-portal.cg-theme-light .cg-member-artcard .cg-art-visual .cg-art-hover-actions button,
+.cg-portal.cg-theme-light .cg-member-artcard .cg-art-visual .text-white {color:#fff!important;}
+.cg-portal.cg-theme-light .cg-member-artcard .cg-art-hover-actions button:focus-visible,
+.cg-portal.cg-theme-light .cg-member-artcard .cg-art-touch-actions button:focus-visible {
+  outline:2px solid #fb923c;outline-offset:2px;
+}
+@media (hover:none), (pointer:coarse) {
+  .cg-portal .cg-member-artcard .cg-art-info .cg-art-mockup-touch {font-size:11px;}
+}

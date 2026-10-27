@@ -199,7 +199,8 @@ export function PortalView() {
   const [zipOpen, setZipOpen] = useState(false)
   const [portalTheme, setPortalTheme] = useState<'dark' | 'light'>('dark')
   const [mockupDialogOpen, setMockupDialogOpen] = useState(false)
-  const openMockup = () => setMockupDialogOpen(true)
+  const [mockupArt, setMockupArt] = useState<ArtItem | null>(null)
+  const openMockup = (art?: ArtItem) => { setMockupArt(art ?? null); setMockupDialogOpen(true) }
 
 
   // O campo acompanha mudanças externas (logo, limpar filtros, troca de página).
@@ -581,8 +582,8 @@ export function PortalView() {
               type="button"
               aria-label="Abrir informações do Gerador de Mockup"
               title="Gerador de Mockup"
-              onClick={openMockup}
-              className="cg-header-quicklink"
+              onClick={() => openMockup()}
+              className="cg-header-quicklink cg-header-mockup"
             >
               <Box className="h-4 w-4 shrink-0" />
               <span className="cg-header-quicklabel">Gerador de Mockup</span>
@@ -651,7 +652,7 @@ export function PortalView() {
 
         {/* Atalhos próprios do mobile — mantêm a busca legível no cabeçalho. */}
         <nav className="cg-mobile-quicklinks mx-auto flex w-full max-w-[1600px] items-center gap-2 px-4 pb-2.5 md:hidden sm:px-7" aria-label="Ferramentas rápidas">
-          <button type="button" onClick={openMockup} className="cg-header-quicklink flex-1 justify-center">
+          <button type="button" onClick={() => openMockup()} className="cg-header-quicklink cg-header-mockup flex-1 justify-center">
             <Box className="h-4 w-4" /> Gerador de Mockup <ExternalLink className="h-3 w-3" />
           </button>
           <button type="button" onClick={toggleTheme} className="cg-theme-toggle flex-none px-3">
@@ -887,19 +888,22 @@ export function PortalView() {
           </div>
         )}
 
-        {(
-          <div className="cg-filter-toolbar sticky top-[82px] z-20 mb-4 flex flex-wrap items-center gap-2 rounded-2xl p-2.5 sm:top-[82px]" aria-label="Barra de navegação das artes">
-            <button type="button" onClick={() => setMenuOpen(true)} className="cg-filter-button inline-flex h-9 items-center gap-2 rounded-xl px-3 text-xs font-bold"><SlidersHorizontal className="h-4 w-4" /> Categorias e filtros{categoryIds.length + tagIds.length > 0 ? ` (${categoryIds.length + tagIds.length})` : ''}</button>
-            <span className="hidden text-xs font-semibold text-slate-300 sm:inline">{total.toLocaleString('pt-BR')} {total === 1 ? 'resultado' : 'resultados'}</span>
-            <div className="ml-auto flex items-center gap-2">
-              <span className="hidden text-xs font-semibold text-slate-300 sm:inline">Ordenar por</span>
-              <Select value={sort} onValueChange={(value) => setFilter({ sort: value as typeof sort })}>
-                <SelectTrigger className="cg-sort-trigger h-9 w-[157px] rounded-xl text-xs font-bold sm:w-[172px]"><SelectValue /></SelectTrigger>
-                <SelectContent><SelectItem value="recentes">Mais recentes</SelectItem><SelectItem value="baixadas">Mais baixadas</SelectItem><SelectItem value="nome">Nome (A–Z)</SelectItem></SelectContent>
-              </Select>
-            </div>
-          </div>
-        )}
+        {/* Categorias com números reais e barra de busca sempre visível. */}
+        <div className="cg-category-toolbar mb-3" aria-label="Categorias do acervo">
+          <ChipScroller activeKey={categoryIds[0] ?? 'all'} fadeFrom="from-[#121e30]">
+            <button type="button" data-active={categoryIds.length === 0 && tab === 'todas'} onClick={() => { setFilter({ tab: 'todas', categoryIds: [], seasonalEventId: null }); scrollToResults() }} className={cn('cg-category-pill', categoryIds.length === 0 && tab === 'todas' ? 'cg-category-pill-active' : '')}>Todas <span>{counts?.arts?.toLocaleString('pt-BR') ?? '…'}</span></button>
+            {(catalogQ.data?.categories ?? []).map((category) => <button type="button" key={category.id} data-active={categoryIds.includes(category.id)} aria-pressed={categoryIds.includes(category.id)} onClick={() => { setFilter({ tab: 'todas', categoryIds: categoryIds.includes(category.id) ? categoryIds.filter(id => id !== category.id) : [category.id], seasonalEventId: null }); scrollToResults() }} className={cn('cg-category-pill', categoryIds.includes(category.id) && 'cg-category-pill-active')}>{category.emoji} {category.name} <span>{category.artCount.toLocaleString('pt-BR')}</span></button>)}
+          </ChipScroller>
+        </div>
+        <div className="cg-filter-toolbar sticky top-[82px] z-20 mb-4 flex flex-wrap items-center gap-2 rounded-2xl p-2.5 sm:top-[82px]" aria-label="Barra de navegação das artes">
+          <button type="button" onClick={() => setMenuOpen(true)} className="cg-filter-button inline-flex h-9 shrink-0 items-center gap-2 rounded-xl px-3 text-xs font-bold"><SlidersHorizontal className="h-4 w-4" /> Mais filtros{categoryIds.length + tagIds.length > 0 ? ` (${categoryIds.length + tagIds.length})` : ''}</button>
+          <label className="cg-inline-search relative flex min-w-[145px] flex-1 items-center" aria-label="Buscar no acervo"><Search className="pointer-events-none absolute left-3 h-4 w-4 text-orange-300" /><input type="search" value={searchInput} onChange={event => setSearchInput(event.target.value)} placeholder="Buscar tema, arte ou código…" className="h-9 w-full rounded-xl border border-white/15 bg-[#1b2c46] pl-9 pr-2 text-xs text-white outline-none placeholder:text-slate-400 focus:border-orange-400" /></label>
+          <span className="hidden text-xs font-semibold text-slate-300 lg:inline">{total.toLocaleString('pt-BR')} {total === 1 ? 'resultado' : 'resultados'}</span>
+          <Select value={sort} onValueChange={value => setFilter({ sort: value as typeof sort })}>
+            <SelectTrigger aria-label="Ordenar artes" className="cg-sort-trigger h-9 w-[125px] shrink-0 rounded-xl text-xs font-bold sm:w-[165px]"><SelectValue /></SelectTrigger>
+            <SelectContent><SelectItem value="recentes">Mais recentes</SelectItem><SelectItem value="baixadas">Mais baixadas</SelectItem><SelectItem value="nome">Nome (A–Z)</SelectItem></SelectContent>
+          </Select>
+        </div>
 
         {/* Active filters */}
         {(activeFilterChips.length > 0 || q) && (
@@ -958,28 +962,26 @@ export function PortalView() {
 
         {/* Grid */}
         {artsQ.isLoading ? (
-          <div className="cg-member-grid grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
-            {Array.from({ length: 6 }).map((_, i) => (
-              <div key={i} className="rounded-2xl border border-zinc-200 bg-white p-3.5">
-                <Skeleton className="aspect-[16/9] w-full rounded-xl bg-zinc-100" />
-                <Skeleton className="mt-3 h-4 w-2/3 rounded bg-zinc-100" />
-                <Skeleton className="mt-2 h-3 w-1/3 rounded bg-zinc-100" />
-                <Skeleton className="mt-3 h-9 w-full rounded-xl bg-zinc-100" />
+          <div className="cg-member-grid grid grid-cols-2 gap-2.5 sm:gap-4 lg:grid-cols-3">
+            {Array.from({ length: 12 }).map((_, i) => (
+              <div key={i} className="rounded-2xl border border-white/10 bg-[#172338] p-2.5 sm:p-3.5">
+                <Skeleton className="aspect-[16/9] w-full rounded-xl bg-slate-700/35" />
+                <Skeleton className="mt-3 h-4 w-2/3 rounded bg-slate-700/35" />
+                <Skeleton className="mt-2 h-3 w-1/3 rounded bg-slate-700/35" />
+                <Skeleton className="mt-3 h-3 w-1/2 rounded bg-slate-700/35" />
               </div>
             ))}
           </div>
         ) : arts.length === 0 ? (
-          <div className="flex flex-col items-center justify-center rounded-3xl border border-dashed border-zinc-300 bg-white py-20 text-center">
-            <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-orange-50">
-              <SearchX className="h-8 w-8 text-orange-400" />
-            </div>
-            <h3 className="mt-4 text-lg font-black text-zinc-800">Nenhuma arte encontrada</h3>
-            <p className="mt-1 max-w-xs text-sm text-zinc-400">
+          <div className="flex flex-col items-center justify-center rounded-3xl border border-dashed border-white/15 bg-[#172338] px-5 py-12 text-center">
+            <img src="/uploads/rebrand/mascote-principal.webp" alt="Mascote Click & Gruda" loading="lazy" className="h-28 w-28 object-contain sm:h-36 sm:w-36" />
+            <h3 className="mt-3 text-lg font-bold text-white">Nenhuma arte para essa busca.</h3>
+            <p className="mt-2 max-w-sm text-sm text-slate-300">
               {tab === 'favoritas'
                 ? 'Toque no coraçãozinho das artes que você ama para vê-las aqui.'
                 : tab === 'selecionadas'
                   ? 'As artes especiais escolhidas a dedo pela nossa equipe vão aparecer aqui.'
-                  : 'Tente ajustar a busca ou limpar os filtros para ver mais artes.'}
+                  : counts?.lancamentos ? `Temos ${counts.lancamentos.toLocaleString('pt-BR')} lançamentos no acervo. Limpe os filtros para conhecer.` : 'Experimente outro tema ou limpe os filtros para encontrar mais artes.'}
             </p>
             <Button
               onClick={() => {
@@ -992,7 +994,7 @@ export function PortalView() {
             </Button>
           </div>
         ) : (
-          <div className="cg-member-grid grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
+          <div className="cg-member-grid grid grid-cols-2 gap-2.5 sm:gap-4 lg:grid-cols-3">
             <AnimatePresence initial={false}>
               {arts.map((art) => (
                 <ArtCard
@@ -1003,6 +1005,7 @@ export function PortalView() {
                   onDownload={handleDownload}
                   onToggleFavorite={toggleFavorite}
                   onPreview={(chosen) => setPreviewId(chosen.id)}
+                  onOpenMockup={(chosen) => openMockup(chosen)}
                 />
               ))}
             </AnimatePresence>
@@ -1043,14 +1046,14 @@ export function PortalView() {
 
       {/* ================= HAMBURGER MENU (Categorias + Tags) ================= */}
       <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
-        <SheetContent side="left" className="flex w-[min(90vw,355px)] flex-col overflow-hidden p-0 sm:max-w-[355px]">
-          <SheetHeader className="border-b border-zinc-100 p-5 text-left">
-            <SheetTitle className="flex items-center gap-2 text-base font-black text-zinc-900">
+        <SheetContent side="left" className="cg-filter-drawer flex w-[min(90vw,355px)] flex-col overflow-hidden border-white/10 bg-[#121d2f] p-0 text-slate-100 sm:max-w-[355px]">
+          <SheetHeader className="border-b border-white/10 p-5 text-left">
+            <SheetTitle className="flex items-center gap-2 text-base font-bold text-white">
               <Menu className="h-4.5 w-4.5 text-orange-500" /> Explorar artes
             </SheetTitle>
           </SheetHeader>
 
-          <div className="min-h-0 flex-1 overflow-y-auto p-5 scrollbar-thin">
+          <div className="cg-filter-drawer-scroll min-h-0 flex-1 overflow-y-auto p-5">
             <div className="mb-5">
               <p className="mb-2 text-[11px] font-black uppercase tracking-wider text-zinc-400">Ordenar artes</p>
               <Select value={sort} onValueChange={(v) => setFilter({ sort: v as typeof sort })}>
@@ -1118,8 +1121,8 @@ export function PortalView() {
               <RotateCcw className="mr-1.5 h-4 w-4" /> Limpar filtros
             </Button>
           </div>
-          <div className="shrink-0 border-t border-zinc-200 bg-white p-4 shadow-[0_-8px_24px_rgba(0,0,0,.04)]">
-            <Button onClick={() => setMenuOpen(false)} className="h-11 w-full rounded-xl bg-zinc-950 font-black text-white hover:bg-zinc-800">
+          <div className="shrink-0 border-t border-white/10 bg-[#101a2b] p-4 shadow-[0_-8px_24px_rgba(0,0,0,.22)]">
+            <Button onClick={() => setMenuOpen(false)} className="h-11 w-full rounded-xl bg-orange-500 font-bold text-white hover:bg-orange-600">
               <Check className="mr-2 h-4 w-4 text-orange-400" />
               Ver {artsQ.isFetching ? 'resultados' : `${total.toLocaleString('pt-BR')} artes`}
             </Button>
@@ -1148,10 +1151,12 @@ export function PortalView() {
             <DialogTitle className="flex items-center gap-2 text-xl font-black text-white"><Box className="h-5 w-5 text-orange-400" /> Gerador de Mockups 3D</DialogTitle>
             <DialogDescription className="text-sm leading-relaxed text-slate-300">{user.isDemo ? 'O gerador de mockups 3D é um recurso para membros. A demonstração permite conhecer a biblioteca; o uso do gerador depende da ativação do seu acesso.' : <>O mockup é <strong className="text-white">premium</strong>, e você assinante tem acesso gratuito. Se ainda não tem o código de acesso, solicite ao suporte o seu código grátis.</>}</DialogDescription>
           </DialogHeader>
+          {mockupArt && <div className="rounded-xl border border-orange-400/20 bg-orange-400/[.07] p-3 text-xs leading-5 text-slate-200"><strong className="block text-orange-200">Arte selecionada: {mockupArt.title}</strong>O Studio não importa esta estampa automaticamente. {user.isDemo ? "Na demonstração, conheça o acervo. Após ativar seu acesso, baixe a arte e envie o arquivo ao Studio." : "Baixe a arte pelo botão abaixo e, no gerador, envie o arquivo para visualizar a caneca em 3D."}</div>}
           <DialogFooter className="mt-2 flex-col gap-2 sm:flex-row sm:justify-between">
             {user.isDemo ? <DemoConversionActions /> : <>
             <Button type="button" variant="outline" onClick={() => window.open(WHATSAPP.link(mockupSupportMessage), '_blank', 'noopener,noreferrer')} className="border-white/15 bg-white/5 text-slate-100 hover:bg-white/10">Solicitar código grátis</Button>
-            <Button type="button" onClick={() => { setMockupDialogOpen(false); openExternal('https://clicktools.vercel.app/', 'mockup_platform_open') }} className="bg-orange-500 text-white hover:bg-orange-600">Continuar para o gerador</Button></>}
+            {mockupArt && <Button type="button" variant="outline" disabled={downloadStates[mockupArt.id] === 'loading'} onClick={() => handleDownload(mockupArt)} className="border-white/15 bg-white/5 text-white hover:bg-white/10"><Download className="mr-1.5 h-4 w-4" /> Baixar esta arte</Button>}
+            <Button type="button" onClick={() => { setMockupDialogOpen(false); openExternal('https://clicktools.vercel.app/', 'mockup_platform_open') }} className="bg-orange-500 text-white hover:bg-orange-600">Abrir Studio Mockup 3D</Button></>}
           </DialogFooter>
         </DialogContent>
       </Dialog>
