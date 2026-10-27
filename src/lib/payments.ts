@@ -1,4 +1,5 @@
 import { db } from '@/lib/db'
+import { SITE_URL } from '@/lib/site'
 
 /* ---------------- Mercado Pago ---------------- */
 
@@ -8,21 +9,22 @@ export async function createMercadoPagoPix(opts: {
   email: string
   name: string
   description: string
+  paymentId: string
 }): Promise<{ externalId: string; qrCodePayload: string; qrCodeImage: string }> {
   const res = await fetch('https://api.mercadopago.com/v1/payments', {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${opts.token}`,
       'Content-Type': 'application/json',
-      'X-Idempotency-Key': crypto.randomUUID(),
+      'X-Idempotency-Key': opts.paymentId,
     },
     body: JSON.stringify({
       transaction_amount: Number((opts.amountCents / 100).toFixed(2)),
       description: opts.description,
       payment_method_id: 'pix',
-      ...(process.env.NEXT_PUBLIC_SITE_URL
-        ? { notification_url: `${process.env.NEXT_PUBLIC_SITE_URL.replace(/\/+$/, '')}/api/payments/webhook/mercadopago` }
-        : {}),
+      notification_url: `${SITE_URL}/api/payments/webhook/mercadopago`,
+      external_reference: opts.paymentId,
+      date_of_expiration: new Date(Date.now() + 31 * 60 * 1000).toISOString(),
       payer: {
         email: opts.email,
         first_name: opts.name?.split(' ')[0] || 'Cliente',
@@ -34,6 +36,7 @@ export async function createMercadoPagoPix(opts: {
     throw new Error(data?.message || data?.error || 'Erro ao criar pagamento no Mercado Pago')
   }
   const td = data?.point_of_interaction?.transaction_data
+  if (!data.id || !td?.qr_code) throw new Error('O Mercado Pago não retornou um PIX válido. Confira as credenciais no painel.')
   return {
     externalId: String(data.id),
     qrCodePayload: td?.qr_code || '',
@@ -73,6 +76,7 @@ export async function createAsaasPix(opts: {
   cpfCnpj: string
   amountCents: number
   description: string
+  paymentId: string
 }): Promise<{ externalId: string; qrCodePayload: string; qrCodeImage: string }> {
   const base = asaasBase(opts.sandbox)
   const headers = { access_token: opts.key, 'Content-Type': 'application/json' }
@@ -97,6 +101,7 @@ export async function createAsaasPix(opts: {
       value: Number((opts.amountCents / 100).toFixed(2)),
       dueDate: today,
       description: opts.description,
+      externalReference: opts.paymentId,
     }),
   })
   const pay = await payRes.json().catch(() => ({}))
@@ -139,17 +144,17 @@ export async function checkAsaasPayment(
 
 /* ---------------- Shared ---------------- */
 
+/** Liberação e confirmação do pagamento acontecem na mesma transação. */
 export async function approvePayment(paymentId: string) {
-  const payment = await db.payment.findUnique({ where: { id: paymentId } })
-  if (!payment || payment.status === 'APPROVED') return
-  await db.$transaction([
-    db.payment.update({
-      where: { id: payment.id },
+  return db.$transaction(async tx => {
+    const payment = await tx.payment.findUnique({ where: { id: paymentId } })
+    if (!payment || payment.status === 'APPROVED') return false
+    const claimed = await tx.payment.updateMany({
+      where: { id: paymentId, status: { not: 'APPROVED' } },
       data: { status: 'APPROVED', approvedAt: new Date() },
-    }),
-    db.user.update({
-      where: { id: payment.userId },
-      data: { hasAccess: true, accessSource: 'PURCHASE', status: 'ACTIVE' },
-    }),
-  ])
+    })
+    if (!claimed.count) return false
+    await tx.user.update({ where: { id: payment.userId }, data: { hasAccess: true, accessSource: 'PURCHASE', status: 'ACTIVE' } })
+    return true
+  })
 }

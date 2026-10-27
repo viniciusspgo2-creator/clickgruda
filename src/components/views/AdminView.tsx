@@ -30,6 +30,7 @@ import {
   Trash2,
   TrendingUp,
   Globe,
+  TicketPercent,
   User as UserIcon,
   Users,
   Wand2,
@@ -49,6 +50,8 @@ import { NewUserDialog } from '@/components/admin/NewUserDialog'
 import { PreviewAccountDialog } from '@/components/admin/PreviewAccountDialog'
 import { LandingAnalyticsPanel } from '@/components/admin/LandingAnalyticsPanel'
 import { AdminSeoSection } from '@/components/admin/AdminSeoSection'
+import { AdminCouponsSection } from '@/components/admin/AdminCouponsSection'
+import { AdminMercadoPagoSection } from '@/components/admin/AdminMercadoPagoSection'
 import { AdminEnhanceSection, AdminSearchMissesSection, AdminSecuritySection, AdminWaitlistSection } from '@/components/views/AdminGrowthSections'
 import { useStore } from '@/lib/store'
 import { formatBRL } from '@/lib/types'
@@ -69,6 +72,8 @@ export type AdminSection =
   | 'seguranca'
   | 'settings'
   | 'seo'
+  | 'coupons'
+  | 'mercadopago'
 
 const SECTIONS: { id: AdminSection; label: string; icon: React.ElementType }[] = [
   { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
@@ -78,6 +83,8 @@ const SECTIONS: { id: AdminSection; label: string; icon: React.ElementType }[] =
   { id: 'seasonal', label: 'Datas Sazonais', icon: CalendarHeart },
   { id: 'users', label: 'Usuários', icon: Users },
   { id: 'payments', label: 'Pagamentos', icon: CreditCard },
+  { id: 'mercadopago', label: 'Mercado Pago', icon: CreditCard },
+  { id: 'coupons', label: 'Cupons de desconto', icon: TicketPercent },
   { id: 'sugestoes', label: 'Sugestões de Tema', icon: Lightbulb },
   { id: 'buscas', label: 'Buscas sem resultado', icon: SearchX },
   { id: 'melhorias', label: 'Melhorias de Arte', icon: Wand2 },
@@ -243,6 +250,8 @@ export function AdminView() {
             {section === 'espera' && <AdminWaitlistSection />}
             {section === 'seguranca' && <AdminSecuritySection />}
             {section === 'seo' && <AdminSeoSection />}
+            {section === 'mercadopago' && <AdminMercadoPagoSection />}
+            {section === 'coupons' && <AdminCouponsSection />}
             {section === 'settings' && <AdminSettingsSection />}
           </motion.div>
         </main>

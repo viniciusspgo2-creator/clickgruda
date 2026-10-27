@@ -15,7 +15,8 @@
     "test:discovery": "node --test scripts/discovery.test.mjs",
     "test:analytics": "node --test scripts/analytics-dashboard.test.cjs",
     "test:upload-limit": "node --test scripts/upload-limit.test.cjs",
-    "test:seo": "node --test scripts/seo-integrations.test.cjs"
+    "test:seo": "node --test scripts/seo-integrations.test.cjs",
+    "test:commerce": "node --test scripts/commerce.test.cjs"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1145.0",

@@ -179,6 +179,7 @@ export function PortalView() {
   const tab = useStore((s) => s.tab)
   const q = useStore((s) => s.q)
   const categoryIds = useStore((s) => s.categoryIds)
+  const selectCategory = useStore((s) => s.selectCategory)
   const tagIds = useStore((s) => s.tagIds)
   const sort = useStore((s) => s.sort)
   const seasonalEventId = useStore((s) => s.seasonalEventId)
@@ -462,7 +463,7 @@ export function PortalView() {
   }
   const toggleCategory = (id: string) => {
     setSearchInput('')
-    setFilter({ tab: 'todas', categoryIds: [id], tagIds: [], seasonalEventId: null, q: '' })
+    selectCategory(id)
     scrollToResults()
   }
   const viewSeasonal = (id: string) => {
@@ -1114,7 +1115,7 @@ export function PortalView() {
               </Select>
             </div>
             <p className="mb-2.5 text-[11px] font-black uppercase tracking-wider text-zinc-400">Categorias</p>
-            <div className="space-y-1">
+            <div className="space-y-1" role="radiogroup" aria-label="Escolha uma categoria">
               {(catalogQ.data?.categories || []).map((c) => {
                 const active = categoryIds.includes(c.id)
                 const catIcon = getCategoryIcon(c.icon)
@@ -1122,7 +1123,8 @@ export function PortalView() {
                   <button
                     key={c.id}
                     onClick={() => { toggleCategory(c.id); setMenuOpen(false) }}
-                    aria-pressed={active}
+                    role="radio"
+                    aria-checked={active}
                     className={cn(
                       'flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm font-bold transition-all',
                       active

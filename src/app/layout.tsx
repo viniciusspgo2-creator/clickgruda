@@ -63,7 +63,7 @@ export async function generateMetadata(): Promise<Metadata> {
   openGraph: {
     title: "Click&Gruda — Biblioteca de Artes para Sublimação de Canecas",
     description:
-      "Mais de 8 mil artes para canecas organizadas por tema. Downloads ilimitados, novidades semanais e mockups 3D para quem vive de personalizados.",
+      "Biblioteca de artes para canecas com curadoria e variedade de temas. Downloads ilimitados, novidades semanais e mockups 3D para quem vive de personalizados.",
     siteName: SITE.name,
     locale: "pt_BR",
     type: "website",
@@ -81,7 +81,7 @@ export async function generateMetadata(): Promise<Metadata> {
     card: "summary_large_image",
     title: "Click & Gruda — Artes Prontas para Sublimação de Canecas",
     description:
-      "Mais de 8 mil artes para canecas com curadoria, atualizações semanais, downloads ilimitados e mockups 3D. Confira a oferta atual.",
+      "Artes para canecas com curadoria, variedade de temas, atualizações semanais, downloads ilimitados e mockups 3D. Confira a oferta atual.",
     images: [SOCIAL_IMAGE],
   },
   verification: {

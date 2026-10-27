@@ -7,7 +7,6 @@ export const SALES = {
   brand: 'Click&Gruda',
   promoEndsAt: '2026-12-31T23:59:59-03:00',
   promoEndsLabel: '31 de dezembro de 2026',
-  estimatedArtCount: 8000,
   defaultPriceCents: 4790,
   /** Opcional: informe URL externa SOMENTE se trocar o checkout próprio. Deixe null para o fluxo atual de cadastro/checkout. */
   CHECKOUT_URL: null as string | null,
@@ -20,7 +19,7 @@ export const SALES = {
   steps: [
     { num: '01', title: 'Encontre', subtitle: 'A arte certa, sem caçar arquivo.', description: 'Pesquise, explore categorias e descubra coleções para cada ocasião. Chega de abrir pasta por pasta.' },
     { num: '02', title: 'Baixe e produza', subtitle: 'Da escolha para a sua bancada.', description: 'Selecione sua arte e use o arquivo na produção, respeitando o tamanho e os ajustes da sua caneca.' },
-    { num: '03', title: 'Apresente e venda', subtitle: 'Faça seu trabalho aparecer.', description: 'Mostre o resultado ao cliente. Se quiser, use o gerador de mockups 3D e divulgue seus produtos em sua loja online.' },
+    { num: '03', title: 'Apresente e venda', subtitle: 'Faça seu trabalho aparecer.', description: 'Mostre o resultado ao cliente. Se quiser, use o gerador de mockups 3D e prepare imagens para divulgar seus produtos nas redes sociais ou enviar pelo WhatsApp.' },
   ],
   artworks: [
     { src: '/uploads/showcase/arte-flork-casal-nesmo.webp', title: 'Frase de atitude', category: 'Frases' },

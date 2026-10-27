@@ -1,6 +1,7 @@
 import { db } from '@/lib/db'
 import { getSessionUser, jsonError } from '@/lib/auth'
 import { getSettings } from '@/lib/settings'
+import { createCheckoutOrder, getCheckoutContext } from '@/lib/coupons'
 
 /**
  * POST /api/payments/manual-pix
@@ -11,7 +12,7 @@ import { getSettings } from '@/lib/settings'
  * MANUAL_PIX é registrado — o Admin Master vê na lista de pagamentos e faz
  * a liberação da conta após conferir o comprovante recebido no WhatsApp.
  */
-export async function POST() {
+export async function POST(req: Request) {
   const session = await getSessionUser()
   if (!session) return jsonError('Faça login para continuar', 401)
   if (session.isDemo) return jsonError('Conta Preview: operação indisponível.', 403)
@@ -22,17 +23,12 @@ export async function POST() {
 
   if (session.hasAccess) return jsonError('Você já tem acesso ativo.', 400)
 
-  const amountCents = parseInt(settings.price_cents || '4790', 10)
-
-  const payment = await db.payment.create({
-    data: {
-      userId: session.id,
-      provider: 'MANUAL_PIX',
-      method: 'PIX',
-      amountCents,
-      status: 'PENDING',
-    },
-  })
+  const body = await req.json().catch(() => ({}))
+  if (!body || typeof body !== 'object' || Array.isArray(body)) return jsonError('Dados inválidos.', 400)
+  let order: Awaited<ReturnType<typeof createCheckoutOrder>>
+  try { order = await createCheckoutOrder(session.id, 'MANUAL_PIX', Number(settings.price_cents || 4790), body.couponCode) }
+  catch (error) { return jsonError(error instanceof Error ? error.message : 'Cupom inválido.', 400) }
+  const { payment, quote } = order
 
   // Cadastro pré-aprovado: aguardando apenas a conferência do comprovante.
   await db.user.update({
@@ -40,5 +36,14 @@ export async function POST() {
     data: { status: 'PENDING_MANUAL' },
   })
 
-  return Response.json({ ok: true, paymentId: payment.id, amountCents }, { status: 201 })
+  return Response.json({ ok: true, paymentId: payment.id, ...quote }, { status: 201 })
+}
+
+export async function GET() {
+  const session = await getSessionUser()
+  if (!session || session.isDemo) return jsonError('Entre na sua conta.', 401)
+  const payment = await db.payment.findFirst({ where: { userId: session.id, provider: 'MANUAL_PIX', status: 'PENDING' }, orderBy: { createdAt: 'desc' } })
+  if (!payment) return Response.json({ paymentId: null })
+  const quote = await getCheckoutContext(payment.id)
+  return Response.json({ paymentId: payment.id, amountCents: payment.amountCents, ...(quote ? { discountCents: quote.discountCents, subtotalCents: quote.subtotalCents, coupon: quote.coupon } : {}) })
 }

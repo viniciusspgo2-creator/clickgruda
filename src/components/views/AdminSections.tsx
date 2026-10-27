@@ -1341,7 +1341,7 @@ export function AdminSettingsSection() {
           </div>
           <div className="space-y-1.5">
             <Label className="text-xs font-black uppercase text-zinc-500">Mercado Pago — Access Token</Label>
-            <Input value={form.mercadopago_access_token || ''} onChange={(e) => set('mercadopago_access_token', e.target.value)} placeholder="APP_USR-..." className="rounded-xl font-mono text-xs" />
+            <Input type="password" autoComplete="new-password" value={form.mercadopago_access_token || ''} onChange={(e) => set('mercadopago_access_token', e.target.value)} placeholder="APP_USR-..." className="rounded-xl font-mono text-xs" />
           </div>
           <div className="space-y-1.5">
             <Label className="text-xs font-black uppercase text-zinc-500">Asaas — API Key</Label>

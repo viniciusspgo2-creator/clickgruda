@@ -1,5 +1,7 @@
 # Click & Gruda — Biblioteca + Conta Preview + Analytics
 
+> Documento histórico da versão 2. Para a atualização atual, siga primeiro `LEIA-ME-ATUALIZACAO-CURADORIA-E-PAGAMENTOS.md`. A migração abaixo só se aplica a instalações antigas que ainda não receberam esses campos; os novos cupons e pagamentos não exigem outra migração.
+
 ## Aviso importante sobre o banco de dados
 
 **É obrigatório atualizar o banco Neon ANTES de publicar este código na Vercel.**
@@ -39,6 +41,6 @@ Alternativa técnica: com as variáveis corretas de conexão no ambiente, `npx p
 
 ## Validação disponível nesta entrega
 
-O código foi analisado estaticamente e passou no conjunto de testes de regressão estática de funcionalidades. **Não foi possível executar um build real do Next.js/Prisma neste ambiente**, pois a instalação de dependências requer acesso ao registry que não estava disponível. Assim, a entrega é uma versão implementada que ainda requer confirmação final na Vercel; não é um certificado de funcionamento 100% em produção.
+Na entrega original da versão 2, a validação estava limitada à análise estática. Na atualização atual, o build real do Next.js/Prisma e os testes listados em `LEIA-ME-ATUALIZACAO-CURADORIA-E-PAGAMENTOS.md` foram executados com sucesso. A validação de produção continua dependendo das credenciais e serviços do seu projeto.
 
 Rode `node --test scripts/preview-features.test.mjs` para repetir as checagens de cobertura estática. Para validação final rode `npm ci`, `npx prisma generate` e `npm run build` no ambiente com dependências e banco configurados.

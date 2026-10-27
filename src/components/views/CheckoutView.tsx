@@ -30,6 +30,8 @@ import { track } from '@/lib/analytics'
 import { WHATSAPP } from '@/lib/site'
 import { formatBRL, type CatalogData, type PaymentData } from '@/lib/types'
 import { cn } from '@/lib/utils'
+import { CouponEntry } from '@/components/checkout/CouponEntry'
+import type { CheckoutQuote } from '@/lib/coupons'
 
 type Step = 'form' | 'pix' | 'pending' | 'success'
 type ProviderChoice = 'MERCADOPAGO' | 'ASAAS' | 'MANUAL_PIX'
@@ -61,8 +63,12 @@ export function CheckoutView() {
   const [pixCopied, setPixCopied] = useState(false)
   const [secondsLeft, setSecondsLeft] = useState(30 * 60)
 
+  const pendingManualQ = useQuery<{ amountCents?: number }>({ queryKey: ['pending-manual-payment', user?.id], queryFn: async () => { const r = await fetch('/api/payments/manual-pix'); if (!r.ok) throw new Error('Não foi possível consultar o pedido.'); return r.json() }, enabled: step === 'pending' && Boolean(user), staleTime: 10000 })
   const checkoutTracked = useRef(false)
-  const priceCents = catalogQ.data?.priceCents ?? 4790
+  const [couponQuote, setCouponQuote] = useState<CheckoutQuote | null>(null)
+  const subtotalCents = catalogQ.data?.priceCents ?? 4790
+  const activeQuote = couponQuote?.subtotalCents === subtotalCents ? couponQuote : null
+  const priceCents = payment?.amountCents ?? (step === 'pending' ? pendingManualQ.data?.amountCents : undefined) ?? activeQuote?.amountCents ?? subtotalCents
   useEffect(() => {
     if (!catalogQ.data || !user || user.hasAccess || checkoutTracked.current) return
     checkoutTracked.current = true
@@ -81,14 +87,14 @@ export function CheckoutView() {
       {
         id: 'MERCADOPAGO',
         label: 'Mercado Pago',
-        desc: 'PIX aprovado na hora · QR Code automático',
+        desc: 'PIX com confirmação e liberação automáticas',
         available: providers.mercadopago,
         icon: Wallet,
       },
       {
         id: 'ASAAS',
         label: 'Asaas',
-        desc: 'PIX aprovado na hora · QR Code automático',
+        desc: 'PIX com confirmação e liberação automáticas',
         available: providers.asaas,
         icon: Landmark,
       },
@@ -105,10 +111,7 @@ export function CheckoutView() {
 
   useEffect(() => {
     if (!provider && availableOptions.length > 0) {
-      // PIX manual ativo → é a opção preferencial (fluxo com comprovante no WhatsApp)
-      const preferred = manualEnabled
-        ? availableOptions.find((o) => o.id === 'MANUAL_PIX') || availableOptions[0]
-        : availableOptions.find((o) => o.id === effectiveProvider) || availableOptions[0]
+      const preferred = availableOptions.find(o => o.id === effectiveProvider) || availableOptions[0]
       setProvider(preferred.id)
     }
   }, [availableOptions, effectiveProvider, provider, manualEnabled])
@@ -131,15 +134,6 @@ export function CheckoutView() {
     if (!user?.hasAccess) return
     if ((step === 'form' || step === 'pending') && useStore.getState().view === 'checkout') setView('portal')
   }, [user, step, setView])
-
-  // Poll payment status
-  useQuery<{ status: PaymentData['status']; hasAccess?: boolean }>({
-    queryKey: ['payment', payment?.id],
-    queryFn: async () => (await fetch(`/api/payments/${payment!.id}`)).json(),
-    enabled: step === 'pix' && !!payment?.id,
-    refetchInterval: 3000,
-    refetchIntervalInBackground: true,
-  })
 
   // Watch for approval via a lightweight interval (reads same endpoint)
   useEffect(() => {
@@ -186,7 +180,7 @@ export function CheckoutView() {
       const res = await fetch('/api/payments/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ provider, cpf: cpf.replace(/\D/g, '') }),
+        body: JSON.stringify({ provider, cpf: cpf.replace(/\D/g, ''), couponCode: activeQuote?.coupon?.code || '' }),
       })
       const data = await res.json()
       if (!res.ok) {
@@ -194,6 +188,7 @@ export function CheckoutView() {
         return
       }
       setPayment(data)
+      setCouponQuote(data)
       setSecondsLeft(30 * 60)
       setStep('pix')
       track('pix_generated', { provider: provider || 'manual' })
@@ -242,12 +237,14 @@ export function CheckoutView() {
     setError(null)
     setConfirmingManual(true)
     try {
-      const res = await fetch('/api/payments/manual-pix', { method: 'POST' })
+      const res = await fetch('/api/payments/manual-pix', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ couponCode: activeQuote?.coupon?.code || '' }) })
       const data = await res.json().catch(() => ({}))
       if (!res.ok) {
         setError(data.error || 'Não foi possível registrar agora. Tente novamente.')
         return
       }
+      setCouponQuote(data)
+      queryClient.setQueryData(['pending-manual-payment', user?.id], data)
       track('pix_generated', { provider: 'MANUAL_PIX' })
       setStep('pending')
     } catch {
@@ -317,7 +314,7 @@ export function CheckoutView() {
                     <span className="text-5xl font-black tracking-tight">{formatBRL(priceCents)}</span>
                     <span className="pb-1.5 text-sm font-bold text-zinc-400">único</span>
                   </div>
-                  <p className="mt-1 text-sm font-medium text-zinc-400">Arte avulsa: R$ 10 a R$ 30 cada. Aqui, o acervo inteiro é uma compra só.</p>
+                  <p className="mt-2 text-sm leading-relaxed text-zinc-400">Sua biblioteca de artes e seus próximos lançamentos em um só acesso.</p>
 
                   <ul className="mt-6 space-y-3 text-sm font-medium text-zinc-300">
                     {[
@@ -340,7 +337,7 @@ export function CheckoutView() {
               {/* Payment options */}
               <div className="rounded-3xl border border-zinc-200 bg-white p-7 shadow-xl shadow-zinc-200/40">
                 <h2 className="text-xl font-black tracking-tight text-zinc-950">Como você quer pagar?</h2>
-                <p className="mt-1 text-sm text-zinc-500">No PIX automático, o acesso libera na hora. No PIX direto (chave), após conferirmos o seu comprovante no WhatsApp.</p>
+                <p className="mt-1 text-sm text-zinc-500">No Mercado Pago, o acesso é liberado automaticamente após a confirmação do pagamento. No PIX direto (chave), após conferirmos o seu comprovante no WhatsApp.</p>
 
                 <div className="mt-6 space-y-3">
                   {availableOptions.length === 0 && (
@@ -394,6 +391,8 @@ export function CheckoutView() {
                     </button>
                   ))}
                 </div>
+
+                <CouponEntry subtotalCents={subtotalCents} value={activeQuote} onChange={setCouponQuote} disabled={generating || confirmingManual} />
 
                 {provider === 'ASAAS' && (
                   <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="mt-4">

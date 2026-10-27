@@ -2,104 +2,39 @@ import { db } from '@/lib/db'
 import { getSessionUser, jsonError } from '@/lib/auth'
 import { getSettings, resolveProvider, type GatewayProvider } from '@/lib/settings'
 import { createMercadoPagoPix, createAsaasPix } from '@/lib/payments'
+import { createCheckoutOrder } from '@/lib/coupons'
 
-/**
- * POST /api/payments/checkout — gera o PIX via gateway REAL.
- * Mercado Pago/Asaas ficam disponíveis automaticamente assim que as
- * credenciais são salvas no Admin Master (Configurações). Sem gateway
- * configurado, o checkout usa o fluxo "PIX direto (chave)" — esta rota
- * então responde com erro orientado (o frontend não a chama nesse caso).
- */
 export async function POST(req: Request) {
   const session = await getSessionUser()
   if (!session) return jsonError('Faça login para assinar', 401)
   if (session.isDemo) return jsonError('Conta Preview: operação indisponível.', 403)
-
+  if (session.hasAccess) return jsonError('Sua conta já tem acesso ativo.', 400)
   const body = await req.json().catch(() => ({}))
+  if (!body || typeof body !== 'object' || Array.isArray(body)) return jsonError('Dados inválidos.', 400)
   const settings = await getSettings()
-  const requested = (body.provider || '').toUpperCase()
-  const effective = resolveProvider(settings)
-
-  // Só permite um gateway que esteja realmente configurado (por segurança).
-  let provider: GatewayProvider | null = effective
-  if (requested === 'MERCADOPAGO' && (settings.mercadopago_access_token || '').trim()) provider = 'MERCADOPAGO'
-  else if (requested === 'ASAAS' && (settings.asaas_api_key || '').trim()) provider = 'ASAAS'
-
-  if (!provider) {
-    return jsonError(
-      'Nenhum gateway de pagamento ativo no momento. Use a opção "PIX direto (chave)" no checkout.',
-      400
-    )
+  const requested = typeof body.provider === 'string' ? body.provider.toUpperCase() : ''
+  let provider: GatewayProvider | null = resolveProvider(settings)
+  if (requested) {
+    if (!['MERCADOPAGO', 'ASAAS'].includes(requested)) return jsonError('Forma de pagamento inválida.', 400)
+    const available = requested === 'MERCADOPAGO' ? settings.mercadopago_access_token : settings.asaas_api_key
+    if (!available?.trim()) return jsonError('Esta forma de pagamento não está disponível.', 400)
+    provider = requested as GatewayProvider
   }
-
-  const amountCents = parseInt(settings.price_cents || '4790', 10)
-  const description = 'Click & Gruda — Acesso Vitalício a todas as artes'
-
+  if (!provider) return jsonError('Nenhum gateway está ativo. Consulte as formas disponíveis no checkout.', 400)
+  const cpf = typeof body.cpf === 'string' ? body.cpf.replace(/\D/g, '') : ''
+  if (provider === 'ASAAS' && cpf.length !== 11) return jsonError('Informe um CPF válido para pagar via Asaas.', 400)
+  let order: Awaited<ReturnType<typeof createCheckoutOrder>>
+  try { order = await createCheckoutOrder(session.id, provider, Number(settings.price_cents || 4790), body.couponCode) }
+  catch (error) { return jsonError(error instanceof Error ? error.message : 'Confira o cupom informado.', 400) }
   try {
-    if (provider === 'MERCADOPAGO') {
-      const mp = await createMercadoPagoPix({
-        token: settings.mercadopago_access_token,
-        amountCents,
-        email: session.email,
-        name: session.name,
-        description,
-      })
-      const payment = await db.payment.create({
-        data: {
-          userId: session.id,
-          provider,
-          amountCents,
-          status: 'PENDING',
-          externalId: mp.externalId,
-          qrCodePayload: mp.qrCodePayload,
-          qrCodeImage: mp.qrCodeImage,
-        },
-      })
-      return Response.json({
-        id: payment.id,
-        status: payment.status,
-        provider,
-        amountCents,
-        qrCodeImage: mp.qrCodeImage,
-        qrCodePayload: mp.qrCodePayload,
-      })
-    }
-
-    // ASAAS
-    const cpf = (body.cpf || '').replace(/\D/g, '')
-    if (!cpf || cpf.length < 11) {
-      return jsonError('Informe um CPF válido para pagar via Asaas', 400)
-    }
-    const asaas = await createAsaasPix({
-      key: settings.asaas_api_key,
-      sandbox: settings.asaas_sandbox === 'true',
-      name: session.name,
-      email: session.email,
-      cpfCnpj: cpf,
-      amountCents,
-      description,
-    })
-    const payment = await db.payment.create({
-      data: {
-        userId: session.id,
-        provider,
-        amountCents,
-        status: 'PENDING',
-        externalId: asaas.externalId,
-        qrCodePayload: asaas.qrCodePayload,
-        qrCodeImage: asaas.qrCodeImage,
-      },
-    })
-    return Response.json({
-      id: payment.id,
-      status: payment.status,
-      provider,
-      amountCents,
-      qrCodeImage: asaas.qrCodeImage,
-      qrCodePayload: asaas.qrCodePayload,
-    })
-  } catch (e: unknown) {
-    const message = e instanceof Error ? e.message : 'Erro ao gerar o PIX. Tente novamente.'
-    return jsonError(message, 502)
+    const opts = { amountCents: order.quote.amountCents, paymentId: order.payment.id, email: session.email, name: session.name, description: 'Click & Gruda — acesso à plataforma' }
+    const result = provider === 'MERCADOPAGO'
+      ? await createMercadoPagoPix({ ...opts, token: settings.mercadopago_access_token })
+      : await createAsaasPix({ ...opts, key: settings.asaas_api_key, sandbox: settings.asaas_sandbox === 'true', cpfCnpj: cpf })
+    const payment = await db.payment.update({ where: { id: order.payment.id }, data: { externalId: result.externalId, qrCodePayload: result.qrCodePayload, qrCodeImage: result.qrCodeImage } })
+    return Response.json({ id: payment.id, status: payment.status, provider, ...order.quote, qrCodeImage: result.qrCodeImage, qrCodePayload: result.qrCodePayload })
+  } catch (error) {
+    await db.payment.updateMany({ where: { id: order.payment.id, status: 'PENDING' }, data: { status: 'FAILED' } })
+    return jsonError(error instanceof Error ? error.message : 'Não foi possível gerar o PIX. Tente novamente.', 502)
   }
 }

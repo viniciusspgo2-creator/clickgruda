@@ -21,7 +21,7 @@ export async function GET(req: Request) {
   const tabParam = url.searchParams.get('tab') || 'todas'
   const tab = allowedTabs.has(tabParam) ? tabParam : 'todas'
   const q = (url.searchParams.get('q') || '').trim().slice(0, 160)
-  const categoryIds = csv(url.searchParams.get('categories')).slice(0, 30)
+  const categoryIds = csv(url.searchParams.get('categories')).slice(-1)
   const tagIds = csv(url.searchParams.get('tags')).slice(0, 30)
   const eventId = url.searchParams.get('event')?.slice(0, 100) || null
   const sortParam = url.searchParams.get('sort') || 'recentes'

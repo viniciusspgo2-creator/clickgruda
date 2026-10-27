@@ -6,6 +6,7 @@ export const SETTING_KEYS = [
   'payment_provider',
   'price_cents',
   'mercadopago_access_token',
+  'mercadopago_webhook_secret',
   'asaas_api_key',
   'asaas_sandbox',
   'pix_key',
@@ -24,7 +25,7 @@ export const SETTING_KEYS = [
 export type SettingsMap = Partial<Record<(typeof SETTING_KEYS)[number], string>>
 
 export async function getSettings(keys?: readonly string[]): Promise<Record<string, string>> {
-  const rows = await db.setting.findMany(keys ? { where: { key: { in: [...keys] } } } : undefined)
+  const rows = await db.setting.findMany({ where: { key: { in: [...(keys ?? SETTING_KEYS)] } } })
   const out: Record<string, string> = {}
   for (const r of rows) out[r.key] = r.value
   return out

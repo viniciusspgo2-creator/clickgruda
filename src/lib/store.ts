@@ -53,6 +53,7 @@ interface AppState {
   seasonalEventId: string | null
   setFilter: (partial: Partial<Pick<AppState, 'tab' | 'q' | 'categoryIds' | 'tagIds' | 'sort' | 'seasonalEventId'>>) => void
   resetFilters: () => void
+  selectCategory: (id: string) => void
 
   // Checkout
   checkoutProvider: 'MERCADOPAGO' | 'ASAAS' | null
@@ -86,6 +87,7 @@ export const useStore = create<AppState>((set) => ({
   sort: 'recentes',
   seasonalEventId: null,
   setFilter: (partial) => set({ ...partial, ...(partial.categoryIds ? { categoryIds: partial.categoryIds.slice(-1) } : {}) }),
+  selectCategory: (id) => set({ tab: 'todas', categoryIds: id ? [id] : [], tagIds: [], seasonalEventId: null, q: '' }),
   resetFilters: () =>
     set({ tab: 'todas', q: '', categoryIds: [], tagIds: [], sort: 'recentes', seasonalEventId: null }),
 
