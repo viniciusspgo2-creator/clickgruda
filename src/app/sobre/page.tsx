@@ -4,7 +4,7 @@ import { ArrowRight, Mail, MapPin, ShieldCheck, Sparkles, Users } from 'lucide-r
 import { SiteHeader, SiteFooter, MobileNote } from '@/components/blog/SiteChrome'
 import { PageViewTracker } from '@/components/blog/PageViewTracker'
 import { PRICE } from '@/lib/knowledge'
-import { SITE, SITE_URL, CONTENT_PUBLISHED_ISO, todayISO } from '@/lib/site'
+import { SITE, SITE_URL, CONTENT_UPDATED_ISO } from '@/lib/site'
 
 export const metadata: Metadata = {
   title: 'Sobre a Click & Gruda — Quem Produz as Artes e Como Funciona',
@@ -46,8 +46,7 @@ export default function SobrePage() {
         isPartOf: { '@id': `${SITE_URL}/#website` },
         about: { '@id': `${SITE_URL}/#organization` },
         mainEntity: { '@id': `${SITE_URL}/#organization` },
-        datePublished: CONTENT_PUBLISHED_ISO,
-        dateModified: todayISO(),
+        dateModified: CONTENT_UPDATED_ISO,
         author: { '@type': 'Organization', name: SITE.author.name },
       },
       {
@@ -94,9 +93,7 @@ export default function SobrePage() {
         {/* BLUF */}
         <p className="mt-5 text-lg font-semibold leading-relaxed text-zinc-800">
           A Click &amp; Gruda é uma plataforma brasileira de artes digitais para sublimação de canecas: por um
-          pagamento único de {PRICE} (sem mensalidade), o assinante obtém acesso vitalício e downloads ilimitados a
-          todo o acervo — incluindo lançamentos frequentes — em artes no formato exato de 21 × 9,5 cm, prontas
-          para prensagem térmica e para produzir e vender as suas canecas.
+          acesso ativo, o assinante encontra artes organizadas, lançamentos frequentes, mockup 3D e downloads ilimitados. As artes usam o formato de referência de 21 × 9,5 cm; confira as medidas da sua caneca e os ajustes da impressão. Consulte na página inicial as condições da campanha de acesso vitalício.
         </p>
 
         {/* Como produzimos */}
@@ -151,7 +148,7 @@ export default function SobrePage() {
             { label: 'Nome', value: SITE.name },
             { label: 'Atuação', value: 'Plataforma online de artes digitais para sublimação (e-commerce)' },
             { label: 'Área atendida', value: 'Brasil (conteúdo e suporte em português)' },
-            { label: 'Modelo', value: `Acesso vitalício por pagamento único de ${PRICE}` },
+            { label: 'Modelo', value: 'Planos e condições vigentes na página inicial' },
             { label: 'Idioma', value: 'Português (pt-BR)' },
             { label: 'Contato', value: SITE.email },
           ].map((d) => (

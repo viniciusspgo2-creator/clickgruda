@@ -10,6 +10,8 @@
  */
 import { SITE } from '@/lib/site'
 
+export const LANDING_FAQ_INDICES = [0, 1, 2, 3, 6, 8, 9, 11, 14] as const
+
 export const PRICE = 'R$ 47,90'
 
 /* ============================================================
@@ -34,7 +36,7 @@ export const KEY_TAKEAWAYS: string[] = [
 export const ENTITY_DEFINITION = SITE.description
 
 export const ENTITY_PRACTICAL =
-  'Na prática, você cria sua conta, escolhe o plano vigente e navega pela biblioteca por categorias e tags. É possível favoritar, acompanhar os lançamentos e baixar artes para produzir personalizados, respeitando a eventual cota diária de downloads configurada no portal.'
+  'Na prática, você cria sua conta, escolhe o plano vigente e navega pela biblioteca por categorias e tags. É possível favoritar, acompanhar os lançamentos e baixar artes para produzir personalizados, com downloads ilimitados enquanto a conta tem acesso ativo.'
 
 /* ============================================================
  * 3. FAQ — 13 perguntas consolidadas + 3 objeções de conversão (edição, liberação do PIX, exclusividade)
@@ -50,7 +52,7 @@ export const FAQ_ITEMS: { q: string; a: string }[] = [
   },
   {
     q: 'Tem mensalidade?',
-    a: `O plano promocional de ${PRICE} oferece pagamento único e acesso vitalício até 31 de dezembro de 2026. Após a campanha, consulte as condições disponíveis no checkout.`,
+    a: `O plano promocional de ${PRICE} está disponível para contratação até 31 de dezembro de 2026, com pagamento único e acesso vitalício para quem contratar durante a campanha. Após a campanha, consulte as condições disponíveis no checkout.`,
   },
   {
     q: 'Posso vender canecas com as artes?',
@@ -75,7 +77,7 @@ export const FAQ_ITEMS: { q: string; a: string }[] = [
   },
   {
     q: 'Posso baixar a mesma arte mais de uma vez?',
-    a: 'Sim. Você pode baixar a mesma arte novamente. Pode haver uma cota diária de artes diferentes para preservar a estabilidade da plataforma; o limite aparece no portal.',
+    a: 'Sim. Os downloads são ilimitados para contas com acesso ativo. Você pode baixar artes diferentes e baixar novamente as mesmas artes, sem cota diária.',
   },
   {
     q: 'Preciso saber editar arquivo para usar as artes?',
@@ -214,7 +216,7 @@ export const COMPARISON: {
   },
   {
     criterion: 'Downloads repetidos',
-    clickgruda: 'Re-download permitido; pode haver cota diária de artes diferentes',
+    clickgruda: 'Downloads ilimitados e novos downloads da mesma arte permitidos',
     avulsa: 'Costumam limitar ao download da compra',
     freelancer: 'Arquivo entregue uma única vez',
   },
@@ -257,7 +259,7 @@ export const NOT_FOR_WHO: string[] = [
 export const HOWTO_STEPS: { name: string; text: string }[] = [
   {
     name: 'Assine e baixe a arte',
-    text: `Escolha o plano disponível, entre no portal, filtre as artes por categoria, tag ou busca e baixe o arquivo para produzir a peça, observando a cota diária quando estiver ativa.`,
+    text: `Escolha o plano disponível, entre no portal, filtre as artes por categoria, tag ou busca e baixe o arquivo para produzir a peça, com downloads ilimitados para contas com acesso ativo.`,
   },
   {
     name: 'Imprima em papel sublimático',
@@ -268,7 +270,7 @@ export const HOWTO_STEPS: { name: string; text: string }[] = [
     text: 'Ligue a prensa térmica de canecas e ajuste a temperatura e o tempo conforme o manual do seu equipamento (as faixas de referência do mercado para canecas ficam em torno de 170 °C a 200 °C).',
   },
   {
-    name: 'Posicione e prensar',
+    name: 'Posicione e prense',
     text: 'Fixe a caneca de porcelana para sublimação no cilindro da prensa, ajuste a pressão adequada e inicie a prensagem pelo tempo indicado, garantindo que o papel fique esticado e sem dobras.',
   },
   {
@@ -338,7 +340,7 @@ export const KEY_FACTS = {
   price: PRICE,
   artFormatCm: '21 × 9,5 cm',
   mugStandard: 'Canecas de porcelana de 325 ml',
-  downloads: 'Re-download permitido; cota diária de artes diferentes configurável pelo administrador',
+  downloads: 'Downloads ilimitados para contas com acesso ativo, incluindo re-download',
   commercialUse: 'Para produzir e vender as suas canecas',
   newArtsFrequency: 'Lançamentos frequentes inclusos no acesso',
   payment:

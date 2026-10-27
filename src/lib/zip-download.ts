@@ -15,21 +15,13 @@ export type ZipProgress = {
   failed: number
   parts: number
   current?: string
-  /** artes que ficaram para amanhã (limite diário) */
+  /** Reservado por compatibilidade: sempre 0. */
   deferred: number
   /** artes puladas por já terem sido baixadas antes */
   skipped: number
-  /** o limite diário foi atingido no meio do download (o que já tinha baixado foi salvo) */
+  /** Reservado por compatibilidade: sempre false. */
   limitReached: boolean
   limit: number
-}
-
-export class ZipLimitError extends Error {
-  limit: number
-  constructor(limit: number) {
-    super('DAILY_LIMIT')
-    this.limit = limit
-  }
 }
 
 export class ZipCorsError extends Error {
@@ -84,7 +76,6 @@ async function fetchOriginal(art: { id: string; code: string }, signal: AbortSig
   const res = await fetch(`/api/arts/${art.id}/download?via=zip`, { signal })
   if (!res.ok) {
     const j = await res.json().catch(() => ({}))
-    if (j.code === 'DAILY_LIMIT') throw new ZipLimitError(Number(j.limit) || 0)
     throw new Error(j.error || `Erro ${res.status}`)
   }
   if ((res.headers.get('content-type') || '').includes('application/json')) {
@@ -129,11 +120,7 @@ export async function downloadScopeAsZip(
         : 'Não há artes nesta seleção.'
     )
   }
-  // limite diário: baixa só o que ainda cabe hoje; o resto fica para amanhã
-  const remaining: number | null = typeof list.remaining === 'number' ? list.remaining : null
-  const limit: number = list.limit || 0
-  if (remaining !== null && remaining <= 0) throw new ZipLimitError(limit)
-  const arts = remaining !== null ? all.slice(0, remaining) : all
+  const arts = all
 
   const base = slug(target.label)
   const progress: ZipProgress = {
@@ -144,7 +131,7 @@ export async function downloadScopeAsZip(
     deferred: all.length - arts.length,
     skipped: alreadyHad,
     limitReached: false,
-    limit,
+    limit: 0,
   }
   let files: Record<string, Uint8Array> = {}
   let bytes = 0
@@ -162,7 +149,7 @@ export async function downloadScopeAsZip(
   }
 
   const worker = async () => {
-    while (!fatal && !signal.aborted && !progress.limitReached) {
+    while (!fatal && !signal.aborted) {
       const i = cursor++
       if (i >= arts.length) return
       const art = arts[i]
@@ -173,11 +160,6 @@ export async function downloadScopeAsZip(
         } catch (e) {
           if (e instanceof ZipCorsError) {
             fatal = e
-            return
-          }
-          if (e instanceof ZipLimitError) {
-            progress.limitReached = true
-            progress.limit = e.limit || progress.limit
             return
           }
           if (e instanceof DOMException && e.name === 'AbortError') return
@@ -200,7 +182,6 @@ export async function downloadScopeAsZip(
   if (fatal) throw fatal
   if (signal.aborted) throw new DOMException('Cancelado', 'AbortError')
   flush(true)
-  if (progress.limitReached) progress.deferred += progress.total - progress.done
   onProgress({ ...progress })
   return progress
 }

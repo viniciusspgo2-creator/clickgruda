@@ -352,7 +352,7 @@ export function AdminWaitlistSection() {
 
 type Device = { id: string; device: string; ip: string; lastSeenAt: string; createdAt: string }
 type SecurityData = {
-  settings: { max_devices: string; dl_daily_limit: string }
+  settings: { max_devices: string }
   alerts: {
     id: string
     type: 'DEVICES' | 'DOWNLOADS'
@@ -456,14 +456,13 @@ export function AdminSecuritySection() {
           <ShieldAlert className="h-4.5 w-4.5 text-orange-500" /> Regras de proteção
         </p>
         <p className="mt-0.5 text-xs text-zinc-400">
-          Cada login é um aparelho: passou do limite, o aparelho menos usado é desconectado. No limite diário de downloads, a pessoa vê um aviso amigável e volta no dia seguinte. Se ela bater o limite em 3+ dias da semana, abre um alerta aqui. Admin e conta demo ficam fora das regras. Use 0 para desligar uma regra.
+          Cada login é um aparelho: passou do limite, o aparelho menos usado é desconectado. Os downloads são ilimitados para contas com acesso ativo. Use 0 para desligar o limite de aparelhos.
         </p>
         {cfg && (
           <div className="mt-4 grid gap-3 sm:grid-cols-2">
             {(
               [
                 ['max_devices', 'Aparelhos por conta', 'Padrão: 2 (ex.: celular + computador)'],
-                ['dl_daily_limit', 'Downloads por dia (por conta)', 'Padrão: 500 · renova à meia-noite (Brasília) · 0 = sem limite'],
               ] as const
             ).map(([key, label, hint]) => (
               <div key={key} className="space-y-1">

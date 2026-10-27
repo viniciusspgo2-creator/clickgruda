@@ -1,5 +1,5 @@
 import type { MetadataRoute } from 'next'
-import { SITE_URL, todayISO } from '@/lib/site'
+import { SITE_URL, CONTENT_UPDATED_ISO, DEMO_VIDEO } from '@/lib/site'
 import { BLOG_ARTICLES } from '@/content/blog'
 
 /**
@@ -10,16 +10,21 @@ import { BLOG_ARTICLES } from '@/content/blog'
  */
 export const dynamic = 'force-static'
 
+// O serializador de vídeo do Next interpola texto diretamente no XML.
+// Escapar também o '&' da marca mantém o sitemap válido para o Google.
+const xmlText = (text: string) => text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&apos;')
+
 export default function sitemap(): MetadataRoute.Sitemap {
-  const lastmod = new Date(todayISO())
+  const lastmod = new Date(CONTENT_UPDATED_ISO)
 
   return [
     {
-      url: SITE_URL,
+      url: `${SITE_URL}/`,
       lastModified: lastmod,
       changeFrequency: 'weekly',
       priority: 1,
       images: [`${SITE_URL}/uploads/hero-mug.png`],
+      videos: [{ title: xmlText(DEMO_VIDEO.name), description: xmlText(DEMO_VIDEO.description), thumbnail_loc: DEMO_VIDEO.thumbnailUrl, player_loc: DEMO_VIDEO.embedUrl, duration: DEMO_VIDEO.durationSeconds, publication_date: DEMO_VIDEO.uploadDate }],
     },
     {
       url: `${SITE_URL}/blog`,

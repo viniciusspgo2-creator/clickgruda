@@ -1,16 +1,7 @@
-import { db } from '@/lib/db'
-import { getSessionUser, jsonError } from '@/lib/auth'
-
-/** DELETE — desativa/exclui um link do próprio assinante. */
-export async function DELETE(_req: Request, { params }: { params: Promise<{ id: string }> }) {
-  const session = await getSessionUser()
-  if (!session) return jsonError('Faça login para continuar', 401)
-  if (session.isDemo) return jsonError('Conta Preview: operação indisponível.', 403)
-  const { id } = await params
-
-  const link = await db.shareLink.findUnique({ where: { id } })
-  if (!link || link.userId !== session.id) return jsonError('Link não encontrado', 404)
-
-  await db.shareLink.delete({ where: { id } })
-  return Response.json({ ok: true })
+/** Compartilhamento de catálogo descontinuado. */
+function gone() {
+  return Response.json({ error: 'O compartilhamento de catálogo foi removido.' }, {
+    status: 410, headers: { 'Cache-Control': 'no-store', 'X-Robots-Tag': 'noindex, nofollow' },
+  })
 }
+export const DELETE = gone

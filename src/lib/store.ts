@@ -2,8 +2,8 @@
 
 import { create } from 'zustand'
 
-export type View = 'landing' | 'auth' | 'checkout' | 'portal' | 'admin' | 'catalogo'
-export type PortalTab = 'todas' | 'lancamentos' | 'selecionadas' | 'reprovadas' | 'sazonal' | 'favoritas' | 'downloads' | 'compartilhar'
+export type View = 'landing' | 'auth' | 'checkout' | 'portal' | 'admin'
+export type PortalTab = 'todas' | 'lancamentos' | 'selecionadas' | 'reprovadas' | 'sazonal' | 'favoritas' | 'downloads'
 export type AuthMode = 'login' | 'register'
 export type SortMode = 'recentes' | 'baixadas' | 'nome'
 
@@ -35,10 +35,6 @@ interface AppState {
 
   user: SessionUser | null
   setUser: (u: SessionUser | null) => void
-
-  /** Token do catálogo compartilhado (/?catalogo=TOKEN) — página pública para o cliente do assinante */
-  shareToken: string | null
-  setShareToken: (t: string | null) => void
 
   authMode: AuthMode
   setAuthMode: (m: AuthMode) => void
@@ -75,9 +71,6 @@ export const useStore = create<AppState>((set) => ({
   user: null,
   setUser: (u) => set({ user: u }),
 
-  shareToken: null,
-  setShareToken: (t) => set({ shareToken: t }),
-
   authMode: 'login',
   setAuthMode: (m) => set({ authMode: m }),
   pendingIntent: null,
@@ -92,7 +85,7 @@ export const useStore = create<AppState>((set) => ({
   tagIds: [],
   sort: 'recentes',
   seasonalEventId: null,
-  setFilter: (partial) => set(partial),
+  setFilter: (partial) => set({ ...partial, ...(partial.categoryIds ? { categoryIds: partial.categoryIds.slice(-1) } : {}) }),
   resetFilters: () =>
     set({ tab: 'todas', q: '', categoryIds: [], tagIds: [], sort: 'recentes', seasonalEventId: null }),
 

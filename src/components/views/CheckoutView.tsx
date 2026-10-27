@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { AnimatePresence, motion } from 'framer-motion'
 import {
@@ -61,7 +61,14 @@ export function CheckoutView() {
   const [pixCopied, setPixCopied] = useState(false)
   const [secondsLeft, setSecondsLeft] = useState(30 * 60)
 
+  const checkoutTracked = useRef(false)
   const priceCents = catalogQ.data?.priceCents ?? 4790
+  useEffect(() => {
+    if (!catalogQ.data || !user || user.hasAccess || checkoutTracked.current) return
+    checkoutTracked.current = true
+    track('begin_checkout', { currency: 'BRL', value: priceCents / 100 })
+  }, [catalogQ.data, user, priceCents])
+
   const providers = catalogQ.data?.providers ?? { mercadopago: false, asaas: false }
   const effectiveProvider = catalogQ.data?.provider ?? null
   const manualPix = catalogQ.data?.manualPix
@@ -142,6 +149,15 @@ export function CheckoutView() {
         const res = await fetch(`/api/payments/${payment.id}`)
         const data = await res.json()
         if (data.status === 'APPROVED' || data.hasAccess) {
+          if (data.status === 'APPROVED') {
+            const key = `cg-purchase-${payment.id}`
+            let alreadyTracked = false
+            try { alreadyTracked = sessionStorage.getItem(key) === '1' } catch { /* sessão atual */ }
+            if (!alreadyTracked) {
+              track('purchase', { transaction_id: payment.id, currency: 'BRL', value: payment.amountCents / 100 })
+              try { sessionStorage.setItem(key, '1') } catch { /* sem armazenamento */ }
+            }
+          }
           setStep('success')
           toast.success('Pagamento aprovado! Acesso liberado 🎉')
           queryClient.invalidateQueries({ queryKey: ['catalog'] })

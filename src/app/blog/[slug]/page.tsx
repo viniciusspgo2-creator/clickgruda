@@ -7,7 +7,7 @@ import { SiteHeader, SiteFooter, MobileNote } from '@/components/blog/SiteChrome
 import { PageViewTracker } from '@/components/blog/PageViewTracker'
 import { ArticleRenderer } from '@/components/blog/ArticleRenderer'
 import { BLOG_ARTICLES, BLOG_CATEGORY_LABELS, AUTHOR_NOTE_TEXT, getArticle, getRelatedArticles } from '@/content/blog'
-import { SITE, SITE_URL, todayISO } from '@/lib/site'
+import { SITE, SITE_URL } from '@/lib/site'
 
 type Props = { params: Promise<{ slug: string }> }
 
@@ -160,8 +160,8 @@ export default async function ArticlePage({ params }: Props) {
             </span>
             <span className="flex items-center gap-1 text-zinc-400">
               <CalendarDays className="h-3.5 w-3.5" />
-              {new Date(article.datePublished).toLocaleDateString('pt-BR')} · atualizado em{' '}
-              <time dateTime={article.dateModified}>{new Date(article.dateModified).toLocaleDateString('pt-BR')}</time>
+              {new Date(article.datePublished).toLocaleDateString('pt-BR', { timeZone: 'UTC' })} · atualizado em{' '}
+              <time dateTime={article.dateModified}>{new Date(article.dateModified).toLocaleDateString('pt-BR', { timeZone: 'UTC' })}</time>
             </span>
           </div>
 
@@ -201,9 +201,9 @@ export default async function ArticlePage({ params }: Props) {
           <p className="font-bold text-zinc-700">Sobre a autoria deste artigo</p>
           <p className="mt-1">
             Autoria: {SITE.author.name} · Revisão técnica: {SITE.reviewer.name} · Publicado em{' '}
-            <time dateTime={article.datePublished}>{new Date(article.datePublished).toLocaleDateString('pt-BR')}</time>{' '}
+            <time dateTime={article.datePublished}>{new Date(article.datePublished).toLocaleDateString('pt-BR', { timeZone: 'UTC' })}</time>{' '}
             · Última atualização em{' '}
-            <time dateTime={article.dateModified}>{new Date(article.dateModified).toLocaleDateString('pt-BR')}</time>
+            <time dateTime={article.dateModified}>{new Date(article.dateModified).toLocaleDateString('pt-BR', { timeZone: 'UTC' })}</time>
           </p>
           <p className="mt-1.5 flex items-start gap-1.5">
             <ShieldCheck className="mt-0.5 h-3.5 w-3.5 shrink-0 text-orange-500" />

@@ -2,11 +2,11 @@
 
 import { useRef, useState } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
-import { AlertTriangle, CheckCircle2, Download, FileArchive, PartyPopper, X } from 'lucide-react'
+import { AlertTriangle, CheckCircle2, Download, FileArchive, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { downloadScopeAsZip, ZipLimitError, type ZipProgress, type ZipScope } from '@/lib/zip-download'
+import { downloadScopeAsZip, type ZipProgress, type ZipScope } from '@/lib/zip-download'
 import type { CatalogData } from '@/lib/types'
 
 type Option = { key: string; label: string; count: number; target: ZipScope }
@@ -24,7 +24,6 @@ export function ZipDownloadDialog({
   const queryClient = useQueryClient()
   const [choice, setChoice] = useState('')
   const [skip, setSkip] = useState(true)
-  const [limitHit, setLimitHit] = useState<number | null>(null)
   const [phase, setPhase] = useState<'idle' | 'running' | 'done' | 'error'>('idle')
   const [progress, setProgress] = useState<ZipProgress | null>(null)
   const [message, setMessage] = useState('')
@@ -52,7 +51,6 @@ export function ZipDownloadDialog({
     abortRef.current = ctrl
     setPhase('running')
     setMessage('')
-    setLimitHit(null)
     setProgress({ done: 0, total: selected.count, failed: 0, parts: 0, deferred: 0, skipped: 0, limitReached: false, limit: 0 })
     try {
       const final = await downloadScopeAsZip({ ...selected.target, skipDownloaded: skip }, setProgress, ctrl.signal)
@@ -61,11 +59,7 @@ export function ZipDownloadDialog({
       queryClient.invalidateQueries({ queryKey: ['catalog'] })
     } catch (e) {
       queryClient.invalidateQueries({ queryKey: ['catalog'] })
-      if (e instanceof ZipLimitError) {
-        setPhase('idle')
-        setProgress(null)
-        setLimitHit(e.limit || catalog?.quota?.limit || 500)
-      } else if (e instanceof DOMException && e.name === 'AbortError') {
+      if (e instanceof DOMException && e.name === 'AbortError') {
         setPhase('idle')
         setMessage('Download cancelado.')
       } else {
@@ -84,7 +78,7 @@ export function ZipDownloadDialog({
       onOpenChange={(o) => {
         if (!o && phase === 'running') return // não fecha no meio do download
         onOpenChange(o)
-        if (!o) setTimeout(() => (setPhase('idle'), setProgress(null), setMessage(''), setLimitHit(null)), 250)
+        if (!o) setTimeout(() => (setPhase('idle'), setProgress(null), setMessage('')), 250)
       }}
     >
       <DialogContent className="max-w-md rounded-3xl border-zinc-200 bg-white p-0 sm:p-0" aria-describedby="zip-desc">
@@ -130,13 +124,6 @@ export function ZipDownloadDialog({
               </SelectContent>
             </Select>
           </div>
-
-          {catalog?.quota && catalog.quota.limit > 0 && (
-            <p className="text-xs font-semibold text-zinc-500">
-              Hoje você já baixou <b className="text-zinc-800">{catalog.quota.used}</b> de {catalog.quota.limit} artes
-              {' '}· restam <b className="text-orange-600">{Math.max(0, catalog.quota.limit - catalog.quota.used)}</b>. O limite renova à meia-noite.
-            </p>
-          )}
 
           <label className="flex cursor-pointer items-start gap-2.5 rounded-xl border border-zinc-200 px-3.5 py-2.5">
             <input
@@ -184,26 +171,6 @@ export function ZipDownloadDialog({
               <span>
                 Pronto! {progress.done - progress.failed} artes salvas em {progress.parts} {progress.parts === 1 ? 'arquivo ZIP' : 'arquivos ZIP'}.
                 {progress.failed > 0 && ` ${progress.failed} não puderam ser baixadas — tente de novo para pegar as que faltaram.`}
-              </span>
-            </div>
-          )}
-
-          {phase === 'done' && progress && progress.deferred > 0 && (
-            <div className="flex items-start gap-2 rounded-xl bg-amber-50 px-3.5 py-3 text-sm font-semibold text-amber-800">
-              <PartyPopper className="mt-0.5 h-4 w-4 shrink-0" />
-              <span>
-                Você chegou ao limite de {progress.limit} downloads de hoje! Para não sobrecarregar o sistema, ele renova à meia-noite.
-                Ainda faltam {progress.deferred} artes desta seleção: volte amanhã e clique em “Baixar ZIP” de novo
-                {skip ? ' — continuamos de onde parou.' : ' (marque “Pular artes que eu já baixei” para continuar de onde parou).'}
-              </span>
-            </div>
-          )}
-
-          {limitHit !== null && (
-            <div className="flex items-start gap-2 rounded-xl bg-amber-50 px-3.5 py-3 text-sm font-semibold text-amber-800">
-              <PartyPopper className="mt-0.5 h-4 w-4 shrink-0" />
-              <span>
-                Você chegou ao limite de {limitHit} downloads de hoje! 🎉 Para não sobrecarregar o sistema, ele renova à meia-noite. Volte amanhã e baixe mais {limitHit}.
               </span>
             </div>
           )}

@@ -32,7 +32,6 @@ import {
   Settings2,
   Layers3,
   ArrowUpRight,
-  Share2,
   ShieldCheck,
   SlidersHorizontal,
   Sparkles,
@@ -51,7 +50,6 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { Logo } from '@/components/shared/Logo'
 import { ArtCard } from '@/components/shared/ArtCard'
 import { ChipScroller } from '@/components/shared/ChipScroller'
-import { ShareCatalogSection } from '@/components/portal/ShareCatalogSection'
 import { ThemeSuggestionDialog } from '@/components/portal/ThemeSuggestionDialog'
 import { TagFilterPanel } from '@/components/portal/TagFilterPanel'
 import { DiscoveryShelf } from '@/components/portal/DiscoveryShelf'
@@ -59,7 +57,6 @@ import { ArtPreviewDialog } from '@/components/portal/ArtPreviewDialog'
 import { EnhanceRequestDialog } from '@/components/portal/EnhanceRequestDialog'
 import { LoadMoreFooter } from '@/components/shared/LoadMoreFooter'
 import { ZipDownloadDialog } from '@/components/portal/ZipDownloadDialog'
-import { DailyLimitDialog } from '@/components/portal/DailyLimitDialog'
 import { WHATSAPP, WHATSAPP_MESSAGES } from '@/lib/site'
 import { getCategoryIcon } from '@/lib/category-icons'
 import { useStore, type PortalTab } from '@/lib/store'
@@ -78,7 +75,6 @@ const TABS: { id: PortalTab; label: string; icon: React.ElementType }[] = [
   { id: 'sazonal', label: 'Sazonal', icon: CalendarHeart },
   { id: 'favoritas', label: 'Favoritas', icon: Heart },
   { id: 'downloads', label: 'Meus downloads', icon: Download },
-  { id: 'compartilhar', label: 'Compartilhar', icon: Share2 },
 ]
 
 function useCountdown(targetIso: string | null | undefined) {
@@ -199,7 +195,6 @@ export function PortalView() {
   const [suggestionOpen, setSuggestionOpen] = useState(false)
   const [enhanceOpen, setEnhanceOpen] = useState(false)
   const [zipOpen, setZipOpen] = useState(false)
-  const [limitDialog, setLimitDialog] = useState<number | null>(null)
   const [portalTheme, setPortalTheme] = useState<'dark' | 'light'>('dark')
   const [mockupDialogOpen, setMockupDialogOpen] = useState(false)
   const [shopDialogOpen, setShopDialogOpen] = useState(false)
@@ -328,7 +323,7 @@ export function PortalView() {
       return res.json()
     },
     getNextPageParam: (last) => (last.hasMore ? last.page + 1 : undefined),
-    enabled: !!user?.hasAccess && tab !== 'compartilhar',
+    enabled: !!user?.hasAccess ,
     staleTime: 15_000,
     retry: 1,
   })
@@ -400,8 +395,7 @@ export function PortalView() {
       const res = await fetch(`/api/arts/${art.id}/download`)
       if (!res.ok) {
         const data = await res.json().catch(() => ({}))
-        if (data.code === 'DAILY_LIMIT') setLimitDialog(Number(data.limit) || 500)
-        else toast.error(data.error || 'Erro ao baixar a arte.')
+        toast.error(data.error || 'Erro ao baixar a arte.')
         setDownloadStates((s) => ({ ...s, [art.id]: 'idle' }))
         return
       }
@@ -467,7 +461,8 @@ export function PortalView() {
     window.open(url, '_blank', 'noopener,noreferrer')
   }
   const toggleCategory = (id: string) => {
-    setFilter({ tab: 'todas', categoryIds: categoryIds.includes(id) ? categoryIds.filter((value) => value !== id) : [id], tagIds: [], seasonalEventId: null })
+    setSearchInput('')
+    setFilter({ tab: 'todas', categoryIds: [id], tagIds: [], seasonalEventId: null, q: '' })
     scrollToResults()
   }
   const viewSeasonal = (id: string) => {
@@ -927,13 +922,13 @@ export function PortalView() {
         )}
 
         {/* Informações de assinatura ocupam apenas uma linha e não empurram a grade. */}
-        {tab !== 'compartilhar' && (
+        {(
           <div className="cg-member-toolbar mb-5 flex flex-col gap-3 rounded-2xl p-3 sm:flex-row sm:items-center sm:justify-between" aria-label="Ações e informações da biblioteca">
             <div className="flex min-w-0 items-center gap-3">
               <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-orange-500/15 text-orange-400"><ShieldCheck className="h-4.5 w-4.5" /></span>
               <div>
                 <p className="text-xs font-extrabold text-slate-100">Sua biblioteca, sempre à mão</p>
-                <p className="text-[11px] leading-relaxed text-slate-300">{catalogQ.data?.quota?.limit ? `Downloads hoje: ${catalogQ.data.quota.used} de ${catalogQ.data.quota.limit}` : 'Encontre, favorite e baixe suas artes'} · Não achou o que queria? Peça uma arte.</p>
+                <p className="text-[11px] leading-relaxed text-slate-300">Downloads ilimitados para criar suas canecas · Não achou o que queria? Peça uma arte.</p>
               </div>
             </div>
             <div className="flex shrink-0 flex-wrap gap-2">
@@ -943,7 +938,7 @@ export function PortalView() {
           </div>
         )}
 
-        {tab !== 'compartilhar' && (
+        {(
           <div className="cg-filter-toolbar sticky top-[82px] z-20 mb-4 flex flex-wrap items-center gap-2 rounded-2xl p-2.5 sm:top-[82px]" aria-label="Barra de navegação das artes">
             <button type="button" onClick={() => setMenuOpen(true)} className="cg-filter-button inline-flex h-9 items-center gap-2 rounded-xl px-3 text-xs font-bold"><SlidersHorizontal className="h-4 w-4" /> Categorias e filtros{categoryIds.length + tagIds.length > 0 ? ` (${categoryIds.length + tagIds.length})` : ''}</button>
             <span className="hidden text-xs font-semibold text-slate-300 sm:inline">{total.toLocaleString('pt-BR')} {total === 1 ? 'resultado' : 'resultados'}</span>
@@ -1006,7 +1001,6 @@ export function PortalView() {
             {tab === 'sazonal' && 'Artes sazonais'}
             {tab === 'favoritas' && 'Suas favoritas'}
             {tab === 'downloads' && 'Baixadas por você'}
-            {tab === 'compartilhar' && 'Compartilhar catálogo'}
           </h1>
           <span className="text-sm font-semibold text-slate-300">
             {total} {total === 1 ? 'arte' : 'artes'}
@@ -1014,16 +1008,7 @@ export function PortalView() {
         </div>
 
         {/* Grid */}
-        {tab === 'compartilhar' ? (
-          user.isDemo ? <div className="rounded-2xl border border-orange-200 bg-orange-50 p-6 text-center text-sm font-bold text-orange-800">A criação de catálogos compartilhados está bloqueada na conta de avaliação.</div> : <ShareCatalogSection />
-        ) : artsQ.isError ? (
-          <div role="alert" className="rounded-3xl border border-rose-200 bg-white px-5 py-12 text-center shadow-sm">
-            <SearchX className="mx-auto h-9 w-9 text-rose-400" />
-            <h2 className="mt-3 text-lg font-black text-zinc-900">Não foi possível carregar as artes</h2>
-            <p className="mt-1 text-sm text-zinc-500">Verifique sua conexão e tente novamente. Seus filtros foram preservados.</p>
-            <Button onClick={() => artsQ.refetch()} className="mt-5 rounded-xl bg-orange-500 font-bold hover:bg-orange-600"><RefreshCw className="mr-2 h-4 w-4" /> Tentar novamente</Button>
-          </div>
-        ) : artsQ.isLoading ? (
+        {artsQ.isLoading ? (
           <div className="cg-member-grid grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
             {Array.from({ length: 6 }).map((_, i) => (
               <div key={i} className="rounded-2xl border border-zinc-200 bg-white p-3.5">
@@ -1076,7 +1061,7 @@ export function PortalView() {
         )}
 
         {/* Rolagem híbrida: carrega sozinho até um limite, depois "Carregar mais" */}
-        {tab !== 'compartilhar' && arts.length > 0 && (
+        {arts.length > 0 && (
           <LoadMoreFooter
             loaded={arts.length}
             total={total}
@@ -1101,7 +1086,7 @@ export function PortalView() {
               <Lightbulb className="h-3.5 w-3.5" /> Sugerir uma nova arte
             </button>
             <span className="flex items-center gap-1.5">
-              <Download className="h-3.5 w-3.5" /> {catalogQ.data?.quota?.limit ? `Até ${catalogQ.data.quota.limit} artes por dia` : 'Baixe suas artes a qualquer hora'}
+              <Download className="h-3.5 w-3.5" /> Downloads ilimitados
             </span>
           </div>
         </div>
@@ -1136,11 +1121,8 @@ export function PortalView() {
                 return (
                   <button
                     key={c.id}
-                    onClick={() =>
-                      setFilter({
-                        categoryIds: active ? categoryIds.filter((i) => i !== c.id) : [...categoryIds, c.id],
-                      })
-                    }
+                    onClick={() => { toggleCategory(c.id); setMenuOpen(false) }}
+                    aria-pressed={active}
                     className={cn(
                       'flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm font-bold transition-all',
                       active
@@ -1265,7 +1247,6 @@ export function PortalView() {
       <ThemeSuggestionDialog open={suggestionOpen} onOpenChange={setSuggestionOpen} />
       <EnhanceRequestDialog open={enhanceOpen} onOpenChange={setEnhanceOpen} />
       <ZipDownloadDialog open={zipOpen} onOpenChange={setZipOpen} catalog={catalogQ.data} />
-      <DailyLimitDialog open={limitDialog !== null} onOpenChange={(o) => !o && setLimitDialog(null)} limit={limitDialog ?? 500} />
     </div>
   )
 }

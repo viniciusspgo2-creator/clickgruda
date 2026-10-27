@@ -1,3 +1,5 @@
+import { GuideSchema } from '@/components/geo/GuideSchema'
+import { SITE_URL, SOCIAL_IMAGE } from '@/lib/site'
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { ArrowRight, BookOpen, CalendarDays, Check, HelpCircle, Info, Scale, Sparkles, Users } from 'lucide-react'
@@ -7,12 +9,14 @@ import { COMPARISON, ENTITY_PRACTICAL, FAQ_ITEMS, FOR_WHO, GLOSSARY_TERMS, HOWTO
 export const metadata: Metadata = {
   title: 'Guia completo — Artes para Sublimação, Perguntas e Comparativos',
   description: 'Guia para sublimadores: como funciona a Click&Gruda, quem se beneficia, fluxo para criar canecas, perguntas frequentes e glossário de sublimação.',
-  alternates: { canonical: '/guia' },
+  alternates: { canonical: `${SITE_URL}/guia` },
+  openGraph: { title: 'Guia de sublimação de canecas — Click & Gruda', description: 'Artes, fluxo de produção, perguntas e glossário para sublimadores.', url: `${SITE_URL}/guia`, type: 'website', locale: 'pt_BR', images: [SOCIAL_IMAGE] },
+  twitter: { card: 'summary_large_image', title: 'Guia de sublimação de canecas', description: 'Como funciona, perguntas frequentes e glossário.', images: [SOCIAL_IMAGE] },
 }
 
 export default function GuiaPage() {
   return <div className="flex min-h-screen flex-col bg-white text-zinc-900">
-    <SiteHeader /><MobileNote />
+    <GuideSchema /><SiteHeader /><MobileNote />
     <main className="mx-auto w-full max-w-5xl flex-1 px-5 pb-24 pt-10 sm:px-8 sm:pt-16">
       <nav className="text-xs text-zinc-500" aria-label="Trilha de navegação"><Link href="/" className="font-semibold text-orange-600 hover:underline">Início</Link> / Guia completo</nav>
       <div className="mt-8 inline-flex items-center gap-2 rounded-full bg-orange-50 px-4 py-2 text-xs font-extrabold uppercase tracking-widest text-orange-700"><BookOpen className="h-4 w-4" /> Material educativo</div>

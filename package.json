@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev -p 3000 2>&1 | tee dev.log",
-    "build": "node scripts/cleanup-legacy-bocao.cjs && node --test scripts/recovery-no-bocao.test.cjs && prisma generate && next build",
+    "build": "node scripts/cleanup-seo-legacy.cjs && node scripts/cleanup-legacy-bocao.cjs && node --test scripts/recovery-no-bocao.test.cjs && prisma generate && next build",
     "start": "NODE_ENV=production bun .next/standalone/server.js 2>&1 | tee server.log",
     "lint": "eslint .",
     "db:push": "prisma db push",
@@ -14,7 +14,8 @@
     "check:types": "tsc --noEmit",
     "test:discovery": "node --test scripts/discovery.test.mjs",
     "test:analytics": "node --test scripts/analytics-dashboard.test.cjs",
-    "test:upload-limit": "node --test scripts/upload-limit.test.cjs"
+    "test:upload-limit": "node --test scripts/upload-limit.test.cjs",
+    "test:seo": "node --test scripts/seo-integrations.test.cjs"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1145.0",

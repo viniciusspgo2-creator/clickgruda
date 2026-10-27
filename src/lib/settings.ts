@@ -1,6 +1,8 @@
 import { db } from '@/lib/db'
+import { MARKETING_KEYS } from '@/lib/marketing-config'
 
 export const SETTING_KEYS = [
+  ...MARKETING_KEYS,
   'payment_provider',
   'price_cents',
   'mercadopago_access_token',
@@ -17,7 +19,6 @@ export const SETTING_KEYS = [
   'r2_originals_bucket',
   'r2_public_url',
   'max_devices',
-  'dl_daily_limit',
 ] as const
 
 export type SettingsMap = Partial<Record<(typeof SETTING_KEYS)[number], string>>

@@ -40,7 +40,7 @@ export type CatalogData = {
   nextEvent: CatalogEvent | null
   counts: { arts: number; lancamentos: number; selecionadas: number; favoritas: number; minhasDownloads: number; reprovadas: number }
   waitlisted?: boolean
-  /** downloads de hoje (artes diferentes) e limite diário; limit 0 = sem limite */
+  /** Compatibilidade com clientes anteriores: null indica downloads ilimitados. */
   quota?: { used: number; limit: number } | null
   priceCents: number
   provider: 'MERCADOPAGO' | 'ASAAS' | null

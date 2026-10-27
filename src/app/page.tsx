@@ -1,14 +1,12 @@
+import type { Metadata } from 'next'
 import { AppShell } from '@/components/AppShell'
+import { HomeSchema } from '@/components/geo/HomeSchema'
+import { getPublicMarketing } from '@/lib/public-marketing'
+import { SITE_URL } from '@/lib/site'
 
-/**
- * Rota raiz — Server Component.
- *
- * GEO/LLMO: por ser um Server Component, o conteúdo da landing (renderizado
- * dentro do AppShell) vai para o HTML inicial — legível por GPTBot,
- * ClaudeBot, PerplexityBot, Google-Extended e CCBot, que não executam JS.
- * O grafo JSON-LD completo (Organization, Product, FAQPage, HowTo,
- * DefinedTermSet, WebSite, BreadcrumbList) é injetado no layout raiz.
- */
-export default function Home() {
-  return <AppShell />
+export const metadata: Metadata = { alternates: { canonical: `${SITE_URL}/` } }
+
+export default async function Home() {
+  const { priceCents } = await getPublicMarketing()
+  return <><HomeSchema priceCents={priceCents} /><AppShell /></>
 }

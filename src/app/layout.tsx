@@ -4,7 +4,11 @@ import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
 import { GeoSchema } from "@/components/geo/GeoSchema";
 import { AnalyticsScripts } from "@/components/geo/AnalyticsScripts";
-import { SITE, SITE_URL, CONTENT_PUBLISHED_ISO, todayISO } from "@/lib/site";
+import { SITE, SITE_URL, SOCIAL_IMAGE } from "@/lib/site";
+
+import { getPublicMarketing } from '@/lib/public-marketing';
+
+export const revalidate = 300;
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -16,14 +20,16 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-export const metadata: Metadata = {
+export async function generateMetadata(): Promise<Metadata> {
+  const { config } = await getPublicMarketing();
+  return {
   metadataBase: new URL(SITE_URL),
   title: {
     default: "Click&Gruda — Biblioteca de Artes para Canecas | Artes Selecionadas",
     template: "%s | Click & Gruda",
   },
   description:
-    "Mais de 8 mil artes para canecas selecionadas e organizadas, novidades semanais, gerador de mockups 3D, loja online e mais de 45 ferramentas. Conheça a Click&Gruda.",
+    "Artes para sublimação de canecas organizadas por tema, com downloads ilimitados, novidades semanais e mockup 3D. Conheça a Click & Gruda.",
   keywords: [
     "artes para canecas",
     "sublimação de canecas",
@@ -41,9 +47,6 @@ export const metadata: Metadata = {
   creator: SITE.author.name,
   publisher: SITE.name,
   category: "e-commerce",
-  alternates: {
-    canonical: "/",
-  },
   robots: {
     index: true,
     follow: true,
@@ -60,16 +63,16 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Click&Gruda — Biblioteca de Artes para Sublimação de Canecas",
     description:
-      "Mais de 8 mil artes para canecas organizadas por tema. Novidades semanais, mockups 3D, loja online e ferramentas para quem vive de personalizados.",
+      "Mais de 8 mil artes para canecas organizadas por tema. Downloads ilimitados, novidades semanais e mockups 3D para quem vive de personalizados.",
     siteName: SITE.name,
     locale: "pt_BR",
     type: "website",
     url: SITE_URL,
     images: [
       {
-        url: "/uploads/hero-mug.png",
-        width: 1344,
-        height: 768,
+        url: SOCIAL_IMAGE,
+        width: 1122,
+        height: 1402,
         alt: "Canecas sublimadas com artes digitais da Click & Gruda",
       },
     ],
@@ -78,21 +81,18 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Click & Gruda — Artes Prontas para Sublimação de Canecas",
     description:
-      "Mais de 8 mil artes para canecas com curadoria, atualizações semanais, mockups 3D e loja online. Confira a oferta atual.",
-    images: ["/uploads/hero-mug.png"],
+      "Mais de 8 mil artes para canecas com curadoria, atualizações semanais, downloads ilimitados e mockups 3D. Confira a oferta atual.",
+    images: [SOCIAL_IMAGE],
   },
-  other: {
-    "article:published_time": CONTENT_PUBLISHED_ISO,
-    "article:modified_time": todayISO(),
-    // SEO local — operação 100% digital, área atendida Brasil
-    "geo.region": "BR",
-    "geo.placename": "Brasil",
+  verification: {
+    ...(config.gscVerification ? { google: config.gscVerification } : {}),
+    other: {
+      ...(config.bingVerification ? { 'msvalidate.01': config.bingVerification } : {}),
+      ...(config.metaDomainVerification ? { 'facebook-domain-verification': config.metaDomainVerification } : {}),
+    },
   },
-  // Google Search Console: defina NEXT_PUBLIC_GSC_VERIFICATION no ambiente
-  ...(process.env.NEXT_PUBLIC_GSC_VERIFICATION
-    ? { verification: { google: process.env.NEXT_PUBLIC_GSC_VERIFICATION } }
-    : {}),
-};
+  };
+}
 
 export const viewport: Viewport = {
   themeColor: "#14171e",
@@ -100,20 +100,21 @@ export const viewport: Viewport = {
   initialScale: 1,
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const { config } = await getPublicMarketing();
   return (
     <html lang="pt-BR" suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background text-foreground`}
       >
-        {/* Grafo JSON-LD completo — server-rendered, legível por crawlers sem JS */}
-        <GeoSchema />
-        {/* GA4 + GTM: carregam SOMENTE quando configurados via env (zero overhead) */}
-        <AnalyticsScripts />
+        {/* Entidades da marca no HTML; schemas de conteúdo ficam em cada página. */}
+        <GeoSchema socialUrls={config.socialUrls} />
+        {/* IDs do Admin Master ou ambiente; scripts opcionais após consentimento. */}
+        <AnalyticsScripts config={config} />
         {children}
         <Toaster position="top-center" richColors closeButton />
       </body>

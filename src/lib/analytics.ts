@@ -15,8 +15,10 @@ export type EventParams = Record<string, string | number | boolean | undefined>
 
 declare global {
   interface Window {
-    dataLayer?: Record<string, unknown>[]
+    dataLayer?: unknown[]
     gtag?: (...args: unknown[]) => void
+    fbq?: (...args: unknown[]) => void
+    cgTracking?: { enabled: boolean; mode: 'ga4' | 'gtm' | 'none'; pixelId: string }
   }
 }
 
@@ -27,9 +29,21 @@ export function track(event: string, params: EventParams = {}) {
   if (typeof window === 'undefined') return
   try {
     if (window.localStorage.getItem('cg-analytics-opt-out') === '1') return
-    window.dataLayer = window.dataLayer || []
-    window.dataLayer.push({ event, ...params })
-    window.gtag?.('event', event, params)
+    const tracking = window.cgTracking
+    if (tracking?.enabled) {
+      if (tracking.mode === 'gtm') {
+        window.dataLayer = window.dataLayer || []
+        window.dataLayer.push({ event, ...params })
+      } else if (tracking.mode === 'ga4') {
+        window.gtag?.('event', event, params)
+      }
+      if (tracking.pixelId) {
+        if (event === 'auth_submit' && params.method === 'register' && params.success === true) window.fbq?.('track', 'CompleteRegistration')
+        if (event === 'begin_checkout') window.fbq?.('track', 'InitiateCheckout', { currency: 'BRL', value: params.value, content_name: 'Acesso Click & Gruda' })
+        if (event === 'purchase' && typeof params.transaction_id === 'string') window.fbq?.('track', 'Purchase', { currency: 'BRL', value: params.value }, { eventID: params.transaction_id })
+        if (event === 'cta_click' && params.intent === 'whatsapp') window.fbq?.('track', 'Contact')
+      }
+    }
     // Métrica interna persistida no PostgreSQL (não depende de GA4 ou GTM).
     if (['landing_view', 'cta_click', 'faq_open', 'scroll_depth', 'feature_click'].includes(event)) {
       let visitorId = window.localStorage.getItem('cg-anon-visitor')

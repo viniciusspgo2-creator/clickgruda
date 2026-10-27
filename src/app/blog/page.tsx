@@ -5,7 +5,7 @@ import { ArrowRight, CalendarDays, Clock3 } from 'lucide-react'
 import { SiteHeader, SiteFooter, MobileNote } from '@/components/blog/SiteChrome'
 import { PageViewTracker } from '@/components/blog/PageViewTracker'
 import { BLOG_ARTICLES, BLOG_CATEGORY_LABELS } from '@/content/blog'
-import { SITE, SITE_URL, todayISO } from '@/lib/site'
+import { SITE, SITE_URL, CONTENT_UPDATED_ISO } from '@/lib/site'
 
 export const metadata: Metadata = {
   title: 'Blog do Sublimador — Guias, Custos e Artes para Canecas',
@@ -47,7 +47,7 @@ export default function BlogPage() {
         url: `${SITE_URL}/blog`,
         name: 'Blog do Sublimador — Click & Gruda',
         inLanguage: 'pt-BR',
-        dateModified: todayISO(),
+        dateModified: CONTENT_UPDATED_ISO,
         isPartOf: { '@id': `${SITE_URL}/#website` },
         about: { '@id': `${SITE_URL}/#organization` },
         description:

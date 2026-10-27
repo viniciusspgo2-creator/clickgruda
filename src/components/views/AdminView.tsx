@@ -29,6 +29,7 @@ import {
   Tag,
   Trash2,
   TrendingUp,
+  Globe,
   User as UserIcon,
   Users,
   Wand2,
@@ -47,6 +48,7 @@ import { AdminArtsSection, AdminCategoriesSection, AdminSuggestionsSection, Admi
 import { NewUserDialog } from '@/components/admin/NewUserDialog'
 import { PreviewAccountDialog } from '@/components/admin/PreviewAccountDialog'
 import { LandingAnalyticsPanel } from '@/components/admin/LandingAnalyticsPanel'
+import { AdminSeoSection } from '@/components/admin/AdminSeoSection'
 import { AdminEnhanceSection, AdminSearchMissesSection, AdminSecuritySection, AdminWaitlistSection } from '@/components/views/AdminGrowthSections'
 import { useStore } from '@/lib/store'
 import { formatBRL } from '@/lib/types'
@@ -66,6 +68,7 @@ export type AdminSection =
   | 'espera'
   | 'seguranca'
   | 'settings'
+  | 'seo'
 
 const SECTIONS: { id: AdminSection; label: string; icon: React.ElementType }[] = [
   { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
@@ -81,6 +84,7 @@ const SECTIONS: { id: AdminSection; label: string; icon: React.ElementType }[] =
   { id: 'espera', label: 'Lista de espera', icon: ClipboardList },
   { id: 'seguranca', label: 'Segurança', icon: ShieldAlert },
   { id: 'settings', label: 'Configurações', icon: Settings },
+  { id: 'seo', label: 'SEO e Integrações', icon: Globe },
 ]
 
 export function AdminView() {
@@ -129,7 +133,7 @@ export function AdminView() {
   }
 
   const nav = (
-    <nav className="space-y-1" aria-label="Seções do painel">
+    <nav className="min-h-0 flex-1 space-y-1 overflow-y-auto" aria-label="Seções do painel">
       {SECTIONS.map((s) => {
         const active = section === s.id
         return (
@@ -238,6 +242,7 @@ export function AdminView() {
             {section === 'melhorias' && <AdminEnhanceSection />}
             {section === 'espera' && <AdminWaitlistSection />}
             {section === 'seguranca' && <AdminSecuritySection />}
+            {section === 'seo' && <AdminSeoSection />}
             {section === 'settings' && <AdminSettingsSection />}
           </motion.div>
         </main>

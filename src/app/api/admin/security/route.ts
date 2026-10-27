@@ -2,7 +2,6 @@ import { db } from '@/lib/db'
 import { getSessionUser, jsonError } from '@/lib/auth'
 import { getSettings } from '@/lib/settings'
 import { DEFAULT_MAX_DEVICES, SESSION_ACTIVE_DAYS } from '@/lib/sessions'
-import { DEFAULT_DAILY_DOWNLOAD_LIMIT } from '@/lib/download-quota'
 
 async function requireAdmin() {
   const session = await getSessionUser()
@@ -14,7 +13,7 @@ export async function GET() {
   const since = new Date(Date.now() - SESSION_ACTIVE_DAYS * 86400000)
 
   const [settings, alerts, activeRows] = await Promise.all([
-    getSettings(['max_devices', 'dl_daily_limit']),
+    getSettings(['max_devices']),
     db.accountAlert.findMany({
       orderBy: [{ resolved: 'asc' }, { createdAt: 'desc' }],
       take: 100,
@@ -57,7 +56,6 @@ export async function GET() {
   return Response.json({
     settings: {
       max_devices: settings.max_devices ?? String(DEFAULT_MAX_DEVICES),
-      dl_daily_limit: settings.dl_daily_limit ?? String(DEFAULT_DAILY_DOWNLOAD_LIMIT),
     },
     alerts: alerts.map((a) => ({
       id: a.id,

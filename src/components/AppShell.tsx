@@ -1,5 +1,6 @@
 'use client'
 
+import dynamic from 'next/dynamic'
 import { useEffect, useState } from 'react'
 import { ArrowUp } from 'lucide-react'
 import { AnimatePresence, motion } from 'framer-motion'
@@ -9,13 +10,12 @@ import { track } from '@/lib/analytics'
 import { toast } from 'sonner'
 import { formatArtCode } from '@/lib/art-code'
 import { LandingView } from '@/components/views/LandingView'
-import { AuthView } from '@/components/views/AuthView'
-import { CheckoutView } from '@/components/views/CheckoutView'
-import { PortalView } from '@/components/views/PortalView'
-import { AdminView } from '@/components/views/AdminView'
-import { SharedCatalogView } from '@/components/views/SharedCatalogView'
+const AuthView = dynamic(() => import('@/components/views/AuthView').then(module => module.AuthView))
+const CheckoutView = dynamic(() => import('@/components/views/CheckoutView').then(module => module.CheckoutView))
+const PortalView = dynamic(() => import('@/components/views/PortalView').then(module => module.PortalView))
+const AdminView = dynamic(() => import('@/components/views/AdminView').then(module => module.AdminView))
 
-const VALID_VIEWS: View[] = ['landing', 'auth', 'checkout', 'portal', 'admin', 'catalogo']
+const VALID_VIEWS: View[] = ['landing', 'auth', 'checkout', 'portal', 'admin']
 
 /**
  * AppShell — casca client-side da SPA.
@@ -45,23 +45,8 @@ export function AppShell() {
   const view = useStore((s) => s.view)
   const setView = useStore((s) => s.setView)
   const setUser = useStore((s) => s.setUser)
-  const setShareToken = useStore((s) => s.setShareToken)
 
   useEffect(() => {
-    // Catálogo compartilhado (?catalogo=TOKEN) — página pública para o cliente
-    // do assinante. Tem prioridade sobre a restauração de sessão/view.
-    let shareParam: string | null = null
-    try {
-      shareParam = new URLSearchParams(window.location.search).get('catalogo')
-    } catch {
-      shareParam = null
-    }
-    if (shareParam) {
-      setShareToken(shareParam)
-      setView('catalogo')
-      return
-    }
-
     // Link direto da arte (?arte=42) — vem na mensagem do WhatsApp do cliente.
     // Abre o portal já buscando pelo código da arte.
     let arteParam: number | null = null
@@ -107,8 +92,6 @@ export function AppShell() {
         if (next === 'portal' && (!data.user || !data.user.hasAccess)) return
         if (next === 'admin' && (!data.user || data.user.role !== 'ADMIN')) return
         if (next === 'checkout' && !data.user) return
-        // 'catalogo' sem token na URL não é restaurável — cai na landing
-        if (next === 'catalogo') return
         if (next !== useStore.getState().view) setView(next)
       } catch {
         /* mantém a landing */
@@ -117,7 +100,7 @@ export function AppShell() {
     return () => {
       cancelled = true
     }
-  }, [setView, setUser, setShareToken])
+  }, [setView, setUser])
 
   useEffect(() => {
     // Preserve internal deep links from blog/guia (/#preco, /#faq, /#artes).
@@ -157,7 +140,7 @@ export function AppShell() {
         <AnimatePresence mode="wait">
           <motion.div
             key={view}
-            initial={{ opacity: 0, y: 12 }}
+            initial={false}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.28, ease: 'easeOut' }}
@@ -167,7 +150,6 @@ export function AppShell() {
             {view === 'checkout' && <CheckoutView />}
             {view === 'portal' && <PortalView />}
             {view === 'admin' && <AdminView />}
-            {view === 'catalogo' && <SharedCatalogView />}
           </motion.div>
         </AnimatePresence>
         {showBackToTop && <button type="button" title="Voltar ao topo" aria-label="Voltar ao topo da página" onClick={() => window.scrollTo({ top: 0, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' })} className="fixed bottom-24 right-5 z-[65] flex h-11 w-11 items-center justify-center rounded-full border border-white/20 bg-zinc-950 text-orange-400 shadow-xl transition hover:-translate-y-1 hover:bg-orange-600 hover:text-white focus-visible:outline-2 focus-visible:outline-orange-500 sm:bottom-24"><ArrowUp className="h-5 w-5"/></button>}
