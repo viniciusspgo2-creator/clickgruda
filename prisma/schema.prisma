@@ -8,260 +8,70 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id           String      @id @default(cuid())
-  name         String
-  email        String      @unique
-  password     String
-  role         String      @default("USER") // USER | ADMIN
-  hasAccess    Boolean     @default(false)
-  isDemo       Boolean     @default(false) // conta demo: navega no portal com artes embaçadas, sem download
-  isPreview    Boolean     @default(false) // conta universal de apresentação; nunca permite downloads ou gravações
-  previewMaxSessions Int  @default(10) // limite de acessos simultâneos dessa conta (1..100)
-  accessSource String? // PURCHASE | ADMIN_GRANT
-  status       String      @default("ACTIVE") // ACTIVE | PENDING_MANUAL (pré-aprovado, aguardando liberação do PIX manual)
-  createdAt    DateTime    @default(now())
-  updatedAt    DateTime    @updatedAt
-  favorites    Favorite[]
-  downloads    Download[]
-  payments     Payment[]
-  suggestions  ThemeSuggestion[]
-  shareLinks   ShareLink[]
-  sessions     UserSession[]
-  alerts       AccountAlert[]
-  waitlist     CatalogoWaitlist[]
-  limitHits    DownloadLimitHit[]
-  enhanceRequests ArtEnhanceRequest[]
-}
-
-model Category {
+model WhatsAppLink {
   id        String   @id @default(cuid())
-  name      String   @unique
-  emoji     String   @default("🎨")
-  icon      String   @default("") // nome do ícone na biblioteca padronizada (lucide)
-  createdAt DateTime @default(now())
-  arts      Art[]
-}
-
-model Tag {
-  id        String    @id @default(cuid())
-  name      String    @unique
-  createdAt DateTime  @default(now())
-  arts      ArtTag[]
-}
-
-model SeasonalEvent {
-  id        String   @id @default(cuid())
-  name      String
-  emoji     String   @default("🎉")
-  month     Int
-  day       Int
-  rule      String?  // data móvel: MOTHERS_DAY | FATHERS_DAY | EASTER | CARNIVAL | BLACK_FRIDAY (null = data fixa mês/dia)
-  createdAt DateTime @default(now())
-  arts      Art[]
-}
-
-model Art {
-  id              String         @id @default(cuid())
-  code            Int            @default(autoincrement()) // código curto da arte (CG-0001) — o sublimador acha a arte por ele (a sequence já garante que não repete)
-  title           String
-  imageUrl        String // URL pública da PRÉVIA (WebP leve) — é o que aparece no site
-  originalKey     String? // chave do PNG ORIGINAL no R2 (privado) — nunca enviada ao navegador
-  isRejected      Boolean        @default(false) // biblioteca separada: design reprovado
-  isSelected      Boolean        @default(false) // arte "especial" — aparece na aba Selecionadas do portal
-  isLaunch        Boolean        @default(false)
-  downloadsCount  Int            @default(0)
-  categoryId      String?
-  category        Category?      @relation(fields: [categoryId], references: [id], onDelete: SetNull)
-  seasonalEventId String?
-  seasonalEvent   SeasonalEvent? @relation(fields: [seasonalEventId], references: [id], onDelete: SetNull)
-  tags            ArtTag[]
-  favorites       Favorite[]
-  downloads       Download[]
-  createdAt       DateTime       @default(now())
-
-  @@index([code])
-  @@index([isRejected, createdAt])
-}
-
-model ArtTag {
-  artId String
-  art   Art    @relation(fields: [artId], references: [id], onDelete: Cascade)
-  tagId String
-  tag   Tag    @relation(fields: [tagId], references: [id], onDelete: Cascade)
-
-  @@id([artId, tagId])
-}
-
-model Favorite {
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  artId     String
-  art       Art      @relation(fields: [artId], references: [id], onDelete: Cascade)
-  createdAt DateTime @default(now())
-
-  @@id([userId, artId])
-}
-
-model Download {
-  id        String   @id @default(cuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  artId     String
-  art       Art      @relation(fields: [artId], references: [id], onDelete: Cascade)
-  viaZip    Boolean  @default(false) // baixada dentro de um ZIP de backup (conta separado no alerta de volume)
-  createdAt DateTime @default(now())
-
-  @@index([userId, createdAt])
-}
-
-model Payment {
-  id            String    @id @default(cuid())
-  userId        String
-  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  provider      String // MERCADOPAGO | ASAAS | DEMO
-  method        String    @default("PIX")
-  amountCents   Int
-  status        String    @default("PENDING") // PENDING | APPROVED | EXPIRED | FAILED
-  externalId    String?
-  qrCodePayload String?
-  qrCodeImage   String?
-  createdAt     DateTime  @default(now())
-  approvedAt    DateTime?
-}
-
-model Setting {
-  key   String @id
-  value String
-}
-
-model ThemeSuggestion {
-  id        String   @id @default(cuid())
-  message   String
-  name      String   @default("")
-  contact   String   @default("") // whatsapp ou e-mail (opcional)
-  status    String   @default("NEW") // NEW | SEEN | DONE
-  userId    String?
-  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  slug      String   @unique
+  phone     String
+  message   String   @default("")
+  title     String   @default("")
+  clicks    Int      @default(0)
   createdAt DateTime @default(now())
 }
 
 /**
- * ShareLink — link temporário que o assinante gera para o CLIENTE DELE
- * navegar no catálogo de artes (somente visualização) e escolher uma arte.
- * O cliente responde via WhatsApp do próprio assinante.
+ * ---------------- Acesso PREMIUM (Mockup Studio) ----------------
  */
-model ShareLink {
-  id        String   @id @default(cuid())
-  token     String   @unique
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  whatsapp  String   @default("") // WhatsApp de contato do assinante (recebe a escolha do cliente)
-  active    Boolean  @default(true)
-  views     Int      @default(0)
-  expiresAt DateTime
-  createdAt DateTime @default(now())
+
+model AccessCode {
+  id               String          @id @default(cuid())
+  code             String          @unique
+  note             String          @default("")
+  clientName       String          @default("")
+  clientType       String          @default("library")
+  browserHash      String?
+  sessionHash      String?
+  sessionExpiresAt DateTime?
+  maxUses          Int             @default(1)
+  active           Boolean         @default(true)
+  expiresAt        DateTime?
+  createdAt        DateTime        @default(now())
+  uses             AccessCodeUse[]
+
+  @@index([sessionHash])
+}
+
+model AccessCodeUse {
+  id       String     @id @default(cuid())
+  codeId   String
+  code     AccessCode @relation(fields: [codeId], references: [id], onDelete: Cascade)
+  deviceId String
+  usedAt   DateTime   @default(now())
+
+  @@unique([codeId, deviceId])
+  @@index([usedAt])
 }
 
 /**
- * UserSession — cada login = 1 dispositivo. O JWT carrega o id (sid); revogar a linha
- * derruba aquele aparelho na hora. Base do limite de dispositivos por conta.
+ * ---------------- Contador de visitas ----------------
  */
-model UserSession {
-  id            String    @id @default(cuid())
-  userId        String
-  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  device        String    @default("") // "Chrome · Windows"
-  ip            String    @default("")
-  createdAt     DateTime  @default(now())
-  lastSeenAt    DateTime  @default(now())
-  revokedAt     DateTime?
-  revokedReason String? // LIMIT | ADMIN | LOGOUT
 
-  @@index([userId, revokedAt])
-}
-
-/** Alerta de possível compartilhamento de conta (troca de aparelhos ou volume anormal de downloads). */
-model AccountAlert {
+model Visit {
   id        String   @id @default(cuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  type      String // DEVICES | DOWNLOADS
-  detail    String
-  resolved  Boolean  @default(false)
+  day       String // "2026-10-13" (America/Sao_Paulo)
+  path      String
+  sid       String // id de sessão anônima
   createdAt DateTime @default(now())
 
-  @@index([resolved, createdAt])
-}
-
-/** Buscas do portal que não encontraram nenhuma arte — fila de temas para criar. */
-model SearchMiss {
-  id        String   @id @default(cuid())
-  query     String   @unique // normalizada: minúsculas, sem acento, espaços colapsados
-  display   String // última forma digitada
-  count     Int      @default(1) // total de buscas
-  users     Int      @default(0) // pessoas diferentes que buscaram
-  status    String   @default("NEW") // NEW | DONE (arte criada)
-  lastAt    DateTime @default(now())
-  createdAt DateTime @default(now())
-  people    SearchMissUser[]
-}
-
-model SearchMissUser {
-  missId String
-  miss   SearchMiss @relation(fields: [missId], references: [id], onDelete: Cascade)
-  userId String
-
-  @@id([missId, userId])
-}
-
-/** Lista de espera do Catálogo Digital (membros que querem o preço de membro). */
-model CatalogoWaitlist {
-  id         String    @id @default(cuid())
-  name       String
-  email      String    @unique
-  whatsapp   String
-  userId     String?
-  user       User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
-  notifiedAt DateTime? // quando você avisou do lançamento
-  createdAt  DateTime  @default(now())
-}
-
-/** Dias em que a conta bateu o limite diário de downloads (base do alerta de uso pesado recorrente). */
-model DownloadLimitHit {
-  userId String
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  day    String // YYYY-MM-DD no fuso de Brasília
-
-  @@id([userId, day])
+  @@index([day])
+  @@index([day, path])
 }
 
 /**
- * ArtEnhanceRequest — pedido de melhoria de qualidade.
- * O assinante envia a própria arte (pixelizada / baixa qualidade) e a equipe
- * devolve em alta resolução. O arquivo cai direto no Painel Admin Master.
+ * ---------------- Configurações (SEO etc.) ----------------
  */
-/** Contagem interna de visitas e interações da landing; não guarda IP ou dados pessoais. */
-model SiteEvent {
-  id        String   @id @default(cuid())
-  name      String
-  visitorId String
-  location  String   @default("")
-  createdAt DateTime @default(now())
 
-  @@index([name, createdAt])
-  @@index([visitorId, createdAt])
-}
-
-model ArtEnhanceRequest {
-  id        String   @id @default(cuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  imageUrl  String // URL pública da imagem enviada
-  fileName  String   @default("") // nome original do arquivo
-  note      String   @default("") // observação opcional do assinante
-  status    String   @default("NEW") // NEW | DONE
-  createdAt DateTime @default(now())
-
-  @@index([status, createdAt])
+model SiteConfig {
+  key       String   @id
+  value     String // JSON serializado
+  updatedAt DateTime @updatedAt
 }
