@@ -1,0 +1,105 @@
+'use client'
+
+import { create } from 'zustand'
+
+export type View = 'landing' | 'auth' | 'checkout' | 'portal' | 'admin'
+export type PortalTab = 'todas' | 'lancamentos' | 'selecionadas' | 'reprovadas' | 'sazonal' | 'favoritas' | 'downloads'
+export type AuthMode = 'login' | 'register'
+export type SortMode = 'recentes' | 'baixadas' | 'nome'
+
+export type SessionUser = {
+  id: string
+  name: string
+  email: string
+  role: string
+  hasAccess: boolean
+  isDemo?: boolean
+  isPreview?: boolean
+  isPublicDemo?: boolean
+  /** ACTIVE | PENDING_MANUAL (aguardando liberação do PIX manual) */
+  status?: string
+}
+
+export function saveView(view: View) {
+  try {
+    sessionStorage.setItem('cg_view', view)
+  } catch {
+    /* ignore */
+  }
+}
+
+interface AppState {
+  view: View
+  setView: (v: View) => void
+  ready: boolean
+  setReady: (b: boolean) => void
+
+  user: SessionUser | null
+  sessionRevision: number
+  sessionNotice: 'NEW_LOGIN' | 'SESSION_REVOKED' | 'ACCOUNT_BLOCKED' | null
+  sessionDeviceLimit: number
+  setSessionNotice: (notice: AppState['sessionNotice'], limit?: number) => void
+  setUser: (u: SessionUser | null) => void
+
+  authMode: AuthMode
+  setAuthMode: (m: AuthMode) => void
+  pendingIntent: 'checkout' | null
+  setPendingIntent: (p: 'checkout' | null) => void
+
+  menuOpen: boolean
+  setMenuOpen: (b: boolean) => void
+
+  // Portal filters
+  tab: PortalTab
+  q: string
+  categoryIds: string[]
+  tagIds: string[]
+  sort: SortMode
+  seasonalEventId: string | null
+  setFilter: (partial: Partial<Pick<AppState, 'tab' | 'q' | 'categoryIds' | 'tagIds' | 'sort' | 'seasonalEventId'>>) => void
+  resetFilters: () => void
+  selectCategory: (id: string) => void
+
+  // Checkout
+  checkoutProvider: 'MERCADOPAGO' | 'ASAAS' | null
+  setCheckoutProvider: (p: 'MERCADOPAGO' | 'ASAAS' | null) => void
+}
+
+export const useStore = create<AppState>((set) => ({
+  view: 'landing',
+  setView: (v) => {
+    saveView(v)
+    set({ view: v })
+  },
+  ready: false,
+  setReady: (b) => set({ ready: b }),
+
+  user: null,
+  sessionRevision: 0,
+  sessionNotice: null,
+  sessionDeviceLimit: 1,
+  setSessionNotice: (sessionNotice, limit = 1) => set({ sessionNotice, sessionDeviceLimit: Math.max(1, limit) }),
+  setUser: (u) => set(state => ({ user: u, sessionRevision: state.sessionRevision + 1 })),
+
+  authMode: 'login',
+  setAuthMode: (m) => set({ authMode: m }),
+  pendingIntent: null,
+  setPendingIntent: (p) => set({ pendingIntent: p }),
+
+  menuOpen: false,
+  setMenuOpen: (b) => set({ menuOpen: b }),
+
+  tab: 'todas',
+  q: '',
+  categoryIds: [],
+  tagIds: [],
+  sort: 'recentes',
+  seasonalEventId: null,
+  setFilter: (partial) => set({ ...partial, ...(partial.categoryIds ? { categoryIds: partial.categoryIds.slice(-1) } : {}) }),
+  selectCategory: (id) => set({ tab: 'todas', categoryIds: id ? [id] : [], tagIds: [], seasonalEventId: null, q: '' }),
+  resetFilters: () =>
+    set({ tab: 'todas', q: '', categoryIds: [], tagIds: [], sort: 'recentes', seasonalEventId: null }),
+
+  checkoutProvider: null,
+  setCheckoutProvider: (p) => set({ checkoutProvider: p }),
+}))

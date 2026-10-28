@@ -1,10 +1,14 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono, Space_Grotesk } from "next/font/google";
+import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import "@/components/site/studio-home.css";
-import { Toaster } from "@/components/ui/toaster";
-import { PageTracker } from "@/components/site/page-tracker";
-import { getSeoConfig } from "@/lib/site-config";
+import { Toaster } from "@/components/ui/sonner";
+import { GeoSchema } from "@/components/geo/GeoSchema";
+import { AnalyticsScripts } from "@/components/geo/AnalyticsScripts";
+import { SITE, SITE_URL, SOCIAL_IMAGE } from "@/lib/site";
+
+import { getPublicMarketing } from '@/lib/public-marketing';
+
+export const revalidate = 300;
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -16,44 +20,82 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-const display = Space_Grotesk({
-  variable: "--font-display",
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-});
-
 export async function generateMetadata(): Promise<Metadata> {
-  const seo = await getSeoConfig();
-  const base = seo.siteUrl || "https://clicktools.vercel.app";
-
+  const { config } = await getPublicMarketing();
   return {
-    metadataBase: new URL(base),
-    title: {
-      default: seo.defaultTitle,
-      template: seo.titleTemplate.includes("%s") ? seo.titleTemplate : `%s | ${seo.siteName}`,
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: "Click&Gruda — Biblioteca de Artes para Canecas | Artes Selecionadas",
+    template: "%s | Click & Gruda",
+  },
+  description:
+    "Artes para sublimação de canecas organizadas por tema, com downloads ilimitados, novidades semanais e mockup 3D. Conheça a Click & Gruda.",
+  keywords: [
+    "artes para canecas",
+    "sublimação de canecas",
+    "artes para sublimação",
+    "arte sublimação caneca 21x9,5",
+    "sublimação",
+    "sublimadores",
+    "flork",
+    "artes digitais para canecas",
+    "acesso vitalício artes",
+    "artes sazonais canecas",
+    "Click e Gruda",
+  ],
+  authors: [{ name: SITE.author.name, url: SITE_URL }],
+  creator: SITE.author.name,
+  publisher: SITE.name,
+  category: "e-commerce",
+  robots: {
+    index: true,
+    follow: true,
+    "max-snippet": -1,
+    "max-image-preview": "large",
+    "max-video-preview": -1,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-snippet": -1,
+      "max-image-preview": "large",
     },
-    description: seo.description,
-    keywords: seo.keywords,
-    authors: [{ name: seo.siteName }],
-    creator: seo.siteName,
-    openGraph: {
-      title: seo.defaultTitle,
-      description: seo.description,
-      type: "website",
-      siteName: seo.siteName,
-      locale: "pt_BR",
-      images: [{ url: seo.ogImage }],
+  },
+  openGraph: {
+    title: "Click&Gruda — Biblioteca de Artes para Sublimação de Canecas",
+    description:
+      "Biblioteca de artes para canecas com curadoria e variedade de temas. Downloads ilimitados, novidades semanais e mockups 3D para quem vive de personalizados.",
+    siteName: SITE.name,
+    locale: "pt_BR",
+    type: "website",
+    url: SITE_URL,
+    images: [
+      {
+        url: SOCIAL_IMAGE,
+        width: 1122,
+        height: 1402,
+        alt: "Canecas sublimadas com artes digitais da Click & Gruda",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Click & Gruda — Artes Prontas para Sublimação de Canecas",
+    description:
+      "Artes para canecas com curadoria, variedade de temas, atualizações semanais, downloads ilimitados e mockups 3D. Confira a oferta atual.",
+    images: [SOCIAL_IMAGE],
+  },
+  verification: {
+    ...(config.gscVerification ? { google: config.gscVerification } : {}),
+    other: {
+      ...(config.bingVerification ? { 'msvalidate.01': config.bingVerification } : {}),
+      ...(config.metaDomainVerification ? { 'facebook-domain-verification': config.metaDomainVerification } : {}),
     },
-    twitter: {
-      card: "summary_large_image",
-      creator: seo.twitterCreator || undefined,
-    },
-    alternates: { canonical: "/" },
+  },
   };
 }
 
 export const viewport: Viewport = {
-  themeColor: "#0a0908",
+  themeColor: "#14171e",
   width: "device-width",
   initialScale: 1,
 };
@@ -63,69 +105,18 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const seo = await getSeoConfig();
-  const base = (seo.siteUrl || "https://clicktools.vercel.app").replace(/\/+$/, "");
-
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@graph": [
-      {
-        "@type": "WebSite",
-        "@id": `${base}/#website`,
-        name: seo.siteName,
-        url: base,
-        description: seo.description,
-        inLanguage: "pt-BR",
-        publisher: { "@id": `${base}/#organization` },
-      },
-      {
-        "@type": "Organization",
-        "@id": `${base}/#organization`,
-        name: seo.siteName,
-        alternateName: "Click e Gruda",
-        url: base,
-        description:
-          "Studio Mockup 3D para canecas, incluso para assinantes da Biblioteca de Artes Click & Gruda. Acesso avulso de 24 horas e cinco ferramentas bônus gratuitas.",
-        logo: { "@type": "ImageObject", url: `${base}${seo.ogImage}` },
-        sameAs: [
-          "https://www.clickgruda.com.br/",
-          "https://www.instagram.com/clickgruda.digital",
-          "https://wa.me/62998387816",
-        ],
-        contactPoint: {
-          "@type": "ContactPoint",
-          contactType: "customer support",
-          telephone: "+55-62-99838-7816",
-          url: "https://wa.me/62998387816",
-          availableLanguage: ["Portuguese"],
-        },
-        areaServed: { "@type": "Country", name: "Brasil" },
-      },
-    ],
-  };
-
+  const { config } = await getPublicMarketing();
   return (
-    <html lang="pt-BR" suppressHydrationWarning className="dark">
+    <html lang="pt-BR" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${display.variable} antialiased bg-background text-foreground`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background text-foreground`}
       >
+        {/* Entidades da marca no HTML; schemas de conteúdo ficam em cada página. */}
+        <GeoSchema socialUrls={config.socialUrls} />
+        {/* IDs do Admin Master ou ambiente; scripts opcionais após consentimento. */}
+        <AnalyticsScripts config={config} />
         {children}
-        <Toaster />
-        <PageTracker />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-        />
-        {seo.gaId && (
-          <>
-            <script async src={`https://www.googletagmanager.com/gtag/js?id=${seo.gaId}`} />
-            <script
-              dangerouslySetInnerHTML={{
-                __html: `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','${seo.gaId}');`,
-              }}
-            />
-          </>
-        )}
+        <Toaster position="top-center" richColors closeButton />
       </body>
     </html>
   );

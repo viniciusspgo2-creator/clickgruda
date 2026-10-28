@@ -1,31 +1,26 @@
-import type { MetadataRoute } from 'next';
-import { getSeoConfig } from '@/lib/site-config';
+import type { MetadataRoute } from 'next'
+import { SITE_URL } from '@/lib/site'
 
-export const dynamic = 'force-dynamic';
+// Uma única regra compartilhada: grupos específicos não herdam o grupo '*'.
+// CSS, JS, imagens e o conhecimento público permanecem rastreáveis.
+const disallow = [
+  '/admin', '/portal', '/checkout', '/login', '/cadastro',
+  '/api/admin/', '/api/auth/', '/api/payments/', '/api/portal/',
+  '/api/favorites', '/api/analytics/', '/api/public/catalog/',
+  '/api/arts/', '/api/enhance-requests',
+  '/*?catalogo=', '/*&catalogo=', '/*?arte=', '/*&arte=',
+]
 
-export default async function robots(): Promise<MetadataRoute.Robots> {
-  const seo = await getSeoConfig();
-  const base = (seo.siteUrl || 'https://clickgruda.vercel.app').replace(/\/+$/, '');
-
+export default function robots(): MetadataRoute.Robots {
   return {
-    rules: [
-      /* Busca tradicional */
-      {
-        userAgent: '*',
-        allow: '/',
-        disallow: ['/admin', '/api'],
-      },
-      /* Crawlers de IA — GEO (permitidos expressamente) */
-      { userAgent: ['GPTBot', 'OAI-SearchBot', 'ChatGPT-User'], allow: '/' },
-      { userAgent: ['PerplexityBot', 'Perplexity-User'], allow: '/' },
-      { userAgent: ['ClaudeBot', 'Claude-User', 'Claude-SearchBot', 'anthropic-ai'], allow: '/' },
-      { userAgent: 'Google-Extended', allow: '/' },
-      { userAgent: 'CCBot', allow: '/' },
-      { userAgent: 'Applebot-Extended', allow: '/' },
-      { userAgent: 'Bytespider', allow: '/' },
-      { userAgent: 'Amazonbot', allow: '/' },
-    ],
-    sitemap: `${base}/sitemap.xml`,
-    host: base,
-  };
+    rules: {
+      userAgent: ['*', 'Googlebot', 'Bingbot', 'OAI-SearchBot', 'ChatGPT-User',
+        'GPTBot', 'PerplexityBot', 'ClaudeBot', 'Claude-User', 'Claude-SearchBot',
+        'Google-Extended', 'CCBot', 'Applebot', 'Applebot-Extended',
+        'meta-externalagent', 'Bytespider', 'Amazonbot'],
+      allow: '/',
+      disallow,
+    },
+    sitemap: `${SITE_URL}/sitemap.xml`,
+  }
 }
