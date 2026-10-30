@@ -91,7 +91,7 @@ export function AppShell() {
         const next: View = stored && VALID_VIEWS.includes(stored as View) ? (stored as View) : 'landing'
         // Um link direto para uma seção comercial não deve restaurar o portal
         // da sessão anterior e ocultar a seção que o visitante solicitou.
-        const landingAnchors = ['preco', 'investimento', 'faq', 'perguntas', 'artes', 'biblioteca', 'recursos', 'como-funciona']
+        const landingAnchors = ['preco', 'investimento', 'faq', 'perguntas', 'artes', 'biblioteca', 'recursos', 'como-funciona', 'studio-mockup', 'video']
         if (landingAnchors.includes(window.location.hash.slice(1))) return
         if (next === 'portal' && (!data.user || !data.user.hasAccess)) return
         if (next === 'admin' && (!data.user || data.user.role !== 'ADMIN')) return

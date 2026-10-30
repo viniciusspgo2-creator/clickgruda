@@ -48,7 +48,7 @@ export const FAQ_ITEMS: { q: string; a: string }[] = [
   },
   {
     q: 'Qual o formato das artes?',
-    a: 'Todas as artes vêm no formato 21×9,5 cm — a medida exata da caneca — em alta resolução, prontas para imprimir e sublimar.',
+    a: 'Você baixa arquivos de imagem para sublimação de canecas. Antes de imprimir, confira as dimensões da arte, a área de estampa do seu modelo e os ajustes do seu equipamento.',
   },
   {
     q: 'Tem mensalidade?',
@@ -81,7 +81,7 @@ export const FAQ_ITEMS: { q: string; a: string }[] = [
   },
   {
     q: 'Preciso saber editar arquivo para usar as artes?',
-    a: 'Não. O PNG já vem pronto no tamanho exato da caneca (21 × 9,5 cm), em alta resolução: é imprimir no papel sublimático e prensar. Se você quiser adaptar para outro produto, dá para redimensionar em qualquer editor de imagens.',
+    a: 'Você pode escolher uma arte pronta da biblioteca sem criar um design do zero. Para produzir, prepare a impressão no programa que já utiliza e confira tamanho, espelhamento e ajustes da sua caneca. Alterações de nomes ou elementos dependem do formato e do editor utilizado.',
   },
   {
     q: 'E se o PIX não liberar o meu acesso?',
@@ -89,7 +89,7 @@ export const FAQ_ITEMS: { q: string; a: string }[] = [
   },
   {
     q: 'As artes são exclusivas? Outros sublimadores usam as mesmas?',
-    a: 'O acervo é compartilhado entre os assinantes — todo mundo baixa das mesmas artes, e é isso que mantém o preço acessível. Se você precisa de um design exclusivo do zero, um freelancer continua sendo a melhor escolha (explicamos isso na comparação com arte avulsa e freelancer logo abaixo).',
+    a: 'O acervo é compartilhado entre os assinantes. Outros profissionais podem usar as mesmas artes; o acesso à biblioteca não inclui exclusividade sobre os designs.',
   },
   {
     q: 'As artes funcionam em prensa de canecas caseira ou semiautomática?',
