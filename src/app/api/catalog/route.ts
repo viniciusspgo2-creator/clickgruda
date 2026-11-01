@@ -3,25 +3,30 @@ import { getSessionUser } from '@/lib/auth'
 import { getSettings, resolveProvider } from '@/lib/settings'
 import { nextEventDate, daysUntil } from '@/lib/seasonal'
 import { ensureDefaultSeasonalEvents } from '@/lib/seasonal-defaults'
+import { BOCAO_MARKER, BOCAO_PARENT_PREFIX } from '@/lib/bocao'
 
 export async function GET() {
   await ensureDefaultSeasonalEvents()
+  const mainArtWhere = { isRejected: false, tags: { none: { tag: { name: BOCAO_MARKER } } } } as const
   const [session, settings, categories, tags, artsCount, launchesCount, selectedCount, catCounts, tagCounts, eventCounts, events] =
     await Promise.all([
       getSessionUser(),
       getSettings(),
       db.category.findMany({ orderBy: { name: 'asc' } }),
       db.tag.findMany({ orderBy: { name: 'asc' } }),
-      db.art.count({ where: { isRejected: false } }),
-      db.art.count({ where: { isRejected: false, isLaunch: true } }),
-      db.art.count({ where: { isRejected: false, isSelected: true } }),
-      db.art.groupBy({ by: ['categoryId'], where: { isRejected: false }, _count: true }),
-      db.artTag.groupBy({ by: ['tagId'], where: { art: { isRejected: false } }, _count: true }),
-      db.art.groupBy({ by: ['seasonalEventId'], where: { isRejected: false }, _count: true }),
+      db.art.count({ where: mainArtWhere }),
+      db.art.count({ where: { ...mainArtWhere, isLaunch: true } }),
+      db.art.count({ where: { ...mainArtWhere, isSelected: true } }),
+      db.art.groupBy({ by: ['categoryId'], where: mainArtWhere, _count: true }),
+      db.artTag.groupBy({ by: ['tagId'], where: { art: mainArtWhere }, _count: true }),
+      db.art.groupBy({ by: ['seasonalEventId'], where: mainArtWhere, _count: true }),
       db.seasonalEvent.findMany(),
     ])
 
-  const rejectedCount = await db.art.count({ where: { isRejected: true } })
+  const [rejectedCount, bocaoCount] = await Promise.all([
+    db.art.count({ where: { isRejected: true } }),
+    db.art.count({ where: { isRejected: false, tags: { some: { tag: { name: BOCAO_MARKER } } } } }),
+  ])
   const catCountMap = new Map(catCounts.map((c) => [c.categoryId, c._count]))
   const tagCountMap = new Map(tagCounts.map((t) => [t.tagId, t._count]))
   const eventCountMap = new Map(eventCounts.map((e) => [e.seasonalEventId, e._count]))
@@ -63,12 +68,13 @@ export async function GET() {
       icon: c.icon,
       artCount: catCountMap.get(c.id) || 0,
     })), { id: '__none__', name: 'Sem categorias', emoji: '📂', icon: '', artCount: catCountMap.get(null) || 0 }],
-    tags: tags.map((t) => ({ id: t.id, name: t.name, artCount: tagCountMap.get(t.id) || 0 })),
+    tags: tags.filter((t) => t.name !== BOCAO_MARKER && !t.name.startsWith(BOCAO_PARENT_PREFIX)).map((t) => ({ id: t.id, name: t.name, artCount: tagCountMap.get(t.id) || 0 })),
     events: eventsWithMeta,
     nextEvent: eventsWithMeta[0] || null,
     counts: {
       arts: artsCount,
       reprovadas: rejectedCount,
+      bocoes: bocaoCount,
       lancamentos: launchesCount,
       selecionadas: selectedCount,
       favoritas: favCount,

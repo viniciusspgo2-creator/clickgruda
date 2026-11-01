@@ -38,7 +38,7 @@ export type CatalogData = {
   tags: { id: string; name: string; artCount: number }[]
   events: CatalogEvent[]
   nextEvent: CatalogEvent | null
-  counts: { arts: number; lancamentos: number; selecionadas: number; favoritas: number; minhasDownloads: number; reprovadas: number }
+  counts: { arts: number; lancamentos: number; selecionadas: number; favoritas: number; minhasDownloads: number; reprovadas: number; bocoes: number }
   waitlisted?: boolean
   /** Compatibilidade com clientes anteriores: null indica downloads ilimitados. */
   quota?: { used: number; limit: number } | null

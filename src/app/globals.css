@@ -1170,6 +1170,8 @@
 }
 
 
+/* Experience 3.9 — panoramic hero with mascot in a gaming chair, preserving the image frame.
+   The HTML controls remain usable and the new artwork maintains the source aspect ratio. */
 /* Experience 3.8 — seamless panoramic hero: one full image, zero cropping.
    The clean art includes the entire room, mascot and brand slogan;
    the left-side copy and live art counter remain real HTML. */
@@ -1737,3 +1739,9 @@
 .cg-portal .cg-member-artcard .cg-art-card-surface:focus-within {transform:translateY(-3px)!important;}
 /* Neutraliza o sm:max-w-lg herdado do Dialog base. */
 .cg-access-dialog {width:min(610px,calc(100vw - 24px))!important;max-width:min(610px,calc(100vw - 24px))!important;}
+
+/* Mockup dialog — compact two-column actions on desktop, comfortable touch areas on phones. */
+.cg-access-dialog .cg-access-actions > button { transition:transform .18s ease,box-shadow .18s ease; min-height:48px; width:100%; }
+.cg-access-dialog .cg-access-actions > button:hover { transform:translateY(-1px); }
+.cg-access-dialog .cg-access-actions > button:focus-visible {outline:2px solid #fb923c;outline-offset:2px;}
+@media(max-width:639px){ .cg-access-dialog .cg-access-actions {grid-template-columns:minmax(0,1fr);} }

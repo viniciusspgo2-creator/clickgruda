@@ -2,6 +2,7 @@ import type { Prisma } from '@prisma/client'
 import { db } from '@/lib/db'
 import { parseArtCode } from '@/lib/art-code'
 import { searchTokens, searchVariants } from '@/lib/art-search'
+import { BOCAO_MARKER, bocaoParentTag, BOCAO_PARENT_PREFIX } from '@/lib/bocao'
 
 export type ArtDTO = {
   id: string
@@ -56,7 +57,7 @@ function toDTO(a: ArtRow, favSet: Set<string>): ArtDTO {
     createdAt: a.createdAt.toISOString(),
     category: a.category ? { id: a.category.id, name: a.category.name, emoji: a.category.emoji } : null,
     seasonalEvent: a.seasonalEvent ? { id: a.seasonalEvent.id, name: a.seasonalEvent.name, emoji: a.seasonalEvent.emoji } : null,
-    tags: a.tags.map((t) => ({ id: t.tag.id, name: t.tag.name })),
+    tags: a.tags.filter((t) => t.tag.name !== BOCAO_MARKER && !t.tag.name.startsWith(BOCAO_PARENT_PREFIX)).map((t) => ({ id: t.tag.id, name: t.tag.name })),
     favorited: favSet.has(a.id),
   }
 }
@@ -67,6 +68,11 @@ export function buildArtWhere(o: ArtQuery): Prisma.ArtWhereInput {
   const tab = o.tab || 'todas'
   // Sub-biblioteca separada por padrão; busca e destaques nunca misturam artes reprovadas.
   if (!o.includeRejected) AND.push({ isRejected: tab === 'reprovadas' })
+  // Bocões ficam em uma aba própria: não poluem o acervo principal nem lançamentos.
+  if (!o.includeRejected) {
+    if (tab === 'bocoes') AND.push({ tags: { some: { tag: { name: BOCAO_MARKER } } } })
+    else if (tab !== 'downloads' && tab !== 'favoritas') AND.push({ tags: { none: { tag: { name: BOCAO_MARKER } } } })
+  }
 
   if (tab === 'lancamentos') AND.push({ isLaunch: true })
   if (tab === 'selecionadas') AND.push({ isSelected: true })
@@ -86,7 +92,7 @@ export function buildArtWhere(o: ArtQuery): Prisma.ArtWhereInput {
     const code = parseArtCode(q)
     if (code !== null) {
       // A busca por código é exata, sem misturar resultados por números parecidos.
-      AND.push({ code })
+      AND.push(tab === 'bocoes' ? { OR: [{ code }, { tags: { some: { tag: { name: bocaoParentTag(code) } } } }] } : { code })
     } else {
       const matchTerm = (term: string): Prisma.ArtWhereInput => ({ OR: [
         { title: { contains: term, mode: 'insensitive' } },

@@ -12,10 +12,13 @@ function walk(folder) {
     return item.isDirectory() ? walk(absolute) : [absolute];
   });
 }
-test('nenhum código do servidor nem UI requer Bocao', () => {
-  const sources = [...walk(path.join(root, 'src')), ...walk(path.join(root,'prisma'))]
-    .filter(f => /\.(ts|tsx|prisma)$/.test(f));
-  for (const file of sources) assert.doesNotMatch(fs.readFileSync(file, 'utf8'), /boc[aã]o|bocoes/i, file);
+test('Bocão usa as tabelas Art e Tag existentes sem exigir um novo modelo', () => {
+  const schema = read('prisma/schema.prisma');
+  assert.match(schema, /model Art\s*\{/);
+  assert.match(schema, /model Tag\s*\{/);
+  assert.doesNotMatch(schema, /model Bocao\s*\{/);
+  assert.match(read('src/lib/bocao.ts'), /BOCAO_MARKER/);
+  assert.match(read('src/components/views/AdminSections.tsx'), /openBocao/);
 });
 test('as três APIs afetadas consultam apenas tabelas remanescentes', () => {
   for (const name of ['src/lib/arts.ts', 'src/app/api/catalog/route.ts', 'src/app/api/admin/arts/route.ts']) {

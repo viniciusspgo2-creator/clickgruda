@@ -24,8 +24,9 @@ type ArtCardProps = {
 /** Download e favoritos ficam acessíveis sem hover. Overlay: somente Studio e prévia ampliada. */
 export function ArtCard({ art, locked = false, demo = false, downloadState = 'idle', onDownload, onToggleFavorite, onPreview, onOpenMockup }: ArtCardProps) {
   const title = formatArtTitle(art.title)
+  const isBocao = art.title.startsWith('Bocão da arte ')
   const canDownload = !demo && !locked && downloadState !== 'loading'
-  const downloadLabel = downloadState === 'loading' ? 'Preparando arquivo…' : downloadState === 'done' ? 'Baixar novamente' : 'Baixar arte'
+  const downloadLabel = downloadState === 'loading' ? 'Preparando arquivo…' : downloadState === 'done' ? 'Baixar novamente' : isBocao ? 'Baixar Bocão' : 'Baixar arte'
   const code = formatArtCode(art.code)
   const copyCode = async () => {
     try { await navigator.clipboard.writeText(code); toast.success('Código copiado!') }
@@ -61,6 +62,7 @@ export function ArtCard({ art, locked = false, demo = false, downloadState = 'id
             )}
           </div>
           <div className="cg-art-meta flex min-w-0 flex-wrap items-center gap-1.5">
+            {isBocao && <span className="rounded-full border border-orange-400/30 bg-orange-500/15 px-2 py-1 text-[9px] font-bold text-orange-200">Arte complementar · Bocão</span>}
             {art.category && <span className="max-w-full truncate rounded-full border border-white/5 bg-orange-400/10 px-2 py-0.5 text-[9px] font-medium text-orange-200">{art.category.emoji} {art.category.name}</span>}
             <button type="button" onClick={copyCode} aria-label={`Copiar código ${code}`} title="Copiar código da arte" className="cg-art-code inline-flex max-w-full items-center gap-1 rounded-md border border-white/10 bg-white/[.055] px-2 py-1 font-mono text-[9px] text-slate-300 transition-colors hover:text-white"><Copy className="h-2.5 w-2.5 shrink-0" /><span className="truncate">{code}</span></button>
             {art.tags.slice(0, 1).map(tag => <span key={tag.id} title={tag.name} className="max-w-[110px] truncate rounded-full bg-white/[.04] px-2 py-1 text-[9px] text-slate-400">#{tag.name}</span>)}

@@ -18,7 +18,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog'
 import { CATEGORY_ICONS, getCategoryIcon } from '@/lib/category-icons'
 import { uploadArtFile } from '@/lib/art-upload'
-import { formatArtCode } from '@/lib/art-code'
+import { formatArtCode, parseArtCode } from '@/lib/art-code'
+import { BOCAO_MARKER, BOCAO_PARENT_PREFIX, bocaoDisplayTitle, bocaoParentFromTags, bocaoParentTag, isBocaoTags } from '@/lib/bocao'
 import { BulkUploadDialog } from '@/components/admin/BulkUploadDialog'
 import { BulkEditArtsDialog, type BulkArtSelection } from '@/components/admin/BulkEditArtsDialog'
 import { type AdminArtFilters, hasActiveAdminArtFilters } from '@/lib/admin-art-filters'
@@ -126,6 +127,8 @@ type ArtFormState = {
   isLaunch: boolean
   isSelected: boolean
   isRejected: boolean
+  isBocao: boolean
+  linkedArtCode: string
 }
 
 const emptyForm: ArtFormState = {
@@ -137,6 +140,8 @@ const emptyForm: ArtFormState = {
   isLaunch: true,
   isSelected: false,
   isRejected: false,
+  isBocao: false,
+  linkedArtCode: '',
 }
 
 export function AdminArtsSection() {
@@ -203,17 +208,27 @@ export function AdminArtsSection() {
     setFormOpen(true)
   }
 
+  const openBocao = () => {
+    setForm({ ...emptyForm, isBocao: true, isLaunch: false, isSelected: false })
+    setFormOpen(true)
+  }
+
   const openEdit = (art: ArtItem) => {
+    const tagNames = art.tags.map((t) => t.name)
+    const parentCode = bocaoParentFromTags(tagNames)
+
     setForm({
       id: art.id,
-      title: art.title,
+      title: isBocaoTags(tagNames) ? art.title.replace(/^Boc[aã]o da arte CG-?\d+\s*(?:[—–-]\s*)?/i, '') : art.title,
       imageUrl: art.imageUrl,
       categoryId: art.category?.id || 'none',
       seasonalEventId: art.seasonalEvent?.id || 'none',
-      tagNames: art.tags.map((t) => t.name),
+      tagNames,
       isLaunch: art.isLaunch,
       isSelected: art.isSelected,
       isRejected: Boolean(art.isRejected),
+      isBocao: isBocaoTags(tagNames),
+      linkedArtCode: parentCode !== null ? formatArtCode(parentCode) : '',
     })
     setFormOpen(true)
   }
@@ -232,19 +247,32 @@ export function AdminArtsSection() {
   }
 
   const save = async () => {
-    if (!form.title.trim()) return toast.error('Dê um título para a arte.')
+    if (!form.title.trim() && !form.isBocao) return toast.error('Dê um título para a arte.')
+    const linkedCode = form.isBocao ? parseArtCode(form.linkedArtCode) : null
+    if (form.isBocao && (linkedCode === null || linkedCode <= 0)) return toast.error('Informe o código da arte principal, por exemplo CG-0042.')
     if (!form.imageUrl) return toast.error('Envie a imagem da arte antes de salvar.')
     setSaving(true)
     try {
+      if (form.isBocao && linkedCode !== null) {
+        // O código precisa corresponder a uma arte existente (e não outro Bocão).
+        const existsRes = await fetch(`/api/admin/arts?page=1&q=${encodeURIComponent(formatArtCode(linkedCode))}`)
+        if (!existsRes.ok) throw new Error('Não foi possível validar o código da arte principal.')
+        const exists = await existsRes.json() as { arts: ArtItem[] }
+        const source = exists.arts.find((art) => art.code === linkedCode && !isBocaoTags(art.tags.map((t) => t.name)))
+        if (!source) throw new Error('Arte principal não encontrada. Confira o código informado.')
+      }
+      const tags = form.isBocao && linkedCode !== null
+        ? [...new Set([...form.tagNames.filter((tag) => tag !== BOCAO_MARKER && !tag.startsWith(BOCAO_PARENT_PREFIX)), BOCAO_MARKER, bocaoParentTag(linkedCode)])]
+        : form.tagNames.filter((tag) => tag !== BOCAO_MARKER && !tag.startsWith(BOCAO_PARENT_PREFIX))
       const body = {
-        title: form.title,
+        title: form.isBocao && linkedCode !== null ? bocaoDisplayTitle(form.title, linkedCode) : form.title,
         imageUrl: form.imageUrl,
         originalKey: form.originalKey,
         categoryId: form.categoryId === 'none' ? null : form.categoryId,
         seasonalEventId: form.seasonalEventId === 'none' ? null : form.seasonalEventId,
-        tagNames: form.tagNames,
-        isLaunch: form.isLaunch,
-        isSelected: form.isSelected,
+        tagNames: tags,
+        isLaunch: form.isBocao ? false : form.isLaunch,
+        isSelected: form.isBocao ? false : form.isSelected,
         isRejected: form.isRejected,
       }
       const res = await fetch(form.id ? `/api/admin/arts/${form.id}` : '/api/admin/arts', {
@@ -257,11 +285,15 @@ export function AdminArtsSection() {
         toast.error(data.error || 'Erro ao salvar.')
         return
       }
-      toast.success(form.id ? 'Arte atualizada!' : 'Arte publicada! 🎉')
+      toast.success(form.id ? 'Arquivo atualizado!' : form.isBocao ? 'Bocão publicado e relacionado à arte principal!' : 'Arte publicada! 🎉')
       setFormOpen(false)
+      queryClient.invalidateQueries({ queryKey: ['admin-tags'] })
+      queryClient.invalidateQueries({ queryKey: ['catalog'] })
       queryClient.invalidateQueries({ queryKey: ['admin-arts'] })
       queryClient.invalidateQueries({ queryKey: ['arts'] })
       queryClient.invalidateQueries({ queryKey: ['admin-stats'] })
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Erro ao salvar o arquivo.')
     } finally {
       setSaving(false)
     }
@@ -434,6 +466,9 @@ export function AdminArtsSection() {
           <Button onClick={() => setBulkOpen(true)} variant="outline" className="h-10 rounded-xl border-orange-300 font-black text-orange-600 hover:bg-orange-50">
             <Images className="mr-1.5 h-4 w-4" /> Enviar várias (até 100)
           </Button>
+          <Button onClick={openBocao} variant="outline" className="h-10 rounded-xl border-orange-300 bg-orange-50 font-black text-orange-700 hover:bg-orange-100">
+            <Images className="mr-1.5 h-4 w-4" /> Bocão
+          </Button>
           <Button onClick={openNew} className="h-10 rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 font-black shadow-md shadow-orange-500/25">
             <Plus className="mr-1.5 h-4 w-4" /> Nova arte
           </Button>
@@ -491,6 +526,7 @@ export function AdminArtsSection() {
         <span className="mr-1 inline-flex items-center gap-1.5 text-xs font-extrabold text-zinc-700"><ImageOff className="h-4 w-4 text-orange-500" /> Revisar cadastros</span>
         <button type="button" aria-pressed={filterCategory === 'none'} onClick={() => { changeFilter(setFilterCategory, filterCategory === 'none' ? 'all' : 'none'); setFilterQuality('all') }} className={cn('rounded-lg border px-3 py-2 text-xs font-bold transition-colors', filterCategory === 'none' ? 'border-orange-400 bg-orange-500 text-white' : 'border-zinc-200 bg-zinc-50 text-zinc-600 hover:border-orange-300 hover:text-orange-700')}>Sem categoria</button>
         <button type="button" aria-pressed={filterQuality === 'rejected'} onClick={() => changeFilter(setFilterQuality, filterQuality === 'rejected' ? 'all' : 'rejected')} className={cn('rounded-lg border px-3 py-2 text-xs font-bold', filterQuality === 'rejected' ? 'bg-orange-500 text-white' : 'border-zinc-200 bg-zinc-50 text-zinc-600')}>Artes reprovadas</button>
+        <button type="button" aria-pressed={search.toLowerCase() === BOCAO_MARKER} onClick={() => { setSearch(search.toLowerCase() === BOCAO_MARKER ? '' : BOCAO_MARKER); setPage(1) }} className={cn('rounded-lg border px-3 py-2 text-xs font-bold', search.toLowerCase() === BOCAO_MARKER ? 'bg-orange-500 text-white' : 'border-zinc-200 bg-zinc-50 text-zinc-600')}>Bocões cadastrados</button>
         <button type="button" aria-pressed={filterQuality === 'no-tags'} onClick={() => { changeFilter(setFilterQuality, filterQuality === 'no-tags' ? 'all' : 'no-tags'); setFilterCategory('all') }} className={cn('rounded-lg border px-3 py-2 text-xs font-bold transition-colors', filterQuality === 'no-tags' ? 'border-orange-400 bg-orange-500 text-white' : 'border-zinc-200 bg-zinc-50 text-zinc-600 hover:border-orange-300 hover:text-orange-700')}>Sem tags</button>
         <div className="ml-auto inline-flex shrink-0 gap-1 rounded-xl bg-zinc-100 p-1" role="group" aria-label="Visualização das artes">
           <button type="button" aria-pressed={viewMode === 'list'} aria-label="Visualizar artes em lista" title="Modo lista" onClick={() => setViewMode('list')} className={cn('flex h-8 items-center gap-1.5 rounded-lg px-2.5 text-xs font-bold', viewMode === 'list' ? 'bg-white text-orange-600 shadow-sm' : 'text-zinc-500 hover:text-zinc-800')}><List className="h-4 w-4" /><span className="hidden sm:inline">Lista</span></button>
@@ -573,6 +609,7 @@ export function AdminArtsSection() {
                 <div className="flex min-h-6 flex-wrap gap-1">
                   {art.category ? <Badge className="bg-orange-50 text-[10px] font-bold text-orange-700">{art.category.emoji} {art.category.name}</Badge> : <Badge className="bg-rose-50 text-[10px] text-rose-600">Sem categoria</Badge>}
                   {art.seasonalEvent && <Badge variant="outline" className="text-[10px] text-zinc-600">{art.seasonalEvent.emoji} {art.seasonalEvent.name}</Badge>}
+                  {isBocaoTags(art.tags.map(t => t.name)) && <Badge className="bg-orange-100 text-[9px] font-black text-orange-700">Bocão · Arte {formatArtCode(bocaoParentFromTags(art.tags.map(t => t.name)))}</Badge>}
                   {art.isRejected && <Badge className="bg-red-100 text-[10px] text-red-700">Design reprovado</Badge>}
                   {art.tags.length === 0 && <Badge className="bg-amber-50 text-[10px] text-amber-700">Sem tags</Badge>}
                 </div>
@@ -678,14 +715,20 @@ export function AdminArtsSection() {
         <DialogContent className="max-h-[92vh] max-w-lg overflow-y-auto rounded-3xl p-6">
           <DialogHeader>
             <DialogTitle className="text-lg font-black text-zinc-950">
-              {form.id ? 'Editar arte' : 'Nova arte no acervo'}
+              {form.isBocao ? (form.id ? 'Editar Bocão' : 'Novo Bocão') : (form.id ? 'Editar arte' : 'Nova arte no acervo')}
             </DialogTitle>
           </DialogHeader>
 
           <div className="space-y-4">
+            {form.isBocao && <div className="rounded-2xl border border-orange-200 bg-orange-50 p-4">
+              <p className="text-sm font-black text-orange-800">Arte complementar · Bocão</p>
+              <p className="mt-1 text-xs leading-relaxed text-orange-900/80">Envie o arquivo complementar e indique o código da arte principal. O Bocão ficará na aba própria e terá download individual. Sem mudanças na estrutura do banco.</p>
+              <Label htmlFor="bocao-linked-code" className="mt-3 block text-xs font-black">Código da arte principal *</Label>
+              <Input id="bocao-linked-code" value={form.linkedArtCode} onChange={e => setForm(f => ({ ...f, linkedArtCode: e.target.value }))} placeholder="Ex.: CG-0042" className="mt-1 rounded-xl bg-white" />
+            </div>}
             {/* Upload */}
             <div>
-              <Label className="text-xs font-black uppercase tracking-wide text-zinc-500">Imagem (21×9,5 recomendado)</Label>
+              <Label className="text-xs font-black uppercase tracking-wide text-zinc-500">{form.isBocao ? 'Arquivo do Bocão (PNG, JPG ou WebP)' : 'Imagem (21×9,5 recomendado)'}</Label>
               <input
                 ref={fileRef}
                 type="file"
@@ -727,11 +770,11 @@ export function AdminArtsSection() {
             </div>
 
             <div className="space-y-1.5">
-              <Label className="text-xs font-black uppercase tracking-wide text-zinc-500">Título</Label>
-              <Input value={form.title} onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))} placeholder="Ex: Casal Flork — Amor de Verdade" className="rounded-xl" />
+              <Label className="text-xs font-black uppercase tracking-wide text-zinc-500">{form.isBocao ? 'Descrição do Bocão (opcional)' : 'Título'}</Label>
+              <Input value={form.title} onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))} placeholder={form.isBocao ? "Ex.: Parte interna e fundo da arte" : "Ex: Casal Flork — Amor de Verdade"} className="rounded-xl" />
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
+            {!form.isBocao && <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
                 <Label className="text-xs font-black uppercase tracking-wide text-zinc-500">Categoria</Label>
                 <Select value={form.categoryId} onValueChange={(v) => setForm((f) => ({ ...f, categoryId: v }))}>
@@ -764,7 +807,7 @@ export function AdminArtsSection() {
                   </SelectContent>
                 </Select>
               </div>
-            </div>
+            </div>}
 
             <div className="space-y-1.5">
               <Label className="text-xs font-black uppercase tracking-wide text-zinc-500">Tags (Enter para adicionar)</Label>
@@ -809,20 +852,20 @@ export function AdminArtsSection() {
               )}
             </div>
 
-            <div className="flex items-center justify-between rounded-xl border border-red-200 bg-red-50/70 px-3.5 py-3">
+            {!form.isBocao && <div className="flex items-center justify-between rounded-xl border border-red-200 bg-red-50/70 px-3.5 py-3">
               <div><p className="text-sm font-extrabold text-red-800">Design reprovado · sub-biblioteca</p><p className="text-xs text-zinc-600">Fica disponível apenas na coleção Artes reprovadas. Não aparece na biblioteca principal.</p></div>
               <Switch checked={form.isRejected} onCheckedChange={(v) => setForm((f) => ({ ...f, isRejected: v }))} />
-            </div>
+            </div>}
 
-            <div className="flex items-center justify-between rounded-xl border border-zinc-200 bg-zinc-50 px-3.5 py-3">
+            {!form.isBocao && <div className="flex items-center justify-between rounded-xl border border-zinc-200 bg-zinc-50 px-3.5 py-3">
               <div>
                 <p className="text-sm font-bold text-zinc-800">Marcar como lançamento</p>
                 <p className="text-xs text-zinc-400">Aparece na aba Lançamentos com selo NOVO</p>
               </div>
               <Switch checked={form.isLaunch} onCheckedChange={(v) => setForm((f) => ({ ...f, isLaunch: v }))} />
-            </div>
+            </div>}
 
-            <div className="flex items-center justify-between rounded-xl border border-amber-200 bg-amber-50/60 px-3.5 py-3">
+            {!form.isBocao && <div className="flex items-center justify-between rounded-xl border border-amber-200 bg-amber-50/60 px-3.5 py-3">
               <div>
                 <p className="flex items-center gap-1.5 text-sm font-bold text-zinc-800">
                   <Star className="h-4 w-4 fill-amber-400 text-amber-500" /> Marcar como Selecionada
@@ -830,11 +873,11 @@ export function AdminArtsSection() {
                 <p className="text-xs text-zinc-500">Arte especial: aparece na aba Selecionadas do portal</p>
               </div>
               <Switch checked={form.isSelected} onCheckedChange={(v) => setForm((f) => ({ ...f, isSelected: v }))} />
-            </div>
+            </div>}
 
-            <Button onClick={save} disabled={saving} className="h-11 w-full rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 font-black">
+            <Button onClick={save} disabled={saving || uploading} className="h-11 w-full rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 font-black">
               {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
-              {form.id ? 'Salvar alterações' : 'Publicar arte'}
+              {form.id ? 'Salvar alterações' : form.isBocao ? 'Publicar Bocão' : 'Publicar arte'}
             </Button>
           </div>
         </DialogContent>

@@ -22,6 +22,7 @@ import {
   FileDown,
   SearchX,
   Settings,
+  BellRing,
   ShieldAlert,
   ShieldCheck,
   ShoppingBag,
@@ -52,6 +53,7 @@ import { LandingAnalyticsPanel } from '@/components/admin/LandingAnalyticsPanel'
 import { AdminSeoSection } from '@/components/admin/AdminSeoSection'
 import { AdminCouponsSection } from '@/components/admin/AdminCouponsSection'
 import { AdminMercadoPagoSection } from '@/components/admin/AdminMercadoPagoSection'
+import { AdminAnnouncementSection } from '@/components/admin/AdminAnnouncementSection'
 import { AdminEnhanceSection, AdminSearchMissesSection, AdminSecuritySection } from '@/components/views/AdminGrowthSections'
 import { useStore } from '@/lib/store'
 import { formatBRL } from '@/lib/types'
@@ -70,6 +72,7 @@ export type AdminSection =
   | 'melhorias'
   | 'seguranca'
   | 'settings'
+  | 'avisos'
   | 'seo'
   | 'coupons'
   | 'mercadopago'
@@ -88,6 +91,7 @@ const SECTIONS: { id: AdminSection; label: string; icon: React.ElementType }[] =
   { id: 'buscas', label: 'Buscas sem resultado', icon: SearchX },
   { id: 'melhorias', label: 'Melhorias de Arte', icon: Wand2 },
   { id: 'seguranca', label: 'Segurança', icon: ShieldAlert },
+  { id: 'avisos', label: 'Avisos / Pop-up', icon: BellRing },
   { id: 'settings', label: 'Configurações', icon: Settings },
   { id: 'seo', label: 'SEO e Integrações', icon: Globe },
 ]
@@ -249,6 +253,7 @@ export function AdminView() {
             {section === 'mercadopago' && <AdminMercadoPagoSection />}
             {section === 'coupons' && <AdminCouponsSection />}
             {section === 'settings' && <AdminSettingsSection />}
+            {section === 'avisos' && <AdminAnnouncementSection />}
           </motion.div>
         </main>
       </div>

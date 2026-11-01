@@ -17,7 +17,7 @@ export async function GET(req: Request) {
   if (!session) return jsonError('Entre na sua conta para consultar o acervo', 401)
   if (!session.hasAccess && session.role !== 'ADMIN') return jsonError('Acesso necessário para consultar o acervo', 403)
 
-  const allowedTabs = new Set(['todas', 'lancamentos', 'selecionadas', 'sazonal', 'favoritas', 'downloads', 'reprovadas'])
+  const allowedTabs = new Set(['todas', 'lancamentos', 'selecionadas', 'sazonal', 'favoritas', 'downloads', 'reprovadas', 'bocoes'])
   const tabParam = url.searchParams.get('tab') || 'todas'
   const tab = allowedTabs.has(tabParam) ? tabParam : 'todas'
   const q = (url.searchParams.get('q') || '').trim().slice(0, 160)

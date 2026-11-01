@@ -52,6 +52,7 @@ export function ArtPreviewDialog({
           </div>
           <div className="flex flex-col gap-4 p-5 sm:p-6">
             <div className="flex flex-wrap gap-1.5">
+              {art.title.startsWith('Bocão da arte ') && <span className="inline-flex items-center rounded-full bg-orange-500/15 px-2.5 py-1 text-[10px] font-black uppercase text-orange-200">Bocão · Arte complementar</span>}
               {art.isLaunch && <span className="inline-flex items-center gap-1 rounded-full bg-orange-100 px-2.5 py-1 text-[10px] font-black uppercase text-orange-700"><Flame className="h-3 w-3" /> Novo</span>}
               {art.isSelected && <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2.5 py-1 text-[10px] font-black uppercase text-amber-800"><Star className="h-3 w-3" /> Selecionada</span>}
             </div>
@@ -74,7 +75,7 @@ export function ArtPreviewDialog({
               {art.tags.map((tag) => <button key={tag.id} onClick={() => { onTag(tag.id); onOpenChange(false) }} className="inline-flex items-center gap-1 rounded-lg border border-white/15 px-2.5 py-1.5 text-[11px] font-semibold text-slate-400 hover:border-orange-200 hover:bg-orange-50 hover:text-orange-700"><Tag className="h-3 w-3" /> {tag.name}</button>)}
             </div>
             <div className="mt-auto flex gap-2 border-t border-white/10 pt-4">
-              <Button disabled={demo || downloadState === 'loading'} onClick={() => onDownload(art)} className="h-12 flex-1 rounded-xl bg-orange-500 font-black text-white hover:bg-orange-600">{demo ? <><EyeOff className="mr-2 h-4 w-4" /> Demo</> : downloadState === 'loading' ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Preparando...</> : downloadState === 'done' ? <><Check className="mr-2 h-4 w-4" /> Baixar novamente</> : <><Download className="mr-2 h-4 w-4" /> Baixar arte</>}</Button>
+              <Button disabled={demo || downloadState === 'loading'} onClick={() => onDownload(art)} className="h-12 flex-1 rounded-xl bg-orange-500 font-black text-white hover:bg-orange-600">{demo ? <><EyeOff className="mr-2 h-4 w-4" /> Demo</> : downloadState === 'loading' ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Preparando...</> : downloadState === 'done' ? <><Check className="mr-2 h-4 w-4" /> Baixar novamente</> : <><Download className="mr-2 h-4 w-4" /> {art.title.startsWith('Bocão da arte ') ? 'Baixar Bocão' : 'Baixar arte'}</>}</Button>
               {!demo && <Button variant="outline" aria-label={art.favorited ? 'Remover dos favoritos' : 'Adicionar aos favoritos'} title={art.favorited ? 'Remover dos favoritos' : 'Adicionar aos favoritos'} onClick={() => onFavorite(art)} className="h-11 w-11 rounded-xl border-white/15 p-0"><Heart className={cn('h-4 w-4', art.favorited ? 'fill-rose-500 text-rose-500' : 'text-slate-400')} /></Button>}
             </div>
             {demo && <DemoConversionActions />}

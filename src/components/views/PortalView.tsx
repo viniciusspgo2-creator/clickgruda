@@ -17,6 +17,7 @@ import {
   Flame,
   Heart,
   LayoutGrid,
+  Images,
   Lightbulb,
   Loader2,
   LogOut,
@@ -58,6 +59,7 @@ import { DemoConversionActions } from '@/components/portal/DemoConversionActions
 import { EnhanceRequestDialog } from '@/components/portal/EnhanceRequestDialog'
 import { LoadMoreFooter } from '@/components/shared/LoadMoreFooter'
 import { ZipDownloadDialog } from '@/components/portal/ZipDownloadDialog'
+import { AnnouncementDialog } from '@/components/portal/AnnouncementDialog'
 import { WHATSAPP, WHATSAPP_MESSAGES } from '@/lib/site'
 import { formatArtTitle } from '@/lib/format-art-title'
 import { getCategoryIcon } from '@/lib/category-icons'
@@ -74,6 +76,7 @@ const TABS: { id: PortalTab; label: string; icon: React.ElementType }[] = [
   { id: 'lancamentos', label: 'Lançamentos', icon: Flame },
   { id: 'selecionadas', label: 'Selecionadas', icon: Star },
   { id: 'reprovadas', label: 'Artes reprovadas', icon: EyeOff },
+  { id: 'bocoes', label: 'Bocão', icon: Images },
   { id: 'sazonal', label: 'Sazonal', icon: CalendarHeart },
   { id: 'favoritas', label: 'Favoritas', icon: Heart },
   { id: 'downloads', label: 'Meus downloads', icon: Download },
@@ -489,7 +492,7 @@ export function PortalView() {
             {TABS.map((item) => {
               const active = tab === item.id
               const restricted = Boolean(user.isDemo && ['favoritas', 'downloads'].includes(item.id))
-              const count = item.id === 'todas' ? counts?.arts : item.id === 'lancamentos' ? counts?.lancamentos : item.id === 'selecionadas' ? counts?.selecionadas : item.id === 'reprovadas' ? counts?.reprovadas : item.id === 'favoritas' ? counts?.favoritas : item.id === 'downloads' ? counts?.minhasDownloads : undefined
+              const count = item.id === 'todas' ? counts?.arts : item.id === 'lancamentos' ? counts?.lancamentos : item.id === 'selecionadas' ? counts?.selecionadas : item.id === 'reprovadas' ? counts?.reprovadas : item.id === 'bocoes' ? counts?.bocoes : item.id === 'favoritas' ? counts?.favoritas : item.id === 'downloads' ? counts?.minhasDownloads : undefined
               return (
                 <button key={item.id} type="button" aria-current={active ? 'page' : undefined} aria-disabled={restricted}
                   onClick={() => restricted ? toast.info('Este recurso fica disponível após ativar o acesso.') : setFilter({ tab: item.id, ...(item.id === 'todas' ? { sort: 'recentes' } : {}), ...(item.id !== 'sazonal' ? { seasonalEventId: null } : {}) })}
@@ -676,6 +679,8 @@ export function PortalView() {
                       ? counts?.selecionadas
                       : t.id === 'reprovadas'
                     ? counts?.reprovadas
+                    : t.id === 'bocoes'
+                      ? counts?.bocoes
                     : t.id === 'favoritas'
                       ? counts?.favoritas
                       : t.id === 'downloads'
@@ -738,7 +743,7 @@ export function PortalView() {
           <div className="cg-hero-seamless">
             {/* A composição de fundo é UMA imagem inteira: sem colunas, cortes ou zoom. */}
             <img
-              src="/uploads/cg-hero-fundo-limpo.webp"
+              src="/uploads/cg-hero-mascote-cadeira-2026.webp"
               alt=""
               className="cg-hero-seamless-image"
               width={2048}
@@ -955,6 +960,7 @@ export function PortalView() {
             {tab === 'sazonal' && 'Artes sazonais'}
             {tab === 'favoritas' && 'Suas favoritas'}
             {tab === 'downloads' && 'Baixadas por você'}
+            {tab === 'bocoes' && 'Bocões complementares às artes'}
           </h1>
           <span className="text-sm font-semibold text-slate-300">
             {total} {total === 1 ? 'arte' : 'artes'}
@@ -1153,15 +1159,17 @@ export function PortalView() {
             <DialogDescription className="max-w-full text-left text-[13px] leading-relaxed text-slate-300 sm:text-sm">{user.isDemo ? 'O gerador de mockups 3D é um recurso para membros. A demonstração permite conhecer a biblioteca; o uso do gerador depende da ativação do seu acesso.' : <>O mockup é <strong className="text-white">premium</strong> e você, assinante, tem acesso gratuito. Se ainda não recebeu seu código de acesso, solicite gratuitamente ao suporte.</>}</DialogDescription>
           </DialogHeader>
           {mockupArt && <div className="min-w-0 max-w-full rounded-xl border border-orange-400/25 bg-orange-400/[.07] p-3 text-xs leading-relaxed text-slate-200 sm:p-4"><strong className="mb-1 block break-words text-orange-200">Arte selecionada: {formatArtTitle(mockupArt.title)}</strong><p>O Studio não importa a estampa automaticamente. {user.isDemo ? 'Na demonstração, conheça o acervo. Após ativar seu acesso, baixe a arte e envie o arquivo ao Studio.' : 'Baixe a arte pelo botão abaixo e envie o arquivo ao Studio para visualizar a caneca em 3D.'}</p></div>}
-          <DialogFooter className="cg-access-actions mt-1 grid min-w-0 grid-cols-1 gap-2 sm:grid-cols-2">
+          <DialogFooter className={`cg-access-actions mt-1 grid min-w-0 grid-cols-1 gap-2 ${mockupArt ? "sm:grid-cols-3" : "sm:grid-cols-2"}`}>
             {user.isDemo ? <div className="min-w-0 sm:col-span-2"><DemoConversionActions /></div> : <>
               <Button type="button" variant="outline" onClick={() => window.open(WHATSAPP.link(mockupSupportMessage), '_blank', 'noopener,noreferrer')} className="min-h-11 h-auto min-w-0 whitespace-normal rounded-xl border-white/20 bg-white/5 px-3 py-2 text-center text-slate-100 hover:bg-white/10 hover:text-white">Solicitar código grátis</Button>
               {mockupArt && <Button type="button" variant="outline" disabled={downloadStates[mockupArt.id] === 'loading'} onClick={() => handleDownload(mockupArt)} className="min-h-11 h-auto min-w-0 whitespace-normal rounded-xl border-white/20 bg-white/5 px-3 py-2 text-center text-slate-100 hover:bg-white/10 hover:text-white"><Download className="mr-1.5 h-4 w-4 shrink-0" /> Baixar esta arte</Button>}
-              <Button type="button" onClick={() => { setMockupDialogOpen(false); openExternal('https://clicktools.vercel.app/', 'mockup_platform_open') }} className="min-h-11 h-auto min-w-0 whitespace-normal rounded-xl bg-orange-500 px-3 py-2 text-center font-bold text-white hover:bg-orange-600 sm:col-span-2">Abrir Studio Mockup 3D</Button>
+              <Button type="button" onClick={() => { setMockupDialogOpen(false); openExternal('https://clicktools.vercel.app/', 'mockup_platform_open') }} className="min-h-11 h-auto min-w-0 whitespace-normal rounded-xl bg-orange-500 px-3 py-2 text-center font-bold text-white hover:bg-orange-600">Abrir Studio Mockup 3D</Button>
             </>}
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <AnnouncementDialog userId={user.id} />
 
       {/* ================= SUGESTÃO DE TEMA (envia ao Admin Master) ================= */}
       <ArtPreviewDialog art={previewArt} open={!!previewArt} onOpenChange={(open) => !open && setPreviewId(null)} demo={!!user.isDemo} downloadState={previewArt ? downloadStates[previewArt.id] || 'idle' : 'idle'} onDownload={handleDownload} onFavorite={toggleFavorite} onCategory={toggleCategory} onTag={viewTag} onSeasonal={viewSeasonal} />
