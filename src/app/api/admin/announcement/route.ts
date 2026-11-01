@@ -1,5 +1,5 @@
 import { getSessionUser, jsonError } from '@/lib/auth'
-import { ANNOUNCEMENT_KINDS, readAnnouncement, writeAnnouncement, type AnnouncementKind, type AnnouncementContent } from '@/lib/announcement'
+import { ANNOUNCEMENT_KINDS, readAnnouncement, writeAnnouncement, type AnnouncementKind, type AnnouncementContent, type PortalAnnouncement } from '@/lib/announcement'
 
 export const dynamic = 'force-dynamic'
 
@@ -19,7 +19,7 @@ export async function PUT(req: Request) {
   const kind = safeKind(body.kind)
   const title = String(body.title ?? '').trim()
   const message = String(body.message ?? '').trim()
-  const layout = body.layout === 'double' ? 'double' : 'single'
+  const layout: NonNullable<PortalAnnouncement['layout']> = body.layout === 'double' ? 'double' : 'single'
   const enabled = body.enabled === true
   const rawSecondary = body.secondary && typeof body.secondary === 'object' && !Array.isArray(body.secondary)
     ? body.secondary as Record<string, unknown> : {}
@@ -35,7 +35,7 @@ export async function PUT(req: Request) {
     return jsonError('Preencha título e mensagem do segundo aviso para publicar o pop-up duplo', 400)
   const previous = await readAnnouncement()
   const revision = enabled ? `${Date.now()}-${Math.random().toString(36).slice(2,9)}` : previous.revision
-  const announcement = { kind, title, message, enabled, revision, layout, secondary }
+  const announcement: PortalAnnouncement = { kind, title, message, enabled, revision, layout, secondary }
   await writeAnnouncement(announcement)
   return Response.json({ announcement }, { headers: { 'Cache-Control': 'no-store' } })
 }
