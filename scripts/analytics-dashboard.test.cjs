@@ -31,8 +31,8 @@ function fakeDb() {
     },
     $queryRaw: async (strings) => {
       const sql = strings.join('?')
-      if (sql.includes('AS "uniqueVisitors"') && !sql.includes('to_char')) return [{ views: 7n, uniqueVisitors: 3n, clicks: 2n, faq: 1n, scrolls: 0n }]
-      if (sql.includes('to_char')) return [{ day: '2026-10-24', views: 7n, uniqueVisitors: 3n, clicks: 2n }]
+      if (sql.includes('AS "uniqueVisitors"') && !sql.includes('to_char')) return [{ views: 7n, uniqueVisitors: 3n, clicks: 2n, faq: 1n, scrolls: 0n, demoEntries: 4n, demoVisitors: 2n }]
+      if (sql.includes('to_char')) return [{ day: '2026-10-24', views: 7n, uniqueVisitors: 3n, clicks: 2n, demoEntries: 3n }]
       return [{ location: 'header', count: 2n }]
     },
   }
@@ -50,7 +50,7 @@ const req = (url, body, extras = {}) => new Request(url, { method: 'POST', heade
 // Testa uma sequência real das rotas sem conectar ao Neon.
 test('Tipo do gráfico diário evita inferência never[] no build TypeScript', () => {
   const source = fs.readFileSync(path.join(__dirname, '..', 'src/app/api/admin/analytics/route.ts'), 'utf8')
-  assert.match(source, /const trend:\s*Array<\{\s*day:\s*string;\s*views:\s*number;\s*uniqueVisitors:\s*number;\s*clicks:\s*number\s*\}>\s*=\s*\[\]/)
+  assert.match(source, /const trend:\s*Array<\{\s*day:\s*string;\s*views:\s*number;\s*uniqueVisitors:\s*number;\s*clicks:\s*number;\s*demoEntries:\s*number\s*\}>\s*=\s*\[\]/)
 })
 
 test('Admin ativa e desativa exclusão do navegador, com histórico corretamente filtrável', async () => {
@@ -118,6 +118,9 @@ test('API de relatório responde filtros e preserva números agregados', async (
   assert.equal(result.views, 7)
   assert.equal(result.uniqueVisitors, 3)
   assert.equal(result.clicks, 2)
+  assert.equal(result.demoEntries, 4)
+  assert.equal(result.demoVisitors, 2)
+  assert.equal(result.trend[1].demoEntries, 3)
   assert.equal(result.trend.length, 2)
   assert.equal(result.trend[1].day, '2026-10-24')
   assert.equal(result.clickRate, 28.6)

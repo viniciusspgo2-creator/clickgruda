@@ -47,8 +47,8 @@ export async function GET(req: Request) {
   const ignoredVisitors = readStringList(savedBrowsers?.value).filter(v => /^[0-9a-f]{64}$/.test(v))
   const ignoredIps = readStringList(savedIps?.value)
 
-  type Totals = { views: bigint; uniqueVisitors: bigint; clicks: bigint; faq: bigint; scrolls: bigint }
-  type Day = { day: string; views: bigint; uniqueVisitors: bigint; clicks: bigint }
+  type Totals = { views: bigint; uniqueVisitors: bigint; clicks: bigint; faq: bigint; scrolls: bigint; demoEntries: bigint; demoVisitors: bigint }
+  type Day = { day: string; views: bigint; uniqueVisitors: bigint; clicks: bigint; demoEntries: bigint }
   type Top = { location: string; count: bigint }
   const [totals, byDay, topClicks] = await Promise.all([
     db.$queryRaw<Totals[]>`
@@ -56,14 +56,17 @@ export async function GET(req: Request) {
              COUNT(DISTINCT "visitorId") FILTER (WHERE name = 'landing_view') AS "uniqueVisitors",
              COUNT(*) FILTER (WHERE name = 'cta_click') AS clicks,
              COUNT(*) FILTER (WHERE name = 'faq_open') AS faq,
-             COUNT(*) FILTER (WHERE name = 'scroll_depth') AS scrolls
+             COUNT(*) FILTER (WHERE name = 'scroll_depth') AS scrolls,
+             COUNT(*) FILTER (WHERE name = 'demo_entry') AS "demoEntries",
+             COUNT(DISTINCT "visitorId") FILTER (WHERE name = 'demo_entry') AS "demoVisitors"
       FROM "SiteEvent" WHERE "createdAt" >= ${from} AND "createdAt" < ${to}
         AND NOT ("visitorId" = ANY(${ignoredVisitors}::text[]))`,
     db.$queryRaw<Day[]>`
       SELECT to_char(("createdAt" AT TIME ZONE 'UTC' AT TIME ZONE 'America/Sao_Paulo')::date, 'YYYY-MM-DD') AS day,
              COUNT(*) FILTER (WHERE name = 'landing_view') AS views,
              COUNT(DISTINCT "visitorId") FILTER (WHERE name = 'landing_view') AS "uniqueVisitors",
-             COUNT(*) FILTER (WHERE name = 'cta_click') AS clicks
+             COUNT(*) FILTER (WHERE name = 'cta_click') AS clicks,
+             COUNT(*) FILTER (WHERE name = 'demo_entry') AS "demoEntries"
       FROM "SiteEvent" WHERE "createdAt" >= ${from} AND "createdAt" < ${to}
         AND NOT ("visitorId" = ANY(${ignoredVisitors}::text[]))
       GROUP BY 1 ORDER BY 1`,
@@ -74,11 +77,11 @@ export async function GET(req: Request) {
       GROUP BY 1 ORDER BY count DESC LIMIT 8`,
   ])
   const daily = new Map(byDay.map(d => [d.day, d]))
-  const trend: Array<{ day: string; views: number; uniqueVisitors: number; clicks: number }> = []
+  const trend: Array<{ day: string; views: number; uniqueVisitors: number; clicks: number; demoEntries: number }> = []
   for (let t = Date.parse(`${start}T12:00:00Z`); t <= Date.parse(`${end}T12:00:00Z`); t += DAY_MS) {
     const day = isoDay(new Date(t))
     const row = daily.get(day)
-    trend.push({ day, views: Number(row?.views ?? 0), uniqueVisitors: Number(row?.uniqueVisitors ?? 0), clicks: Number(row?.clicks ?? 0) })
+    trend.push({ day, views: Number(row?.views ?? 0), uniqueVisitors: Number(row?.uniqueVisitors ?? 0), clicks: Number(row?.clicks ?? 0), demoEntries: Number(row?.demoEntries ?? 0) })
   }
   const total = totals[0]
   const visits = Number(total?.views ?? 0)
@@ -87,6 +90,7 @@ export async function GET(req: Request) {
   return Response.json({
     range, start, end, views: visits, uniqueVisitors: Number(total?.uniqueVisitors ?? 0),
     clicks, faq: Number(total?.faq ?? 0), scrolls: Number(total?.scrolls ?? 0),
+    demoEntries: Number(total?.demoEntries ?? 0), demoVisitors: Number(total?.demoVisitors ?? 0),
     clickRate: visits ? Math.round((clicks / visits) * 1000) / 10 : 0,
     trend, topClicks: topClicks.map(e => ({ location: e.location, count: Number(e.count) })),
     browserExcluded: isInternalCookie(cookieStore.get(ANALYTICS_IGNORE_COOKIE)?.value),

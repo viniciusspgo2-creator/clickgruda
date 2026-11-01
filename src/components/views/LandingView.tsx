@@ -83,10 +83,10 @@ export function LandingView() {
     <main>
       <section className="cg-home-hero" aria-labelledby="home-hero-title">
         <picture className="cg-home-hero-art" aria-hidden="true">
-          <source media="(max-width: 1023px)" srcSet="/uploads/rebrand/hero-mascote-cadeira-mobile-2026.webp" />
+          <source media="(max-width: 1023px)" srcSet="/uploads/rebrand/hero-mascote-cadeira-mobile-2026.webp?v=2" />
           {/* Precompressed art direction: load only the matching mobile/desktop asset. */}
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/uploads/rebrand/hero-mascote-cadeira-landing-2026.webp" width={1774} height={887} alt="" fetchPriority="high" loading="eager" decoding="async" />
+          <img src="/uploads/rebrand/hero-mascote-cadeira-landing-2026.webp?v=2" width={1774} height={887} alt="" fetchPriority="high" loading="eager" decoding="async" />
         </picture>
         <div className="cg-home-hero-shade" aria-hidden="true" />
         <div className="cg-home-hero-inner">

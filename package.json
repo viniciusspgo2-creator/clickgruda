@@ -13,7 +13,7 @@
     "check:source": "node scripts/check-source.mjs",
     "check:types": "tsc --noEmit",
     "test:discovery": "node --test scripts/discovery.test.mjs",
-    "test:analytics": "node --test scripts/analytics-dashboard.test.cjs",
+    "test:analytics": "node --test scripts/analytics-dashboard.test.cjs scripts/demo-entry.test.cjs",
     "test:upload-limit": "node --test scripts/upload-limit.test.cjs",
     "test:r2-upload": "node --test scripts/r2-upload.test.cjs",
     "test:seo": "node --test scripts/seo-integrations.test.cjs",

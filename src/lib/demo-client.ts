@@ -5,7 +5,18 @@ import { useStore, type AuthMode, type SessionUser } from '@/lib/store'
 import { track } from '@/lib/analytics'
 
 export async function enterPublicDemo(queryClient: QueryClient, location: string) {
-  const response = await fetch('/api/auth/demo', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' })
+  let visitorId: string | undefined
+  try {
+    visitorId = window.localStorage.getItem('cg-anon-visitor') || undefined
+    if (!visitorId) {
+      visitorId = window.crypto.randomUUID()
+      window.localStorage.setItem('cg-anon-visitor', visitorId)
+    }
+  } catch { /* Navegadores com armazenamento bloqueado continuam podendo acessar a DEMO. */ }
+  const response = await fetch('/api/auth/demo', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ visitorId, location }),
+  })
   const data = await response.json()
   if (!response.ok || !data.user?.hasAccess) throw new Error(data.error || 'Não foi possível abrir a demonstração.')
   // Limpa artes e dados da identidade anterior antes de montar o portal.

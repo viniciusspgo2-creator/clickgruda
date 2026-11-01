@@ -16,9 +16,11 @@ type AnalyticsData = {
   views: number
   uniqueVisitors: number
   clicks: number
+  demoEntries: number
+  demoVisitors: number
   faq: number
   clickRate: number
-  trend: { day: string; views: number; uniqueVisitors: number; clicks: number }[]
+  trend: { day: string; views: number; uniqueVisitors: number; clicks: number; demoEntries: number }[]
   topClicks: { location: string; count: number }[]
   browserExcluded: boolean
   ignoredIps: string[]
@@ -126,6 +128,23 @@ export function LandingAnalyticsPanel() {
         </div>)}
       </div>
 
+      <div className="rounded-xl border border-orange-200 bg-orange-50/40 p-3 sm:p-4" aria-label="Acessos à conta de demonstração">
+        <h4 className="flex items-center gap-2 text-sm font-extrabold text-zinc-900"><Users className="h-4 w-4 text-orange-600" /> Acessos à DEMO</h4>
+        <p className="mt-1 text-xs text-zinc-600">Acessos liberados à demonstração pública no período selecionado. Não são apenas cliques no botão.</p>
+        <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
+          <div className="rounded-xl border border-orange-200 bg-white p-4">
+            <p className="text-xs font-semibold text-zinc-600">Entradas na conta DEMO</p>
+            <p className="mt-1 text-3xl font-black tabular-nums text-zinc-900">{analyticsQ.isLoading ? '…' : money(analytics?.demoEntries)}</p>
+            <p className="mt-1 text-[11px] text-zinc-500">Total de acessos concluídos, incluindo retornos.</p>
+          </div>
+          <div className="rounded-xl border border-orange-200 bg-white p-4">
+            <p className="text-xs font-semibold text-zinc-600">Visitantes distintos na DEMO</p>
+            <p className="mt-1 text-3xl font-black tabular-nums text-zinc-900">{analyticsQ.isLoading ? '…' : money(analytics?.demoVisitors)}</p>
+            <p className="mt-1 text-[11px] text-zinc-500">Estimativa de navegadores diferentes, não pessoas identificadas.</p>
+          </div>
+        </div>
+      </div>
+
       <div className="rounded-xl border border-zinc-200 p-3 sm:p-4">
         <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
           <h4 className="text-sm font-extrabold text-zinc-800">Evolução de visitas e interações</h4>
@@ -142,6 +161,7 @@ export function LandingAnalyticsPanel() {
               <Line type="monotone" name="Visitas" dataKey="views" stroke="#f97316" strokeWidth={2.5} dot={analytics.trend.length <= 7} isAnimationActive={false}/>
               <Line type="monotone" name="Únicos por dia" dataKey="uniqueVisitors" stroke="#6366f1" strokeWidth={2} dot={false} isAnimationActive={false}/>
               <Line type="monotone" name="Cliques" dataKey="clicks" stroke="#10b981" strokeWidth={2} dot={false} isAnimationActive={false}/>
+              <Line type="monotone" name="Entradas DEMO" dataKey="demoEntries" stroke="#a855f7" strokeWidth={2} dot={false} isAnimationActive={false}/>
             </LineChart>
           </ResponsiveContainer>
         </div> : <p className="py-14 text-center text-xs text-zinc-500">Não há dados nesse período.</p>}
@@ -168,7 +188,7 @@ export function LandingAnalyticsPanel() {
           </div>
         </div>
       </div>
-      <p className="text-[11px] leading-relaxed text-zinc-500">Dados coletados desde a ativação do contador. Visitantes únicos são estimativas por navegador, não pessoas; bloqueadores e trocas de navegador podem alterar a contagem. Os totais do gráfico são por dia; somar os únicos diários não corresponde necessariamente aos únicos de todo o período. A exclusão de IP vale para eventos futuros. Desativar a exclusão deste navegador volta a considerar também seu histórico anterior. Este controle afeta as métricas internas, não as configurações do Google Analytics.</p>
+      <p className="text-[11px] leading-relaxed text-zinc-500">Dados coletados desde a ativação de cada contador; acessos à DEMO anteriores a esta atualização não podem ser recuperados. Visitantes únicos são estimativas por navegador, não pessoas; bloqueadores e trocas de navegador podem alterar a contagem. Os totais do gráfico são por dia; somar os únicos diários não corresponde necessariamente aos únicos de todo o período. A exclusão de IP vale para eventos futuros. Desativar a exclusão deste navegador volta a considerar também seu histórico anterior. Este controle afeta as métricas internas, não as configurações do Google Analytics.</p>
     </section>
   )
 }
