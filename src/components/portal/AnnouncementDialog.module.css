@@ -113,3 +113,44 @@
 @media (prefers-reduced-motion: reduce) {
   .continue, .socialLink { transition: none; }
 }
+
+/* Pop-up duplo: a composição aprovada permanece intacta, com duas informações lado a lado. */
+.doubleShell {
+  width: min(100%, 970px);
+  max-height: calc(100dvh - 32px);
+  overflow-y: auto;
+  padding: 6px;
+  scrollbar-width: thin;
+  scrollbar-color: #a95020 transparent;
+}
+.doubleGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  align-items: stretch;
+}
+.doubleCard {
+  width: 100%;
+  max-height: none;
+  min-height: 252px;
+  overflow: hidden;
+}
+.doubleCard .content { padding-bottom: 28px; }
+.doubleCard .announcementBody { min-height: 145px; }
+.doubleFooter {
+  max-width: 600px;
+  margin: 14px auto 0;
+  padding: 2px 5px 8px;
+}
+.doubleFooter .socialBox { margin: 0; }
+.doubleFooter .continue { margin-top: 11px; }
+@media (max-width: 850px) {
+  .doubleGrid { grid-template-columns: minmax(0, 1fr); gap: 12px; }
+  .doubleShell { max-width: 465px; }
+  .doubleCard { min-height: 0; }
+  .doubleCard .announcementBody { min-height: 120px; }
+}
+@media (max-width: 440px) {
+  .doubleShell { padding: 3px; }
+  .doubleCard .content { padding-bottom: 17px; }
+}
