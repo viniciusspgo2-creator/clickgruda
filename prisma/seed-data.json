@@ -1,0 +1,549 @@
+{
+  "settings": [
+    {
+      "key": "payment_provider",
+      "value": ""
+    },
+    {
+      "key": "price_cents",
+      "value": "4790"
+    },
+    {
+      "key": "mercadopago_access_token",
+      "value": ""
+    },
+    {
+      "key": "asaas_api_key",
+      "value": ""
+    },
+    {
+      "key": "asaas_sandbox",
+      "value": "true"
+    },
+    {
+      "key": "r2_enabled",
+      "value": "false"
+    },
+    {
+      "key": "r2_endpoint",
+      "value": ""
+    },
+    {
+      "key": "r2_access_key_id",
+      "value": ""
+    },
+    {
+      "key": "r2_secret_access_key",
+      "value": ""
+    },
+    {
+      "key": "r2_bucket",
+      "value": ""
+    },
+    {
+      "key": "r2_public_url",
+      "value": ""
+    },
+    {
+      "key": "pix_key",
+      "value": ""
+    },
+    {
+      "key": "pix_holder",
+      "value": ""
+    },
+    {
+      "key": "pix_manual_enabled",
+      "value": "false"
+    }
+  ],
+  "categories": [
+    {
+      "id": "cmuqda9bx0006ptd6plzxz1cl",
+      "name": "ANIMAIS",
+      "emoji": "🐾",
+      "icon": "",
+      "createdAt": "2026-10-02T02:51:54.429Z"
+    },
+    {
+      "id": "cmuqda9by0007ptd6s2apt18t",
+      "name": "COMEMORATIVAS",
+      "emoji": "🎉",
+      "icon": "",
+      "createdAt": "2026-10-02T02:51:54.430Z"
+    },
+    {
+      "id": "cmuqda9bs0002ptd6iou04ytd",
+      "name": "FLORK",
+      "emoji": "😄",
+      "icon": "",
+      "createdAt": "2026-10-02T02:51:54.424Z"
+    },
+    {
+      "id": "cmuqda9bw0005ptd6au4e6hyd",
+      "name": "FRASES",
+      "emoji": "💬",
+      "icon": "",
+      "createdAt": "2026-10-02T02:51:54.428Z"
+    },
+    {
+      "id": "cmuqda9bt0003ptd6nt813xgj",
+      "name": "PROFISSÕES",
+      "emoji": "💼",
+      "icon": "",
+      "createdAt": "2026-10-02T02:51:54.425Z"
+    },
+    {
+      "id": "cmuqda9bu0004ptd6zxrdzffp",
+      "name": "RELIGIÃO",
+      "emoji": "🙏",
+      "icon": "",
+      "createdAt": "2026-10-02T02:51:54.426Z"
+    }
+  ],
+  "tags": [
+    {
+      "id": "cmuqda9bz0008ptd6ogutq5ic",
+      "name": "amor",
+      "createdAt": "2026-10-02T02:51:54.431Z"
+    },
+    {
+      "id": "cmuqda9c00009ptd6j1g65m09",
+      "name": "casal",
+      "createdAt": "2026-10-02T02:51:54.432Z"
+    },
+    {
+      "id": "cmuqda9c0000aptd694qldxsn",
+      "name": "flork",
+      "createdAt": "2026-10-02T02:51:54.433Z"
+    },
+    {
+      "id": "cmuqda9c1000bptd6sfxvggbn",
+      "name": "café",
+      "createdAt": "2026-10-02T02:51:54.434Z"
+    },
+    {
+      "id": "cmuqda9c2000cptd66pnmxz5z",
+      "name": "amizade",
+      "createdAt": "2026-10-02T02:51:54.434Z"
+    },
+    {
+      "id": "cmuqda9c2000dptd68amwpkni",
+      "name": "enfermagem",
+      "createdAt": "2026-10-02T02:51:54.435Z"
+    },
+    {
+      "id": "cmuqda9c3000eptd6onq99beo",
+      "name": "educação",
+      "createdAt": "2026-10-02T02:51:54.436Z"
+    },
+    {
+      "id": "cmuqda9c4000fptd65n9dnh63",
+      "name": "estrada",
+      "createdAt": "2026-10-02T02:51:54.436Z"
+    },
+    {
+      "id": "cmuqda9c4000gptd62g2kcnbj",
+      "name": "fé",
+      "createdAt": "2026-10-02T02:51:54.437Z"
+    },
+    {
+      "id": "cmuqda9c5000hptd6fkzamovg",
+      "name": "versículo",
+      "createdAt": "2026-10-02T02:51:54.437Z"
+    },
+    {
+      "id": "cmuqda9c6000iptd66zpjv1jc",
+      "name": "motivacional",
+      "createdAt": "2026-10-02T02:51:54.438Z"
+    },
+    {
+      "id": "cmuqda9c7000jptd6l7s7ivpm",
+      "name": "engraçado",
+      "createdAt": "2026-10-02T02:51:54.439Z"
+    },
+    {
+      "id": "cmuqda9c8000kptd66h8wodmp",
+      "name": "gato",
+      "createdAt": "2026-10-02T02:51:54.440Z"
+    },
+    {
+      "id": "cmuqda9c8000lptd6e99p9iua",
+      "name": "mãe",
+      "createdAt": "2026-10-02T02:51:54.441Z"
+    },
+    {
+      "id": "cmuqda9cb000mptd698lus162",
+      "name": "namorados",
+      "createdAt": "2026-10-02T02:51:54.443Z"
+    },
+    {
+      "id": "cmuqda9cc000nptd6crzq8e2t",
+      "name": "natal",
+      "createdAt": "2026-10-02T02:51:54.445Z"
+    },
+    {
+      "id": "cmuqda9cd000optd6dh8j3e5n",
+      "name": "páscoa",
+      "createdAt": "2026-10-02T02:51:54.446Z"
+    },
+    {
+      "id": "cmuqda9ce000pptd6t5dz2ne4",
+      "name": "profissão",
+      "createdAt": "2026-10-02T02:51:54.447Z"
+    },
+    {
+      "id": "cmuqda9cf000qptd65q3jhk6f",
+      "name": "comemorativa",
+      "createdAt": "2026-10-02T02:51:54.447Z"
+    },
+    {
+      "id": "cmuqeknoa000fptwjtom3nzy2",
+      "name": "qa",
+      "createdAt": "2026-10-02T03:27:59.194Z"
+    }
+  ],
+  "events": [
+    {
+      "id": "cmuqda9cg000rptd6eh4pt5jt",
+      "name": "Ano Novo",
+      "emoji": "🎆",
+      "month": 1,
+      "day": 1,
+      "createdAt": "2026-10-02T02:51:54.449Z"
+    },
+    {
+      "id": "cmuqda9ch000sptd6okbzr89b",
+      "name": "Páscoa",
+      "emoji": "🐣",
+      "month": 4,
+      "day": 20,
+      "createdAt": "2026-10-02T02:51:54.450Z"
+    },
+    {
+      "id": "cmuqda9ci000tptd60t3s7jen",
+      "name": "Dia das Mães",
+      "emoji": "💐",
+      "month": 5,
+      "day": 12,
+      "createdAt": "2026-10-02T02:51:54.450Z"
+    },
+    {
+      "id": "cmuqda9cj000uptd6y1dsmsxo",
+      "name": "Dia dos Namorados",
+      "emoji": "💘",
+      "month": 6,
+      "day": 12,
+      "createdAt": "2026-10-02T02:51:54.451Z"
+    },
+    {
+      "id": "cmuqda9ck000vptd66u9t7qi0",
+      "name": "Dia dos Pais",
+      "emoji": "👨‍👧‍👦",
+      "month": 8,
+      "day": 11,
+      "createdAt": "2026-10-02T02:51:54.452Z"
+    },
+    {
+      "id": "cmuqda9cl000wptd696uggubo",
+      "name": "Dia das Crianças",
+      "emoji": "🧸",
+      "month": 10,
+      "day": 12,
+      "createdAt": "2026-10-02T02:51:54.453Z"
+    },
+    {
+      "id": "cmuqda9cm000xptd6xzwcdjw1",
+      "name": "Halloween",
+      "emoji": "🎃",
+      "month": 10,
+      "day": 31,
+      "createdAt": "2026-10-02T02:51:54.455Z"
+    },
+    {
+      "id": "cmuqda9co000yptd6l5hvmugc",
+      "name": "Black Friday",
+      "emoji": "🛒",
+      "month": 11,
+      "day": 29,
+      "createdAt": "2026-10-02T02:51:54.456Z"
+    },
+    {
+      "id": "cmuqda9co000zptd634qj1267",
+      "name": "Natal",
+      "emoji": "🎄",
+      "month": 12,
+      "day": 25,
+      "createdAt": "2026-10-02T02:51:54.457Z"
+    }
+  ],
+  "arts": [
+    {
+      "id": "cmuqda9cq0011ptd687gnm527",
+      "title": "Casal Flork — Amor de Verdade",
+      "imageUrl": "/uploads/art-flork-casal.png",
+      "isLaunch": true,
+      "downloadsCount": 5,
+      "categoryId": "cmuqda9bs0002ptd6iou04ytd",
+      "seasonalEventId": null,
+      "createdAt": "2026-10-02T02:51:54.458Z"
+    },
+    {
+      "id": "cmuqda9cs0013ptd67ta2ai3s",
+      "title": "Flork Café — Turbinado",
+      "imageUrl": "/uploads/art-flork-cafe.png",
+      "isLaunch": true,
+      "downloadsCount": 97,
+      "categoryId": "cmuqda9bs0002ptd6iou04ytd",
+      "seasonalEventId": null,
+      "createdAt": "2026-10-02T02:51:54.460Z"
+    },
+    {
+      "id": "cmuqda9ct0015ptd67bosz9tw",
+      "title": "Amigas para Sempre",
+      "imageUrl": "/uploads/art-flork-amigas.png",
+      "isLaunch": false,
+      "downloadsCount": 69,
+      "categoryId": "cmuqda9bs0002ptd6iou04ytd",
+      "seasonalEventId": null,
+      "createdAt": "2026-10-02T02:51:54.461Z"
+    },
+    {
+      "id": "cmuqda9cu0017ptd69ewe8oo3",
+      "title": "Enfermeira Coração de Ouro",
+      "imageUrl": "/uploads/art-prof-enfermeira.png",
+      "isLaunch": true,
+      "downloadsCount": 36,
+      "categoryId": "cmuqda9bt0003ptd6nt813xgj",
+      "seasonalEventId": null,
+      "createdAt": "2026-10-02T02:51:54.463Z"
+    },
+    {
+      "id": "cmuqda9cv0019ptd6cafkbfn8",
+      "title": "Professora Inspiradora",
+      "imageUrl": "/uploads/art-prof-professora.png",
+      "isLaunch": false,
+      "downloadsCount": 105,
+      "categoryId": "cmuqda9bt0003ptd6nt813xgj",
+      "seasonalEventId": null,
+      "createdAt": "2026-10-02T02:51:54.463Z"
+    },
+    {
+      "id": "cmuqda9cw001bptd6jdsh7mnt",
+      "title": "Caminhoneiro da Estrada",
+      "imageUrl": "/uploads/art-prof-caminhoneiro.png",
+      "isLaunch": false,
+      "downloadsCount": 111,
+      "categoryId": "cmuqda9bt0003ptd6nt813xgj",
+      "seasonalEventId": null,
+      "createdAt": "2026-10-02T02:51:54.465Z"
+    },
+    {
+      "id": "cmuqda9cy001dptd651nu3k8r",
+      "title": "Fé que Move Montanhas",
+      "imageUrl": "/uploads/art-relig-fe.png",
+      "isLaunch": true,
+      "downloadsCount": 62,
+      "categoryId": "cmuqda9bu0004ptd6zxrdzffp",
+      "seasonalEventId": null,
+      "createdAt": "2026-10-02T02:51:54.466Z"
+    },
+    {
+      "id": "cmuqda9cz001fptd62av7olyq",
+      "title": "Tudo Posso — Filipenses 4:13",
+      "imageUrl": "/uploads/art-relig-versiculo.png",
+      "isLaunch": false,
+      "downloadsCount": 62,
+      "categoryId": "cmuqda9bu0004ptd6zxrdzffp",
+      "seasonalEventId": null,
+      "createdAt": "2026-10-02T02:51:54.467Z"
+    },
+    {
+      "id": "cmuqda9d0001hptd69n3craob",
+      "title": "Primeiro Café, Depois os Problemas",
+      "imageUrl": "/uploads/art-frase-cafe.png",
+      "isLaunch": true,
+      "downloadsCount": 85,
+      "categoryId": "cmuqda9bw0005ptd6au4e6hyd",
+      "seasonalEventId": null,
+      "createdAt": "2026-10-02T02:51:54.469Z"
+    },
+    {
+      "id": "cmuqda9d1001jptd6n2kwuwun",
+      "title": "Modo Gato Ativado",
+      "imageUrl": "/uploads/art-animal-gato.png",
+      "isLaunch": false,
+      "downloadsCount": 82,
+      "categoryId": "cmuqda9bx0006ptd6plzxz1cl",
+      "seasonalEventId": null,
+      "createdAt": "2026-10-02T02:51:54.470Z"
+    },
+    {
+      "id": "cmuqda9d3001lptd6rcqv6hec",
+      "title": "Feliz Dia das Mães Floral",
+      "imageUrl": "/uploads/art-sazonal-maes.png",
+      "isLaunch": true,
+      "downloadsCount": 103,
+      "categoryId": "cmuqda9by0007ptd6s2apt18t",
+      "seasonalEventId": "cmuqda9ci000tptd60t3s7jen",
+      "createdAt": "2026-10-02T02:51:54.471Z"
+    },
+    {
+      "id": "cmuqda9d3001nptd6ospnmzjt",
+      "title": "Dia dos Namorados — 12 de Junho",
+      "imageUrl": "/uploads/art-sazonal-namorados.png",
+      "isLaunch": true,
+      "downloadsCount": 76,
+      "categoryId": "cmuqda9by0007ptd6s2apt18t",
+      "seasonalEventId": "cmuqda9cj000uptd6y1dsmsxo",
+      "createdAt": "2026-10-02T02:51:54.472Z"
+    },
+    {
+      "id": "cmuqda9d4001pptd6zq3yu7jz",
+      "title": "Feliz Natal Clássico",
+      "imageUrl": "/uploads/art-sazonal-natal.png",
+      "isLaunch": false,
+      "downloadsCount": 74,
+      "categoryId": "cmuqda9by0007ptd6s2apt18t",
+      "seasonalEventId": "cmuqda9co000zptd634qj1267",
+      "createdAt": "2026-10-02T02:51:54.473Z"
+    },
+    {
+      "id": "cmuqda9d6001rptd6g8a1zrxn",
+      "title": "Feliz Páscoa Coelhinho",
+      "imageUrl": "/uploads/art-sazonal-pascoa.png",
+      "isLaunch": false,
+      "downloadsCount": 67,
+      "categoryId": "cmuqda9by0007ptd6s2apt18t",
+      "seasonalEventId": "cmuqda9ch000sptd6okbzr89b",
+      "createdAt": "2026-10-02T02:51:54.474Z"
+    }
+  ],
+  "artTags": [
+    {
+      "artId": "cmuqda9cq0011ptd687gnm527",
+      "tagId": "cmuqda9bz0008ptd6ogutq5ic"
+    },
+    {
+      "artId": "cmuqda9cq0011ptd687gnm527",
+      "tagId": "cmuqda9c00009ptd6j1g65m09"
+    },
+    {
+      "artId": "cmuqda9cq0011ptd687gnm527",
+      "tagId": "cmuqda9c0000aptd694qldxsn"
+    },
+    {
+      "artId": "cmuqda9cs0013ptd67ta2ai3s",
+      "tagId": "cmuqda9c0000aptd694qldxsn"
+    },
+    {
+      "artId": "cmuqda9cs0013ptd67ta2ai3s",
+      "tagId": "cmuqda9c1000bptd6sfxvggbn"
+    },
+    {
+      "artId": "cmuqda9cs0013ptd67ta2ai3s",
+      "tagId": "cmuqda9c7000jptd6l7s7ivpm"
+    },
+    {
+      "artId": "cmuqda9ct0015ptd67bosz9tw",
+      "tagId": "cmuqda9c0000aptd694qldxsn"
+    },
+    {
+      "artId": "cmuqda9ct0015ptd67bosz9tw",
+      "tagId": "cmuqda9c2000cptd66pnmxz5z"
+    },
+    {
+      "artId": "cmuqda9cu0017ptd69ewe8oo3",
+      "tagId": "cmuqda9c2000dptd68amwpkni"
+    },
+    {
+      "artId": "cmuqda9cu0017ptd69ewe8oo3",
+      "tagId": "cmuqda9ce000pptd6t5dz2ne4"
+    },
+    {
+      "artId": "cmuqda9cv0019ptd6cafkbfn8",
+      "tagId": "cmuqda9c3000eptd6onq99beo"
+    },
+    {
+      "artId": "cmuqda9cv0019ptd6cafkbfn8",
+      "tagId": "cmuqda9ce000pptd6t5dz2ne4"
+    },
+    {
+      "artId": "cmuqda9cw001bptd6jdsh7mnt",
+      "tagId": "cmuqda9c4000fptd65n9dnh63"
+    },
+    {
+      "artId": "cmuqda9cw001bptd6jdsh7mnt",
+      "tagId": "cmuqda9ce000pptd6t5dz2ne4"
+    },
+    {
+      "artId": "cmuqda9cy001dptd651nu3k8r",
+      "tagId": "cmuqda9c4000gptd62g2kcnbj"
+    },
+    {
+      "artId": "cmuqda9cz001fptd62av7olyq",
+      "tagId": "cmuqda9c4000gptd62g2kcnbj"
+    },
+    {
+      "artId": "cmuqda9cz001fptd62av7olyq",
+      "tagId": "cmuqda9c5000hptd6fkzamovg"
+    },
+    {
+      "artId": "cmuqda9d0001hptd69n3craob",
+      "tagId": "cmuqda9c1000bptd6sfxvggbn"
+    },
+    {
+      "artId": "cmuqda9d0001hptd69n3craob",
+      "tagId": "cmuqda9c6000iptd66zpjv1jc"
+    },
+    {
+      "artId": "cmuqda9d0001hptd69n3craob",
+      "tagId": "cmuqda9c7000jptd6l7s7ivpm"
+    },
+    {
+      "artId": "cmuqda9d1001jptd6n2kwuwun",
+      "tagId": "cmuqda9c8000kptd66h8wodmp"
+    },
+    {
+      "artId": "cmuqda9d1001jptd6n2kwuwun",
+      "tagId": "cmuqda9c7000jptd6l7s7ivpm"
+    },
+    {
+      "artId": "cmuqda9d3001lptd6rcqv6hec",
+      "tagId": "cmuqda9c8000lptd6e99p9iua"
+    },
+    {
+      "artId": "cmuqda9d3001lptd6rcqv6hec",
+      "tagId": "cmuqda9cf000qptd65q3jhk6f"
+    },
+    {
+      "artId": "cmuqda9d3001nptd6ospnmzjt",
+      "tagId": "cmuqda9cb000mptd698lus162"
+    },
+    {
+      "artId": "cmuqda9d3001nptd6ospnmzjt",
+      "tagId": "cmuqda9bz0008ptd6ogutq5ic"
+    },
+    {
+      "artId": "cmuqda9d3001nptd6ospnmzjt",
+      "tagId": "cmuqda9cf000qptd65q3jhk6f"
+    },
+    {
+      "artId": "cmuqda9d4001pptd6zq3yu7jz",
+      "tagId": "cmuqda9cc000nptd6crzq8e2t"
+    },
+    {
+      "artId": "cmuqda9d4001pptd6zq3yu7jz",
+      "tagId": "cmuqda9cf000qptd65q3jhk6f"
+    },
+    {
+      "artId": "cmuqda9d6001rptd6g8a1zrxn",
+      "tagId": "cmuqda9cd000optd6dh8j3e5n"
+    },
+    {
+      "artId": "cmuqda9d6001rptd6g8a1zrxn",
+      "tagId": "cmuqda9cf000qptd65q3jhk6f"
+    }
+  ],
+  "users": []
+}
