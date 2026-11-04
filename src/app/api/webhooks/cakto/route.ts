@@ -7,10 +7,6 @@ export const maxDuration = 10
 const MAX_BODY = 256 * 1024
 
 export async function POST(req: Request) {
-  // Limite bastante generoso para não prejudicar retries legítimos da Cakto.
-  const rateKey = throttleKey('cakto-webhook-ip', requestIp(req))
-  if (await isThrottled(rateKey)) return Response.json({ error: 'Limite temporário' }, { status: 429 })
-  await countAttempt(rateKey, 2000, 1)
   if (Number(req.headers.get('content-length') || 0) > MAX_BODY) return Response.json({ error: 'Corpo muito grande' }, { status: 413 })
   let raw: string
   try {
@@ -22,6 +18,17 @@ export async function POST(req: Request) {
   catch (error) {
     return Response.json({ error: 'Webhook não autorizado' }, { status: error instanceof InvalidCaktoWebhook ? 401 : 400 })
   }
+  // A autenticação ocorre antes de acessar o contador persistente.
+  // Se o contador falhar temporariamente durante uma rajada de eventos válidos,
+  // não transformar esse erro acessório em 500 de um pagamento legítimo.
+  const rateKey = throttleKey('cakto-webhook-ip', requestIp(req))
+  try {
+    if (await isThrottled(rateKey)) return Response.json({ error: 'Limite temporário' }, { status: 429 })
+    await countAttempt(rateKey, 2000, 1)
+  } catch (error) {
+    const code = error && typeof error === 'object' && 'code' in error ? String(error.code) : 'UNKNOWN'
+    console.warn('[cakto] contador de solicitações indisponível', { code })
+  }
   const events = caktoProvider.normalize(payload)
   if (!events.length || events.length > 100) return Response.json({ error: 'Lote inválido' }, { status: 400 })
   try {
@@ -30,9 +37,12 @@ export async function POST(req: Request) {
       await processPaymentEvent(caktoProvider.name, evt)
     }
     return Response.json({ ok: true })
-  } catch {
+  } catch (error) {
+    // Nunca registrar segredos nem dados do comprador em logs.
+    const code = error && typeof error === 'object' && 'code' in error && typeof error.code === 'string'
+      ? error.code : 'UNKNOWN'
+    console.error('[cakto] falha ao processar evento', { code, types: events.map((event) => event.kind) })
     // Não dá 200 se falhou: solicita reenvio pelo gateway.
-    console.error('[cakto] erro ao persistir evento')
     return Response.json({ error: 'Falha temporária' }, { status: 500 })
   }
 }

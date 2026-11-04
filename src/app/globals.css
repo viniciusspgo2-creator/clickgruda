@@ -1776,3 +1776,128 @@
 
 .cg-sidebar-link.cg-bocao-nav:not(.cg-sidebar-link-active) { color:#ff8a2a; font-weight:800; border:1px solid rgba(255,106,0,.23); background:rgba(255,106,0,.07); }
 .cg-sidebar-link.cg-bocao-nav:hover { border-color:rgba(255,106,0,.6); }
+
+
+
+/* 04/11/2026 · HERO responsivo: enquadramento natural do mascote e CTAs sem overflow.
+   O asset mobile 850×850 é exibido sem esticar e o layout passa a ser empilhado. */
+@media (max-width: 767px) {
+  .cg-home-hero {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+    background: #0b0b0f;
+  }
+  .cg-home-hero-art {
+    position: relative;
+    order: 0;
+    display: block;
+    flex: none;
+    inset: auto;
+    z-index: 0;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1 / 1;
+    margin: 0;
+    transform: none;
+    mask-image: none;
+    overflow: hidden;
+  }
+  .cg-home-hero-art img {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1 / 1;
+    object-fit: contain;
+    object-position: center;
+  }
+  .cg-home-hero-art::after {
+    background: linear-gradient(180deg, transparent 82%, #0b0b0f 100%);
+  }
+  .cg-home-hero-shade { display: none; }
+  .cg-home-hero-inner {
+    position: relative;
+    order: 1;
+    display: block;
+    z-index: 1;
+    width: 100%;
+    max-width: 100%;
+    min-height: 0;
+    margin: -10px 0 0;
+    padding: 0 18px 38px;
+    box-sizing: border-box;
+  }
+  .cg-home-hero-copy {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 590px;
+    min-width: 0;
+    margin: 0 auto;
+  }
+  .cg-home-hero-copy > * { box-sizing: border-box; max-width: 100%; }
+  .cg-home-hero-kicker {
+    order: 0;
+    margin: 10px 0 0;
+    font-size: 9px;
+  }
+  .cg-home-hero-title {
+    order: 1;
+    margin: 14px 0 0;
+    font-size: clamp(29px, 8vw, 44px);
+    line-height: 1.12;
+    overflow-wrap: break-word;
+  }
+  .cg-home-hero-title > span { max-width: 100%; }
+  .cg-home-hero-description {
+    order: 2;
+    max-width: 100%;
+    margin: 15px 0 0;
+    font-size: 13.5px;
+    line-height: 1.7;
+  }
+  .cg-home-hero-actions {
+    order: 3;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 10px;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    margin: 20px 0 0;
+  }
+  .cg-home-hero-actions > * {
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    flex: none;
+  }
+  .cg-home-hero-actions .cg-sales-button,
+  .cg-home-hero-actions .cg-sales-outline-button {
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    min-height: 52px;
+    padding: 12px 14px;
+    border-radius: 12px;
+    font-size: clamp(11px, 3vw, 13px);
+    line-height: 1.45;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    text-align: center;
+  }
+  .cg-home-hero-actions svg { flex-shrink: 0; }
+  .cg-home-hero-note {
+    order: 4;
+    margin: 14px 0 0;
+    font-size: 10px;
+  }
+}
+@media (max-width: 359px) {
+  .cg-home-hero-inner { padding-right: 14px; padding-left: 14px; }
+  .cg-home-hero-title { font-size: clamp(27px, 8vw, 34px); }
+}
