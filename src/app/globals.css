@@ -2048,3 +2048,118 @@
 @media(prefers-reduced-motion:reduce) {
   .cg-portal .cg-sidebar-link,.cg-portal .cg-sidebar-category-item,.cg-portal .cg-discovery .cg-discovery-tile {transition:none!important;}
 }
+
+
+/* ========================================================================
+   Click & Gruda · refinamento de harmonia visual · 05/11/2026
+   Mantém o layout aprovado; substitui marrons/pretos por azul-marinho e reduz
+   o glow para combinar com a biblioteca existente. Apenas no tema escuro.
+   ======================================================================== */
+.cg-portal:not(.cg-theme-light) {
+  --cg-polish-deep: #0b1220;
+  --cg-polish-surface: #121e30;
+  --cg-polish-raised: #18263b;
+  --cg-polish-line: rgba(157, 185, 225, .17);
+  --cg-polish-accent: #ff791f;
+}
+.cg-portal:not(.cg-theme-light) .cg-portal-sidebar {
+  background: linear-gradient(170deg, #0c1423 0%, #0b1220 54%, #0c1626 100%);
+  border-right: 1px solid rgba(154, 182, 221, .17);
+  box-shadow: 8px 0 26px rgba(0, 5, 16, .16), inset -1px 0 0 rgba(255,255,255,.018);
+}
+.cg-portal:not(.cg-theme-light) .cg-portal-sidebar::before {
+  inset:-185px -190px auto auto;
+  background:radial-gradient(ellipse, rgba(255,121,31,.075), transparent 72%);
+  filter:blur(25px);
+}
+.cg-portal:not(.cg-theme-light) .cg-portal-sidebar::after {opacity:.13;box-shadow:none;border-color:rgba(255,135,47,.45);}
+.cg-portal:not(.cg-theme-light) .cg-sidebar-brand {border-bottom-color:rgba(155,183,221,.12);}
+.cg-portal:not(.cg-theme-light) .cg-sidebar-heading {color:#8195b1;}
+.cg-portal:not(.cg-theme-light) .cg-sidebar-link {color:#d7e2f2;}
+.cg-portal:not(.cg-theme-light) .cg-sidebar-link:hover {
+  background:linear-gradient(90deg, rgba(255,121,31,.12),rgba(36,57,85,.25));
+}
+.cg-portal:not(.cg-theme-light) .cg-sidebar-link-active {
+  background:linear-gradient(100deg, rgba(255,121,31,.25),rgba(27,43,65,.95) 75%,rgba(20,35,56,.88))!important;
+  border:1px solid rgba(255,142,58,.48)!important;
+  color:#fff!important;
+  box-shadow:inset 3px 0 0 #ff892e,0 3px 17px rgba(255,121,31,.085),inset 0 1px 0 rgba(255,255,255,.035)!important;
+}
+.cg-portal:not(.cg-theme-light) .cg-sidebar-link-active .cg-sidebar-icon {filter:none;}
+.cg-portal:not(.cg-theme-light) .cg-sidebar-count {
+  background:#202d41;border-color:rgba(172,191,224,.1);color:#dae5f5;
+}
+.cg-portal:not(.cg-theme-light) .cg-sidebar-category-item {color:#cbd7e9;}
+.cg-portal:not(.cg-theme-light) .cg-sidebar-cat-svg {color:#c8d8ec;}
+.cg-portal:not(.cg-theme-light) .cg-sidebar-category-active .cg-sidebar-cat-svg {color:#ff9a51;}
+.cg-portal:not(.cg-theme-light) .cg-sidebar-all-categories {
+  border-color:rgba(255,136,52,.48);
+  background:linear-gradient(110deg,rgba(255,121,31,.1),rgba(25,42,66,.75));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.04),0 5px 18px rgba(1,7,21,.15);
+}
+.cg-portal:not(.cg-theme-light) .cg-sidebar-all-categories:hover {
+  background:linear-gradient(100deg,rgba(255,121,31,.18),rgba(25,42,66,.84));
+  box-shadow:0 0 16px rgba(255,121,31,.12);
+}
+.cg-portal:not(.cg-theme-light) .cg-sidebar-bottom {
+  border-color:rgba(255,145,68,.26);
+  background:linear-gradient(135deg,#15243a,#121e30 78%);
+  box-shadow:0 9px 22px rgba(0,5,17,.11),inset 0 1px 0 rgba(255,255,255,.04);
+}
+.cg-portal:not(.cg-theme-light) .cg-sidebar-bottom-crown {filter:none;color:#ffad59;}
+.cg-portal:not(.cg-theme-light) .cg-sidebar-bottom p {color:#a5b6cf;}
+.cg-portal:not(.cg-theme-light) .cg-portal-header {
+  background:rgba(10,18,32,.965);
+  border-bottom-color:rgba(157,185,225,.14);
+  box-shadow:0 5px 19px rgba(0,6,20,.15);
+}
+.cg-portal:not(.cg-theme-light) .cg-header-menu-icon,
+.cg-portal:not(.cg-theme-light) .cg-theme-toggle,
+.cg-portal:not(.cg-theme-light) .cg-user-trigger {
+  background:linear-gradient(130deg,#19283d,#101a2c);
+  border-color:rgba(164,188,229,.21);
+}
+.cg-portal:not(.cg-theme-light) .cg-header-explore {
+  background:linear-gradient(130deg,rgba(255,121,31,.08),rgba(22,36,56,.91))!important;
+  border-color:rgba(255,142,64,.23)!important;
+}
+.cg-portal:not(.cg-theme-light) .cg-portal-search {
+  background:linear-gradient(180deg,#1a2940,#162238)!important;
+  border-color:rgba(166,192,231,.25)!important;
+  box-shadow:inset 0 1px 3px rgba(2,9,24,.12),0 0 0 1px rgba(255,255,255,.012)!important;
+}
+.cg-portal:not(.cg-theme-light) .cg-header-quicklink.cg-header-mockup {
+  background:linear-gradient(115deg,rgba(255,121,31,.09),rgba(23,36,54,.92));
+  border-color:rgba(255,135,43,.52);
+  box-shadow:inset 0 1px 0 rgba(255,190,126,.06),0 3px 12px rgba(0,6,18,.15);
+}
+.cg-portal:not(.cg-theme-light) .cg-header-quicklink.cg-header-mockup:hover {
+  background:linear-gradient(115deg,rgba(255,121,31,.2),rgba(23,36,54,.95));
+  box-shadow:0 0 15px rgba(255,121,31,.11);
+}
+.cg-portal:not(.cg-theme-light) .cg-discovery .cg-discovery-tile,
+.cg-portal:not(.cg-theme-light) .cg-discovery .cg-discovery-tile:nth-child(2n) {
+  background:linear-gradient(132deg,#18263c,#142035 72%,#19283c);
+  border-color:rgba(166,194,232,.16);
+  box-shadow:0 7px 22px rgba(0,6,20,.13),inset 0 1px 0 rgba(255,255,255,.035);
+}
+.cg-portal:not(.cg-theme-light) .cg-discovery .cg-discovery-tile:hover {
+  background:linear-gradient(132deg,#1d2d44,#17253b 75%,#26354c);
+  border-color:rgba(255,137,58,.42);
+  box-shadow:0 10px 25px rgba(0,6,20,.18);
+}
+.cg-portal:not(.cg-theme-light) .cg-discovery .cg-discovery-tile::after {
+  background:radial-gradient(circle,rgba(255,127,34,.075),transparent 70%);
+}
+.cg-portal:not(.cg-theme-light) .cg-discovery-icon {
+  background:linear-gradient(150deg,#25364d,#1c2b40);
+  border-color:rgba(255,148,72,.25);
+  color:#ffa45b;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.045);
+}
+.cg-portal:not(.cg-theme-light) .cg-discovery-icon svg {filter:none;}
+.cg-portal:not(.cg-theme-light) .cg-library-heading {border-top-color:rgba(156,184,226,.11);}
+.cg-portal:not(.cg-theme-light) .cg-member-artcard .cg-art-card-surface {border-color:rgba(164,190,225,.19);}
+.cg-portal:not(.cg-theme-light) .cg-member-artcard .cg-art-card-surface:hover {
+  box-shadow:0 14px 29px rgba(0,7,22,.2),0 0 0 1px rgba(255,129,39,.09);
+}

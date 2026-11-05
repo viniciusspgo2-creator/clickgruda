@@ -577,6 +577,7 @@ export function PortalView() {
             <button type="button" className="cg-sidebar-link" onClick={() => { navigateTab('todas', 'baixadas') }}><TrendingUp className="h-[18px] w-[18px]"/><span>Mais baixadas</span></button>
             {!user.isDemo && !quota && <button type="button" className="cg-sidebar-link" onClick={() => setZipOpen(true)}><Download className="h-[18px] w-[18px]"/><span>Baixar catálogo em ZIP</span></button>}
             <button type="button" className="cg-sidebar-link" onClick={() => user.isDemo ? toast.info('Sugestões liberadas após a assinatura.') : setSuggestionOpen(true)}><Lightbulb className="h-[18px] w-[18px]"/><span>Sugerir uma arte</span></button>
+            <button type="button" className="cg-sidebar-link" onClick={() => user.isDemo ? toast.info('Disponível após a ativação do acesso.') : setEnhanceOpen(true)}><Wand2 className="h-[18px] w-[18px]"/><span>Melhorar minha arte</span></button>
             {user.role === 'ADMIN' && <button type="button" className="cg-sidebar-link" onClick={() => setView('admin')}><Settings2 className="h-[18px] w-[18px]"/><span>Painel Master</span></button>}
           </nav>
         </div>
@@ -713,6 +714,9 @@ export function PortalView() {
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => user.isDemo ? toast.info('Sugestões liberadas após a assinatura.') : setSuggestionOpen(true)} className="font-bold text-orange-600">
                 <Lightbulb className="mr-2 h-4 w-4" /> Sugerir uma nova arte
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => user.isDemo ? toast.info('Disponível após a ativação do acesso.') : setEnhanceOpen(true)}>
+                <Wand2 className="mr-2 h-4 w-4" /> Melhorar minha arte
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={logout} className="text-red-600">
@@ -959,30 +963,8 @@ export function PortalView() {
           </div>
         )}
 
-        {/* Informações de assinatura ocupam apenas uma linha e não empurram a grade. */}
-        {(
-          <div className="cg-member-toolbar mb-5 flex flex-col gap-3 rounded-2xl p-3 sm:flex-row sm:items-center sm:justify-between" aria-label="Ações e informações da biblioteca">
-            <div className="flex min-w-0 items-center gap-3">
-              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-orange-500/15 text-orange-400"><ShieldCheck className="h-4.5 w-4.5" /></span>
-              <div>
-                <p className="text-xs font-extrabold text-slate-100">Sua biblioteca, sempre à mão</p>
-                <p className="text-[11px] leading-relaxed text-slate-300">{quota ? `Teste: ${quota.remaining} downloads restantes · Conheça o acervo e aproveite!` : 'Downloads ilimitados para criar suas canecas · Não achou o que queria? Peça uma arte.'}</p>
-              </div>
-            </div>
-            <div className="flex shrink-0 flex-wrap gap-2">
-              <button onClick={() => user.isDemo ? toast.info('Sugestões liberadas após a assinatura.') : setSuggestionOpen(true)} className="inline-flex h-9 flex-1 items-center justify-center gap-1.5 rounded-xl border border-orange-400/30 bg-orange-500/15 px-3 text-xs font-bold text-orange-200 transition-colors hover:bg-orange-500/25 sm:flex-none"><Lightbulb className="h-3.5 w-3.5" /> Sugerir arte</button>
-              <button onClick={() => (user.isDemo ? toast.info('Disponível após a ativação do acesso.') : setEnhanceOpen(true))} className="inline-flex h-9 flex-1 items-center justify-center gap-1.5 rounded-xl border border-white/15 bg-[#0b1423] px-3 text-xs font-bold text-slate-100 transition-colors hover:bg-[#253550] sm:flex-none"><Wand2 className="h-3.5 w-3.5" /> Melhorar minha arte</button>
-            </div>
-          </div>
-        )}
-
-        {/* Categorias com números reais e barra de busca sempre visível. */}
-        <div className="cg-category-toolbar mb-3" aria-label="Categorias do acervo">
-          <ChipScroller activeKey={categoryIds[0] ?? 'all'} fadeFrom="from-[#121e30]">
-            <button type="button" data-active={categoryIds.length === 0 && tab === 'todas'} onClick={() => { setFilter({ tab: 'todas', categoryIds: [], seasonalEventId: null }); scrollToResults() }} className={cn('cg-category-pill', categoryIds.length === 0 && tab === 'todas' ? 'cg-category-pill-active' : '')}>Todas <span>{counts?.arts?.toLocaleString('pt-BR') ?? '…'}</span></button>
-            {(catalogQ.data?.categories ?? []).map((category) => <button type="button" key={category.id} data-active={categoryIds.includes(category.id)} aria-pressed={categoryIds.includes(category.id)} onClick={() => { setFilter({ tab: 'todas', categoryIds: categoryIds.includes(category.id) ? categoryIds.filter(id => id !== category.id) : [category.id], seasonalEventId: null }); scrollToResults() }} className={cn('cg-category-pill', categoryIds.includes(category.id) && 'cg-category-pill-active')}>{category.emoji} {category.name} <span>{category.artCount.toLocaleString('pt-BR')}</span></button>)}
-          </ChipScroller>
-        </div>
+        {/* A faixa promocional e o carrossel redundante de categorias foram removidos.
+            Categorias continuam acessíveis na sidebar e em “Mais filtros”. */}
         <div className="cg-filter-toolbar sticky top-[82px] z-20 mb-4 flex flex-wrap items-center gap-2 rounded-2xl p-2.5 sm:top-[82px]" aria-label="Barra de navegação das artes">
           <button type="button" onClick={() => setMenuOpen(true)} className="cg-filter-button inline-flex h-9 shrink-0 items-center gap-2 rounded-xl px-3 text-xs font-bold"><SlidersHorizontal className="h-4 w-4" /> Mais filtros{categoryIds.length + tagIds.length > 0 ? ` (${categoryIds.length + tagIds.length})` : ''}</button>
           <label className="cg-inline-search relative flex min-w-[145px] flex-1 items-center" aria-label="Buscar no acervo"><Search className="pointer-events-none absolute left-3 h-4 w-4 text-orange-300" /><input type="search" value={searchInput} onChange={event => setSearchInput(event.target.value)} placeholder="Buscar tema, arte ou código…" className="h-9 w-full rounded-xl border border-white/15 bg-[#1b2c46] pl-9 pr-2 text-xs text-white outline-none placeholder:text-slate-400 focus:border-orange-400" /></label>
