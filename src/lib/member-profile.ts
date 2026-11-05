@@ -2,7 +2,8 @@ import type { Prisma } from '@prisma/client'
 import { db } from '@/lib/db'
 
 export const MEMBER_PREFIX = 'member-profile:'
-export type MemberProfile = { whatsapp: string; extraDevices: number; contactPurpose?: string; registeredAt?: string }
+/** null = downloads ilimitados (padrão para assinantes). Número >= 0 = cota total. */
+export type MemberProfile = { whatsapp: string; extraDevices: number; downloadLimit?: number | null; contactPurpose?: string; registeredAt?: string }
 type Client = Pick<Prisma.TransactionClient, 'setting'>
 
 export function normalizeWhatsapp(value: unknown): string {
@@ -16,8 +17,8 @@ export function normalizeWhatsapp(value: unknown): string {
 export function parseMemberProfile(value?: string | null): MemberProfile {
   try {
     const data = JSON.parse(value || '{}')
-    return { ...data, whatsapp: typeof data.whatsapp === 'string' ? data.whatsapp : '', extraDevices: Number.isInteger(data.extraDevices) ? Math.max(0, Math.min(20, data.extraDevices)) : 0 }
-  } catch { return { whatsapp: '', extraDevices: 0 } }
+    return { ...data, whatsapp: typeof data.whatsapp === 'string' ? data.whatsapp : '', extraDevices: Number.isInteger(data.extraDevices) ? Math.max(0, Math.min(20, data.extraDevices)) : 0, downloadLimit: Number.isSafeInteger(data.downloadLimit) && data.downloadLimit >= 0 && data.downloadLimit <= 100000 ? data.downloadLimit : null }
+  } catch { return { whatsapp: '', extraDevices: 0, downloadLimit: null } }
 }
 export async function getMemberProfile(id: string, client: Client = db) {
   const row = await client.setting.findUnique({ where: { key: MEMBER_PREFIX + id } })

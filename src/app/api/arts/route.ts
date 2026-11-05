@@ -1,6 +1,7 @@
 import { getSessionUser, jsonError } from '@/lib/auth'
 import { queryArts } from '@/lib/arts'
 import { recordSearchMiss } from '@/lib/search-miss'
+import { getDownloadQuota } from '@/lib/download-quota'
 
 function csv(param: string | null): string[] {
   if (!param) return []
@@ -32,7 +33,8 @@ export async function GET(req: Request) {
   const pageSize = Number.isSafeInteger(requestedSize) ? Math.min(Math.max(requestedSize, 1), 100) : 48
 
   const result = await queryArts({ userId: session?.id ?? null, tab, q, categoryIds, tagIds, eventId, sort, page, pageSize })
-  if (session.isDemo) {
+  const quota = await getDownloadQuota(session)
+  if (session.isDemo || quota?.exhausted) {
     for (const art of result.arts) {
       art.imageUrl = `/api/arts/${art.id}/preview`
       if (art.pairedArt) art.pairedArt.imageUrl = `/api/arts/${art.pairedArt.id}/preview`

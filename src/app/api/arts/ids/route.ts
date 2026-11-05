@@ -1,6 +1,7 @@
 import { db } from '@/lib/db'
 import { getSessionUser, jsonError } from '@/lib/auth'
 import { formatArtCode } from '@/lib/art-code'
+import { getDownloadQuota } from '@/lib/download-quota'
 
 /**
  * GET /api/arts/ids?scope=category|event|launch|selected|all&id=...&skip=1
@@ -12,6 +13,7 @@ export async function GET(req: Request) {
   const session = await getSessionUser()
   if (!session) return jsonError('Faça login para baixar as artes', 401)
   if (!session.hasAccess || session.isDemo) return jsonError('Download liberado apenas para membros com acesso ativo.', 403)
+  if (await getDownloadQuota(session)) return jsonError('O download em ZIP é exclusivo do acesso completo. Utilize os downloads individuais disponíveis no seu teste.', 403)
 
   const url = new URL(req.url)
   const scope = url.searchParams.get('scope') || 'all'

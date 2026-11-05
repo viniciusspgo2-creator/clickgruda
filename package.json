@@ -19,7 +19,8 @@
     "test:seo": "node --test scripts/seo-integrations.test.cjs",
     "test:commerce": "node --test scripts/commerce.test.cjs",
     "test:account-experience": "node --test scripts/account-experience.test.cjs",
-    "test:member-flow": "node scripts/e2e-member-flow.cjs --prisma-dev"
+    "test:member-flow": "node scripts/e2e-member-flow.cjs --prisma-dev",
+    "test:download-quota": "node --test scripts/download-quota.test.cjs"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1145.0",

@@ -259,6 +259,7 @@ export function PortalView() {
       return res.json()
     },
     staleTime: 60_000,
+    refetchInterval: 30_000, // alterações de cota feitas pelo admin chegam sem precisar recarregar a página
   })
 
   const suggestionsQ = useQuery<{ suggestions: string[]; related: string[] }>({
@@ -295,6 +296,13 @@ export function PortalView() {
     staleTime: 15_000,
     retry: 1,
   })
+
+  const quota = catalogQ.data?.quota
+  const quotaExhausted = Boolean(quota?.exhausted)
+  const protectedPreview = Boolean(user?.isDemo || quotaExhausted)
+
+  // Ao esgotar/reativar a cota, recarrega as URLs de prévia (protegidas no servidor).
+  useEffect(() => { queryClient.invalidateQueries({ queryKey: ['arts'] }) }, [quotaExhausted, queryClient])
 
   // "Todas as datas" representa realmente todos os eventos.
   // Nenhum efeito reativa o próximo evento depois que o cliente limpa o filtro.
@@ -336,7 +344,7 @@ export function PortalView() {
   })
 
   const toggleFavorite = (art: ArtItem) => {
-    if (user?.isDemo) {
+    if (protectedPreview) {
       toast.info('Favoritos ficam disponíveis após a ativação do acesso.')
       return
     }
@@ -354,8 +362,8 @@ export function PortalView() {
       setView('checkout')
       return
     }
-    if (user.isDemo) {
-      toast.info('Modo demonstração: os downloads são liberados após a ativação do seu acesso.')
+    if (user.isDemo || quotaExhausted) {
+      toast.info(quotaExhausted ? 'Seu limite de downloads terminou. Garanta seu acesso completo!' : 'Modo demonstração: os downloads são liberados após a ativação do seu acesso.')
       return
     }
     setDownloadStates((s) => ({ ...s, [art.id]: 'loading' }))
@@ -364,6 +372,7 @@ export function PortalView() {
       if (!res.ok) {
         const data = await res.json().catch(() => ({}))
         toast.error(data.error || 'Erro ao baixar a arte.')
+        if (res.status === 403) { queryClient.invalidateQueries({ queryKey: ['catalog'] }); queryClient.invalidateQueries({ queryKey: ['arts'] }) }
         setDownloadStates((s) => ({ ...s, [art.id]: 'idle' }))
         return
       }
@@ -415,7 +424,7 @@ export function PortalView() {
     requestAnimationFrame(() => resultsRef.current?.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth', block: 'start' }))
   }
   const navigateTab = (nextTab: PortalTab, nextSort?: typeof sort) => {
-    if (user?.isDemo && ['favoritas', 'downloads'].includes(nextTab)) { toast.info('Favoritos e downloads ficam disponíveis após ativar o acesso.'); return }
+    if ((user?.isDemo || quotaExhausted) && ['favoritas', 'downloads'].includes(nextTab)) { toast.info('Favoritos e downloads ficam disponíveis após ativar o acesso.'); return }
     setFilter({ tab: nextTab, categoryIds: [], tagIds: [], q: '', seasonalEventId: null, ...(nextSort ? { sort: nextSort } : {}) })
     setSearchInput('')
     scrollToResults()
@@ -477,7 +486,7 @@ export function PortalView() {
   }
 
   return (
-    <div onContextMenu={user.isDemo ? (event) => event.preventDefault() : undefined} className={cn("cg-portal relative flex min-h-screen flex-col bg-[#080d18] text-slate-100 lg:pl-[248px]", portalTheme === 'light' && 'cg-theme-light')}>
+    <div onContextMenu={protectedPreview ? (event) => event.preventDefault() : undefined} className={cn("cg-portal relative flex min-h-screen flex-col bg-[#080d18] text-slate-100 lg:pl-[248px]", portalTheme === 'light' && 'cg-theme-light')}>
       {/* Navegação fixa de desktop. Todos os destinos usam os filtros originais da biblioteca. */}
       <aside className="cg-portal-sidebar fixed inset-y-0 left-0 z-50 hidden w-[248px] flex-col lg:flex" aria-label="Navegação principal da Click&Gruda">
         <button type="button" className="cg-sidebar-brand" onClick={() => { resetFilters(); setSearchInput(''); window.scrollTo({ top: 0, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' }) }} aria-label="Ir para a página inicial da biblioteca">
@@ -491,7 +500,7 @@ export function PortalView() {
           <nav className="cg-sidebar-nav" aria-label="Explorar a biblioteca">
             {TABS.map((item) => {
               const active = tab === item.id
-              const restricted = Boolean(user.isDemo && ['favoritas', 'downloads'].includes(item.id))
+              const restricted = Boolean(protectedPreview && ['favoritas', 'downloads'].includes(item.id))
               const count = item.id === 'todas' ? counts?.arts : item.id === 'lancamentos' ? counts?.lancamentos : item.id === 'selecionadas' ? counts?.selecionadas : item.id === 'reprovadas' ? counts?.reprovadas : item.id === 'bocoes' ? counts?.bocoes : item.id === 'favoritas' ? counts?.favoritas : item.id === 'downloads' ? counts?.minhasDownloads : undefined
               return (
                 <button key={item.id} type="button" aria-current={active ? 'page' : undefined} aria-disabled={restricted}
@@ -509,13 +518,13 @@ export function PortalView() {
           <nav className="cg-sidebar-nav" aria-label="Atalhos da plataforma">
             <button type="button" className="cg-sidebar-link" onClick={() => { setMenuOpen(true) }}><SlidersHorizontal className="h-[18px] w-[18px]"/><span>Categorias e filtros</span><ArrowUpRight className="ml-auto h-3.5 w-3.5 opacity-50"/></button>
             <button type="button" className="cg-sidebar-link" onClick={() => { navigateTab('todas', 'baixadas') }}><Flame className="h-[18px] w-[18px]"/><span>Mais baixadas</span></button>
-            {!user.isDemo && <button type="button" className="cg-sidebar-link" onClick={() => setZipOpen(true)}><Download className="h-[18px] w-[18px]"/><span>Baixar catálogo em ZIP</span></button>}
+            {!user.isDemo && !quota && <button type="button" className="cg-sidebar-link" onClick={() => setZipOpen(true)}><Download className="h-[18px] w-[18px]"/><span>Baixar catálogo em ZIP</span></button>}
             <button type="button" className="cg-sidebar-link" onClick={() => user.isDemo ? toast.info('Sugestões liberadas após a assinatura.') : setSuggestionOpen(true)}><Lightbulb className="h-[18px] w-[18px]"/><span>Sugerir uma arte</span></button>
             {user.role === 'ADMIN' && <button type="button" className="cg-sidebar-link" onClick={() => setView('admin')}><Settings2 className="h-[18px] w-[18px]"/><span>Painel Master</span></button>}
           </nav>
         </div>
         <div className="cg-sidebar-bottom">
-          <span className="cg-sidebar-status"><ShieldCheck className="h-4 w-4"/> {user.isDemo ? 'Visita de demonstração' : 'Membro com acesso ativo'}</span>
+          <span className="cg-sidebar-status"><ShieldCheck className="h-4 w-4"/> {user.isDemo ? 'Visita de demonstração' : quota ? `Teste: ${quota.remaining} downloads restantes` : 'Membro com acesso ativo'}</span>
           <p>Seu espaço para criar sem limites de ideias.</p>
         </div>
       </aside>
@@ -631,7 +640,7 @@ export function PortalView() {
               </DropdownMenuLabel>
               <div className="px-2 pb-1.5">
                 <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-black uppercase tracking-wide text-emerald-600">
-                  <ShieldCheck className="h-3 w-3" /> {user.isDemo ? 'Demonstração' : 'Acesso ativo'}
+                  <ShieldCheck className="h-3 w-3" /> {user.isDemo ? 'Demonstração' : quota ? 'Acesso de teste' : 'Acesso ativo'}
                 </span>
               </div>
               <DropdownMenuSeparator />
@@ -669,7 +678,7 @@ export function PortalView() {
           <div className="no-scrollbar flex items-center gap-1 overflow-x-auto pb-2.5 pt-1">
             {TABS.map((t) => {
               const active = tab === t.id
-              const restricted = Boolean(user.isDemo && ['favoritas', 'downloads'].includes(t.id))
+              const restricted = Boolean(protectedPreview && ['favoritas', 'downloads'].includes(t.id))
               const badge =
                 t.id === 'todas'
                   ? counts?.arts
@@ -731,6 +740,20 @@ export function PortalView() {
             <DemoConversionActions />
           </div>
         </div>
+      )}
+
+      {quota && !user.isDemo && (
+        <section className="border-b border-orange-400/20 bg-[#141d2e] px-4 py-4 sm:px-7" role="status" aria-live="polite">
+          <div className="mx-auto flex w-full max-w-[1600px] flex-wrap items-center justify-between gap-4">
+            <div>
+              <p className="flex items-center gap-2 text-sm font-extrabold text-orange-300"><Download className="h-4 w-4" /> {quotaExhausted ? 'Seu período de teste chegou ao limite' : 'Sua conta está em modo de teste'}</p>
+              <p className="mt-1 text-sm leading-6 text-slate-200">{quotaExhausted
+                ? `Você utilizou os ${quota.limit} downloads disponíveis. As artes estão em modo de prévia protegida. Garanta o acesso completo para desbloquear os downloads ilimitados!`
+                : `Você utilizou ${quota.used} de ${quota.limit} downloads. Restam ${quota.remaining} downloads de teste.`}</p>
+            </div>
+            <a href="/comprar" className="inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-xl bg-orange-500 px-5 py-2.5 text-sm font-extrabold text-white shadow-lg shadow-orange-600/20 transition-colors hover:bg-orange-400"><Crown className="h-4 w-4" /> Garanta seu acesso completo <ArrowRight className="h-4 w-4" /></a>
+          </div>
+        </section>
       )}
 
       {/* Download ZIP permanece disponível no menu lateral, sem faixa ocupando o topo. */}
@@ -884,7 +907,7 @@ export function PortalView() {
               <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-orange-500/15 text-orange-400"><ShieldCheck className="h-4.5 w-4.5" /></span>
               <div>
                 <p className="text-xs font-extrabold text-slate-100">Sua biblioteca, sempre à mão</p>
-                <p className="text-[11px] leading-relaxed text-slate-300">Downloads ilimitados para criar suas canecas · Não achou o que queria? Peça uma arte.</p>
+                <p className="text-[11px] leading-relaxed text-slate-300">{quota ? `Teste: ${quota.remaining} downloads restantes · Conheça o acervo e aproveite!` : 'Downloads ilimitados para criar suas canecas · Não achou o que queria? Peça uma arte.'}</p>
               </div>
             </div>
             <div className="flex shrink-0 flex-wrap gap-2">
@@ -1010,12 +1033,12 @@ export function PortalView() {
                     <span className="text-xs text-slate-300">Duas peças para a mesma caneca · downloads individuais</span>
                   </div>
                   <div className="grid grid-cols-2 gap-3 sm:gap-5">
-                    {art.pairedArt ? <div><p className="mb-2 text-xs font-black uppercase tracking-wide text-white/75"><span className="text-orange-400">01</span> · Arte principal</p><ArtCard art={art.pairedArt} demo={!!user.isDemo} downloadState={downloadStates[art.pairedArt.id] || 'idle'} onDownload={handleDownload} onToggleFavorite={toggleFavorite} onPreview={(chosen) => setPreviewId(chosen.id)} onOpenMockup={openMockup} /></div> : <div className="flex min-h-40 flex-col justify-center rounded-xl border border-dashed border-white/15 bg-white/[.035] p-4 text-center"><p className="font-bold text-white/80">01 · Arte principal</p><p className="mt-2 text-xs leading-6 text-white/50">Arte vinculada não encontrada neste acervo.</p></div>}
-                    <div className="cg-bocao-cell"><p className="mb-2 text-xs font-black uppercase tracking-wide text-white/75"><span className="text-orange-400">02</span> · Bocão complementar</p><ArtCard art={art} demo={!!user.isDemo} downloadState={downloadStates[art.id] || 'idle'} onDownload={handleDownload} onToggleFavorite={toggleFavorite} onPreview={(chosen) => setPreviewId(chosen.id)} onOpenMockup={openMockup} /></div>
+                    {art.pairedArt ? <div><p className="mb-2 text-xs font-black uppercase tracking-wide text-white/75"><span className="text-orange-400">01</span> · Arte principal</p><ArtCard art={art.pairedArt} demo={protectedPreview} downloadState={downloadStates[art.pairedArt.id] || 'idle'} onDownload={handleDownload} onToggleFavorite={toggleFavorite} onPreview={(chosen) => setPreviewId(chosen.id)} onOpenMockup={openMockup} /></div> : <div className="flex min-h-40 flex-col justify-center rounded-xl border border-dashed border-white/15 bg-white/[.035] p-4 text-center"><p className="font-bold text-white/80">01 · Arte principal</p><p className="mt-2 text-xs leading-6 text-white/50">Arte vinculada não encontrada neste acervo.</p></div>}
+                    <div className="cg-bocao-cell"><p className="mb-2 text-xs font-black uppercase tracking-wide text-white/75"><span className="text-orange-400">02</span> · Bocão complementar</p><ArtCard art={art} demo={protectedPreview} downloadState={downloadStates[art.id] || 'idle'} onDownload={handleDownload} onToggleFavorite={toggleFavorite} onPreview={(chosen) => setPreviewId(chosen.id)} onOpenMockup={openMockup} /></div>
                   </div>
                 </article>
               ) : (
-                <ArtCard key={art.id} art={art} demo={!!user.isDemo} downloadState={downloadStates[art.id] || 'idle'} onDownload={handleDownload} onToggleFavorite={toggleFavorite} onPreview={(chosen) => setPreviewId(chosen.id)} onOpenMockup={openMockup} />
+                <ArtCard key={art.id} art={art} demo={protectedPreview} downloadState={downloadStates[art.id] || 'idle'} onDownload={handleDownload} onToggleFavorite={toggleFavorite} onPreview={(chosen) => setPreviewId(chosen.id)} onOpenMockup={openMockup} />
               ))}
             </AnimatePresence>
           </div>
@@ -1047,7 +1070,7 @@ export function PortalView() {
               <Lightbulb className="h-3.5 w-3.5" /> Sugerir uma nova arte
             </button>
             <span className="flex items-center gap-1.5">
-              <Download className="h-3.5 w-3.5" /> Downloads ilimitados
+              <Download className="h-3.5 w-3.5" /> {quota ? `${quota.remaining} downloads restantes` : 'Downloads ilimitados'}
             </span>
           </div>
         </div>
@@ -1109,7 +1132,7 @@ export function PortalView() {
               })}
             </div>
 
-            {!user.isDemo && (
+            {!user.isDemo && !quota && (
               <button type="button" onClick={() => { setMenuOpen(false); setZipOpen(true) }} className="cg-filter-zip mt-6 flex w-full items-center justify-center gap-2 rounded-xl border border-orange-400/45 bg-orange-400/10 px-3 py-3 text-xs font-bold text-orange-200 hover:bg-orange-400/20">
                 <Download className="h-4 w-4" /> Baixar catálogo em ZIP (opcional)
               </button>
@@ -1158,11 +1181,11 @@ export function PortalView() {
         <DialogContent className="cg-access-dialog w-[calc(100vw-24px)] max-w-[610px] sm:max-w-[610px] min-w-0 max-h-[min(90dvh,750px)] gap-4 overflow-x-hidden overflow-y-auto rounded-2xl border-white/10 bg-[#121a2a] p-4 text-slate-100 shadow-2xl sm:p-6" >
           <DialogHeader className="min-w-0 gap-3 pr-7 text-left">
             <DialogTitle className="flex min-w-0 flex-wrap items-center gap-2 text-lg font-black leading-snug text-white sm:text-xl"><Box className="h-5 w-5 shrink-0 text-orange-400" /> Gerador de Mockups 3D</DialogTitle>
-            <DialogDescription className="max-w-full text-left text-[13px] leading-relaxed text-slate-300 sm:text-sm">{user.isDemo ? 'O gerador de mockups 3D é um recurso para membros. A demonstração permite conhecer a biblioteca; o uso do gerador depende da ativação do seu acesso.' : <>O mockup é <strong className="text-white">premium</strong> e você, assinante, tem acesso gratuito. Se ainda não recebeu seu código de acesso, solicite gratuitamente ao suporte.</>}</DialogDescription>
+            <DialogDescription className="max-w-full text-left text-[13px] leading-relaxed text-slate-300 sm:text-sm">{protectedPreview ? 'O gerador de mockups 3D está disponível no acesso completo. Garanta seu acesso para baixar as artes e utilizar as ferramentas premium.' : <>O mockup é <strong className="text-white">premium</strong> e você, assinante, tem acesso gratuito. Se ainda não recebeu seu código de acesso, solicite gratuitamente ao suporte.</>}</DialogDescription>
           </DialogHeader>
-          {mockupArt && <div className="min-w-0 max-w-full rounded-xl border border-orange-400/25 bg-orange-400/[.07] p-3 text-xs leading-relaxed text-slate-200 sm:p-4"><strong className="mb-1 block break-words text-orange-200">Arte selecionada: {formatArtTitle(mockupArt.title)}</strong><p>O Studio não importa a estampa automaticamente. {user.isDemo ? 'Na demonstração, conheça o acervo. Após ativar seu acesso, baixe a arte e envie o arquivo ao Studio.' : 'Baixe a arte pelo botão abaixo e envie o arquivo ao Studio para visualizar a caneca em 3D.'}</p></div>}
+          {mockupArt && <div className="min-w-0 max-w-full rounded-xl border border-orange-400/25 bg-orange-400/[.07] p-3 text-xs leading-relaxed text-slate-200 sm:p-4"><strong className="mb-1 block break-words text-orange-200">Arte selecionada: {formatArtTitle(mockupArt.title)}</strong><p>O Studio não importa a estampa automaticamente. {protectedPreview ? 'No modo de prévia protegida, o arquivo de impressão fica bloqueado. Garanta o acesso completo para baixar a arte e enviá-la ao Studio.' : 'Baixe a arte pelo botão abaixo e envie o arquivo ao Studio para visualizar a caneca em 3D.'}</p></div>}
           <DialogFooter className={`cg-access-actions mt-1 grid min-w-0 grid-cols-1 gap-2 ${mockupArt ? "sm:grid-cols-3" : "sm:grid-cols-2"}`}>
-            {user.isDemo ? <div className="min-w-0 sm:col-span-2"><DemoConversionActions /></div> : <>
+            {protectedPreview ? <div className="min-w-0 sm:col-span-2">{user.isDemo ? <DemoConversionActions /> : <a href="/comprar" className="inline-flex min-h-11 items-center justify-center rounded-xl bg-orange-500 px-4 py-2 text-sm font-bold text-white">Garanta seu acesso completo</a>}</div> : <>
               <Button type="button" variant="outline" onClick={() => window.open(WHATSAPP.link(mockupSupportMessage), '_blank', 'noopener,noreferrer')} className="min-h-11 h-auto min-w-0 whitespace-normal rounded-xl border-white/20 bg-white/5 px-3 py-2 text-center text-slate-100 hover:bg-white/10 hover:text-white">Solicitar código grátis</Button>
               {mockupArt && <Button type="button" variant="outline" disabled={downloadStates[mockupArt.id] === 'loading'} onClick={() => handleDownload(mockupArt)} className="min-h-11 h-auto min-w-0 whitespace-normal rounded-xl border-white/20 bg-white/5 px-3 py-2 text-center text-slate-100 hover:bg-white/10 hover:text-white"><Download className="mr-1.5 h-4 w-4 shrink-0" /> Baixar esta arte</Button>}
               <Button type="button" onClick={() => { setMockupDialogOpen(false); openExternal('https://clicktools.vercel.app/', 'mockup_platform_open') }} className="min-h-11 h-auto min-w-0 whitespace-normal rounded-xl bg-orange-500 px-3 py-2 text-center font-bold text-white hover:bg-orange-600">Abrir Studio Mockup 3D</Button>
@@ -1174,7 +1197,7 @@ export function PortalView() {
       <AnnouncementDialog userId={user.id} />
 
       {/* ================= SUGESTÃO DE TEMA (envia ao Admin Master) ================= */}
-      <ArtPreviewDialog art={previewArt} open={!!previewArt} onOpenChange={(open) => !open && setPreviewId(null)} demo={!!user.isDemo} downloadState={previewArt ? downloadStates[previewArt.id] || 'idle' : 'idle'} onDownload={handleDownload} onFavorite={toggleFavorite} onCategory={toggleCategory} onTag={viewTag} onSeasonal={viewSeasonal} />
+      <ArtPreviewDialog art={previewArt} open={!!previewArt} onOpenChange={(open) => !open && setPreviewId(null)} demo={protectedPreview} downloadState={previewArt ? downloadStates[previewArt.id] || 'idle' : 'idle'} onDownload={handleDownload} onFavorite={toggleFavorite} onCategory={toggleCategory} onTag={viewTag} onSeasonal={viewSeasonal} />
       <ThemeSuggestionDialog open={suggestionOpen} onOpenChange={setSuggestionOpen} />
       <EnhanceRequestDialog open={enhanceOpen} onOpenChange={setEnhanceOpen} />
       <ZipDownloadDialog open={zipOpen} onOpenChange={setZipOpen} catalog={catalogQ.data} />

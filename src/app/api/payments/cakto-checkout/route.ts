@@ -1,10 +1,11 @@
 import { getSessionUser } from '@/lib/auth'
 import { caktoProvider } from '@/lib/payments/cakto'
+import { getDownloadQuota } from '@/lib/download-quota'
 
 export async function GET() {
   const user = await getSessionUser()
   if (!user || user.isDemo) return Response.json({ error: 'Autenticação necessária' }, { status: 401 })
-  if (user.hasAccess) return Response.json({ error: 'Seu acesso já está ativo' }, { status: 409 })
+  if (user.hasAccess && !(await getDownloadQuota(user))) return Response.json({ error: 'Seu acesso já está ativo' }, { status: 409 })
   const url = caktoProvider.checkoutUrl(user.email)
   if (!url) return Response.json({ error: 'Checkout Cakto não configurado. Contate o suporte.' }, { status: 503 })
   return Response.json({ url }, { headers: { 'Cache-Control': 'private, no-store' } })

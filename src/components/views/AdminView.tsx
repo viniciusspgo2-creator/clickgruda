@@ -47,6 +47,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sh
 import { Logo } from '@/components/shared/Logo'
 import { AdminArtsSection, AdminCategoriesSection, AdminSuggestionsSection, AdminTagsSection, AdminSeasonalSection, AdminSettingsSection } from '@/components/views/AdminSections'
 import { NewUserDialog } from '@/components/admin/NewUserDialog'
+import { DownloadLimitDialog } from '@/components/admin/DownloadLimitDialog'
 import { MemberAccessDialog } from '@/components/admin/MemberAccessDialog'
 import { PreviewAccountDialog } from '@/components/admin/PreviewAccountDialog'
 import { LandingAnalyticsPanel } from '@/components/admin/LandingAnalyticsPanel'
@@ -531,6 +532,7 @@ type AdminUser = {
   extraDevices?: number
   createdAt: string
   downloadsCount: number
+  downloadLimit?: number | null
   favoritesCount: number
   accessStatus?: string
   accessType?: string | null
@@ -632,12 +634,14 @@ function UsersSection() {
               </TableCell>
               <TableCell className="hidden text-sm text-zinc-500 md:table-cell">
                 {u.downloadsCount} downloads · {u.favoritesCount} favoritas
+                {u.downloadLimit != null && <span className="mt-1 block text-xs font-extrabold text-orange-600">Teste: {u.downloadsCount}/{u.downloadLimit} downloads{u.downloadsCount >= u.downloadLimit ? ' · ESGOTADO' : ''}</span>}
               </TableCell>
               <TableCell className="hidden text-sm text-zinc-500 lg:table-cell">
                 {new Date(u.createdAt).toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo', dateStyle: 'short', timeStyle: 'short' })}<span className="block text-[10px] text-zinc-400">Horário de Brasília</span>
               </TableCell>
               <TableCell>
                 <div className="flex items-center justify-end gap-1.5">
+                  {!u.isPreview && u.role !== 'ADMIN' && <DownloadLimitDialog user={u} />}
                   {!u.isPreview && u.role !== 'ADMIN' && <MemberAccessDialog user={u} />}
                   {!u.isPreview && <Button
                     size="sm"

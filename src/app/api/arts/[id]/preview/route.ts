@@ -5,6 +5,7 @@ import { getSessionUser, jsonError } from '@/lib/auth'
 import { readLocalFile } from '@/lib/storage'
 import { MAX_ART_SIZE } from '@/lib/upload-limits'
 import { cachedProtectedPreview, cacheProtectedPreview } from '@/lib/protected-preview-cache'
+import { getDownloadQuota } from '@/lib/download-quota'
 
 export const runtime = 'nodejs'
 const imageResponse = (bytes: Buffer) => new Response(new Uint8Array(bytes), { headers: {
@@ -12,12 +13,12 @@ const imageResponse = (bytes: Buffer) => new Response(new Uint8Array(bytes), { h
   'X-Content-Type-Options': 'nosniff', 'Content-Disposition': 'inline',
 } })
 
-/** Prévia da demo: exibe composição e cores sem fornecer o arquivo de impressão.
+/** Prévia de demonstração ou acesso de teste esgotado: não entrega arquivos de impressão.
  * Imagem reduzida, levemente suavizada e com marca-d’água.
  * Os originais R2 permanecem privados e nunca são enviados a esta sessão. */
 export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
   const user = await getSessionUser()
-  if (!user?.hasAccess || !user.isDemo) return jsonError('Recurso disponível apenas para demonstração.', 403)
+  if (!user?.hasAccess || (!user.isDemo && !(await getDownloadQuota(user))?.exhausted)) return jsonError('Recurso disponível apenas para demonstração protegida.', 403)
   const { id } = await params
   const art = await db.art.findUnique({ where: { id }, select: { imageUrl: true } })
   if (!art) return jsonError('Arte não encontrada.', 404)

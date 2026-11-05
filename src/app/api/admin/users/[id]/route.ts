@@ -17,6 +17,7 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
 
   const data: Record<string, unknown> = {}
   if (body.extraDevices !== undefined && (!Number.isInteger(body.extraDevices) || body.extraDevices < 0 || body.extraDevices > 20)) return jsonError('Informe de 0 a 20 acessos adicionais.', 400)
+  if (body.downloadLimit !== undefined && body.downloadLimit !== null && (!Number.isSafeInteger(body.downloadLimit) || body.downloadLimit < 0 || body.downloadLimit > 100000)) return jsonError('Limite de downloads inválido (0 a 100.000).', 400)
   if (typeof body.blocked === 'boolean') {
     if (admin.id === id && body.blocked) return jsonError('Você não pode bloquear sua própria conta.', 400)
     if (body.blocked) data.status = 'BLOCKED'
@@ -30,11 +31,12 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
     // Liberação da conta sempre encerra o estado "aguardando PIX manual"
     if (body.hasAccess) data.status = 'ACTIVE'
   }
-  const target = await db.user.findUnique({ where: { id }, select: { isPreview: true, status: true } })
+  const target = await db.user.findUnique({ where: { id }, select: { isPreview: true, status: true, role: true } })
   if (!target) return jsonError('Usuário não encontrado.', 404)
   if (body.blocked === true) data.status = 'BLOCKED'
   else if (body.blocked === false && target.status === 'BLOCKED') data.status = 'ACTIVE'
   if (target?.isPreview && (body.role === 'ADMIN' || body.hasAccess === false || typeof body.password === 'string')) return jsonError('A conta Preview só pode ser gerenciada pela opção Preview.', 403)
+  if (body.downloadLimit !== undefined && (target.isPreview || target.role === 'ADMIN' || body.role === 'ADMIN')) return jsonError('O limitador só pode ser configurado para usuários comuns.', 400)
   if (body.role === 'USER' || body.role === 'ADMIN') data.role = body.role
   // Redefinição de senha pelo Admin Master (não há recuperação automática por enquanto)
   if (typeof body.password === 'string') {
@@ -44,6 +46,10 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
   }
 
   const user = await db.$transaction(async tx => {
+    if (body.downloadLimit !== undefined) {
+      const profile = await getMemberProfile(id, tx)
+      await saveMemberProfile(id, { ...profile, downloadLimit: body.downloadLimit }, tx)
+    }
     if (body.extraDevices !== undefined) {
       const profile = await getMemberProfile(id, tx)
       await saveMemberProfile(id, { ...profile, extraDevices: body.extraDevices }, tx)

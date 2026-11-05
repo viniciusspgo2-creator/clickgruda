@@ -26,6 +26,7 @@ export async function GET() {
       email: u.email,
       whatsapp: profileMap.get(u.id)?.whatsapp || '',
       extraDevices: profileMap.get(u.id)?.extraDevices || 0,
+      downloadLimit: profileMap.get(u.id)?.downloadLimit ?? null,
       role: u.role,
       hasAccess: u.hasAccess,
       status: u.status,
@@ -55,6 +56,9 @@ export async function POST(req: Request) {
   const email = String(body.email || '').trim().toLowerCase().slice(0, 120)
   const password = String(body.password || '')
   const grantAccess = body.grantAccess === true
+  const downloadLimit = body.downloadLimit === null || body.downloadLimit === undefined ? null : body.downloadLimit
+  if (downloadLimit !== null && (!Number.isSafeInteger(downloadLimit) || downloadLimit < 0 || downloadLimit > 100000)) return jsonError('Limite de downloads inválido (0 a 100.000).', 400)
+  if (downloadLimit !== null && !grantAccess) return jsonError('Para testar downloads, ative o acesso desta conta.', 400)
   let whatsapp: string
   try { whatsapp = normalizeWhatsapp(body.whatsapp) } catch (error) { return jsonError((error as Error).message, 400) }
 
@@ -87,7 +91,7 @@ export async function POST(req: Request) {
     },
     select: { id: true, name: true, email: true, hasAccess: true },
     })
-    await saveMemberProfile(created.id, { whatsapp, extraDevices: 0, contactPurpose: 'cadastro realizado pela equipe de suporte', registeredAt: new Date().toISOString() }, tx)
+    await saveMemberProfile(created.id, { whatsapp, extraDevices: 0, downloadLimit, contactPurpose: 'cadastro realizado pela equipe de suporte', registeredAt: new Date().toISOString() }, tx)
     return created
   })
   return Response.json({ user: { ...user, whatsapp } })

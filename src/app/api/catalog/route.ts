@@ -4,6 +4,7 @@ import { getSettings, resolveProvider } from '@/lib/settings'
 import { nextEventDate, daysUntil } from '@/lib/seasonal'
 import { ensureDefaultSeasonalEvents } from '@/lib/seasonal-defaults'
 import { BOCAO_MARKER, BOCAO_PARENT_PREFIX } from '@/lib/bocao'
+import { getDownloadQuota } from '@/lib/download-quota'
 
 export async function GET() {
   await ensureDefaultSeasonalEvents()
@@ -59,6 +60,8 @@ export async function GET() {
       ])
     : [0, 0]
 
+  const quota = session ? await getDownloadQuota(session) : null
+
   return Response.json({
     session,
     categories: [...categories.map((c) => ({
@@ -81,7 +84,7 @@ export async function GET() {
       minhasDownloads: dlCount,
     },
     waitlisted,
-    quota: null, // Sem limite diário de downloads.
+    quota,
     priceCents: parseInt(settings.price_cents || '4790', 10),
     provider: resolveProvider(settings),
     providers: {

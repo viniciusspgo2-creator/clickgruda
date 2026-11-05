@@ -18,7 +18,7 @@ function generatePassword() {
   return 'gruda-' + Array.from(bytes, (b) => chars[b % chars.length]).join('')
 }
 
-type Created = { name: string; email: string; password: string; hasAccess: boolean; whatsapp: string }
+type Created = { name: string; email: string; password: string; hasAccess: boolean; whatsapp: string; downloadLimit: number | null }
 
 /** Cadastro manual de cliente — para quem fechou a compra pelo WhatsApp. */
 export function NewUserDialog() {
@@ -29,6 +29,8 @@ export function NewUserDialog() {
   const [whatsapp, setWhatsapp] = useState('')
   const [password, setPassword] = useState('')
   const [grantAccess, setGrantAccess] = useState(false)
+  const [limited, setLimited] = useState(false)
+  const [downloadLimit, setDownloadLimit] = useState('5')
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
   const [created, setCreated] = useState<Created | null>(null)
@@ -39,25 +41,28 @@ export function NewUserDialog() {
     setWhatsapp('')
     setPassword(generatePassword())
     setGrantAccess(false)
+    setLimited(false)
+    setDownloadLimit('5')
     setError('')
     setCreated(null)
   }
 
   const submit = async () => {
     setError('')
+    if (limited && (!/^\d+$/.test(downloadLimit) || Number(downloadLimit) > 100000)) { setError('Informe um limite de downloads de 0 a 100.000.'); return }
     setSaving(true)
     try {
       const res = await fetch('/api/admin/users', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, email, password, grantAccess, whatsapp }),
+        body: JSON.stringify({ name, email, password, grantAccess, whatsapp, downloadLimit: limited ? Number(downloadLimit) : null }),
       })
       const data = await res.json().catch(() => ({}))
       if (!res.ok) {
         setError(data.error || 'Não foi possível cadastrar.')
         return
       }
-      setCreated({ name: data.user.name, email: data.user.email, password, hasAccess: data.user.hasAccess, whatsapp: data.user.whatsapp || whatsapp })
+      setCreated({ name: data.user.name, email: data.user.email, password, hasAccess: data.user.hasAccess, whatsapp: data.user.whatsapp || whatsapp, downloadLimit: limited ? Number(downloadLimit) : null })
       queryClient.invalidateQueries({ queryKey: ['admin-users'] })
       queryClient.invalidateQueries({ queryKey: ['admin-stats'] })
     } catch {
@@ -71,7 +76,8 @@ export function NewUserDialog() {
     ? `Olá, ${created.name.split(' ')[0]}! 🎉 Seu acesso à Click & Gruda está ${created.hasAccess ? 'liberado' : 'criado'}.\n\n` +
       `🔗 Entre em: ${typeof window !== 'undefined' ? window.location.origin : ''}\n` +
       `📧 E-mail: ${created.email}\n` +
-      `🔑 Senha: ${created.password}\n\n` +
+      `🔑 Senha: ${created.password}\n` +
+      (created.downloadLimit !== null ? `🎁 Acesso de teste: até ${created.downloadLimit} download(s).\n\n` : '\n') +
       `Qualquer dúvida é só me chamar por aqui!`
     : ''
 
@@ -97,7 +103,7 @@ export function NewUserDialog() {
               <UserPlus className="h-5 w-5" /> Novo usuário
             </DialogTitle>
             <DialogDescription id="newuser-desc" className="text-sm font-medium text-orange-50">
-              Cadastro manual — para quem comprou pelo WhatsApp.
+              Crie acessos completos ou contas para testes com downloads limitados.
             </DialogDescription>
           </DialogHeader>
 
@@ -113,6 +119,7 @@ export function NewUserDialog() {
                 <div className="rounded-xl border border-zinc-200 bg-zinc-50 p-3.5 text-xs leading-relaxed text-zinc-600">
                   <p><b className="text-zinc-800">E-mail:</b> {created.email}</p>
                   <p><b className="text-zinc-800">Senha:</b> <span className="font-mono">{created.password}</span></p>
+                  {created.downloadLimit !== null && <p className="mt-1 font-bold text-orange-600">Teste limitado a {created.downloadLimit} downloads.</p>}
                   <p className="mt-2 text-[11px] text-amber-600">Anote ou envie agora: depois de fechar esta janela a senha não pode ser vista de novo (só redefinida).</p>
                 </div>
                 <textarea
@@ -186,8 +193,22 @@ export function NewUserDialog() {
                     <span className="block text-sm font-bold text-zinc-800">Liberar acesso agora</span>
                     <span className="block text-xs text-zinc-500">Já pagou? Deixe ligado.</span>
                   </span>
-                  <Switch checked={grantAccess} onCheckedChange={setGrantAccess} />
+                  <Switch checked={grantAccess} onCheckedChange={(checked) => { setGrantAccess(checked); if (!checked) setLimited(false) }} />
                 </label>
+                <div className="space-y-3 rounded-xl border border-orange-200 bg-orange-50/70 px-3.5 py-3">
+                  <label className="flex items-center justify-between gap-3">
+                    <span>
+                      <span className="block text-sm font-bold text-zinc-800">Conta de teste — limitar downloads</span>
+                      <span className="block text-xs text-zinc-500">Quando atingir a cota, as artes ficam embaçadas e o download é bloqueado.</span>
+                    </span>
+                    <Switch checked={limited} onCheckedChange={(checked) => { setLimited(checked); if (checked) setGrantAccess(true) }} />
+                  </label>
+                  {limited && <div className="space-y-1.5">
+                    <Label htmlFor="nu-download-limit" className="text-xs font-bold text-zinc-700">Quantidade de downloads permitidos</Label>
+                    <Input id="nu-download-limit" type="number" inputMode="numeric" min={0} max={100000} step={1} value={downloadLimit} onChange={e => setDownloadLimit(e.target.value)} className="h-10 rounded-xl bg-white" />
+                    <p className="text-[11px] text-zinc-500">Cada download conta, inclusive baixar a mesma arte novamente. O ZIP fica desativado para contas de teste.</p>
+                  </div>}
+                </div>
                 {error && <p className="rounded-lg bg-red-50 px-3 py-2 text-xs font-bold text-red-600">{error}</p>}
                 <Button
                   onClick={submit}

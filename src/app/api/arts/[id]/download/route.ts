@@ -2,6 +2,7 @@ import { db } from '@/lib/db'
 import { getSessionUser, jsonError } from '@/lib/auth'
 import { formatArtCode } from '@/lib/art-code'
 import { readLocalFile, extToMime, slugify, getR2Config, presignOriginalGet } from '@/lib/storage'
+import { DownloadQuotaExceededError, QUOTA_ENDED_MESSAGE, getDownloadQuota, recordSuccessfulDownload } from '@/lib/download-quota'
 
 export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
@@ -15,19 +16,14 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
   const art = await db.art.findUnique({ where: { id } })
   if (!art) return jsonError('Arte não encontrada', 404)
 
-  // Downloads ilimitados para todas as contas com acesso ativo.
+  if ((await getDownloadQuota(session))?.exhausted) return jsonError(QUOTA_ENDED_MESSAGE, 403)
 
   // ?via=zip → a arte está sendo baixada dentro de um ZIP de backup
   const viaZip = new URL(req.url).searchParams.get('via') === 'zip'
 
   // Registra somente quando o arquivo/link existir e estiver pronto para entrega.
   // Uma falha no armazenamento não deve gerar um download bem-sucedido no histórico.
-  const recordSuccess = async () => {
-    await db.$transaction([
-      db.download.create({ data: { userId: session.id, artId: id, viaZip } }),
-      db.art.update({ where: { id }, data: { downloadsCount: { increment: 1 } } }),
-    ])
-  }
+  const recordSuccess = async () => recordSuccessfulDownload(session, id, viaZip)
 
   const filename = `${formatArtCode(art.code)}-${slugify(art.title) || 'arte'}`
 
@@ -36,13 +32,15 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
     const cfg = await getR2Config()
     if (cfg) {
       const oext = art.originalKey.split('.').pop() || 'png'
-      try {
-        const url = await presignOriginalGet(cfg, art.originalKey, `${filename}.${oext}`)
-        await recordSuccess()
-        return Response.json({ url, filename: `${filename}.${oext}` }, { headers: { 'Cache-Control': 'no-store' } })
-      } catch {
-        return jsonError('Não foi possível gerar o link de download. Tente novamente.', 502)
+      let url: string
+      try { url = await presignOriginalGet(cfg, art.originalKey, `${filename}.${oext}`) }
+      catch { return jsonError('Não foi possível gerar o link de download. Tente novamente.', 502) }
+      try { await recordSuccess() }
+      catch (e) {
+        if (e instanceof DownloadQuotaExceededError) return jsonError(QUOTA_ENDED_MESSAGE, 403)
+        throw e
       }
+      return Response.json({ url, filename: `${filename}.${oext}` }, { headers: { 'Cache-Control': 'no-store' } })
     }
   }
 
@@ -77,7 +75,11 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
 
   if (!buffer) return jsonError('Arquivo da arte não encontrado', 404)
 
-  await recordSuccess()
+  try { await recordSuccess() }
+  catch (e) {
+    if (e instanceof DownloadQuotaExceededError) return jsonError(QUOTA_ENDED_MESSAGE, 403)
+    throw e
+  }
   return new Response(new Uint8Array(buffer), {
     headers: {
       'Content-Type': extToMime(ext),
