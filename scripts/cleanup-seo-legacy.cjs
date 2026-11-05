@@ -9,7 +9,6 @@ const obsolete = [
   'src/components/portal/DailyLimitDialog.tsx',
   'src/components/portal/ShareCatalogSection.tsx',
   'src/components/views/SharedCatalogView.tsx',
-  'src/lib/download-quota.ts',
   'src/lib/portal-news.ts',
   'src/components/portal/NovidadesCard.tsx',
   'src/components/portal/CatalogoDigitalNews.tsx',

@@ -1,29 +1,21 @@
 'use client'
 
-import { ArrowRight, CalendarHeart, Flame, Sparkles, Star, TrendingUp } from 'lucide-react'
-import type { CatalogData } from '@/lib/types'
+import { ArrowRight, Flame, Lightbulb, Sparkles, Star, TrendingUp } from 'lucide-react'
 import type { PortalTab, SortMode } from '@/lib/store'
 
 /** Atalhos reais para filtros existentes. Não cria "coleções" fictícias nem mockups. */
 export function DiscoveryShelf({
-  catalog,
   onTab,
-  onCategory,
-  onSeasonal,
-  activeCategories,
+  onSuggest,
 }: {
-  catalog?: CatalogData
   onTab: (tab: PortalTab, sort?: SortMode) => void
-  onCategory: (id: string) => void
-  onSeasonal: (eventId: string) => void
-  activeCategories: string[]
+  onSuggest: () => void
 }) {
-  const event = catalog?.nextEvent
   const shortcuts = [
     { label: 'Lançamentos', detail: 'Artes com selo NOVO', Icon: Flame, onClick: () => onTab('lancamentos') },
     { label: 'Escolhas da equipe', detail: 'Curadoria especial', Icon: Star, onClick: () => onTab('selecionadas') },
     { label: 'Mais baixadas', detail: 'Preferidas da comunidade', Icon: TrendingUp, onClick: () => onTab('todas', 'baixadas') },
-    ...(event && event.artCount > 0 ? [{ label: event.name, detail: `${event.artCount} artes da data`, Icon: CalendarHeart, onClick: () => onSeasonal(event.id) }] : []),
+    { label: 'Sugerir uma arte', detail: 'Dê sua sugestão', Icon: Lightbulb, onClick: onSuggest },
   ]
 
   return (

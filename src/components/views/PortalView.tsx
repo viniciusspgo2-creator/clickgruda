@@ -5,6 +5,19 @@ import { useInfiniteQuery, useMutation, useQuery, useQueryClient, type InfiniteD
 import { AnimatePresence, motion } from 'framer-motion'
 import {
   CalendarHeart,
+  CalendarDays,
+  Cake,
+  Gamepad2,
+  Gift,
+  Ghost,
+  PawPrint,
+  PartyPopper,
+  Type,
+  UsersRound,
+  Orbit,
+  Coffee,
+  House,
+  TrendingUp,
   ArrowRight,
   ChevronDown,
   Check,
@@ -72,15 +85,36 @@ type DownloadStates = Record<string, 'idle' | 'loading' | 'done'>
 type ArtsPage = { arts: ArtItem[]; total: number; page: number; pageSize: number; hasMore: boolean }
 
 const TABS: { id: PortalTab; label: string; icon: React.ElementType }[] = [
-  { id: 'todas', label: 'Todas', icon: LayoutGrid },
+  { id: 'todas', label: 'Todas', icon: House },
   { id: 'lancamentos', label: 'Lançamentos', icon: Flame },
   { id: 'selecionadas', label: 'Selecionadas', icon: Star },
   { id: 'reprovadas', label: 'Artes reprovadas', icon: EyeOff },
-  { id: 'bocoes', label: 'Arte/Bocão', icon: Images },
-  { id: 'sazonal', label: 'Sazonal', icon: CalendarHeart },
+  { id: 'bocoes', label: 'Arte/Bocão', icon: Layers3 },
+  { id: 'sazonal', label: 'Sazonal', icon: CalendarDays },
   { id: 'favoritas', label: 'Favoritas', icon: Heart },
   { id: 'downloads', label: 'Meus downloads', icon: Download },
 ]
+
+/** Os ícones vetoriais já existem em lucide-react e na biblioteca interna de categorias. */
+function SidebarCategoryIcon({ name, icon }: { name: string; icon?: string | null }) {
+  const configured = getCategoryIcon(icon)
+  if (configured) return <configured.Icon className="cg-sidebar-cat-svg" aria-hidden="true" />
+  const key = name.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase()
+  const FallbackIcon =
+    key.includes('ALFABETO') ? Type :
+    key.includes('AMIGO SECRETO') ? Gift :
+    key.includes('AMIZADE') ? Heart :
+    key.includes('AMOSTRADINHO') ? Ghost :
+    key.includes('ANIMA') && !key.includes('ANIME') ? PawPrint :
+    key.includes('ANIME') || key.includes('GEEK') ? Gamepad2 :
+    key.includes('ANIVERS') ? Cake :
+    key.includes('ANO NOVO') ? PartyPopper :
+    key.includes('ASTRONOM') ? Orbit :
+    key.includes('AVO') || key.includes('FAMILI') ? UsersRound :
+    key.includes('CAFE') ? Coffee :
+    LayoutGrid
+  return <FallbackIcon className="cg-sidebar-cat-svg" aria-hidden="true" />
+}
 
 function useCountdown(targetIso: string | null | undefined) {
   const [now, setNow] = useState(Date.now())
@@ -486,15 +520,12 @@ export function PortalView() {
   }
 
   return (
-    <div onContextMenu={protectedPreview ? (event) => event.preventDefault() : undefined} className={cn("cg-portal relative flex min-h-screen flex-col bg-[#080d18] text-slate-100 lg:pl-[248px]", portalTheme === 'light' && 'cg-theme-light')}>
+    <div onContextMenu={protectedPreview ? (event) => event.preventDefault() : undefined} className={cn("cg-portal relative flex min-h-screen flex-col bg-[#080d18] text-slate-100 lg:pl-[278px]", portalTheme === 'light' && 'cg-theme-light')}>
       {/* Navegação fixa de desktop. Todos os destinos usam os filtros originais da biblioteca. */}
-      <aside className="cg-portal-sidebar fixed inset-y-0 left-0 z-50 hidden w-[248px] flex-col lg:flex" aria-label="Navegação principal da Click&Gruda">
+      <aside className="cg-portal-sidebar fixed inset-y-0 left-0 z-50 hidden w-[278px] flex-col lg:flex" aria-label="Navegação principal da Click&Gruda">
         <button type="button" className="cg-sidebar-brand" onClick={() => { resetFilters(); setSearchInput(''); window.scrollTo({ top: 0, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' }) }} aria-label="Ir para a página inicial da biblioteca">
           <Logo dark />
         </button>
-        <div className="cg-sidebar-welcome">
-          <span className="cg-sidebar-welcome-dot" /> SUA ÁREA CRIATIVA
-        </div>
         <div className="cg-sidebar-scroll no-scrollbar">
           <p className="cg-sidebar-heading">BIBLIOTECA</p>
           <nav className="cg-sidebar-nav" aria-label="Explorar a biblioteca">
@@ -506,7 +537,7 @@ export function PortalView() {
                 <button key={item.id} type="button" aria-current={active ? 'page' : undefined} aria-disabled={restricted}
                   onClick={() => restricted ? toast.info('Este recurso fica disponível após ativar o acesso.') : setFilter({ tab: item.id, ...(item.id === 'todas' ? { sort: 'recentes' } : {}), ...(item.id !== 'sazonal' ? { seasonalEventId: null } : {}) })}
                   className={cn('cg-sidebar-link', active && 'cg-sidebar-link-active', item.id === 'bocoes' && 'cg-bocao-nav')}>
-                  <item.icon className="h-[18px] w-[18px] shrink-0" />
+                  <span className="cg-sidebar-icon" aria-hidden="true"><item.icon className="h-[20px] w-[20px] shrink-0" strokeWidth={2.15} /></span>
                   <span className="min-w-0 flex-1 text-left">{item.label === 'Todas' ? 'Visão geral' : item.label}</span>
                   {restricted && <Lock className="ml-auto h-3.5 w-3.5 opacity-60" />}
                   {typeof count === 'number' && count > 0 && <span className="cg-sidebar-count">{count > 9999 ? `${Math.floor(count / 1000)}k+` : count.toLocaleString('pt-BR')}</span>}
@@ -514,16 +545,43 @@ export function PortalView() {
               )
             })}
           </nav>
-          <p className="cg-sidebar-heading mt-7">ACESSO RÁPIDO</p>
+          <div className="cg-sidebar-category-section">
+            <p className="cg-sidebar-heading cg-sidebar-category-heading">CATEGORIAS</p>
+            <div className="cg-sidebar-category-list" aria-label="Categorias da biblioteca">
+              {(catalogQ.data?.categories ?? []).slice(0, 9).map((category) => {
+                const active = categoryIds.includes(category.id)
+                return (
+                  <button
+                    key={category.id}
+                    type="button"
+                    aria-pressed={active}
+                    onClick={() => toggleCategory(category.id)}
+                    className={cn('cg-sidebar-category-item', active && 'cg-sidebar-category-active')}
+                  >
+                    <SidebarCategoryIcon name={category.name} icon={category.icon} />
+                    <span className="cg-sidebar-category-name">{category.name}</span>
+                    <span className="cg-sidebar-count">{category.artCount.toLocaleString('pt-BR')}</span>
+                  </button>
+                )
+              })}
+            </div>
+            <button type="button" className="cg-sidebar-all-categories" onClick={() => setMenuOpen(true)}>
+              <LayoutGrid className="h-[17px] w-[17px]" strokeWidth={2.2} />
+              <span>Ver todas as categorias</span>
+              <ArrowRight className="ml-auto h-4 w-4" />
+            </button>
+          </div>
+          <p className="cg-sidebar-heading mt-6">ACESSO RÁPIDO</p>
           <nav className="cg-sidebar-nav" aria-label="Atalhos da plataforma">
             <button type="button" className="cg-sidebar-link" onClick={() => { setMenuOpen(true) }}><SlidersHorizontal className="h-[18px] w-[18px]"/><span>Categorias e filtros</span><ArrowUpRight className="ml-auto h-3.5 w-3.5 opacity-50"/></button>
-            <button type="button" className="cg-sidebar-link" onClick={() => { navigateTab('todas', 'baixadas') }}><Flame className="h-[18px] w-[18px]"/><span>Mais baixadas</span></button>
+            <button type="button" className="cg-sidebar-link" onClick={() => { navigateTab('todas', 'baixadas') }}><TrendingUp className="h-[18px] w-[18px]"/><span>Mais baixadas</span></button>
             {!user.isDemo && !quota && <button type="button" className="cg-sidebar-link" onClick={() => setZipOpen(true)}><Download className="h-[18px] w-[18px]"/><span>Baixar catálogo em ZIP</span></button>}
             <button type="button" className="cg-sidebar-link" onClick={() => user.isDemo ? toast.info('Sugestões liberadas após a assinatura.') : setSuggestionOpen(true)}><Lightbulb className="h-[18px] w-[18px]"/><span>Sugerir uma arte</span></button>
             {user.role === 'ADMIN' && <button type="button" className="cg-sidebar-link" onClick={() => setView('admin')}><Settings2 className="h-[18px] w-[18px]"/><span>Painel Master</span></button>}
           </nav>
         </div>
         <div className="cg-sidebar-bottom">
+          <Crown className="cg-sidebar-bottom-crown h-7 w-7" aria-hidden="true" />
           <span className="cg-sidebar-status"><ShieldCheck className="h-4 w-4"/> {user.isDemo ? 'Visita de demonstração' : quota ? `Teste: ${quota.remaining} downloads restantes` : 'Membro com acesso ativo'}</span>
           <p>Seu espaço para criar sem limites de ideias.</p>
         </div>
@@ -531,13 +589,14 @@ export function PortalView() {
       {/* ================= HEADER ================= */}
       <header className="cg-portal-header sticky top-0 z-40 border-b border-white/10">
         <div className="mx-auto flex h-[72px] w-full max-w-[1600px] items-center gap-3 px-4 sm:px-7">
+          <button type="button" onClick={() => setMenuOpen(true)} className="cg-header-menu-icon hidden h-10 w-10 shrink-0 items-center justify-center rounded-full lg:flex" aria-label="Abrir categorias e filtros"><Menu className="h-5 w-5" /></button>
           <Button
             variant="outline"
             onClick={() => setMenuOpen(true)}
             className="cg-header-explore h-10 shrink-0 gap-2 rounded-xl font-bold transition-colors"
             aria-label="Abrir categorias e filtros"
           >
-            <Menu className="h-4.5 w-4.5" />
+            <LayoutGrid className="h-4.5 w-4.5" />
             <span className="hidden sm:inline">Categorias</span>
             {categoryIds.length + tagIds.length > 0 && <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-orange-500 px-1 text-[10px] font-black text-white">{categoryIds.length + tagIds.length}</span>}
           </Button>
@@ -896,7 +955,7 @@ export function PortalView() {
         
         {tab === 'todas' && !q && (
           <div className="cg-overview-row mb-7">
-            <DiscoveryShelf catalog={catalogQ.data} onTab={navigateTab} onCategory={toggleCategory} onSeasonal={viewSeasonal} activeCategories={categoryIds} />
+            <DiscoveryShelf onTab={navigateTab} onSuggest={() => user.isDemo ? toast.info('Sugestões liberadas após a assinatura.') : setSuggestionOpen(true)} />
           </div>
         )}
 
@@ -928,10 +987,12 @@ export function PortalView() {
           <button type="button" onClick={() => setMenuOpen(true)} className="cg-filter-button inline-flex h-9 shrink-0 items-center gap-2 rounded-xl px-3 text-xs font-bold"><SlidersHorizontal className="h-4 w-4" /> Mais filtros{categoryIds.length + tagIds.length > 0 ? ` (${categoryIds.length + tagIds.length})` : ''}</button>
           <label className="cg-inline-search relative flex min-w-[145px] flex-1 items-center" aria-label="Buscar no acervo"><Search className="pointer-events-none absolute left-3 h-4 w-4 text-orange-300" /><input type="search" value={searchInput} onChange={event => setSearchInput(event.target.value)} placeholder="Buscar tema, arte ou código…" className="h-9 w-full rounded-xl border border-white/15 bg-[#1b2c46] pl-9 pr-2 text-xs text-white outline-none placeholder:text-slate-400 focus:border-orange-400" /></label>
           <span className="hidden text-xs font-semibold text-slate-300 lg:inline">{total.toLocaleString('pt-BR')} {total === 1 ? 'resultado' : 'resultados'}</span>
-          <Select value={sort} onValueChange={value => setFilter({ sort: value as typeof sort })}>
-            <SelectTrigger aria-label="Ordenar artes" className="cg-sort-trigger h-9 w-[125px] shrink-0 rounded-xl text-xs font-bold sm:w-[165px]"><SelectValue /></SelectTrigger>
-            <SelectContent><SelectItem value="recentes">Mais recentes</SelectItem><SelectItem value="baixadas">Mais baixadas</SelectItem><SelectItem value="nome">Nome (A–Z)</SelectItem></SelectContent>
-          </Select>
+          <div className="cg-mobile-sort">
+            <Select value={sort} onValueChange={value => setFilter({ sort: value as typeof sort })}>
+              <SelectTrigger aria-label="Ordenar artes" className="cg-sort-trigger h-9 w-[125px] shrink-0 rounded-xl text-xs font-bold sm:w-[165px]"><SelectValue /></SelectTrigger>
+              <SelectContent><SelectItem value="recentes">Mais recentes</SelectItem><SelectItem value="baixadas">Mais baixadas</SelectItem><SelectItem value="nome">Nome (A–Z)</SelectItem></SelectContent>
+            </Select>
+          </div>
         </div>
 
         {/* Active filters */}
@@ -967,7 +1028,7 @@ export function PortalView() {
         )}
 
         <div ref={resultsRef} className="cg-library-heading mb-5 flex scroll-mt-36 items-baseline justify-between">
-          <h1 className="text-lg font-black tracking-tight text-zinc-900 sm:text-xl">
+          <h1 className="cg-library-title text-lg font-black tracking-tight text-zinc-900 sm:text-xl"><Layers3 className="cg-library-title-icon h-5 w-5 shrink-0" aria-hidden="true" />
             {tab === 'todas' && 'Todo o acervo'}
             {tab === 'lancamentos' && (
               <span className="flex items-center gap-2">
@@ -985,9 +1046,14 @@ export function PortalView() {
             {tab === 'downloads' && 'Baixadas por você'}
             {tab === 'bocoes' && 'Arte / Bocão · Complementos organizados'}
           </h1>
-          <span className="text-sm font-semibold text-slate-300">
-            {total} {total === 1 ? 'arte' : 'artes'}
-          </span>
+          <div className="cg-library-heading-tools">
+            <span className="cg-library-heading-count text-sm font-semibold text-slate-300">{total.toLocaleString('pt-BR')} {total === 1 ? 'arte' : 'artes'}</span>
+            <Select value={sort} onValueChange={value => setFilter({ sort: value as typeof sort })}>
+              <SelectTrigger aria-label="Ordenar artes" className="cg-sort-trigger cg-heading-sort h-9 w-[135px] shrink-0 rounded-xl text-xs font-bold sm:w-[165px]"><SelectValue /></SelectTrigger>
+              <SelectContent><SelectItem value="recentes">Mais recentes</SelectItem><SelectItem value="baixadas">Mais baixadas</SelectItem><SelectItem value="nome">Nome (A–Z)</SelectItem></SelectContent>
+            </Select>
+            <span className="cg-library-view-indicator" title="Visualização em grade"><LayoutGrid className="h-[17px] w-[17px]" aria-hidden="true" /></span>
+          </div>
         </div>
 
         {/* Grid */}

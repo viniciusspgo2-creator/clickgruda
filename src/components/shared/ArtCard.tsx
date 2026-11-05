@@ -53,27 +53,27 @@ export function ArtCard({ art, locked = false, demo = false, downloadState = 'id
           </div>
         </div>
         <div className="cg-art-info flex min-w-0 flex-1 flex-col gap-2 p-3 sm:p-3.5">
-          <div className="flex min-w-0 items-start gap-2">
-            <h3 className="line-clamp-2 min-h-9 min-w-0 flex-1 text-[12px] font-semibold leading-snug text-white sm:text-sm" title={art.title}>{title}</h3>
-            {!demo && !locked && onToggleFavorite && (
-              <button type="button" onClick={() => onToggleFavorite(art)} aria-pressed={!!art.favorited} aria-label={art.favorited ? 'Remover dos favoritos' : 'Adicionar aos favoritos'} title={art.favorited ? 'Remover dos favoritos' : 'Adicionar aos favoritos'} className={cn('cg-art-favorite inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-white/15 bg-white/[.08] text-slate-200 transition-colors hover:border-rose-400/40 hover:bg-rose-500/15 hover:text-rose-200 focus-visible:outline-2 focus-visible:outline-orange-400', art.favorited && 'border-rose-400/35 bg-rose-500/15 text-rose-300')}>
-                <Heart className={cn('h-[17px] w-[17px]', art.favorited && 'fill-rose-500 text-rose-400')} />
+          <h3 className="cg-art-card-title line-clamp-2 min-w-0 text-[12px] font-semibold leading-snug text-white sm:text-sm" title={art.title}>{title}</h3>
+          <div className="cg-art-card-bottom mt-auto flex min-w-0 items-center justify-between gap-2">
+            <div className="cg-art-meta flex min-w-0 flex-1 flex-wrap items-center gap-1.5">
+              {isBocao && <span className="cg-art-bocao-label rounded-full border border-orange-400/30 bg-orange-500/15 px-2 py-1 text-[9px] font-bold text-orange-200">Arte complementar · Bocão</span>}
+              {art.category && <span className="cg-art-category-label max-w-full truncate rounded-full border border-white/5 bg-orange-400/10 px-2 py-0.5 text-[9px] font-medium text-orange-200">{art.category.emoji} {art.category.name}</span>}
+              <button type="button" onClick={copyCode} aria-label={`Copiar código ${code}`} title="Copiar código da arte" className="cg-art-code inline-flex max-w-full items-center gap-1 rounded-md border border-white/10 bg-white/[.055] px-2 py-1 font-mono text-[9px] text-slate-300 transition-colors hover:text-white"><Copy className="h-2.5 w-2.5 shrink-0" /><span className="truncate">{code}</span></button>
+              {art.tags.slice(0, 1).map(tag => <span key={tag.id} title={tag.name} className="cg-art-extra-tag max-w-[110px] truncate rounded-full bg-white/[.04] px-2 py-1 text-[9px] text-slate-400">#{tag.name}</span>)}
+            </div>
+            <div className="cg-art-card-actions flex shrink-0 items-center gap-1.5">
+              {!demo && !locked && onToggleFavorite && (
+                <button type="button" onClick={() => onToggleFavorite(art)} aria-pressed={!!art.favorited} aria-label={art.favorited ? 'Remover dos favoritos' : 'Adicionar aos favoritos'} title={art.favorited ? 'Remover dos favoritos' : 'Adicionar aos favoritos'} className={cn('cg-art-favorite inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-white/15 bg-white/[.08] text-slate-200 transition-colors hover:border-rose-400/40 hover:bg-rose-500/15 hover:text-rose-200 focus-visible:outline-2 focus-visible:outline-orange-400', art.favorited && 'border-rose-400/35 bg-rose-500/15 text-rose-300')}>
+                  <Heart className={cn('h-[17px] w-[17px]', art.favorited && 'fill-rose-500 text-rose-400')} />
+                </button>
+              )}
+              <button type="button" disabled={!canDownload} onClick={() => onDownload?.(art)} title={demo || locked ? 'Download disponível para assinantes' : downloadLabel} aria-label={demo || locked ? 'Download disponível para assinantes' : downloadLabel} className="cg-art-download inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-orange-500 text-white transition-colors hover:bg-orange-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-400 disabled:cursor-not-allowed disabled:bg-slate-700 disabled:text-slate-300 sm:h-11 sm:w-11">
+                {downloadState === 'loading' ? <Loader2 className="h-4 w-4 shrink-0 animate-spin" /> : demo || locked ? <Lock className="h-4 w-4 shrink-0" /> : <Download className="h-4 w-4 shrink-0" />}
+                <span className="sr-only">{demo || locked ? 'Disponível para assinantes' : downloadLabel}</span>
               </button>
-            )}
+            </div>
           </div>
-          <div className="cg-art-meta flex min-w-0 flex-wrap items-center gap-1.5">
-            {isBocao && <span className="rounded-full border border-orange-400/30 bg-orange-500/15 px-2 py-1 text-[9px] font-bold text-orange-200">Arte complementar · Bocão</span>}
-            {art.category && <span className="max-w-full truncate rounded-full border border-white/5 bg-orange-400/10 px-2 py-0.5 text-[9px] font-medium text-orange-200">{art.category.emoji} {art.category.name}</span>}
-            <button type="button" onClick={copyCode} aria-label={`Copiar código ${code}`} title="Copiar código da arte" className="cg-art-code inline-flex max-w-full items-center gap-1 rounded-md border border-white/10 bg-white/[.055] px-2 py-1 font-mono text-[9px] text-slate-300 transition-colors hover:text-white"><Copy className="h-2.5 w-2.5 shrink-0" /><span className="truncate">{code}</span></button>
-            {art.tags.slice(0, 1).map(tag => <span key={tag.id} title={tag.name} className="max-w-[110px] truncate rounded-full bg-white/[.04] px-2 py-1 text-[9px] text-slate-400">#{tag.name}</span>)}
-          </div>
-          <div className="mt-auto flex min-w-0 flex-col gap-2 pt-1">
-            <button type="button" disabled={!canDownload} onClick={() => onDownload?.(art)} aria-label={demo || locked ? 'Download disponível para assinantes' : downloadLabel} className="cg-art-download inline-flex min-h-10 w-full min-w-0 items-center justify-center gap-2 rounded-xl bg-orange-500 px-2.5 py-2 text-center text-xs font-bold leading-tight text-white shadow-sm transition-colors hover:bg-orange-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-400 disabled:cursor-not-allowed disabled:bg-slate-700 disabled:text-slate-300 disabled:shadow-none sm:min-h-11 sm:text-[13px]">
-              {downloadState === 'loading' ? <Loader2 className="h-4 w-4 shrink-0 animate-spin" /> : demo || locked ? <Lock className="h-4 w-4 shrink-0" /> : <Download className="h-4 w-4 shrink-0" />}
-              <span className="min-w-0">{demo || locked ? 'Disponível para assinantes' : downloadLabel}</span>
-            </button>
-            {onOpenMockup && <button type="button" onClick={() => onOpenMockup(art)} className="cg-art-studio-touch hidden min-h-9 w-full items-center justify-center gap-2 rounded-lg border border-orange-400/25 bg-orange-500/10 px-2 py-1.5 text-[11px] font-semibold text-orange-200 hover:bg-orange-500/20"><Box className="h-3.5 w-3.5" /> Ver no Studio 3D</button>}
-          </div>
+          {onOpenMockup && <button type="button" onClick={() => onOpenMockup(art)} className="cg-art-studio-touch hidden min-h-9 w-full items-center justify-center gap-2 rounded-lg border border-orange-400/25 bg-orange-500/10 px-2 py-1.5 text-[11px] font-semibold text-orange-200 hover:bg-orange-500/20"><Box className="h-3.5 w-3.5" /> Ver no Studio 3D</button>}
         </div>
       </div>
     </motion.article>
