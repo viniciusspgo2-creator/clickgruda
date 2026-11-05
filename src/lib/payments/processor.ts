@@ -1,7 +1,6 @@
 import { Prisma } from '@prisma/client'
 import { db } from '@/lib/db'
 import type { NormalizedPaymentEvent } from './provider'
-import { getMemberProfile, saveMemberProfile } from '@/lib/member-profile'
 
 /**
  * A Cakto pode entregar eventos de uma mesma compra em paralelo.
@@ -57,9 +56,7 @@ export async function processPaymentEvent(provider: string, evt: NormalizedPayme
 
         if (newStatus === 'APPROVED') {
           // Não substitui concessões manuais nem desbloqueia conta bloqueada.
-          if (existingUser.status === 'BLOCKED') return
-          const profile = await getMemberProfile(existingUser.id, tx)
-          if (existingUser.hasAccess && existingUser.accessSource === 'ADMIN_GRANT' && profile.downloadLimit == null) return
+          if (existingUser.status === 'BLOCKED' || (existingUser.hasAccess && existingUser.accessSource === 'ADMIN_GRANT')) return
           await tx.user.update({ where: { id: existingUser.id }, data: {
             hasAccess: true,
             accessStatus: 'ATIVO',
@@ -70,7 +67,6 @@ export async function processPaymentEvent(provider: string, evt: NormalizedPayme
             accessSource: 'PURCHASE',
             status: 'ACTIVE',
           } })
-          if (profile.downloadLimit != null) await saveMemberProfile(existingUser.id, { ...profile, downloadLimit: null }, tx)
         } else if (
           existingUser.accessProvider === provider &&
           existingUser.accessReference === evt.externalId &&
