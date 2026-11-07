@@ -169,7 +169,9 @@ export function AuthView() {
             <p className="mt-1 text-sm text-zinc-500">
               {authMode === 'login'
                 ? 'Entre para acessar o portal de downloads.'
-                : 'Crie sua conta para finalizar a compra do acesso vitalício.'}
+                : freeSignup
+                  ? 'Crie sua conta e comece seu teste grátis.'
+                  : 'Crie sua conta para finalizar a compra do acesso vitalício.'}
             </p>
 
             {authMode === 'register' && <div className="mt-5 rounded-2xl border border-orange-200 bg-orange-50 p-4 text-sm leading-6 text-zinc-700" role="note"><p className="flex items-center gap-2 font-extrabold text-zinc-950"><ShieldCheck className="h-4 w-4 text-orange-600" /> {freeSignup?'Comece seu teste grátis':'Acesso liberado após o pagamento'}</p><p className="mt-1">{freeSignup?'Crie sua conta para baixar até 20 artes em 24 horas e testar o Studio Mockup e o Editor por 7 dias desde o cadastro. Depois, adquira o acesso completo para continuar.':'Crie sua conta e finalize a compra em seguida. Assim que o pagamento for confirmado, seu acesso vitalício é liberado automaticamente. Use o mesmo e-mail no cadastro e na compra.'}</p></div>}
