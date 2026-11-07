@@ -1,3 +1,5 @@
+> Atualização de 07/11/2026: os caminhos obsoletos já foram removidos do versionamento. O build mantém o teste de recuperação, mas não executa mais scripts para apagar arquivos. Este documento registra o contexto da correção anterior.
+
 # Click & Gruda — deploy corrigido / projeto mais leve
 
 **Problema anterior:** erros TS2339/TS2724 em `src/app/api/**/bocoes` ocorrem quando arquivos antigos continuam no repositório GitHub, embora não existam no ZIP de substituição.

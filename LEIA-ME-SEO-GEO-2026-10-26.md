@@ -14,7 +14,7 @@
 1. Substitua os arquivos do projeto pelo conteúdo da pasta clickgruda-main deste ZIP. Preserve a pasta .git do seu repositório.
 2. Mantenha as variáveis atuais do seu projeto Vercel, principalmente DATABASE_URL e AUTH_SECRET. Não copie os valores de exemplo de .env.example por cima dos valores reais.
 3. Se existir NEXT_PUBLIC_SITE_URL, atualize para https://www.clickgruda.com.br. O código também fixa o domínio correto para impedir que uma configuração antiga volte a gerar SEO para a Vercel.
-4. Suba a atualização pelo seu fluxo habitual de GitHub/Vercel. O build remove somente os arquivos antigos listados em scripts/cleanup-seo-legacy.cjs.
+4. Suba a atualização pelo seu fluxo habitual de GitHub/Vercel. Os arquivos antigos já foram removidos do versionamento; o build atual não executa limpeza de arquivos.
 5. Confirme que https://www.clickgruda.com.br abre o sistema atualizado.
 
 Não rode seed nem db push para esta atualização. Ela usa a tabela Setting que já existe, sem criar ou apagar tabelas. O antigo limite diário salvo no banco deixa de ter efeito no código novo.

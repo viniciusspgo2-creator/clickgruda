@@ -1,6 +1,6 @@
 'use client'
 
-import {StudioBonusCard} from '@/components/portal/StudioBonusCard'
+import { MemberAccessSummary } from '@/components/portal/MemberAccessSummary'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient, type InfiniteData } from '@tanstack/react-query'
 import { AnimatePresence, motion } from 'framer-motion'
@@ -808,20 +808,17 @@ export function PortalView() {
         </div>
       )}
 
-      {!user.isDemo && user.role!=='ADMIN' && <StudioBonusCard/>}
-      {quota && !user.isDemo && (
-        <section className="border-b border-orange-400/20 bg-[#141d2e] px-4 py-4 sm:px-7" role="status" aria-live="polite">
-          <div className="mx-auto flex w-full max-w-[1600px] flex-wrap items-center justify-between gap-4">
-            <div>
-              <p className="flex items-center gap-2 text-sm font-extrabold text-orange-300"><Download className="h-4 w-4" /> {quotaExhausted ? 'Seu período de teste chegou ao limite' : 'Sua conta está em modo de teste'}</p>
-              <p className="mt-1 text-sm leading-6 text-slate-200">{quotaExhausted
-                ? `${quota.expired?'O prazo de 24 horas terminou.':`Você utilizou os ${quota.limit} downloads disponíveis.`} As artes estão em modo de prévia protegida. Garanta o acesso completo para desbloquear os downloads ilimitados!`
-                : `Você utilizou ${quota.used} de ${quota.limit} downloads. Restam ${quota.remaining} downloads de teste.${quota.expiresAt ? ` Disponíveis até ${new Date(quota.expiresAt).toLocaleString('pt-BR',{timeZone:'America/Sao_Paulo',dateStyle:'short',timeStyle:'short'})} (Brasília).` : ''}`}</p>
-            </div>
-            <a href="/comprar" className="inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-xl bg-orange-500 px-5 py-2.5 text-sm font-extrabold text-white shadow-lg shadow-orange-600/20 transition-colors hover:bg-orange-400"><Crown className="h-4 w-4" /> Garanta seu acesso completo <ArrowRight className="h-4 w-4" /></a>
-          </div>
-        </section>
-      )}
+      {!user.isDemo && !user.isPreview && user.role !== 'ADMIN' && <MemberAccessSummary
+        userId={user.id} isTrial={Boolean(user.isTrial)} quota={quota}
+        quotaReady={catalogQ.isSuccess} quotaError={catalogQ.isError}
+        onRetryQuota={() => catalogQ.refetch()}
+        onExplore={() => {
+          resetFilters(); setSearchInput('')
+          const input = document.getElementById('member-catalog-search')
+          input?.scrollIntoView({ block: 'center', behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' })
+          input?.focus({ preventScroll: true })
+        }}
+      />}
 
       {/* Download ZIP permanece disponível no menu lateral, sem faixa ocupando o topo. */}
 
@@ -971,7 +968,7 @@ export function PortalView() {
             Categorias continuam acessíveis na sidebar e em “Mais filtros”. */}
         <div className="cg-filter-toolbar sticky top-[82px] z-20 mb-4 flex flex-wrap items-center gap-2 rounded-2xl p-2.5 sm:top-[82px]" aria-label="Barra de navegação das artes">
           <button type="button" onClick={() => setMenuOpen(true)} className="cg-filter-button inline-flex h-9 shrink-0 items-center gap-2 rounded-xl px-3 text-xs font-bold"><SlidersHorizontal className="h-4 w-4" /> Mais filtros{categoryIds.length + tagIds.length > 0 ? ` (${categoryIds.length + tagIds.length})` : ''}</button>
-          <label className="cg-inline-search relative flex min-w-[145px] flex-1 items-center" aria-label="Buscar no acervo"><Search className="pointer-events-none absolute left-3 h-4 w-4 text-orange-300" /><input type="search" value={searchInput} onChange={event => setSearchInput(event.target.value)} placeholder="Buscar tema, arte ou código…" className="h-9 w-full rounded-xl border border-white/15 bg-[#1b2c46] pl-9 pr-2 text-xs text-white outline-none placeholder:text-slate-400 focus:border-orange-400" /></label>
+          <label className="cg-inline-search relative flex min-w-[145px] flex-1 items-center" aria-label="Buscar no acervo"><Search className="pointer-events-none absolute left-3 h-4 w-4 text-orange-300" /><input id="member-catalog-search" type="search" value={searchInput} onChange={event => setSearchInput(event.target.value)} placeholder="Buscar tema, arte ou código…" className="h-9 w-full rounded-xl border border-white/15 bg-[#1b2c46] pl-9 pr-2 text-xs text-white outline-none placeholder:text-slate-400 focus:border-orange-400" /></label>
           <span className="hidden text-xs font-semibold text-slate-300 lg:inline">{total.toLocaleString('pt-BR')} {total === 1 ? 'resultado' : 'resultados'}</span>
           <div className="cg-mobile-sort">
             <Select value={sort} onValueChange={value => setFilter({ sort: value as typeof sort })}>

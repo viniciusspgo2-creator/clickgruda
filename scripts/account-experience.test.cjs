@@ -28,21 +28,21 @@ function ui(file, name, state, props = {}, prepare) {
   const html = ReactDOM.renderToStaticMarkup(React.createElement(QueryClientProvider, { client: query }, React.createElement(Component, props)))
   query.clear(); return html
 }
-test('cadastro informa ativação pendente, exige WhatsApp e oferece demo sem submeter o formulário', () => {
+test('cadastro sem teste grátis exige pagamento e mantém WhatsApp, senha protegida e demo fora do formulário', () => {
   const html = ui('src/components/views/AuthView.tsx', 'AuthView', baseState)
-  assert.match(html, /Cadastro não libera o acesso automaticamente/)
+  assert.match(html, /Acesso liberado após o pagamento/)
   assert.match(html, /id="whatsapp"[^>]*required/)
   assert.match(html.match(/<input\b[^>]*id="password"[^>]*>/)[0], /type="password"/)
   assert.match(html, /aria-label="Mostrar senha"/)
   assert.match(html, /Conhecer por dentro/)
-  assert.match(html, /Prefiro cadastrar com a equipe pelo WhatsApp/)
+  assert.match(html, /Preciso de suporte por WhatsApp/)
   const formEnd = html.indexOf('</form>')
   assert.ok(html.indexOf('Conhecer por dentro') > formEnd)
   assert.ok(!html.includes('PIX automático libera na hora'))
 })
 test('landing mantém a demo e não anuncia Loja Online nem usa a ilustração da loja', () => {
   const html = ui('src/components/views/LandingView.tsx', 'LandingView', { ...baseState, authMode: 'login' })
-  assert.match(html, /Conhecer por dentro/)
+  assert.match(html, /Ver prévias sem cadastro/)
   assert.match(html, /cg-sales-page/)
   assert.ok(!/Loja Online|ecossistema-completo/.test(html))
 })
@@ -94,4 +94,21 @@ test('conflito serializável refaz a transação; só emite token após aplicar 
   const { startSession } = load('src/lib/sessions.ts', { '@/lib/db': { db }, '@/lib/member-profile': { getMemberProfile: async () => ({ extraDevices: 0 }) }, '@/lib/auth': { getCurrentSessionId: async () => null, createSessionToken: async (id, sid) => { assert.equal(revoked, true); assert.equal(sid, 'new-device'); return 'signed-token' } } })
   const result = await startSession({ id: 'member', role: 'USER', isDemo: false }, new Request('https://www.clickgruda.com.br/api/auth/login'))
   assert.equal(attempts, 2); assert.equal(result.displaced, true); assert.equal(result.limit, 1); assert.equal(result.token, 'signed-token')
+})
+
+test('cadastro grátis informa os prazos independentes, sem exigir compra para começar', () => {
+  const html = ui('src/components/views/AuthView.tsx', 'AuthView', baseState, {}, q => q.setQueryData(['auth-options'], {freeSignup:true}))
+  assert.match(html,/até 20 artes em 24 horas/);assert.match(html,/por 7 dias desde o cadastro/)
+  assert.match(html,/Criar conta grátis/);assert.ok(!html.includes('Acesso liberado após o pagamento'))
+})
+test('resumo distingue cota encerrada e bônus ativo, e não oferece abrir bônus vencido ou bloqueado', () => {
+  const props={userId:'summary-qa',isTrial:true,quotaReady:true,quotaError:false,onRetryQuota(){},onExplore(){},quota:{used:20,limit:20,remaining:0,exhausted:true,expired:false}}
+  const render=bonus=>ui('src/components/portal/MemberAccessSummary.tsx','MemberAccessSummary',baseState,props,q=>q.setQueryData(['studio-bonus',props.userId,true],{bonus}))
+  const active={state:'ready',code:'QA-CODE',entitlement:'TRIAL',active:true,trialEndsAt:new Date(Date.now()+86400000).toISOString()}
+  assert.match(render(active),/Seu Studio e Editor continuam disponíveis até/)
+  const expired=render({...active,trialEndsAt:new Date(Date.now()-1000).toISOString()})
+  assert.match(expired,/O teste dos bônus terminou/);assert.ok(!expired.includes('Abrir Studio e Editor'));assert.ok(!expired.includes('Copiar código'))
+  const blocked=render({...active,adminBlocked:true});assert.match(blocked,/Acesso ao bônus bloqueado/);assert.ok(!blocked.includes('Abrir Studio e Editor'))
+  const error=ui('src/components/portal/MemberAccessSummary.tsx','MemberAccessSummary',baseState,{...props,isTrial:false,quota:null,quotaReady:false,quotaError:true})
+  assert.match(error,/Não foi possível consultar seu saldo/);assert.ok(!error.includes('Downloads ilimitados'))
 })
