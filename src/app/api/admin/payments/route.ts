@@ -10,5 +10,5 @@ async function requireAdmin() {
 export async function GET() {
   if (!(await requireAdmin())) return jsonError('Não autorizado', 401)
   const ledger = await financialLedger()
-  return Response.json({ payments: ledger.payments.slice(0, 300), missingCaktoAmounts: ledger.stats.missingCaktoAmounts }, { headers: { 'Cache-Control': 'private, no-store' } })
+  return Response.json({ payments: ledger.payments.filter(p => !p.isTest).slice(0, 300), testPayments: ledger.payments.filter(p => p.isTest).slice(0, 300), realPaymentsCount: ledger.payments.filter(p => !p.isTest).length, testPaymentsCount: ledger.stats.testPaymentsCount, revenueCents: ledger.stats.revenueCents, missingCaktoAmounts: ledger.stats.missingCaktoAmounts }, { headers: { 'Cache-Control': 'private, no-store' } })
 }

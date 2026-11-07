@@ -6,7 +6,7 @@ export async function GET() {
   const session = await getSessionUser()
   if (!session || session.role !== 'ADMIN') return jsonError('Não autorizado', 401)
 
-  const [users, usersWithAccess, arts, categories, tags, events, downloads, ledger, pending, suggestionsTotal, suggestionsNew, recentUsers, recentSuggestions, pendingManualCount, pendingManualUsers, searchMissesNew, waitlistTotal, alertsOpen, enhanceNew] =
+  const [users, usersWithAccess, arts, categories, tags, events, downloads, ledger, suggestionsTotal, suggestionsNew, recentUsers, recentSuggestions, pendingManualCount, pendingManualUsers, searchMissesNew, waitlistTotal, alertsOpen, enhanceNew] =
     await Promise.all([
       db.user.count(),
       db.user.count({ where: { hasAccess: true } }),
@@ -16,7 +16,6 @@ export async function GET() {
       db.seasonalEvent.count(),
       db.download.count(),
       financialLedger(),
-      db.payment.count({ where: { status: 'PENDING' } }),
       db.themeSuggestion.count(),
       db.themeSuggestion.count({ where: { status: 'NEW' } }),
       db.user.findMany({ orderBy: { createdAt: 'desc' }, take: 6, select: { id: true, name: true, email: true, hasAccess: true, createdAt: true } }),
@@ -45,7 +44,8 @@ export async function GET() {
       downloads,
       revenueCents: ledger.stats.revenueCents,
       approvedPayments: ledger.stats.approvedPayments,
-      pendingPayments: pending,
+      pendingPayments: ledger.stats.pendingPayments,
+      testPaymentsCount: ledger.stats.testPaymentsCount,
       missingCaktoAmounts: ledger.stats.missingCaktoAmounts,
       suggestionsTotal,
       suggestionsNew,
@@ -55,7 +55,7 @@ export async function GET() {
       alertsOpen,
       enhanceNew,
     },
-    recentPayments: ledger.payments.slice(0, 6),
+    recentPayments: ledger.payments.filter(p => !p.isTest).slice(0, 6),
     recentUsers: recentUsers.map((u) => ({ ...u, createdAt: u.createdAt.toISOString() })),
     pendingManualUsers: pendingManualUsers.map((u) => ({
       id: u.id,

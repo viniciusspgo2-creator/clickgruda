@@ -1,3 +1,4 @@
+import { isCaktoTestEmail } from '@/lib/payments/payment-classification'
 import { z } from 'zod'
 import { db } from '@/lib/db'
 import { getSessionUser, jsonError } from '@/lib/auth'
@@ -21,6 +22,7 @@ export async function POST(req: Request) {
     const result = await db.$transaction(async tx => {
       const purchase = await tx.pendingPurchase.findUnique({ where: { id: data.purchaseId } })
       if (!purchase || purchase.provider !== 'CAKTO') throw new Conflict('Compra Cakto não encontrada.')
+      if (isCaktoTestEmail(purchase.email)) throw new Conflict('Este é um registro de teste da Cakto e não entra no faturamento.')
       await tx.$queryRaw`SELECT 1::integer FROM pg_advisory_xact_lock(hashtextextended(${'CAKTO:' + purchase.externalId}, 0))`
       const current = await tx.pendingPurchase.findUnique({ where: { id: purchase.id } })
       if (current?.status !== 'APPROVED') throw new Conflict('Esta compra foi revogada ou não está aprovada.')
