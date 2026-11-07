@@ -1,3 +1,4 @@
+import { financialLedger } from '@/lib/payments/financial-ledger'
 import { db } from '@/lib/db'
 import { getSessionUser, jsonError } from '@/lib/auth'
 
@@ -5,7 +6,7 @@ export async function GET() {
   const session = await getSessionUser()
   if (!session || session.role !== 'ADMIN') return jsonError('Não autorizado', 401)
 
-  const [users, usersWithAccess, arts, categories, tags, events, downloads, revenue, pending, suggestionsTotal, suggestionsNew, recentPayments, recentUsers, recentSuggestions, pendingManualCount, pendingManualUsers, searchMissesNew, waitlistTotal, alertsOpen, enhanceNew] =
+  const [users, usersWithAccess, arts, categories, tags, events, downloads, ledger, pending, suggestionsTotal, suggestionsNew, recentUsers, recentSuggestions, pendingManualCount, pendingManualUsers, searchMissesNew, waitlistTotal, alertsOpen, enhanceNew] =
     await Promise.all([
       db.user.count(),
       db.user.count({ where: { hasAccess: true } }),
@@ -14,15 +15,10 @@ export async function GET() {
       db.tag.count(),
       db.seasonalEvent.count(),
       db.download.count(),
-      db.payment.aggregate({ where: { status: 'APPROVED' }, _sum: { amountCents: true }, _count: true }),
+      financialLedger(),
       db.payment.count({ where: { status: 'PENDING' } }),
       db.themeSuggestion.count(),
       db.themeSuggestion.count({ where: { status: 'NEW' } }),
-      db.payment.findMany({
-        orderBy: { createdAt: 'desc' },
-        take: 6,
-        include: { user: { select: { name: true, email: true } } },
-      }),
       db.user.findMany({ orderBy: { createdAt: 'desc' }, take: 6, select: { id: true, name: true, email: true, hasAccess: true, createdAt: true } }),
       db.themeSuggestion.findMany({ orderBy: { createdAt: 'desc' }, take: 4 }),
       db.user.count({ where: { status: 'PENDING_MANUAL', hasAccess: false } }),
@@ -47,9 +43,10 @@ export async function GET() {
       tags,
       events,
       downloads,
-      revenueCents: revenue._sum.amountCents || 0,
-      approvedPayments: revenue._count,
+      revenueCents: ledger.stats.revenueCents,
+      approvedPayments: ledger.stats.approvedPayments,
       pendingPayments: pending,
+      missingCaktoAmounts: ledger.stats.missingCaktoAmounts,
       suggestionsTotal,
       suggestionsNew,
       pendingManualCount,
@@ -58,15 +55,7 @@ export async function GET() {
       alertsOpen,
       enhanceNew,
     },
-    recentPayments: recentPayments.map((p) => ({
-      id: p.id,
-      userName: p.user.name,
-      userEmail: p.user.email,
-      provider: p.provider,
-      amountCents: p.amountCents,
-      status: p.status,
-      createdAt: p.createdAt.toISOString(),
-    })),
+    recentPayments: ledger.payments.slice(0, 6),
     recentUsers: recentUsers.map((u) => ({ ...u, createdAt: u.createdAt.toISOString() })),
     pendingManualUsers: pendingManualUsers.map((u) => ({
       id: u.id,

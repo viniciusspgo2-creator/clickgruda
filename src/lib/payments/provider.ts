@@ -5,6 +5,7 @@ export type NormalizedPaymentEvent = {
   externalId: string
   reference: string
   email: string
+  finance?: { amountCents: number | null; currency: string | null; paidAt: string | null; method: string }
 }
 export interface PaymentProvider {
   readonly name: string

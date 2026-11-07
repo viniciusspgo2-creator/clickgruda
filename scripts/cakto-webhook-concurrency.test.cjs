@@ -14,6 +14,7 @@ function loadProcessor(db) {
   assert.deepEqual(output.diagnostics.filter(x => x.category === ts.DiagnosticCategory.Error), [])
   const module = { exports: {} }
   const requireMock = (name) => {
+    if (name === './cakto-finance') { const mod = {exports:{}}; const code=ts.transpileModule(fs.readFileSync(path.join(__dirname,'../src/lib/payments/cakto-finance.ts'),'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022}}).outputText; new Function('require','module','exports',code)(requireMock,mod,mod.exports); return mod.exports }
     if (name === '@prisma/client') return { Prisma: { TransactionIsolationLevel: { ReadCommitted: 'ReadCommitted' } } }
     if (name === '@/lib/db') return { db }
     if (name === '@/lib/studio-bonus') return {grantCompleteBenefits:async()=>{},queueStudioEntitlement:async()=>{},deliverStudioBonus:async()=>{}}
@@ -64,6 +65,7 @@ function createFakeDb() {
           async update({ data }) { Object.assign(user, data) },
         },
         paymentWebhookEvent: {
+          findUnique: db.paymentWebhookEvent.findUnique,
           async create({ data }) {
             const key = `${data.provider}:${data.externalId}:${data.eventType}`
             if (records.has(key)) throw Object.assign(new Error('unique key'), { code: 'P2002' })
@@ -75,7 +77,8 @@ function createFakeDb() {
           async upsert({ where, create, update }) {
             const w = where.provider_externalId
             const key = `${w.provider}:${w.externalId}`
-            purchases.set(key, purchases.has(key) ? { ...purchases.get(key), ...update } : create)
+            purchases.set(key, purchases.has(key) ? { ...purchases.get(key), ...update } : {id:'purchase'+purchases.size,...create})
+            return purchases.get(key)
           },
         },
         userSession: { async updateMany() { revocations++ } },

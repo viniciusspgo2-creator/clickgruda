@@ -789,6 +789,82 @@ async function main() {
     const result=JSON.parse((await db.setting.findUnique({where:{key:target}})).value);assert.equal(result.deliveredVersion,result.event.version)
     assert.equal((await db.setting.findUnique({where:{key:'qa-preserve-master-setting'}})).value,'keep')
   })
+  const ledgerApi = admin.load('src/lib/payments/financial-ledger.ts')
+  const cakto = admin.load('src/lib/payments/cakto.ts').caktoProvider
+  const processor = admin.load('src/lib/payments/processor.ts').processPaymentEvent
+  const normalized = (id, amount, currency = 'BRL', type = 'purchase_approved', email = 'finance@qa.invalid') => cakto.normalize({ event: type, data: { id, refId: 'ref-' + id, customer: { email }, amount, currency, paidAt: '2026-11-01T12:00:00-03:00', paymentMethod: 'pix' } })[0]
+  await check('normalização usa total cobrado BRL e rejeita valores ambíguos', async () => {
+    for (const [value, expected] of [[47.9,4790],['34.35',3435],[0,0],[0.29,29],['0.01',1],[1.234,null],['47,90',null],[-1,null],[null,null],['',null],[true,null],[Infinity,null]]) assert.equal(normalized('units',value).finance.amountCents,expected)
+    assert.equal(normalized('foreign',47.9,'USD').finance.amountCents,null)
+    assert.equal(normalized('absent',47.9,null).finance.amountCents,null)
+  })
+  process.env.LIBRARY_STUDIO_INTEGRATION_ENABLED = '0'
+  const initialFinance = await ledgerApi.financialLedger()
+  await check('compra Cakto sem conta soma valor real e reenvios não duplicam', async () => {
+    await Promise.all(Array.from({length:5},()=>processor('CAKTO',normalized('finance-1',34.35))))
+    const current = await ledgerApi.financialLedger()
+    assert.equal(current.stats.revenueCents,initialFinance.stats.revenueCents+3435)
+    assert.equal(current.payments.filter(p=>p.externalId==='finance-1').length,1)
+    assert.equal(await db.user.count({where:{email:'finance@qa.invalid'}}),0)
+    await processor('CAKTO',normalized('finance-1',99))
+    assert.equal((await ledgerApi.financialLedger()).stats.revenueCents,current.stats.revenueCents)
+  })
+  await check('compra histórica sem valor aparece e reenvio recupera só financeiro',async()=>{
+    await processor('CAKTO',{kind:'PAGO',type:'purchase_approved',externalId:'finance-legacy',reference:'ref-finance-legacy',email:trial.email})
+    const beforeUser=await db.user.findUnique({where:{id:trial.id}})
+    const beforeEvents=await db.paymentWebhookEvent.count()
+    let current=await ledgerApi.financialLedger()
+    assert.equal(current.payments.find(p=>p.externalId==='finance-legacy').amountCents,null)
+    const beforeAmount=current.stats.revenueCents
+    await processor('CAKTO',normalized('finance-legacy',45.3,'BRL','purchase_approved',trial.email))
+    current=await ledgerApi.financialLedger()
+    assert.equal(current.stats.revenueCents,beforeAmount+4530)
+    assert.equal(await db.paymentWebhookEvent.count(),beforeEvents)
+    assert.deepEqual(await db.user.findUnique({where:{id:trial.id}}),beforeUser)
+  })
+  await check('estorno exclui receita mesmo com aprovação atrasada e lançamento legado', async()=>{
+    const before=(await ledgerApi.financialLedger()).stats.revenueCents
+    await db.payment.create({data:{userId:baseline.id,provider:'CAKTO',externalId:'ref-finance-1',amountCents:3435,status:'APPROVED'}})
+    assert.equal((await ledgerApi.financialLedger()).stats.revenueCents,before)
+    await processor('CAKTO',normalized('finance-1',34.35,'BRL','refund'))
+    await processor('CAKTO',normalized('finance-1',34.35,'BRL','payment_approved'))
+    assert.equal((await ledgerApi.financialLedger()).stats.revenueCents,before-3435)
+    assert.equal((await ledgerApi.financialLedger()).payments.filter(p=>p.externalId==='ref-finance-1')[0].status,'REVOKED')
+  })
+  await check('conciliação exige admin/origem, valor real, é auditada e idempotente',async()=>{
+    const e={kind:'PAGO',type:'purchase_approved',externalId:'finance-missing',reference:'finance-missing',email:'missing@qa.invalid'}
+    await processor('CAKTO',e)
+    const purchase=await db.pendingPurchase.findUnique({where:{provider_externalId:{provider:'CAKTO',externalId:e.externalId}}})
+    const body={purchaseId:purchase.id,amountCents:3890,paidAt:'2026-11-02T03:00:00.000Z',evidence:'Cakto-comprovante-QA',confirmedCakto:true}
+    const route=admin.route('admin/payments/cakto'),api='/api/admin/payments/cakto'
+    assert.equal((await guest.route('admin/payments/cakto').POST(request(api,body))).status,401)
+    assert.equal((await route.POST(request(api,body,'POST','https://evil.invalid'))).status,403)
+    assert.equal((await route.POST(request(api,{...body,confirmedCakto:false}))).status,400)
+    assert.equal((await route.POST(request(api,{...body,amountCents:0}))).status,400)
+    const before=(await ledgerApi.financialLedger()).stats.revenueCents
+    const responses=await Promise.all(Array.from({length:5},()=>route.POST(request(api,body))))
+    assert.ok(responses.every(r=>r.status===200))
+    assert.equal((await ledgerApi.financialLedger()).stats.revenueCents,before+3890)
+    assert.equal((await route.POST(request(api,{...body,amountCents:9999}))).status,409)
+    const receipt=JSON.parse((await db.setting.findUnique({where:{key:'cakto-finance:'+purchase.id}})).value)
+    assert.equal(receipt.adminId,owner.id);assert.equal(receipt.evidence,body.evidence)
+    await processor('CAKTO',normalized(e.externalId,50,'BRL','purchase_approved',e.email))
+    assert.equal((await ledgerApi.financialLedger()).stats.revenueCents,before+3890)
+    await processor('CAKTO',{...e,kind:'CHARGEBACK',type:'chargeback'})
+    assert.equal((await ledgerApi.financialLedger()).stats.revenueCents,before)
+    assert.equal((await route.POST(request(api,body))).status,409)
+  })
+  await check('resumo e lista concordam, cortesias não viram receita',async()=>{
+    const before=(await ledgerApi.financialLedger()).stats.revenueCents
+    await db.user.create({data:{name:'Cortesia financeira',email:'courtesy-finance@qa.invalid',password:'qa',hasAccess:true,accessSource:'ADMIN_GRANT'}})
+    const stats=await (await admin.route('admin/stats').GET()).json()
+    const list=await (await admin.route('admin/payments').GET()).json()
+    assert.equal(stats.stats.revenueCents,before)
+    assert.equal(list.payments.filter(p=>p.status==='APPROVED').reduce((s,p)=>s+(p.amountCents??0),0),before)
+    assert.ok(stats.stats.missingCaktoAmounts>0)
+    assert.equal(stats.stats.missingCaktoAmounts,list.missingCaktoAmounts)
+    assert.equal(list.payments.some(p=>p.userEmail==='courtesy-finance@qa.invalid'),false)
+  })
   await check(
     'admin mestre e configuração original permanecem intactos',
     async () => {
@@ -835,6 +911,7 @@ async function main() {
         built.stdout + built.stderr,
       )
     }
+    const browserPurchase = await db.pendingPurchase.create({data:{provider:'CAKTO',externalId:'QA-BROWSER-CAKTO',email:'browser-cakto@qa.invalid',status:'APPROVED'}})
     const httpPort = await freePort()
     server = spawn(
       process.execPath,
@@ -885,7 +962,7 @@ async function main() {
           sessionStorage.setItem('cg_view', 'admin')
         } catch {}
       })
-      await ctx.route('**/api/admin/payments/manual', async (route) => {
+      await ctx.route('**/api/admin/payments/*', async (route) => {
         if (route.request().method() === 'POST') {
           const response = await route.fetch({
             headers: {
@@ -984,9 +1061,22 @@ async function main() {
         path: path.join(folder, 'browser', 'pagamento-manual.png'),
         fullPage: true,
       })
+      const caktoRow=page.getByRole('row').filter({hasText:'browser-cakto@qa.invalid'})
+      await caktoRow.getByText('Valor a confirmar',{exact:true}).waitFor()
+      await caktoRow.getByRole('button',{name:'Conferir valor Cakto'}).click()
+      await dialog.getByLabel('Valor cobrado (R$)').fill('39,90')
+      await dialog.getByLabel('Data do pagamento').fill('2026-11-02')
+      await dialog.getByLabel('Referência do comprovante conferido').fill('Cakto-QA-comprovante-001')
+      await dialog.getByText('Conferi este pedido na Cakto',{exact:false}).click()
+      await dialog.getByRole('button',{name:'Confirmar conciliação',exact:true}).click()
+      await dialog.waitFor({state:'hidden'})
+      await caktoRow.getByText(/39,90/).waitFor()
+      assert.equal(JSON.parse((await db.setting.findUnique({where:{key:'cakto-finance:'+browserPurchase.id}})).value).amountCents,3990)
+      assert.equal(await db.payment.count({where:{externalId:'QA-BROWSER-CAKTO'}}),0)
+      await page.screenshot({path:path.join(folder,'browser','cakto-conciliado.png'),fullPage:true})
       assert.deepEqual(errors, [])
       console.log(
-        'PASS Chromium: formulário real registra recebimento no banco e atualiza a lista',
+        'PASS Chromium: formulários reais manual e Cakto atualizam o faturamento sem duplicar compra',
       )
       checks++
     } finally {
