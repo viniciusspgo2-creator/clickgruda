@@ -130,7 +130,7 @@ export function AppShell() {
           else toast.info(publicDemo ? 'Esta visita terminou. Use Conhecer por dentro para abrir a demonstração novamente.' : 'Sua sessão terminou. Entre novamente para continuar.')
         } else {
           const current = useStore.getState().user
-          if (current?.id !== data.user.id || current?.isDemo !== data.user.isDemo || current?.role !== data.user.role || current?.hasAccess !== data.user.hasAccess || current?.status !== data.user.status) {
+          if (current?.id !== data.user.id || current?.isDemo !== data.user.isDemo || current?.role !== data.user.role || current?.hasAccess !== data.user.hasAccess || current?.isTrial !== data.user.isTrial || current?.status !== data.user.status) {
             queryClient.clear(); setUser(data.user)
           }
         }

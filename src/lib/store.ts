@@ -12,6 +12,7 @@ export type SessionUser = {
   name: string
   email: string
   role: string
+  isTrial?: boolean
   hasAccess: boolean
   isDemo?: boolean
   isPreview?: boolean

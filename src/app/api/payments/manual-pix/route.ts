@@ -13,7 +13,7 @@ export async function POST(req: Request) {
   const settings = await getSettings()
   // Solicitação de atendimento e ativação; não exige PIX cadastrado nem declara pagamento.
 
-  if (session.hasAccess) return jsonError('Você já tem acesso ativo.', 400)
+  if (session.hasAccess && !session.isTrial) return jsonError('Você já tem acesso ativo.', 400)
 
   const body = await req.json().catch(() => ({}))
   if (!body || typeof body !== 'object' || Array.isArray(body)) return jsonError('Dados inválidos.', 400)

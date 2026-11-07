@@ -35,7 +35,7 @@ test('capped account reaches limit after X downloads and then denies another', a
   assert.deepEqual(JSON.parse(JSON.stringify(await app.exports.getDownloadQuota(user))), { used: 0, limit: 2, remaining: 2, exhausted: false })
   await app.exports.recordSuccessfulDownload(user, 'art1', false)
   await app.exports.recordSuccessfulDownload(user, 'art1', false)
-  await assert.rejects(app.exports.recordSuccessfulDownload(user, 'art1', false), /limite de downloads de teste terminou/i)
+  await assert.rejects(app.exports.recordSuccessfulDownload(user, 'art1', false), error => error.name === 'DownloadQuotaExceededError')
   assert.equal(app.getUsed(), 2)
   assert.equal(app.getArtUpdates(), 2)
   assert.equal((await app.exports.getDownloadQuota(user)).exhausted, true)

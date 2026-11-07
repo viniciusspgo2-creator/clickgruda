@@ -8,7 +8,7 @@ export async function POST(req: Request) {
   const session = await getSessionUser()
   if (!session) return jsonError('Faça login para assinar', 401)
   if (session.isDemo) return jsonError('Conta Preview: operação indisponível.', 403)
-  if (session.hasAccess) return jsonError('Sua conta já tem acesso ativo.', 400)
+  if (session.hasAccess && !session.isTrial) return jsonError('Sua conta já tem acesso ativo.', 400)
   const body = await req.json().catch(() => ({}))
   if (!body || typeof body !== 'object' || Array.isArray(body)) return jsonError('Dados inválidos.', 400)
   const settings = await getSettings()

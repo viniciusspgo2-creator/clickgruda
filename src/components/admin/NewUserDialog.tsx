@@ -1,5 +1,6 @@
 'use client'
 
+import { ManualPaymentDialog } from '@/components/admin/ManualPaymentDialog'
 import { useState } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import { Check, CheckCircle2, Copy, Loader2, MessageCircle, RefreshCw, UserPlus } from 'lucide-react'
@@ -18,7 +19,7 @@ function generatePassword() {
   return 'gruda-' + Array.from(bytes, (b) => chars[b % chars.length]).join('')
 }
 
-type Created = { name: string; email: string; password: string; hasAccess: boolean; whatsapp: string; downloadLimit: number | null }
+type Created = { id: string; name: string; email: string; password: string; hasAccess: boolean; whatsapp: string; downloadLimit: number | null }
 
 /** Cadastro manual de cliente — para quem fechou a compra pelo WhatsApp. */
 export function NewUserDialog() {
@@ -62,7 +63,7 @@ export function NewUserDialog() {
         setError(data.error || 'Não foi possível cadastrar.')
         return
       }
-      setCreated({ name: data.user.name, email: data.user.email, password, hasAccess: data.user.hasAccess, whatsapp: data.user.whatsapp || whatsapp, downloadLimit: limited ? Number(downloadLimit) : null })
+      setCreated({ id: data.user.id, name: data.user.name, email: data.user.email, password, hasAccess: data.user.hasAccess, whatsapp: data.user.whatsapp || whatsapp, downloadLimit: limited ? Number(downloadLimit) : null })
       queryClient.invalidateQueries({ queryKey: ['admin-users'] })
       queryClient.invalidateQueries({ queryKey: ['admin-stats'] })
     } catch {
@@ -154,6 +155,7 @@ export function NewUserDialog() {
                     </a>
                   ) : null}
                 </div>
+                <ManualPaymentDialog user={created} />
                 <div className="flex gap-2">
                   <Button variant="ghost" onClick={reset} className="h-10 flex-1 rounded-xl font-bold text-zinc-500">
                     Cadastrar outro
@@ -191,7 +193,7 @@ export function NewUserDialog() {
                 <label className="flex items-center justify-between rounded-xl border border-emerald-200 bg-emerald-50/60 px-3.5 py-3">
                   <span>
                     <span className="block text-sm font-bold text-zinc-800">Liberar acesso agora</span>
-                    <span className="block text-xs text-zinc-500">Já pagou? Deixe ligado.</span>
+                    <span className="block text-xs text-zinc-500">Concede acesso. O pagamento é registrado separadamente.</span>
                   </span>
                   <Switch checked={grantAccess} onCheckedChange={(checked) => { setGrantAccess(checked); if (!checked) setLimited(false) }} />
                 </label>

@@ -1,0 +1,26 @@
+name: Reenviar bônus pendentes do Studio
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '*/5 * * * *'
+permissions: {}
+concurrency:
+  group: studio-bonus-retry
+  cancel-in-progress: false
+jobs:
+  retry:
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Reenviar lote pendente com autenticação exclusiva
+        env:
+          BONUS_CRON_SECRET: ${{ secrets.STUDIO_BONUS_CRON_SECRET }}
+        shell: bash
+        run: |
+          if [ -z "$BONUS_CRON_SECRET" ]; then
+            echo 'Integração aguardando configuração do segredo de retentativa.'
+            exit 0
+          fi
+          printf 'header = "Authorization: Bearer %s"\n' "$BONUS_CRON_SECRET" |
+            curl --config - --fail --silent --show-error --max-time 55 \
+              --request POST https://www.clickgruda.com.br/api/integrations/studio/retry

@@ -43,7 +43,7 @@ export type CatalogData = {
   counts: { arts: number; lancamentos: number; selecionadas: number; favoritas: number; minhasDownloads: number; reprovadas: number; bocoes: number }
   waitlisted?: boolean
   /** Compatibilidade com clientes anteriores: null indica downloads ilimitados. */
-  quota?: { used: number; limit: number; remaining: number; exhausted: boolean } | null
+  quota?: { used: number; limit: number; remaining: number; exhausted: boolean; expiresAt?:string; expired?:boolean } | null
   priceCents: number
   provider: 'MERCADOPAGO' | 'ASAAS' | null
   providers: { mercadopago: boolean; asaas: boolean }

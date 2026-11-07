@@ -1,3 +1,4 @@
+import {grantCompleteBenefits,queueStudioEntitlement,deliverStudioBonus,STUDIO_PREFIX} from '@/lib/studio-bonus'
 import { db } from '@/lib/db'
 import { getSessionUser, jsonError, hashPassword } from '@/lib/auth'
 import { getMemberProfile, saveMemberProfile, MEMBER_PREFIX } from '@/lib/member-profile'
@@ -31,11 +32,12 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
     // Liberação da conta sempre encerra o estado "aguardando PIX manual"
     if (body.hasAccess) data.status = 'ACTIVE'
   }
-  const target = await db.user.findUnique({ where: { id }, select: { isPreview: true, status: true, role: true } })
+  const target = await db.user.findUnique({ where: { id }, select: { isPreview: true, status: true, role: true,accessType:true } })
   if (!target) return jsonError('Usuário não encontrado.', 404)
   if (body.blocked === true) data.status = 'BLOCKED'
   else if (body.blocked === false && target.status === 'BLOCKED') data.status = 'ACTIVE'
   if (target?.isPreview && (body.role === 'ADMIN' || body.hasAccess === false || typeof body.password === 'string')) return jsonError('A conta Preview só pode ser gerenciada pela opção Preview.', 403)
+  if(body.downloadLimit!==undefined && target.accessType==='TRIAL')return jsonError('O teste público tem 20 downloads em 24 horas. Use Liberar para conceder acesso completo.',400)
   if (body.downloadLimit !== undefined && (target.isPreview || target.role === 'ADMIN' || body.role === 'ADMIN')) return jsonError('O limitador só pode ser configurado para usuários comuns.', 400)
   if (body.role === 'USER' || body.role === 'ADMIN') data.role = body.role
   // Redefinição de senha pelo Admin Master (não há recuperação automática por enquanto)
@@ -46,6 +48,7 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
   }
 
   const user = await db.$transaction(async tx => {
+    await tx.$queryRaw`SELECT id FROM "User" WHERE id=${id} FOR UPDATE`
     if (body.downloadLimit !== undefined) {
       const profile = await getMemberProfile(id, tx)
       await saveMemberProfile(id, { ...profile, downloadLimit: body.downloadLimit }, tx)
@@ -60,14 +63,24 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
     if (body.blocked === true || typeof body.password === 'string') await tx.userSession.updateMany({ where: { userId: id, revokedAt: null }, data: { revokedAt: new Date(), revokedReason: 'ADMIN' } })
     const updated = await tx.user.update({
       where: { id }, data,
-      select: { id: true, name: true, email: true, role: true, hasAccess: true, status: true, accessSource: true, createdAt: true },
+      select: { id: true, name: true, email: true, role: true, hasAccess: true, status: true, accessSource: true, accessType:true, createdAt: true },
     })
     if (typeof body.hasAccess === 'boolean') {
       await tx.paymentWebhookEvent.create({ data: { provider: 'ADMIN', externalId: randomUUID(), eventType: body.hasAccess ? 'ADMIN_GRANT' : 'ADMIN_REVOKE', customerEmail: updated.email, userId: id, outcome: 'PROCESSED' } })
       if (!body.hasAccess) await tx.userSession.updateMany({ where: { userId: id, revokedAt: null }, data: { revokedAt: new Date(), revokedReason: 'ADMIN' } })
     }
+    if(updated.role!=='ADMIN'&&!target.isPreview){
+      if(body.blocked===true)await queueStudioEntitlement(tx,updated,'REVOKED','ACCOUNT_BLOCKED')
+      else if(body.hasAccess===false)await queueStudioEntitlement(tx,updated,'REVOKED','ADMIN_REVOKED')
+      else if(body.hasAccess===true)await grantCompleteBenefits(tx,updated)
+      else if(body.blocked===false && updated.hasAccess){
+        if(updated.accessType==='TRIAL')await queueStudioEntitlement(tx,updated,'TRIAL')
+        else await grantCompleteBenefits(tx,updated)
+      }
+    }
     return updated
   })
+  await deliverStudioBonus(id).catch(()=>{})
   return Response.json({ user })
 }
 
@@ -76,6 +89,8 @@ export async function DELETE(_req: Request, { params }: { params: Promise<{ id: 
   if (!session) return jsonError('Não autorizado', 401)
   const { id } = await params
   if (session.id === id) return jsonError('Você não pode excluir a si mesmo', 400)
+  const bonus=await db.setting.findUnique({where:{key:STUDIO_PREFIX+id}})
+  if(bonus){const d=JSON.parse(bonus.value);if(d.event.entitlement!=='REVOKED'||d.deliveredVersion<d.event.version)return jsonError('Revogue o acesso e aguarde a sincronização do Studio antes de excluir esta conta.',409)}
   await db.$transaction([db.user.delete({ where: { id } }), db.setting.deleteMany({ where: { key: MEMBER_PREFIX + id } })])
   return Response.json({ ok: true })
 }

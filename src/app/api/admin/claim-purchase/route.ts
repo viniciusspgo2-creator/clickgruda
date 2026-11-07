@@ -1,4 +1,5 @@
 import { randomUUID } from 'node:crypto'
+import {grantCompleteBenefits,deliverStudioBonus} from '@/lib/studio-bonus'
 import { db } from '@/lib/db'
 import { getSessionUser, jsonError } from '@/lib/auth'
 
@@ -12,6 +13,7 @@ export async function POST(req: Request) {
   if (!id || !userId || body.confirmOwnership !== true) return jsonError('É necessário confirmar a titularidade do pagamento.', 400)
   try {
     await db.$transaction(async tx => {
+      await tx.$queryRaw`SELECT id FROM "User" WHERE id=${userId} FOR UPDATE`
       const [purchase, user] = await Promise.all([
         tx.pendingPurchase.findUnique({ where: { id } }),
         tx.user.findUnique({ where: { id: userId } }),
@@ -20,8 +22,10 @@ export async function POST(req: Request) {
       if (!user || user.email.toLowerCase() !== purchase.email || user.isDemo || user.isPreview || user.status === 'BLOCKED') throw new Error('Conta ou e-mail inválido')
       await tx.pendingPurchase.update({ where: { id }, data: { claimedUserId: user.id } })
       await tx.user.update({ where: { id: user.id }, data: { hasAccess: true, accessStatus: 'ATIVO', accessType: 'VITALICIO', activatedAt: new Date(), accessProvider: purchase.provider, accessReference: purchase.externalId, accessSource: 'PURCHASE' } })
+      await grantCompleteBenefits(tx,user)
       await tx.paymentWebhookEvent.create({ data: { provider: 'ADMIN', externalId: randomUUID(), eventType: 'MANUAL_CLAIM', customerEmail: user.email, userId: user.id, outcome: 'PROCESSED' } })
     })
+    await deliverStudioBonus(userId).catch(()=>{})
     return Response.json({ ok: true })
   } catch { return jsonError('Não foi possível associar a compra. Verifique os dados.', 400) }
 }

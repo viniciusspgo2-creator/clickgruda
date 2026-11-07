@@ -1,3 +1,4 @@
+import {queueStudioEntitlement,deliverStudioBonus} from '@/lib/studio-bonus'
 import { db } from '@/lib/db'
 import { getSessionUser, jsonError, hashPassword } from '@/lib/auth'
 import { MEMBER_PREFIX, normalizeWhatsapp, parseMemberProfile, saveMemberProfile } from '@/lib/member-profile'
@@ -89,10 +90,12 @@ export async function POST(req: Request) {
       activatedAt: grantAccess ? new Date() : null,
       status: 'ACTIVE',
     },
-    select: { id: true, name: true, email: true, hasAccess: true },
+    select: { id: true, name: true, email: true, hasAccess: true,createdAt:true },
     })
     await saveMemberProfile(created.id, { whatsapp, extraDevices: 0, downloadLimit, contactPurpose: 'cadastro realizado pela equipe de suporte', registeredAt: new Date().toISOString() }, tx)
+    if(grantAccess && downloadLimit===null)await queueStudioEntitlement(tx,created,'MEMBER')
     return created
   })
+  await deliverStudioBonus(user.id).catch(()=>{})
   return Response.json({ user: { ...user, whatsapp } })
 }

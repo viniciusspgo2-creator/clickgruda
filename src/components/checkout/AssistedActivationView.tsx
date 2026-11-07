@@ -46,7 +46,7 @@ export function AssistedActivationView({ subtotalCents, onAutomatic }: { subtota
       const data = await response.json()
       if (!data.user) { useStore.getState().setUser(null); useStore.getState().setAuthMode('login'); useStore.getState().setView('auth'); return }
       useStore.getState().setUser(data.user)
-      if (data.user.hasAccess) { qc.clear(); useStore.getState().setView('portal'); toast.success('Seu acesso está liberado. Boas criações!') }
+      if (data.user.hasAccess && !data.user.isTrial) { qc.clear(); useStore.getState().setView('portal'); toast.success('Seu acesso está liberado. Boas criações!') }
       else toast.info('O acesso ainda aguarda a ativação da equipe. Fale conosco pelo WhatsApp para acompanhar.')
     } catch (e) { toast.error((e as Error).message) }
     finally { setChecking(false) }
