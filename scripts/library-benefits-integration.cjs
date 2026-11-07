@@ -84,6 +84,7 @@ let db,
   studioDb,
   pg,
   server,
+  studioHttp,
   checks = 0
 const check = async (name, callback) => {
   await callback()
@@ -454,6 +455,7 @@ async function main() {
       trial = (await r.json()).user
       assert.equal(trial.role, 'USER')
       assert.equal(trial.isTrial, true)
+      assert.equal(await db.setting.count({where:{key:'trial-origin:'+trial.id}}),1)
       const u = await db.user.findUnique({ where: { id: trial.id } }),
         profile = await learner
           .load('src/lib/member-profile.ts')
@@ -801,7 +803,12 @@ async function main() {
   process.env.LIBRARY_STUDIO_INTEGRATION_ENABLED = '0'
   const initialFinance = await ledgerApi.financialLedger()
   await check('compra Cakto sem conta soma valor real e reenvios não duplicam', async () => {
-    await Promise.all(Array.from({length:5},()=>processor('CAKTO',normalized('finance-1',34.35))))
+    process.env.CAKTO_WEBHOOK_SECRET=randomBytes(32).toString('hex')
+    const gatewayRoute=guest.route('webhooks/cakto')
+    const body={secret:process.env.CAKTO_WEBHOOK_SECRET,event:'purchase_approved',data:{id:'finance-1',refId:'ref-finance-1',customer:{email:'finance@qa.invalid'},amount:34.35,currency:'BRL',paidAt:'2026-11-01T12:00:00-03:00',paymentMethod:'pix'}}
+    assert.equal((await gatewayRoute.POST(request('/api/webhooks/cakto',{...body,secret:'invalid-qa-secret'}))).status,401)
+    const replies=await Promise.all(Array.from({length:5},()=>gatewayRoute.POST(request('/api/webhooks/cakto',body))))
+    assert.ok(replies.every(r=>r.status===200))
     const current = await ledgerApi.financialLedger()
     assert.equal(current.stats.revenueCents,initialFinance.stats.revenueCents+3435)
     assert.equal(current.payments.filter(p=>p.externalId==='finance-1').length,1)
@@ -865,6 +872,32 @@ async function main() {
     assert.equal(stats.stats.missingCaktoAmounts,list.missingCaktoAmounts)
     assert.equal(list.payments.some(p=>p.userEmail==='courtesy-finance@qa.invalid'),false)
   })
+  await check('jornada conta pessoas únicas e compras aprovadas; exclui cortesia/demo/histórico e estornos',async()=>{
+    const date=new Date('2020-01-02T15:00:00Z')
+    const make=async(label,extra={},tracked=true)=>{const u=await db.user.create({data:{name:label,email:label+'@journey.invalid',password:'qa',createdAt:date,...extra}});if(tracked)await db.setting.create({data:{key:'trial-origin:'+u.id,value:date.toISOString()}});return u}
+    await make('courtesy',{hasAccess:true,accessSource:'ADMIN_GRANT'})
+    const downloaded=await make('downloaded')
+    await db.download.createMany({data:[{userId:downloaded.id,artId:art.id},{userId:downloaded.id,artId:art.id}]})
+    const manualBuyer=await make('manual-buyer')
+    await db.payment.createMany({data:[{userId:manualBuyer.id,provider:'ADMIN_MANUAL',amountCents:4790,status:'APPROVED'},{userId:manualBuyer.id,provider:'MANUAL_PIX',amountCents:4790,status:'APPROVED'}]})
+    const gatewayBuyer=await make('gateway-buyer')
+    await db.pendingPurchase.create({data:{provider:'CAKTO',externalId:'JOURNEY-CAKTO',email:gatewayBuyer.email,status:'APPROVED',claimedUserId:gatewayBuyer.id}})
+    const revoked=await make('revoked')
+    await db.payment.create({data:{userId:revoked.id,provider:'CAKTO',externalId:'JOURNEY-REFUND',amountCents:4790,status:'APPROVED'}})
+    await db.pendingPurchase.create({data:{provider:'CAKTO',externalId:'JOURNEY-REFUND',email:revoked.email,status:'REVOKED',claimedUserId:revoked.id}})
+    await db.payment.create({data:{userId:revoked.id,provider:'ADMIN_MANUAL',amountCents:4790,status:'VOIDED'}})
+    await make('demo',{isDemo:true});await make('preview',{isPreview:true});await make('admin-metric',{role:'ADMIN'});await make('legacy-untracked',{},false)
+    const journey=admin.load('src/lib/trial-journey.ts')
+    const result=await journey.getTrialJourney(new Date('2020-01-02T03:00:00Z'),new Date('2020-01-03T03:00:00Z'))
+    assert.equal(result.registered,5);assert.equal(result.downloaded,1);assert.equal(result.purchased,2);assert.equal(result.conversionRate,40)
+    const route=admin.route('admin/trial-journey')
+    const url='/api/admin/trial-journey?range=custom&start=2020-01-02&end=2020-01-02'
+    assert.equal((await guest.route('admin/trial-journey').GET(request(url,{},'GET'))).status,401)
+    assert.equal((await route.GET(request('/api/admin/trial-journey?range=custom&start=2020-02-31&end=2020-03-01',{},'GET'))).status,400)
+    assert.equal((await route.GET(request('/api/admin/trial-journey?range=custom&start=2020-01-01&end=2026-11-07',{},'GET'))).status,400)
+    const response=await route.GET(request(url,{},'GET'));assert.equal(response.status,200);assert.equal((await response.json()).purchased,2)
+    assert.equal((await journey.getTrialJourney(new Date('2018-01-01'),new Date('2018-01-02'))).conversionRate,0)
+  })
   await check(
     'admin mestre e configuração original permanecem intactos',
     async () => {
@@ -895,6 +928,28 @@ async function main() {
   )
   global.fetch = originalFetch
   if (process.argv.includes('--browser')) {
+    // Somente chaves públicas de teste do Turnstile; nenhum captcha de produção é contornado.
+    process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY='1x00000000000000000000AA'
+    process.env.TURNSTILE_SECRET_KEY='1x0000000000000000000000000000000AA'
+    process.env.LIBRARY_STUDIO_INTEGRATION_ENABLED='1'
+    process.env.NODE_USE_ENV_PROXY='1'
+    process.env.NO_PROXY=[process.env.NO_PROXY,'localhost','127.0.0.1'].filter(Boolean).join(',')
+    const certPath=path.join(folder,'local-studio.crt'),keyPath=path.join(folder,'local-studio.key')
+    await run('openssl',['req','-x509','-newkey','rsa:2048','-nodes','-keyout',keyPath,'-out',certPath,'-days','1','-subj','/CN=localhost','-addext','subjectAltName=DNS:localhost,IP:127.0.0.1'])
+    const caPath=path.join(folder,'test-ca-bundle.pem')
+    fs.writeFileSync(caPath,(process.env.NODE_EXTRA_CA_CERTS?fs.readFileSync(process.env.NODE_EXTRA_CA_CERTS,'utf8'):'')+'\n'+fs.readFileSync(certPath,'utf8'))
+    const studioPort=await freePort()
+    studioHttp=require('node:https').createServer({key:fs.readFileSync(keyPath),cert:fs.readFileSync(certPath)},async(req,res)=>{
+      try {
+        const chunks=[];for await(const chunk of req)chunks.push(chunk)
+        const response=await studioRoute.POST(new Request('https://localhost:'+studioPort+req.url,{method:req.method,headers:req.headers,body:Buffer.concat(chunks)}))
+        res.writeHead(response.status,Object.fromEntries(response.headers));res.end(Buffer.from(await response.arrayBuffer()))
+      } catch {res.writeHead(500);res.end('qa-handler-error')}
+    })
+    await new Promise(resolve=>studioHttp.listen(studioPort,'127.0.0.1',resolve))
+    process.env.STUDIO_API_ORIGIN='https://localhost:'+studioPort
+    process.env.NODE_EXTRA_CA_CERTS=caPath
+    await db.art.update({where:{id:art.id},data:{imageUrl:'/uploads/art-flork-cafe.png'}})
     console.log(
       process.argv.includes('--reuse-build')
         ? 'Verificando build existente em Chromium…'
@@ -948,10 +1003,14 @@ async function main() {
       process.env.PLAYWRIGHT_MODULE ||
         '/workspace/work/test-tools/node_modules/playwright',
     )
+    const {X509Certificate,createHash}=require('node:crypto')
+    const ca=new X509Certificate(fs.readFileSync(process.env.NODE_EXTRA_CA_CERTS))
+    const spki=createHash('sha256').update(ca.publicKey.export({type:'spki',format:'der'})).digest('base64')
     const browser = await chromium.launch({
       executablePath: process.env.CHROMIUM_PATH || '/usr/bin/chromium',
       headless: true,
-      args: ['--no-sandbox', '--disable-dev-shm-usage'],
+      proxy:process.env.HTTPS_PROXY?{server:process.env.HTTPS_PROXY,bypass:'127.0.0.1,localhost'}:undefined,
+      args: ['--no-sandbox', '--disable-dev-shm-usage','--ignore-certificate-errors-spki-list='+spki],
     })
     try {
       const ctx = await browser.newContext({
@@ -1079,6 +1138,60 @@ async function main() {
         'PASS Chromium: formulários reais manual e Cakto atualizam o faturamento sem duplicar compra',
       )
       checks++
+      // Jornada por HTTP real: navegador → API compilada → dois bancos → HMAC HTTPS.
+      const memberContext=await browser.newContext({viewport:{width:1440,height:1000},acceptDownloads:true})
+      await memberContext.route('**/api/auth/register',async route=>{const response=await route.fetch({headers:{...route.request().headers(),origin:'https://www.clickgruda.com.br'}});await route.fulfill({response})})
+      const memberPage=await memberContext.newPage(),memberErrors=[]
+      memberPage.on('pageerror',e=>memberErrors.push(e.message))
+      await memberPage.goto(base,{waitUntil:'domcontentloaded'})
+      await memberPage.getByRole('button',{name:'Começar teste grátis',exact:true}).first().click()
+      await memberPage.locator('#name').fill('Jornada Browser QA')
+      await memberPage.locator('#whatsapp').fill('62966665555')
+      await memberPage.locator('#email').fill('journey-browser@qa.invalid')
+      await memberPage.locator('#password').fill('qa-browser-pass-123')
+      // O widget oficial em modo de teste deve emitir o token de teste.
+      await memberPage.waitForFunction(()=>Boolean(document.querySelector('[name="cf-turnstile-response"]')?.value),{},{timeout:30000})
+      await memberPage.getByRole('button',{name:'Criar conta grátis',exact:true}).click()
+      const summary=memberPage.getByRole('region',{name:'Resumo do seu acesso',exact:true})
+      await summary.waitFor({timeout:20000})
+      await summary.getByText('20',{exact:false}).first().waitFor()
+      await summary.getByRole('button',{name:'Copiar código'}).waitFor()
+      const browserTrial=await db.user.findUnique({where:{email:'journey-browser@qa.invalid'}})
+      assert.ok(browserTrial);assert.equal(browserTrial.accessType,'TRIAL')
+      const firstLink=await studioDb.studioLibraryLink.findUnique({where:{externalUserId:browserTrial.id},include:{code:true}})
+      assert.ok(firstLink);assert.equal(firstLink.state,'TRIAL')
+      assert.equal(firstLink.code.expiresAt.getTime()-browserTrial.createdAt.getTime(),7*86400000)
+      await summary.getByRole('button',{name:'Explorar artes',exact:true}).click()
+      assert.equal(await memberPage.locator('#member-catalog-search').evaluate(el=>document.activeElement===el),true)
+      const download=memberPage.waitForEvent('download')
+      await memberPage.getByRole('button',{name:'Baixar arte',exact:true}).first().click()
+      const downloaded=await download;assert.equal(await downloaded.failure(),null)
+      assert.equal(await db.download.count({where:{userId:browserTrial.id}}),1)
+      await summary.getByText('19',{exact:false}).first().waitFor()
+      await memberPage.evaluate(()=>window.scrollTo(0,0));await memberPage.waitForTimeout(200)
+      await memberPage.screenshot({path:path.join(folder,'browser','member-trial.png'),fullPage:true})
+      // Encerra somente a janela de downloads de uma conta fictícia, preservando o bônus.
+      await profileApi.saveMemberProfile(browserTrial.id,{whatsapp:'5562966665555',extraDevices:0,downloadLimit:20,downloadExpiresAt:new Date(Date.now()-1000).toISOString()})
+      await memberPage.reload({waitUntil:'domcontentloaded'})
+      await summary.getByText('Seu Studio e Editor continuam disponíveis até',{exact:false}).waitFor()
+      const originalCode=await summary.locator('#studio-access-code').innerText()
+      const blockedDownload=await memberContext.request.get(base+'/api/arts/'+art.id+'/download');assert.equal(blockedDownload.status(),403)
+      const paymentResponse=await memberContext.request.post(base+'/api/webhooks/cakto',{data:{secret:process.env.CAKTO_WEBHOOK_SECRET,event:'purchase_approved',data:{id:'QA-BROWSER-PACKAGE',customer:{email:browserTrial.email},amount:47.9,currency:'BRL',paidAt:new Date().toISOString(),paymentMethod:'pix'}}})
+      assert.equal(paymentResponse.status(),200)
+      await memberPage.reload({waitUntil:'domcontentloaded'})
+      await summary.getByText('Downloads ilimitados',{exact:true}).waitFor()
+      await summary.getByText('Incluídos no seu acesso completo',{exact:true}).waitFor({timeout:20000})
+      assert.equal(await summary.locator('#studio-access-code').innerText(),originalCode)
+      const permanentLink=await studioDb.studioLibraryLink.findUnique({where:{externalUserId:browserTrial.id},include:{code:true}})
+      assert.equal(permanentLink.codeId,firstLink.codeId);assert.equal(permanentLink.state,'MEMBER');assert.equal(permanentLink.code.expiresAt,null)
+      assert.deepEqual(memberErrors,[])
+      await memberPage.setViewportSize({width:390,height:844})
+      await memberPage.evaluate(()=>window.scrollTo(0,0));await memberPage.waitForTimeout(200)
+      await memberPage.screenshot({path:path.join(folder,'browser','member-complete-mobile.png'),fullPage:true})
+      assert.equal(await memberPage.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true)
+      await memberContext.close()
+      console.log('PASS Chromium: cadastro grátis, captcha de teste, download real, 24h independente do bônus e compra convertem o mesmo código via HTTPS')
+      checks++
     } finally {
       await browser.close()
     }
@@ -1105,6 +1218,7 @@ main()
   })
   .finally(async () => {
     if (server) server.kill('SIGTERM')
+    if (studioHttp) await new Promise(resolve=>studioHttp.close(resolve))
     if (db) await db.$disconnect()
     if (studioDb) await studioDb.$disconnect()
     if (pg) await pg.stop()

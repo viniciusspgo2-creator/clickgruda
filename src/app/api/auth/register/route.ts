@@ -4,6 +4,7 @@ import { hashPassword, setSessionCookie, jsonError, getSessionUser } from '@/lib
 import { startSession } from '@/lib/sessions'
 import { normalizeWhatsapp, saveMemberProfile } from '@/lib/member-profile'
 import { countAttempt, isSafeOrigin, isThrottled, requestIp, throttleKey, verifyTurnstile } from '@/lib/security-guards'
+import { TRIAL_ORIGIN_PREFIX } from '@/lib/trial-journey'
 
 export async function POST(req: Request) {
   if (!isSafeOrigin(req)) return jsonError('Solicitação inválida', 403)
@@ -37,7 +38,10 @@ export async function POST(req: Request) {
       await saveMemberProfile(created.id, { whatsapp, extraDevices: 0, contactPurpose: 'pagamento e suporte desta conta', registeredAt: created.createdAt.toISOString(), ...(trial ? {downloadLimit:20,downloadExpiresAt:new Date(created.createdAt.getTime()+86400000).toISOString()} : {}) }, tx)
       // Não reivindica compras anteriores apenas pelo e-mail digitado: antes é necessário comprovar titularidade.
       // As compras ficam registradas em PendingPurchase para reconciliação administrativa segura.
-      if(trial) await queueStudioEntitlement(tx,created,'TRIAL')
+      if(trial) {
+        await tx.setting.create({ data: { key: TRIAL_ORIGIN_PREFIX + created.id, value: created.createdAt.toISOString() } })
+        await queueStudioEntitlement(tx,created,'TRIAL')
+      }
       return created
     })
 

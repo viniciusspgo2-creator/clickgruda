@@ -1,5 +1,6 @@
 'use client'
 
+import { TrialJourneyPanel } from '@/components/admin/TrialJourneyPanel'
 import { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
@@ -127,6 +128,8 @@ export function LandingAnalyticsPanel() {
           <p className="mt-1 text-[11px] leading-relaxed text-zinc-500">{c.helper}</p>
         </div>)}
       </div>
+
+      <TrialJourneyPanel range={range} start={start} end={end} ready={ready} />
 
       <div className="rounded-xl border border-orange-200 bg-orange-50/40 p-3 sm:p-4" aria-label="Acessos à conta de demonstração">
         <h4 className="flex items-center gap-2 text-sm font-extrabold text-zinc-900"><Users className="h-4 w-4 text-orange-600" /> Acessos à DEMO</h4>
