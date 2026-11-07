@@ -31,7 +31,9 @@ export async function verifyBonusWorkflowToken(
       repository_owner_id: payload.repository_owner_id === '327950105',
       ref: payload.ref === ref,
       workflow_ref: payload.workflow_ref === workflow,
-      sub: payload.sub === `repo:${repository}:ref:${ref}`,
+      // O GitHub permite personalizar o formato de sub. A autorização permanece
+      // vinculada aos IDs imutáveis + repositório/workflow/ref assinados acima.
+      sub: typeof payload.sub === 'string' && payload.sub.trim().length > 0 && payload.sub.length <= 2048,
       runner_environment: payload.runner_environment === 'github-hosted',
       event_name: (payload.event_name === 'schedule' ||
         payload.event_name === 'workflow_dispatch' ||

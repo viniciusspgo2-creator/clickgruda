@@ -47,6 +47,9 @@ test('aceita execução manual somente da main', async () => {
 test('aceita publicação do workflow na main com a mesma identidade restrita', async () => {
   assert.equal(await verifyBonusWorkflowToken(await token({ event_name: 'push' }), keys), true)
 })
+test('aceita subject personalizado mantendo IDs, workflow e ref assinados', async () => {
+  assert.equal(await verifyBonusWorkflowToken(await token({ sub: 'repository_id:1402578509:ref:refs/heads/main' }), keys), true)
+})
 for (const [name, changes] of [
   ['outro emissor', { iss: 'https://example.com' }],
   ['outro destinatário', { aud: 'https://example.com' }],
@@ -55,7 +58,8 @@ for (const [name, changes] of [
   ['outro proprietário', { repository_owner_id: '1' }],
   ['outra branch', { ref: 'refs/heads/feature' }],
   ['outro workflow', { workflow_ref: `${repository}/.github/workflows/other.yml@refs/heads/main` }],
-  ['subject de pull request', { sub: `repo:${repository}:pull_request` }],
+  ['subject ausente', { sub: undefined }],
+  ['subject vazio', { sub: '' }],
   ['evento de pull request', { event_name: 'pull_request' }],
   ['runner externo', { runner_environment: 'self-hosted' }],
   ['token expirado', { iat: 1, exp: 2 }],
