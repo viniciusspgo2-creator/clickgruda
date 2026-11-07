@@ -208,7 +208,7 @@ export function NewUserDialog() {
                   {limited && <div className="space-y-1.5">
                     <Label htmlFor="nu-download-limit" className="text-xs font-bold text-zinc-700">Quantidade de downloads permitidos</Label>
                     <Input id="nu-download-limit" type="number" inputMode="numeric" min={0} max={100000} step={1} value={downloadLimit} onChange={e => setDownloadLimit(e.target.value)} className="h-10 rounded-xl bg-white" />
-                    <p className="text-[11px] text-zinc-500">Cada download conta, inclusive baixar a mesma arte novamente. O ZIP fica desativado para contas de teste.</p>
+                    <p className="text-[11px] text-zinc-500">Cada download conta, inclusive baixar a mesma arte novamente.</p>
                   </div>}
                 </div>
                 {error && <p className="rounded-lg bg-red-50 px-3 py-2 text-xs font-bold text-red-600">{error}</p>}

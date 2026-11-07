@@ -100,6 +100,14 @@ const SECTIONS: { id: AdminSection; label: string; icon: React.ElementType }[] =
   { id: 'seo', label: 'SEO e Integrações', icon: Globe },
 ]
 
+const SECTION_GROUPS: { label: string; sections: AdminSection[] }[] = [
+  { label: 'Visão geral', sections: ['dashboard'] },
+  { label: 'Acervo', sections: ['arts', 'categories', 'tags', 'seasonal'] },
+  { label: 'Membros e vendas', sections: ['users', 'payments', 'coupons', 'mercadopago'] },
+  { label: 'Relacionamento', sections: ['sugestoes', 'buscas', 'melhorias', 'avisos'] },
+  { label: 'Configurações', sections: ['seguranca', 'seo', 'settings'] },
+]
+
 export function AdminView() {
   const user = useStore((s) => s.user)
   const setUser = useStore((s) => s.setUser)
@@ -146,17 +154,20 @@ export function AdminView() {
 
   const nav = (
     <nav className="no-scrollbar min-h-0 flex-1 space-y-1 overflow-y-auto" aria-label="Seções do painel">
-      {SECTIONS.map((s) => {
+      {SECTION_GROUPS.map(group => <div key={group.label} role="group" aria-label={group.label} className="pb-3">
+        <p className="px-3.5 pb-2 pt-2 text-[10px] font-bold uppercase tracking-[.13em] text-zinc-500">{group.label}</p>
+        <div className="space-y-0.5">{group.sections.map(id => SECTIONS.find(item => item.id === id)!).map((s) => {
         const active = section === s.id
         return (
           <button
             key={s.id}
+            aria-current={active ? 'page' : undefined}
             onClick={() => {
               setSection(s.id)
               setMobileNav(false)
             }}
             className={cn(
-              'flex w-full items-center gap-3 rounded-xl px-3.5 py-2.5 text-sm font-bold transition-all',
+              'flex w-full items-center gap-3 rounded-xl px-3.5 py-2 text-sm font-bold transition-all',
               active
                 ? 'bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-lg shadow-orange-600/25'
                 : 'text-zinc-400 hover:bg-zinc-800/70 hover:text-white'
@@ -171,7 +182,7 @@ export function AdminView() {
             )}
           </button>
         )
-      })}
+      })}</div></div>)}
     </nav>
   )
 
@@ -222,12 +233,10 @@ export function AdminView() {
               >
                 <Menu className="h-4.5 w-4.5" />
               </Button>
-              <h1 className="min-w-0 truncate text-base font-black tracking-tight text-zinc-900 sm:text-lg">
-                {SECTIONS.find((s) => s.id === section)?.label}
-              </h1>
+              <div className="min-w-0"><p className="text-[10px] font-semibold uppercase tracking-wider text-zinc-500">{SECTION_GROUPS.find(group => group.sections.includes(section))?.label}</p><h1 className="min-w-0 truncate text-base font-black tracking-tight text-zinc-900 sm:text-lg">{SECTIONS.find((s) => s.id === section)?.label}</h1></div>
             </div>
             <div className="flex items-center gap-2">
-            <a href="/api/admin/arts/export" download title="Exportar títulos, códigos, categorias e tags (CSV)" className="inline-flex h-9 items-center justify-center gap-1.5 rounded-xl border border-zinc-200 bg-white px-3 text-xs font-bold text-zinc-700 transition-colors hover:border-orange-300 hover:text-orange-700"><FileDown className="h-4 w-4" /><span className="hidden sm:inline">Exportar artes</span></a>
+            {section === 'arts' && <a href="/api/admin/arts/export" download title="Exportar títulos, códigos, categorias e tags (CSV)" className="inline-flex h-9 items-center justify-center gap-1.5 rounded-xl border border-zinc-200 bg-white px-3 text-xs font-bold text-zinc-700 transition-colors hover:border-orange-300 hover:text-orange-700"><FileDown className="h-4 w-4" /><span className="hidden sm:inline">Exportar artes</span></a>}
             <Button variant="outline" size="sm" title="Atualizar dados desta seção" aria-label="Atualizar dados do painel" onClick={() => { queryClient.invalidateQueries({ predicate: (query) => String(query.queryKey[0] ?? '').startsWith('admin-') }); toast.info('Atualizando dados do painel...'); }} className="h-9 rounded-xl border-zinc-200 text-zinc-600"><RefreshCw className="h-4 w-4" /><span className="ml-1.5 hidden sm:inline">Atualizar</span></Button>
             <Button
               onClick={() => setView('portal')}

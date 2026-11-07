@@ -36,8 +36,8 @@ export function ArtCard({ art, locked = false, demo = false, downloadState = 'id
   return (
     <motion.article initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.2, ease: 'easeOut' }} className="cg-member-artcard group relative min-w-0">
       <div className="cg-art-card-surface relative flex h-full min-w-0 flex-col overflow-hidden rounded-2xl border border-white/10 bg-[#172338] transition-[transform,border-color,box-shadow] duration-200 ease-out">
-        <div className="cg-art-visual relative aspect-[21/9.5] w-full shrink-0 overflow-hidden bg-[#eef0f3]">
-          <img src={art.imageUrl} alt={title} loading="lazy" draggable={false} decoding="async" onContextMenu={demo ? event => event.preventDefault() : undefined} onDragStart={demo ? event => event.preventDefault() : undefined} className={cn('absolute inset-0 h-full w-full object-contain', locked && 'scale-105 blur-[7px] brightness-[.72]', demo && 'blur-[1px] brightness-[.98]')} />
+        <div onContextMenu={event => event.preventDefault()} onDragStart={event => event.preventDefault()} className="cg-art-visual relative aspect-[21/9.5] w-full shrink-0 overflow-hidden bg-[#eef0f3]">
+          <img src={art.imageUrl} alt={title} loading="lazy" draggable={false} decoding="async" onContextMenu={event => event.preventDefault()} onDragStart={event => event.preventDefault()} className={cn('absolute inset-0 h-full w-full object-contain', locked && 'scale-105 blur-[7px] brightness-[.72]', demo && 'blur-[1px] brightness-[.98]')} />
           {!locked && onPreview && <button type="button" onClick={() => onPreview(art)} aria-label={`Ampliar arte ${title}`} className="absolute inset-0 z-[1] block h-full w-full cursor-zoom-in focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-4px] focus-visible:outline-orange-500" />}
           <div className="pointer-events-none absolute left-2 top-2 z-[3] flex max-w-[calc(100%-16px)] flex-wrap items-center gap-1">
             {art.isLaunch ? <span className="rounded-full border border-orange-400/25 bg-orange-500/95 px-2 py-1 text-[9px] font-semibold text-white shadow">Novo</span> : art.isSelected ? <span className="inline-flex items-center gap-1 rounded-full border border-amber-300/30 bg-amber-950/85 px-2 py-1 text-[9px] font-semibold text-amber-100"><Star className="h-2.5 w-2.5" /> Selecionada</span> : null}
@@ -48,7 +48,7 @@ export function ArtCard({ art, locked = false, demo = false, downloadState = 'id
           {locked && <div className="pointer-events-none absolute inset-0 z-[2] flex items-center justify-center bg-zinc-950/35"><Lock className="h-7 w-7 text-white" /></div>}
           {/* Somente as funções complementares aparecem com hover no desktop. */}
           <div className="cg-art-hover-actions pointer-events-none absolute inset-0 z-[4] flex-col items-center justify-center gap-1 bg-slate-950/65 p-1.5 backdrop-blur-[2px]" aria-label="Visualização e Studio">
-            {onOpenMockup && <button type="button" onClick={() => onOpenMockup(art)} className="pointer-events-auto inline-flex min-h-8 w-full max-w-[215px] items-center justify-center gap-1.5 rounded-lg bg-orange-500 px-2 py-1 text-center text-[11px] font-bold leading-snug text-white shadow-lg hover:bg-orange-400"><Box className="h-4 w-4 shrink-0" /> Abrir Studio 3D</button>}
+            {onOpenMockup && <button type="button" onClick={() => onOpenMockup(art)} className="pointer-events-auto inline-flex min-h-8 w-full max-w-[215px] items-center justify-center gap-1.5 rounded-lg bg-orange-500 px-2 py-1 text-center text-[11px] font-bold leading-snug text-white shadow-lg hover:bg-orange-400"><Box className="h-4 w-4 shrink-0" /> Studio · Mockup + Editor ↗</button>}
             {!locked && onPreview && <button type="button" onClick={() => onPreview(art)} className="pointer-events-auto inline-flex min-h-8 w-full max-w-[215px] items-center justify-center gap-1.5 rounded-lg border border-white/25 bg-white/15 px-2 py-1 text-center text-[11px] font-semibold text-white hover:bg-white/25"><Eye className="h-4 w-4 shrink-0" /> Visualizar arte maior</button>}
           </div>
         </div>
@@ -73,7 +73,7 @@ export function ArtCard({ art, locked = false, demo = false, downloadState = 'id
               </button>
             </div>
           </div>
-          {onOpenMockup && <button type="button" onClick={() => onOpenMockup(art)} className="cg-art-studio-touch hidden min-h-9 w-full items-center justify-center gap-2 rounded-lg border border-orange-400/25 bg-orange-500/10 px-2 py-1.5 text-[11px] font-semibold text-orange-200 hover:bg-orange-500/20"><Box className="h-3.5 w-3.5" /> Ver no Studio 3D</button>}
+          {onOpenMockup && <button type="button" onClick={() => onOpenMockup(art)} className="cg-art-studio-touch hidden min-h-9 w-full items-center justify-center gap-2 rounded-lg border border-orange-400/25 bg-orange-500/10 px-2 py-1.5 text-[11px] font-semibold text-orange-200 hover:bg-orange-500/20"><Box className="h-3.5 w-3.5" /> Abrir Studio · Mockup + Editor ↗</button>}
         </div>
       </div>
     </motion.article>

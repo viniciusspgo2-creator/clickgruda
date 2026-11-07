@@ -2,6 +2,7 @@
  * Conteúdo editável da página de vendas. Não altera dados do portal.
  * Não anunciar tamanho do acervo; 20 downloads é a cota do teste. Preço aprovado em uma única constante.
  */
+import { STUDIO_URL } from '@/lib/site'
 import { LIFETIME_PRICE_CENTS } from '@/lib/payments/config'
 
 export const SALES = {
@@ -13,15 +14,15 @@ export const SALES = {
   CHECKOUT_URL: null as string | null,
   /** Link já presente no rodapé da landing original. */
   EXTERNAL_CATALOG_URL: 'https://www.clickgruda.com.br',
-  STUDIO_URL: 'https://clickteste.vercel.app/',
+  STUDIO_URL,
   heroKicker: 'Biblioteca de artes para canecas',
   heroTitle: ['Sua próxima caneca', 'começa na', 'Biblioteca.'],
   heroDescription: 'Artes para sublimação organizadas por tema, ocasião e estilo. Escolha a estampa, baixe o arquivo e prepare o próximo pedido do seu cliente. Sua conta também reúne os bônus Studio Mockup e Editor.',
   categories: ['Todas', 'Flork', 'Frases', 'Fé & espiritualidade', 'Datas especiais', 'Geek', 'Futebol', 'Música', 'Amizade', 'Humor'],
   steps: [
     { num: '01', title: 'Comece pela Biblioteca', subtitle: 'Crie sua conta e encontre sua próxima arte.', description: 'Busque por tema, explore categorias e escolha o arquivo que combina com o pedido do seu cliente.' },
-    { num: '02', title: 'Crie e apresente', subtitle: 'Editor e Studio Mockup como bônus.', description: 'Seu código fica na área da sua conta na Biblioteca. Use o Editor para montar a arte e o Studio para apresentar a caneca antes de produzir.' },
-    { num: '03', title: 'Ative o acesso completo', subtitle: 'Continue com a Biblioteca e os bônus.', description: 'A confirmação da compra libera os downloads sem a cota do teste. O mesmo código do Studio e do Editor passa a definitivo, sem precisar começar de novo.' },
+    { num: '02', title: 'Crie e apresente', subtitle: 'Mockup e Editor reunidos no Studio.', description: 'Monte a composição no Editor e mostre a caneca em 3D no Mockup. O Studio acompanha seu pacote e abre em outra plataforma.' },
+    { num: '03', title: 'Ative o acesso completo', subtitle: 'Produza agora e acompanhe a evolução da plataforma.', description: 'A confirmação da compra libera os downloads sem a cota do teste. Seu código do Studio passa a definitivo e você continua com o acervo e as ferramentas do pacote.' },
   ],
   artworks: [
     { src: '/uploads/showcase/arte-flork-casal-nesmo.webp', title: 'Frase de atitude', category: 'Frases' },

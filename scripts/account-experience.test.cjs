@@ -105,10 +105,10 @@ test('resumo distingue cota encerrada e bônus ativo, e não oferece abrir bônu
   const props={userId:'summary-qa',isTrial:true,quotaReady:true,quotaError:false,onRetryQuota(){},onExplore(){},quota:{used:20,limit:20,remaining:0,exhausted:true,expired:false}}
   const render=bonus=>ui('src/components/portal/MemberAccessSummary.tsx','MemberAccessSummary',baseState,props,q=>q.setQueryData(['studio-bonus',props.userId,true],{bonus}))
   const active={state:'ready',code:'QA-CODE',entitlement:'TRIAL',active:true,trialEndsAt:new Date(Date.now()+86400000).toISOString()}
-  assert.match(render(active),/Seu Studio e Editor continuam disponíveis até/)
+  assert.match(render(active),/Seu Studio e Editor continuam disponíveis até/);assert.match(render(active),/Acessar Studio · Mockup \+ Editor/)
   const expired=render({...active,trialEndsAt:new Date(Date.now()-1000).toISOString()})
-  assert.match(expired,/O teste dos bônus terminou/);assert.ok(!expired.includes('Abrir Studio e Editor'));assert.ok(!expired.includes('Copiar código'))
-  const blocked=render({...active,adminBlocked:true});assert.match(blocked,/Acesso ao bônus bloqueado/);assert.ok(!blocked.includes('Abrir Studio e Editor'))
+  assert.match(expired,/O teste dos bônus terminou/);assert.ok(!expired.includes('Acessar Studio · Mockup + Editor'));assert.ok(!expired.includes('Copiar código'))
+  const blocked=render({...active,adminBlocked:true});assert.match(blocked,/Acesso ao bônus bloqueado/);assert.ok(!blocked.includes('Acessar Studio · Mockup + Editor'))
   const error=ui('src/components/portal/MemberAccessSummary.tsx','MemberAccessSummary',baseState,{...props,isTrial:false,quota:null,quotaReady:false,quotaError:true})
   assert.match(error,/Não foi possível consultar seu saldo/);assert.ok(!error.includes('Downloads ilimitados'))
 })

@@ -72,9 +72,8 @@ import { ArtPreviewDialog } from '@/components/portal/ArtPreviewDialog'
 import { DemoConversionActions } from '@/components/portal/DemoConversionActions'
 import { EnhanceRequestDialog } from '@/components/portal/EnhanceRequestDialog'
 import { LoadMoreFooter } from '@/components/shared/LoadMoreFooter'
-import { ZipDownloadDialog } from '@/components/portal/ZipDownloadDialog'
 import { AnnouncementDialog } from '@/components/portal/AnnouncementDialog'
-import { WHATSAPP, WHATSAPP_MESSAGES } from '@/lib/site'
+import { STUDIO_URL, WHATSAPP, WHATSAPP_MESSAGES } from '@/lib/site'
 import { formatArtTitle } from '@/lib/format-art-title'
 import { getCategoryIcon } from '@/lib/category-icons'
 import { useStore, type PortalTab } from '@/lib/store'
@@ -89,8 +88,8 @@ const TABS: { id: PortalTab; label: string; icon: React.ElementType }[] = [
   { id: 'todas', label: 'Todas', icon: House },
   { id: 'lancamentos', label: 'Lançamentos', icon: Flame },
   { id: 'selecionadas', label: 'Selecionadas', icon: Star },
-  { id: 'reprovadas', label: 'Artes reprovadas', icon: EyeOff },
   { id: 'bocoes', label: 'Arte/Bocão', icon: Layers3 },
+  { id: 'reprovadas', label: 'Artes reprovadas', icon: EyeOff },
   { id: 'sazonal', label: 'Sazonal', icon: CalendarDays },
   { id: 'favoritas', label: 'Favoritas', icon: Heart },
   { id: 'downloads', label: 'Meus downloads', icon: Download },
@@ -235,7 +234,6 @@ export function PortalView() {
   const [downloadStates, setDownloadStates] = useState<DownloadStates>({})
   const [suggestionOpen, setSuggestionOpen] = useState(false)
   const [enhanceOpen, setEnhanceOpen] = useState(false)
-  const [zipOpen, setZipOpen] = useState(false)
   const [portalTheme, setPortalTheme] = useState<'dark' | 'light'>('dark')
   const [mockupDialogOpen, setMockupDialogOpen] = useState(false)
   const [mockupArt, setMockupArt] = useState<ArtItem | null>(null)
@@ -468,7 +466,14 @@ export function PortalView() {
   }
   const toggleTheme = () => setPortalTheme((current) => (current === 'dark' ? 'light' : 'dark'))
 
-  const mockupSupportMessage = 'Olá! Sou assinante da Click & Gruda e quero solicitar o meu código grátis para acessar o gerador de mockups 3D.'
+  const showStudioCode = () => {
+    setMockupDialogOpen(false)
+    window.requestAnimationFrame(() => {
+      document.getElementById('member-access-summary')?.scrollIntoView({ block: 'start', behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' })
+      document.getElementById('member-access-title')?.focus({ preventScroll: true })
+    })
+  }
+  const studioLocked = Boolean(user?.isDemo || user?.isPreview)
 
   const openExternal = (url: string, source: string) => {
     track(source, { source: 'portal' })
@@ -523,7 +528,7 @@ export function PortalView() {
   }
 
   return (
-    <div onContextMenu={protectedPreview ? (event) => event.preventDefault() : undefined} className={cn("cg-portal relative flex min-h-screen flex-col bg-[#080d18] text-slate-100 lg:pl-[278px]", portalTheme === 'light' && 'cg-theme-light')}>
+    <div className={cn("cg-portal relative flex min-h-screen flex-col bg-[#080d18] text-slate-100 lg:pl-[278px]", portalTheme === 'light' && 'cg-theme-light')}>
       {/* Navegação fixa de desktop. Todos os destinos usam os filtros originais da biblioteca. */}
       <aside className="cg-portal-sidebar fixed inset-y-0 left-0 z-50 hidden w-[278px] flex-col lg:flex" aria-label="Navegação principal da Click&Gruda">
         <button type="button" className="cg-sidebar-brand" onClick={() => { resetFilters(); setSearchInput(''); window.scrollTo({ top: 0, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' }) }} aria-label="Ir para a página inicial da biblioteca">
@@ -578,7 +583,6 @@ export function PortalView() {
           <nav className="cg-sidebar-nav" aria-label="Atalhos da plataforma">
             <button type="button" className="cg-sidebar-link" onClick={() => { setMenuOpen(true) }}><SlidersHorizontal className="h-[18px] w-[18px]"/><span>Categorias e filtros</span><ArrowUpRight className="ml-auto h-3.5 w-3.5 opacity-50"/></button>
             <button type="button" className="cg-sidebar-link" onClick={() => { navigateTab('todas', 'baixadas') }}><TrendingUp className="h-[18px] w-[18px]"/><span>Mais baixadas</span></button>
-            {!user.isDemo && !quota && <button type="button" className="cg-sidebar-link" onClick={() => setZipOpen(true)}><Download className="h-[18px] w-[18px]"/><span>Baixar catálogo em ZIP</span></button>}
             <button type="button" className="cg-sidebar-link" onClick={() => user.isDemo ? toast.info('Sugestões liberadas após a assinatura.') : setSuggestionOpen(true)}><Lightbulb className="h-[18px] w-[18px]"/><span>Sugerir uma arte</span></button>
             <button type="button" className="cg-sidebar-link" onClick={() => user.isDemo ? toast.info('Disponível após a ativação do acesso.') : setEnhanceOpen(true)}><Wand2 className="h-[18px] w-[18px]"/><span>Melhorar minha arte</span></button>
             {user.role === 'ADMIN' && <button type="button" className="cg-sidebar-link" onClick={() => setView('admin')}><Settings2 className="h-[18px] w-[18px]"/><span>Painel Master</span></button>}
@@ -656,13 +660,13 @@ export function PortalView() {
           <div className="cg-header-quicklinks hidden shrink-0 items-center gap-2 md:flex" aria-label="Acessos rápidos">
             <button
               type="button"
-              aria-label="Abrir informações do Gerador de Mockup"
-              title="Gerador de Mockup"
+              aria-label="Acessar Studio: Mockup e Editor em outra plataforma"
+              title="Studio · Mockup + Editor"
               onClick={() => openMockup()}
               className="cg-header-quicklink cg-header-mockup"
             >
               <Box className="h-4 w-4 shrink-0" />
-              <span className="cg-header-quicklabel">Gerador de Mockup</span>
+              <span className="cg-header-quicklabel">Studio · Mockup + Editor</span>
               <ExternalLink className="cg-header-external h-3 w-3 shrink-0" />
             </button>
             <button type="button" onClick={toggleTheme} className="cg-theme-toggle" aria-label={portalTheme === 'dark' ? 'Ativar tema claro' : 'Ativar tema escuro'} title={portalTheme === 'dark' ? 'Tema claro' : 'Tema escuro'}>
@@ -732,7 +736,7 @@ export function PortalView() {
         {/* Atalhos próprios do mobile — mantêm a busca legível no cabeçalho. */}
         <nav className="cg-mobile-quicklinks mx-auto flex w-full max-w-[1600px] items-center gap-2 px-4 pb-2.5 md:hidden sm:px-7" aria-label="Ferramentas rápidas">
           <button type="button" onClick={() => openMockup()} className="cg-header-quicklink cg-header-mockup flex-1 justify-center">
-            <Box className="h-4 w-4" /> Gerador de Mockup <ExternalLink className="h-3 w-3" />
+            <Box className="h-4 w-4" /> Studio · Mockup + Editor <ExternalLink className="h-3 w-3" />
           </button>
           <button type="button" onClick={toggleTheme} className="cg-theme-toggle flex-none px-3">
             {portalTheme === 'dark' ? <SunMedium className="h-4 w-4" /> : <MoonStar className="h-4 w-4" />}
@@ -820,7 +824,6 @@ export function PortalView() {
         }}
       />}
 
-      {/* Download ZIP permanece disponível no menu lateral, sem faixa ocupando o topo. */}
 
       {/* ================= HERO PANORÂMICA / EXPERIÊNCIA 3.8 =================
           Um único fundo sem recortes. Títulos, CTAs e números são HTML interativo
@@ -1181,12 +1184,6 @@ export function PortalView() {
               })}
             </div>
 
-            {!user.isDemo && !quota && (
-              <button type="button" onClick={() => { setMenuOpen(false); setZipOpen(true) }} className="cg-filter-zip mt-6 flex w-full items-center justify-center gap-2 rounded-xl border border-orange-400/45 bg-orange-400/10 px-3 py-3 text-xs font-bold text-orange-200 hover:bg-orange-400/20">
-                <Download className="h-4 w-4" /> Baixar catálogo em ZIP (opcional)
-              </button>
-            )}
-
             {catalogQ.isError && <p role="alert" className="mt-3 rounded-xl bg-rose-50 p-3 text-xs text-rose-700">Falha ao carregar os filtros. <button type="button" onClick={() => catalogQ.refetch()} className="font-bold underline">Tentar de novo</button></p>}
             <TagFilterPanel tags={catalogQ.data?.tags ?? []} selected={tagIds} onChange={(ids) => setFilter({ tagIds: ids })} />
 
@@ -1229,15 +1226,15 @@ export function PortalView() {
       <Dialog open={mockupDialogOpen} onOpenChange={setMockupDialogOpen}>
         <DialogContent className="cg-access-dialog w-[calc(100vw-24px)] max-w-[610px] sm:max-w-[610px] min-w-0 max-h-[min(90dvh,750px)] gap-4 overflow-x-hidden overflow-y-auto rounded-2xl border-white/10 bg-[#121a2a] p-4 text-slate-100 shadow-2xl sm:p-6" >
           <DialogHeader className="min-w-0 gap-3 pr-7 text-left">
-            <DialogTitle className="flex min-w-0 flex-wrap items-center gap-2 text-lg font-black leading-snug text-white sm:text-xl"><Box className="h-5 w-5 shrink-0 text-orange-400" /> Gerador de Mockups 3D</DialogTitle>
-            <DialogDescription className="max-w-full text-left text-[13px] leading-relaxed text-slate-300 sm:text-sm">{protectedPreview ? 'O gerador de mockups 3D está disponível no acesso completo. Garanta seu acesso para baixar as artes e utilizar as ferramentas premium.' : <>O mockup é <strong className="text-white">premium</strong> e você, assinante, tem acesso gratuito. Se ainda não recebeu seu código de acesso, solicite gratuitamente ao suporte.</>}</DialogDescription>
+            <DialogTitle className="flex min-w-0 flex-wrap items-center gap-2 text-lg font-black leading-snug text-white sm:text-xl"><Box className="h-5 w-5 shrink-0 text-orange-400" /> Studio · Mockup + Editor</DialogTitle>
+            <DialogDescription className="max-w-full text-left text-[13px] leading-relaxed text-slate-300 sm:text-sm">{studioLocked ? 'O Studio reúne o Mockup 3D e o Editor em outra plataforma. Crie sua conta na Biblioteca para conhecer os bônus do pacote.' : <>Monte sua composição no Editor e apresente a caneca no Mockup 3D. O Studio abre em outra plataforma, usando seu código de ativação. {user.isTrial ? 'O teste dos bônus dura 7 dias desde o cadastro, independente das 24 horas de downloads.' : 'Os dois recursos estão incluídos no seu acesso à Biblioteca.'} Seu código fica no <strong className="text-white">Resumo do seu acesso</strong>, no topo do portal.</>}</DialogDescription>
           </DialogHeader>
           {mockupArt && <div className="min-w-0 max-w-full rounded-xl border border-orange-400/25 bg-orange-400/[.07] p-3 text-xs leading-relaxed text-slate-200 sm:p-4"><strong className="mb-1 block break-words text-orange-200">Arte selecionada: {formatArtTitle(mockupArt.title)}</strong><p>O Studio não importa a estampa automaticamente. {protectedPreview ? 'No modo de prévia protegida, o arquivo de impressão fica bloqueado. Garanta o acesso completo para baixar a arte e enviá-la ao Studio.' : 'Baixe a arte pelo botão abaixo e envie o arquivo ao Studio para visualizar a caneca em 3D.'}</p></div>}
           <DialogFooter className={`cg-access-actions mt-1 grid min-w-0 grid-cols-1 gap-2 ${mockupArt ? "sm:grid-cols-3" : "sm:grid-cols-2"}`}>
-            {protectedPreview ? <div className="min-w-0 sm:col-span-2">{user.isDemo ? <DemoConversionActions /> : <a href="/comprar" className="inline-flex min-h-11 items-center justify-center rounded-xl bg-orange-500 px-4 py-2 text-sm font-bold text-white">Garanta seu acesso completo</a>}</div> : <>
-              <Button type="button" variant="outline" onClick={() => window.open(WHATSAPP.link(mockupSupportMessage), '_blank', 'noopener,noreferrer')} className="min-h-11 h-auto min-w-0 whitespace-normal rounded-xl border-white/20 bg-white/5 px-3 py-2 text-center text-slate-100 hover:bg-white/10 hover:text-white">Solicitar código grátis</Button>
-              {mockupArt && <Button type="button" variant="outline" disabled={downloadStates[mockupArt.id] === 'loading'} onClick={() => handleDownload(mockupArt)} className="min-h-11 h-auto min-w-0 whitespace-normal rounded-xl border-white/20 bg-white/5 px-3 py-2 text-center text-slate-100 hover:bg-white/10 hover:text-white"><Download className="mr-1.5 h-4 w-4 shrink-0" /> Baixar esta arte</Button>}
-              <Button type="button" onClick={() => { setMockupDialogOpen(false); openExternal('https://clicktools.vercel.app/', 'mockup_platform_open') }} className="min-h-11 h-auto min-w-0 whitespace-normal rounded-xl bg-orange-500 px-3 py-2 text-center font-bold text-white hover:bg-orange-600">Abrir Studio Mockup 3D</Button>
+            {studioLocked ? <div className="min-w-0 sm:col-span-2">{user.isDemo ? <DemoConversionActions /> : <a href="/comprar" className="inline-flex min-h-11 items-center justify-center rounded-xl bg-orange-500 px-4 py-2 text-sm font-bold text-white">Garanta seu acesso completo</a>}</div> : <>
+              {user.role !== 'ADMIN' && <Button type="button" variant="outline" onClick={showStudioCode} className="min-h-11 h-auto min-w-0 whitespace-normal rounded-xl border-white/20 bg-white/5 px-3 py-2 text-center text-slate-100 hover:bg-white/10 hover:text-white">Ver meu código do Studio</Button>}
+              {mockupArt && !protectedPreview && <Button type="button" variant="outline" disabled={downloadStates[mockupArt.id] === 'loading'} onClick={() => handleDownload(mockupArt)} className="min-h-11 h-auto min-w-0 whitespace-normal rounded-xl border-white/20 bg-white/5 px-3 py-2 text-center text-slate-100 hover:bg-white/10 hover:text-white"><Download className="mr-1.5 h-4 w-4 shrink-0" /> Baixar esta arte</Button>}
+              <Button type="button" onClick={() => { setMockupDialogOpen(false); openExternal(STUDIO_URL, 'mockup_platform_open') }} className="min-h-11 h-auto min-w-0 whitespace-normal rounded-xl bg-orange-500 px-3 py-2 text-center font-bold text-white hover:bg-orange-600">Abrir Studio · Mockup + Editor ↗</Button>
             </>}
           </DialogFooter>
         </DialogContent>
@@ -1249,7 +1246,6 @@ export function PortalView() {
       <ArtPreviewDialog art={previewArt} open={!!previewArt} onOpenChange={(open) => !open && setPreviewId(null)} demo={protectedPreview} downloadState={previewArt ? downloadStates[previewArt.id] || 'idle' : 'idle'} onDownload={handleDownload} onFavorite={toggleFavorite} onCategory={toggleCategory} onTag={viewTag} onSeasonal={viewSeasonal} />
       <ThemeSuggestionDialog open={suggestionOpen} onOpenChange={setSuggestionOpen} />
       <EnhanceRequestDialog open={enhanceOpen} onOpenChange={setEnhanceOpen} />
-      <ZipDownloadDialog open={zipOpen} onOpenChange={setZipOpen} catalog={catalogQ.data} />
     </div>
   )
 }

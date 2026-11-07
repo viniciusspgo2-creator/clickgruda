@@ -86,7 +86,7 @@ test('conta ativa baixa 550 artes sem limite diário; login e acesso continuam e
     '@/lib/auth': { getSessionUser: async () => session, jsonError: (error,status) => Response.json({error},{status}) },
     '@/lib/db': { db: { art: { findUnique: async () => ({code:1,title:'Arte teste',imageUrl:'/uploads/test.png'}), update: async () => {} }, download: { create: async () => { count++ } }, $transaction: async ops => Promise.all(ops) } },
     '@/lib/storage': { readLocalFile: async () => Buffer.from('png-test'), extToMime: () => 'image/png', slugify: () => 'arte-teste', getR2Config: async () => null },
-    '@/lib/download-quota': { downloadQuota: async () => ({limit:500,used:600,today:new Set()}) },
+    '@/lib/download-quota': { getDownloadQuota: async () => null, recordSuccessfulDownload: async () => { count++ } },
   }
   const route = load('src/app/api/arts/[id]/download/route.ts',mocks)
   const request = new Request('https://www.clickgruda.com.br/api/arts/art/download')
@@ -98,19 +98,8 @@ test('conta ativa baixa 550 artes sem limite diário; login e acesso continuam e
   assert.equal((await route.GET(request,{params:Promise.resolve({id:'1'})})).status,403)
 })
 
-test('backup lista mais de 6000 artes e retorna ausência de limite', async () => {
-  const route = load('src/app/api/arts/ids/route.ts', {
-    '@/lib/auth': {getSessionUser:async()=>({id:'member',hasAccess:true,role:'USER'}),jsonError:()=>{}},
-    '@/lib/db': {db:{art:{findMany:async query=>{
-      assert.equal(query.take,undefined)
-      return Array.from({length:8200},(_,i)=>({id:String(i),code:i+1,title:'Arte'}))
-    },count:async()=>0}}},
-  })
-  const res = await route.GET(new Request('https://www.clickgruda.com.br/api/arts/ids?scope=all'))
-  const data = await res.json()
-  assert.equal(data.total,8200)
-  assert.equal(data.limit,0)
-  assert.equal(data.remaining,null)
+test('exportação do catálogo em lote foi descontinuada, inclusive a API de IDs', () => {
+  for (const name of ['src/app/api/arts/ids/route.ts', 'src/lib/zip-download.ts', 'src/components/portal/ZipDownloadDialog.tsx', 'src/components/portal/BackupStrip.tsx']) assert.equal(fs.existsSync(path.resolve(__dirname, '..', name)), false, name)
 })
 
 test('Frases substitui Religião; estado nunca acumula categorias', () => {
@@ -136,8 +125,8 @@ test('schemas refletem FAQ da página e não declaram preço antigo se o plano m
   const {HomeSchema} = load('src/components/geo/HomeSchema.tsx')
   const parse = price => JSON.parse(ReactDOM.renderToStaticMarkup(HomeSchema({priceCents:price})).match(/<script[^>]*>([\s\S]*)<\/script>/)[1])
   const data = parse(4790)
-  assert.equal(data['@graph'].find(n=>n['@type']==='FAQPage').mainEntity.length,11)
-  assert.ok(data['@graph'].find(n=>n['@type']==='FAQPage').mainEntity.some(item => item.name.includes('antes de comprar')))
+  const knowledge = load('src/lib/knowledge.ts')
+  assert.deepEqual(data['@graph'].find(n=>n['@type']==='FAQPage').mainEntity.map(item=>item.name), knowledge.LANDING_FAQ_INDICES.map(index=>knowledge.FAQ_ITEMS[index].q))
   assert.equal(data['@graph'].find(n=>n['@type']==='HowTo'),undefined)
   assert.equal(parse(9900)['@graph'].find(n=>n['@type']==='Service').offers,undefined)
 })

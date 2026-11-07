@@ -12,7 +12,7 @@ import { SITE } from '@/lib/site'
 import { LIFETIME_PRICE_CENTS } from '@/lib/payments/config'
 import { formatBRL } from '@/lib/types'
 
-export const LANDING_FAQ_INDICES = [18, 19, 20, 21, 22, 2, 8, 9, 11, 17, 14, 16] as const
+export const LANDING_FAQ_INDICES = [18, 19, 20, 2, 3, 9, 17, 23, 24] as const
 
 export const PRICE = formatBRL(LIFETIME_PRICE_CENTS)
 
@@ -21,7 +21,7 @@ export const PRICE = formatBRL(LIFETIME_PRICE_CENTS)
  * ============================================================ */
 export const KEY_TAKEAWAYS: string[] = [
   'Durante a oferta promocional até 31/12/2026, o acesso vitalício custa R$ 47,90 em pagamento único; depois, consulte os planos disponíveis.',
-  'Cada arquivo já vem na medida exata da caneca (21 × 9,5 cm) — é imprimir e prensar, sem mexer no editor.',
+  'Escolha sua arte, baixe o arquivo e confira as medidas para o modelo da sua caneca antes de imprimir.',
   'O acesso completo inclui lançamentos frequentes, Studio Mockup e Editor, sem contratar os bônus separadamente.',
   'Use as artes nas canecas que você vende — sem cobrança por peça.',
   'A aba Sazonal mostra a próxima data comemorativa e separa as artes — você lança antes da concorrência.',
@@ -41,7 +41,7 @@ export const ENTITY_PRACTICAL =
   'Tudo começa na Biblioteca. A conta grátis oferece até 20 downloads em 24 horas e gera um código para testar Studio Mockup e Editor por 7 dias desde o cadastro. Os prazos são independentes. A confirmação do acesso completo libera downloads sem a cota do teste e mantém o mesmo código dos bônus sem o prazo de teste. Também existe demonstração com prévias protegidas, sem cadastro.'
 
 /* ============================================================
- * 3. FAQ — 13 perguntas consolidadas + 3 objeções de conversão (edição, liberação do PIX, exclusividade)
+ * 3. FAQ — base de perguntas; seleção da landing com foco em dúvidas de contratação
  * ============================================================ */
 export const FAQ_ITEMS: { q: string; a: string }[] = [
   {
@@ -95,7 +95,7 @@ export const FAQ_ITEMS: { q: string; a: string }[] = [
   },
   {
     q: 'As artes funcionam em prensa de canecas caseira ou semiautomática?',
-    a: 'Sim. Como as artes já vêm no formato exato de 21 × 9,5 cm, elas funcionam em qualquer prensa de canecas que utilize o padrão de canecas de 325 ml — manual, semiautomática ou automática. Basta imprimir em papel sublimático e prensar conforme o manual do seu equipamento.',
+    a: 'O acervo é voltado à sublimação de canecas. Confira as dimensões do arquivo, a área de estampa do seu modelo e as orientações do fabricante da prensa antes de produzir.',
   },
   {
     q: 'As artes servem só para canecas ou para outros produtos?',
@@ -113,9 +113,11 @@ export const FAQ_ITEMS: { q: string; a: string }[] = [
   { q: 'Posso acessar em vários aparelhos ao mesmo tempo?', a: 'O acesso é individual e permite um dispositivo conectado por vez. Ao entrar em outro aparelho, a sessão anterior é encerrada. Para usar mais dispositivos simultaneamente, solicite um acesso adicional (IP adicional) de R$ 14,90 ao suporte, que informa as condições e habilita o adicional após a confirmação.' },
   { q: 'Como funciona o teste grátis da Biblioteca?', a: 'Ao criar sua conta grátis, você pode fazer até 20 downloads individuais em até 24 horas. O prazo começa no cadastro e o teste da Biblioteca termina ao atingir a cota ou completar as 24 horas, o que acontecer primeiro. Não é necessário cartão para criar a conta.' },
   { q: 'Se as 24 horas acabarem, perco o teste do Studio e do Editor?', a: 'Não. Os bônus têm prazo próprio: 7 dias desde a criação da conta na Biblioteca. Atingir os 20 downloads ou encerrar as 24 horas da Biblioteca não reduz os 7 dias do Studio e do Editor.' },
-  { q: 'Como recebo meu código do Studio e do Editor?', a: 'O código é gerado automaticamente ao criar a conta grátis e fica disponível na área da sua conta na Biblioteca. Use esse código para ativar os bônus. Quem já é membro pode acessar a área do Studio no portal da Biblioteca para obter seu código.' },
+  { q: 'Como recebo meu código do Studio e do Editor?', a: 'O código é gerado automaticamente e aparece no topo do portal, em Resumo do seu acesso. Use Copiar código e abra o Studio, que reúne Mockup e Editor em outra plataforma. O botão Studio · Mockup + Editor também oferece Ver meu código do Studio. Quem já é membro usa esse mesmo caminho.' },
   { q: 'O que muda quando ativo o acesso completo?', a: 'A confirmação da compra libera a Biblioteca sem a cota de downloads do teste. O mesmo código do Studio e do Editor passa a definitivo, sem a validade de 7 dias. Isso também vale se você ativar o pacote antes de o teste terminar.' },
   { q: 'O Studio e o Editor são comprados separadamente?', a: 'Não. A Biblioteca é o produto principal. Studio Mockup e Editor são bônus incluídos no pacote de quem ativa o acesso completo à Biblioteca. Você também recebe 7 dias para testá-los ao criar a conta grátis.' },
+  { q: 'Meu acesso inclui atualizações e novos produtos?', a: 'Sim. O membro tem acesso às futuras atualizações da plataforma, aos novos lançamentos do acervo e aos novos produtos disponibilizados para membros, conforme forem lançados. As novidades acompanham seu pacote.' },
+  { q: 'Vocês fazem edição no serviço Melhorar minha arte?', a: 'Não fazemos edição de conteúdo. O serviço cobre pequenas adaptações, melhoria de nitidez e redução de pixelização, conforme o arquivo permitir. Não inclui troca de nomes ou personagens, criação ou reconstrução da composição.' },
 ]
 
 /* ============================================================
@@ -140,7 +142,7 @@ export const GLOSSARY_TERMS: { term: string; definition: string }[] = [
   {
     term: 'Cobre-caneca (wrap)',
     definition:
-      'Nome dado à arte impressa que envolve toda a circunferência da caneca. O padrão do mercado brasileiro para canecas de porcelana de 325 ml é a medida de 21 × 9,5 cm — exatamente o formato em que as artes da Click & Gruda são entregues.',
+      'Nome dado à arte impressa que envolve toda a circunferência da caneca. O padrão do mercado brasileiro para canecas de porcelana de 325 ml é a medida de 21 × 9,5 cm. Confira a medida do arquivo e a área de impressão do seu modelo antes de produzir.',
   },
   {
     term: 'Margem de segurança',
@@ -213,7 +215,7 @@ export const COMPARISON: {
   },
   {
     criterion: 'Formato do arquivo',
-    clickgruda: '21 × 9,5 cm (medida exata da caneca)',
+    clickgruda: 'Artes para canecas; confira o arquivo e o modelo antes de imprimir',
     avulsa: 'Varia conforme o banco de artes',
     freelancer: 'Depende do briefing',
   },
@@ -249,7 +251,7 @@ export const COMPARISON: {
 export const FOR_WHO: string[] = [
   'Sublimadores que vivem (ou querem viver) de canecas personalizadas',
   'Quem perde tempo procurando artes em pastas ou packs sem curadoria',
-  'Quem precisa de artes na medida exata, sem retrabalho no editor',
+  'Quem precisa de um acervo organizado para os pedidos de canecas personalizadas',
   'Quem quer capturar datas comemorativas antes da concorrência',
   'Iniciantes que querem custo previsível e acesso imediato',
   'Quem vende em marketplaces, Instagram, WhatsApp ou loja física',

@@ -508,7 +508,7 @@ async function main() {
     async () => {
       const outcomes = await Promise.allSettled(
         Array.from({ length: 31 }, () =>
-          quota.recordSuccessfulDownload(trial, art.id, false),
+          quota.recordSuccessfulDownload(trial, art.id),
         ),
       )
       assert.equal(outcomes.filter((x) => x.status === 'fulfilled').length, 20)
@@ -557,7 +557,7 @@ async function main() {
       const u = { ...old, isDemo: false }
       assert.equal((await quota.getDownloadQuota(u)).expired, true)
       await assert.rejects(
-        quota.recordSuccessfulDownload(u, art.id, false),
+        quota.recordSuccessfulDownload(u, art.id),
         /prazo de teste terminou/,
       )
       const link = await studioDb.studioLibraryLink.findUnique({
@@ -904,7 +904,7 @@ async function main() {
     const balances=await db.setting.findMany({where:{key:{startsWith:'cakto-finance:'}},orderBy:{key:'asc'}})
     const classifier=admin.load('src/lib/payments/payment-classification.ts')
     for(const email of ['john.doe@example.com','ohn.doe@example.com',' JOHN.DOE@EXAMPLE.COM ','sample@example.net'])assert.equal(classifier.isCaktoTestEmail(email),true)
-    assert.equal(classifier.isCaktoTestEmail('marciatrindade502@gmail.com'),false)
+    assert.equal(classifier.isCaktoTestEmail('cliente.real@gmail.com'),false)
     assert.equal(classifier.isCaktoTestEmail('next-real-customer@qa.invalid'),false)
     const fake=await db.user.create({data:{name:'John Doe Cakto Test',email:'john.doe@example.com',password:'qa',hasAccess:true,createdAt:new Date('2021-01-02T15:00:00Z')}})
     await db.setting.create({data:{key:'trial-origin:'+fake.id,value:fake.createdAt.toISOString()}})
@@ -1097,9 +1097,15 @@ async function main() {
         path: path.join(folder, 'browser', 'antes-formulario.png'),
         fullPage: true,
       })
+      const adminNavigation=page.getByRole('navigation',{name:'Seções do painel',exact:true})
+      for(const group of ['Acervo','Membros e vendas','Relacionamento','Configurações'])await adminNavigation.getByRole('group',{name:group,exact:true}).waitFor()
+      assert.equal(await adminNavigation.getByRole('button').count(),16)
       await page
         .getByRole('button', { name: 'Pagamentos', exact: true })
         .click()
+      assert.equal(await page.getByRole('link',{name:'Exportar artes',exact:true}).count(),0)
+      await page.screenshot({path:path.join(folder,'browser','admin-groups.png'),fullPage:true})
+
       await page
         .getByRole('button', { name: 'Registrar pagamento', exact: true })
         .click()
@@ -1211,6 +1217,48 @@ async function main() {
       const firstLink=await studioDb.studioLibraryLink.findUnique({where:{externalUserId:browserTrial.id},include:{code:true}})
       assert.ok(firstLink);assert.equal(firstLink.state,'TRIAL')
       assert.equal(firstLink.code.expiresAt.getTime()-browserTrial.createdAt.getTime(),7*86400000)
+      const memberNavigation=memberPage.getByRole('navigation',{name:'Explorar a biblioteca',exact:true})
+      const sidebarLabels=await memberNavigation.getByRole('button').allTextContents()
+      assert.ok(sidebarLabels.findIndex(t=>t.includes('Arte/Bocão'))<sidebarLabels.findIndex(t=>t.includes('Artes reprovadas')))
+      assert.equal(await memberPage.getByRole('button',{name:/Baixar.*ZIP/i}).count(),0)
+      assert.equal((await memberContext.request.get(base+'/api/arts/ids?scope=all')).status(),404)
+      const artImage=memberPage.locator('.cg-art-visual img').first()
+      assert.equal(await artImage.evaluate(el=>el.dispatchEvent(new MouseEvent('contextmenu',{bubbles:true,cancelable:true,button:2}))),false)
+      assert.equal(await artImage.evaluate(el=>el.dispatchEvent(new Event('dragstart',{bubbles:true,cancelable:true}))),false)
+      assert.equal(await summary.locator('#studio-access-code').evaluate(el=>el.dispatchEvent(new MouseEvent('contextmenu',{bubbles:true,cancelable:true,button:2}))),true)
+      const downloadButton=memberPage.getByRole('button',{name:'Baixar arte',exact:true}).first()
+      assert.equal(await downloadButton.evaluate(el=>getComputedStyle(el).animationName),'cg-download-glow')
+      const beforePulse=await downloadButton.boundingBox();await memberPage.waitForTimeout(200);assert.deepEqual(await downloadButton.boundingBox(),beforePulse)
+      await memberPage.emulateMedia({reducedMotion:'reduce'})
+      assert.equal(await downloadButton.evaluate(el=>getComputedStyle(el).animationName),'none')
+      await memberPage.emulateMedia({reducedMotion:'no-preference'})
+      await memberPage.getByRole('button',{name:'Ampliar arte Arte QA',exact:true}).click()
+      const previewDialog=memberPage.getByRole('dialog',{name:'Arte QA',exact:true})
+      await previewDialog.waitFor()
+      assert.equal(await previewDialog.locator('.cg-preview-art').evaluate(el=>el.dispatchEvent(new MouseEvent('contextmenu',{bubbles:true,cancelable:true,button:2}))),false)
+      assert.equal(await previewDialog.getByRole('link',{name:/Abrir esta prévia/}).count(),0)
+      await previewDialog.getByRole('button',{name:'Aumentar zoom',exact:true}).click()
+      await previewDialog.getByText('125%',{exact:true}).waitFor()
+      await memberPage.keyboard.press('Escape');await previewDialog.waitFor({state:'hidden'})
+      const studioHeaderButton=memberPage.getByRole('button',{name:'Acessar Studio: Mockup e Editor em outra plataforma',exact:true})
+      await studioHeaderButton.click()
+      const studioDialog=memberPage.getByRole('dialog',{name:'Studio · Mockup + Editor',exact:true})
+      await studioDialog.waitFor()
+      assert.equal(await studioDialog.getByRole('button',{name:'Solicitar código grátis'}).count(),0)
+      const opened=[]
+      await memberPage.evaluate(()=>{window.__qaOpened=[];window.open=url=>{window.__qaOpened.push(url);return null}})
+      await studioDialog.getByRole('button',{name:'Abrir Studio · Mockup + Editor ↗',exact:true}).click()
+      assert.deepEqual(await memberPage.evaluate(()=>window.__qaOpened),['https://clickteste.vercel.app/'])
+      await studioHeaderButton.click()
+      await studioDialog.getByRole('button',{name:'Ver meu código do Studio',exact:true}).click()
+      await studioDialog.waitFor({state:'hidden'})
+      await memberPage.waitForFunction(()=>document.activeElement?.id==='member-access-title')
+      await memberPage.getByRole('button',{name:'Melhorar minha arte',exact:true}).first().click()
+      const enhance=memberPage.getByRole('dialog',{name:'Melhorar qualidade da arte',exact:true})
+      await enhance.getByText(/Não fazemos edição, troca de nomes/).waitFor()
+      await memberPage.keyboard.press('Escape');await enhance.waitFor({state:'hidden'})
+      console.log('PASS Chromium: prévias bloqueiam contexto/arrastar; download mantém botão e redução de movimento; ZIP sem API; Studio aponta ao código automático')
+      checks++
       await summary.getByRole('button',{name:'Explorar artes',exact:true}).click()
       assert.equal(await memberPage.locator('#member-catalog-search').evaluate(el=>document.activeElement===el),true)
       const download=memberPage.waitForEvent('download')
@@ -1224,6 +1272,9 @@ async function main() {
       await profileApi.saveMemberProfile(browserTrial.id,{whatsapp:'5562966665555',extraDevices:0,downloadLimit:20,downloadExpiresAt:new Date(Date.now()-1000).toISOString()})
       await memberPage.reload({waitUntil:'domcontentloaded'})
       await summary.getByText('Seu Studio e Editor continuam disponíveis até',{exact:false}).waitFor()
+      await studioHeaderButton.click();await studioDialog.getByRole('button',{name:'Ver meu código do Studio',exact:true}).waitFor()
+      await studioDialog.getByRole('button',{name:'Ver meu código do Studio',exact:true}).click();await studioDialog.waitFor({state:'hidden'})
+
       const originalCode=await summary.locator('#studio-access-code').innerText()
       const blockedDownload=await memberContext.request.get(base+'/api/arts/'+art.id+'/download');assert.equal(blockedDownload.status(),403)
       const paymentResponse=await memberContext.request.post(base+'/api/webhooks/cakto',{data:{secret:process.env.CAKTO_WEBHOOK_SECRET,event:'purchase_approved',data:{id:'QA-BROWSER-PACKAGE',customer:{email:browserTrial.email},amount:47.9,currency:'BRL',paidAt:new Date().toISOString(),paymentMethod:'pix'}}})

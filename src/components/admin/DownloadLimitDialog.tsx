@@ -55,7 +55,7 @@ export function DownloadLimitDialog({ user }: { user: { id: string; name: string
         </label>
         {limited && <div className="space-y-1.5"><Label htmlFor="edit-user-downloads">Total de downloads permitidos</Label>
           <Input id="edit-user-downloads" type="number" min={0} max={100000} step={1} value={value} onChange={e => setValue(e.target.value)} />
-          <p className="text-xs text-zinc-500">Ao atingir a cota, bloqueia o download e mostra prévias embaçadas. ZIP indisponível enquanto limitado.</p>
+          <p className="text-xs text-zinc-500">Ao atingir a cota, bloqueia o download e mostra prévias embaçadas.</p>
         </div>}
         <Button disabled={saving} onClick={save} className="h-11 w-full rounded-xl bg-orange-500 font-bold hover:bg-orange-600">{saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null} Salvar limite</Button>
       </div>

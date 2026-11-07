@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 
-import { CalendarHeart, Check, Copy, Download, EyeOff, Flame, Heart, Loader2, Star, Tag, ZoomIn, ZoomOut, RotateCcw, ExternalLink, Info } from 'lucide-react'
+import { CalendarHeart, Check, Copy, Download, EyeOff, Flame, Heart, Loader2, Star, Tag, ZoomIn, ZoomOut, RotateCcw, Info } from 'lucide-react'
 import { toast } from 'sonner'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
@@ -31,10 +31,10 @@ export function ArtPreviewDialog({
   if (!art) return null
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent onContextMenu={demo ? event => event.preventDefault() : undefined} className="cg-premium-preview flex max-h-[96dvh] w-[calc(100vw-1rem)] max-w-[min(96vw,1480px)] flex-col overflow-y-auto rounded-2xl border-white/10 bg-[#121a2a] p-0 text-slate-100 sm:rounded-3xl">
+      <DialogContent className="cg-premium-preview flex max-h-[96dvh] w-[calc(100vw-1rem)] max-w-[min(96vw,1480px)] flex-col overflow-y-auto rounded-2xl border-white/10 bg-[#121a2a] p-0 text-slate-100 sm:rounded-3xl">
         <DialogHeader className="sr-only"><DialogTitle>{art.title}</DialogTitle><DialogDescription>Prévia visual. O download da arte é feito pelo botão Baixar arte.</DialogDescription></DialogHeader>
         <div className="grid min-h-0 gap-0 lg:grid-cols-[minmax(0,2.45fr)_minmax(265px,.85fr)]">
-          <div className="cg-preview-visual relative flex min-h-[300px] flex-col overflow-hidden bg-[#e5e8ee] sm:min-h-[65dvh]">
+          <div onContextMenu={event => event.preventDefault()} onDragStart={event => event.preventDefault()} className="cg-preview-visual relative flex min-h-[300px] flex-col overflow-hidden bg-[#e5e8ee] sm:min-h-[65dvh]">
             <span className="cg-preview-watermark-note absolute left-3 top-3 z-20 inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white/95 px-3 py-2 text-[11px] font-extrabold text-slate-800 shadow-md sm:left-4 sm:top-4">
               <Info className="h-3.5 w-3.5 text-orange-600" /> <span className="cg-preview-note-label">SOMENTE PRÉVIA</span>
             </span>
@@ -48,7 +48,6 @@ export function ArtPreviewDialog({
               <img src={art.imageUrl} alt={`Estampa completa: ${art.title}`} draggable={false} onDoubleClick={() => setZoom((z) => z === 1 ? 1.75 : 1)} style={{ transform: `scale(${zoom})` }} className={cn('cg-preview-art block max-h-[76dvh] w-full max-w-full select-none object-contain transition-transform duration-200', demo && 'blur-[1.5px] brightness-[0.98]')} />
               {demo && <span className="pointer-events-none absolute bottom-4 left-1/2 z-10 -translate-x-1/2 rounded-xl bg-zinc-950/85 px-4 py-2 text-xs font-bold text-white shadow-lg"><EyeOff className="mr-1 inline h-4 w-4" /> Prévia protegida</span>}
             </div>
-            {!demo && <a href={art.imageUrl} target="_blank" rel="noopener noreferrer" className="cg-preview-open absolute bottom-3 left-1/2 z-10 inline-flex -translate-x-1/2 items-center gap-1.5 rounded-lg border border-slate-200 bg-white/95 px-3 py-2 text-xs font-bold text-slate-800 shadow-sm hover:bg-white"><ExternalLink className="h-3.5 w-3.5"/> Abrir esta prévia em outra aba</a>}
           </div>
           <div className="flex flex-col gap-4 p-5 sm:p-6">
             <div className="flex flex-wrap gap-1.5">

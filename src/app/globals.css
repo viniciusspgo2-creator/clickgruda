@@ -1708,10 +1708,6 @@
   box-shadow:none!important;opacity:1!important;
 }
 .cg-filter-drawer .cg-filter-clear:hover {background:#314966!important;border-color:#fb923c!important;color:#fff!important;}
-.cg-filter-drawer .cg-filter-zip {
-  background:rgba(249,115,22,.11)!important;border-color:rgba(251,146,60,.55)!important;color:#ffbd8a!important;
-}
-.cg-filter-drawer .cg-filter-zip:hover {background:rgba(249,115,22,.2)!important;}
 .cg-filter-drawer .cg-filter-drawer-scroll [role="radio"] {overflow:hidden;}
 .cg-filter-drawer .cg-filter-drawer-scroll [role="radio"] > span:nth-child(2) {min-width:0;overflow-wrap:anywhere;}
 .cg-filter-drawer .cg-filter-drawer-scroll .bg-orange-100 {background:rgba(251,139,55,.19)!important;}
@@ -1939,7 +1935,7 @@
 .cg-portal .cg-sidebar-icon {display:flex;align-items:center;justify-content:center;flex:0 0 24px;width:24px;height:24px;color:#f6f6f8;}
 .cg-portal .cg-sidebar-link:nth-child(2) .cg-sidebar-icon,
 .cg-portal .cg-sidebar-link:nth-child(3) .cg-sidebar-icon,
-.cg-portal .cg-sidebar-link:nth-child(5) .cg-sidebar-icon {color:#ff982d;filter:drop-shadow(0 0 5px rgba(255,119,18,.42));}
+.cg-portal .cg-sidebar-link:nth-child(4) .cg-sidebar-icon {color:#ff982d;filter:drop-shadow(0 0 5px rgba(255,119,18,.42));}
 .cg-portal .cg-sidebar-link-active {
   background:linear-gradient(95deg,rgba(255,105,16,.86),rgba(101,48,29,.7) 65%,rgba(255,110,25,.1))!important;
   border:1px solid rgba(255,157,66,.65)!important;
@@ -2171,4 +2167,20 @@
 @media (max-width:767px) {
   .cg-home-trial-summary { order:3; width:100%; margin:17px 0 0; font-size:12px; }
   .cg-home-trial-summary span { font-size:11px; }
+}
+
+/* Destaque suave do download: o brilho não altera tamanho ou posição do botão. */
+.cg-portal .cg-member-artcard .cg-art-download:not(:disabled) {
+  box-shadow:none!important;
+  filter:drop-shadow(0 0 4px rgba(255,119,18,.22));
+  animation:cg-download-glow 3.2s ease-in-out infinite;
+}
+@keyframes cg-download-glow {
+  0%,100% {filter:drop-shadow(0 0 3px rgba(255,119,18,.16));}
+  50% {filter:drop-shadow(0 0 8px rgba(255,119,18,.38));}
+}
+.cg-art-visual img,.cg-preview-visual img {-webkit-touch-callout:none;-webkit-user-drag:none;user-select:none;}
+#member-access-summary {scroll-margin-top:190px;}
+@media (prefers-reduced-motion:reduce) {
+  .cg-portal .cg-member-artcard .cg-art-download:not(:disabled) {animation:none;}
 }
