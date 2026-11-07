@@ -24,20 +24,31 @@ export async function verifyBonusWorkflowToken(
       maxTokenAge: '5m',
       clockTolerance: 5,
     })
-    return (
-      typeof payload.exp === 'number' &&
-      payload.repository === repository &&
-      payload.repository_id === '1402578509' &&
-      payload.repository_owner_id === '327950105' &&
-      payload.ref === ref &&
-      payload.workflow_ref === workflow &&
-      payload.sub === `repo:${repository}:ref:${ref}` &&
-      payload.runner_environment === 'github-hosted' &&
-      (payload.event_name === 'schedule' ||
+    const claims = {
+      exp: typeof payload.exp === 'number',
+      repository: payload.repository === repository,
+      repository_id: payload.repository_id === '1402578509',
+      repository_owner_id: payload.repository_owner_id === '327950105',
+      ref: payload.ref === ref,
+      workflow_ref: payload.workflow_ref === workflow,
+      sub: payload.sub === `repo:${repository}:ref:${ref}`,
+      runner_environment: payload.runner_environment === 'github-hosted',
+      event_name: (payload.event_name === 'schedule' ||
         payload.event_name === 'workflow_dispatch' ||
-        payload.event_name === 'push')
-    )
-  } catch {
+        payload.event_name === 'push'),
+    }
+    const rejected = Object.entries(claims).filter(([, valid]) => !valid)
+    if (rejected.length)
+      console.warn('Studio retry identity rejected: claims', rejected.map(([key]) => key).join(','))
+    return rejected.length === 0
+  } catch (error) {
+    // Apenas categoria fixa do erro; nunca registrar token, assinatura ou claims recebidos.
+    if (token.split('.').length === 3) {
+      const claim = error && typeof error === 'object' && 'claim' in error &&
+        typeof error.claim === 'string' && ['aud', 'iss', 'iat', 'exp', 'nbf'].includes(error.claim)
+        ? error.claim : ''
+      console.warn('Studio retry identity rejected: verification', error instanceof Error ? error.name : 'unknown', claim)
+    }
     return false
   }
 }
