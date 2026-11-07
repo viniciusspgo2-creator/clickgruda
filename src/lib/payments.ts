@@ -1,3 +1,4 @@
+import {grantCompleteBenefits,deliverStudioBonus} from '@/lib/studio-bonus'
 import { db } from '@/lib/db'
 import { SITE_URL } from '@/lib/site'
 
@@ -146,16 +147,20 @@ export async function checkAsaasPayment(
 
 /** Liberação e confirmação do pagamento acontecem na mesma transação. */
 export async function approvePayment(paymentId: string) {
-  return db.$transaction(async tx => {
+  const result = await db.$transaction(async tx => {
     const payment = await tx.payment.findUnique({ where: { id: paymentId } })
-    if (!payment || payment.status === 'APPROVED') return false
+    if (!payment || payment.status === 'APPROVED' || payment.status === 'VOIDED' || payment.provider === 'ADMIN_MANUAL') return false
     const claimed = await tx.payment.updateMany({
       where: { id: paymentId, status: { not: 'APPROVED' } },
       data: { status: 'APPROVED', approvedAt: new Date() },
     })
     if (!claimed.count) return false
-    const user = await tx.user.findUnique({ where: { id: payment.userId }, select: { status: true } })
-    await tx.user.update({ where: { id: payment.userId }, data: { hasAccess: true, accessSource: 'PURCHASE', status: user?.status === 'BLOCKED' ? 'BLOCKED' : 'ACTIVE' } })
-    return true
+    await tx.$queryRaw`SELECT id FROM "User" WHERE id=${payment.userId} FOR UPDATE`
+    const user = await tx.user.findUnique({ where: { id: payment.userId } })
+    await tx.user.update({ where: { id: payment.userId }, data: { hasAccess: true, accessStatus:'ATIVO', accessType:'VITALICIO', accessSource: 'PURCHASE', status: user?.status === 'BLOCKED' ? 'BLOCKED' : 'ACTIVE' } })
+    if(user && user.status!=='BLOCKED')await grantCompleteBenefits(tx,user)
+    return payment.userId
   })
+  if(result)await deliverStudioBonus(result).catch(()=>{})
+  return Boolean(result)
 }

@@ -13,6 +13,9 @@ function makeHandler({ verify, normalize, countAttempt = async () => {}, isThrot
   assert.equal(transpiled.diagnostics.filter(d => d.category === ts.DiagnosticCategory.Error).length, 0)
   const mod = { exports: {} }
   function mock(name) {
+    if(name==='next/server')return {after:()=>{}}
+    if(name==='@/lib/db')return {db:{}}
+    if(name==='@/lib/studio-bonus')return {studioBonusEnabled:()=>false,deliverStudioBonus:async()=>{}}
     if (name === '@/lib/payments/cakto') return {
       caktoProvider: { name: 'CAKTO', verify, normalize },
       InvalidCaktoWebhook: class InvalidCaktoWebhook extends Error {},

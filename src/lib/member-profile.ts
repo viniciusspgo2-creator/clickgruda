@@ -3,7 +3,7 @@ import { db } from '@/lib/db'
 
 export const MEMBER_PREFIX = 'member-profile:'
 /** null = downloads ilimitados (padrão para assinantes). Número >= 0 = cota total. */
-export type MemberProfile = { whatsapp: string; extraDevices: number; downloadLimit?: number | null; contactPurpose?: string; registeredAt?: string }
+export type MemberProfile = { whatsapp: string; extraDevices: number; downloadLimit?: number | null; downloadExpiresAt?: string | null; contactPurpose?: string; registeredAt?: string }
 type Client = Pick<Prisma.TransactionClient, 'setting'>
 
 export function normalizeWhatsapp(value: unknown): string {

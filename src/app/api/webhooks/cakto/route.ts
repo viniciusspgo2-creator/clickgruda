@@ -1,9 +1,12 @@
+import {after} from 'next/server'
+import {db} from '@/lib/db'
+import {deliverStudioBonus,studioBonusEnabled} from '@/lib/studio-bonus'
 import { caktoProvider, InvalidCaktoWebhook } from '@/lib/payments/cakto'
 import { processPaymentEvent } from '@/lib/payments/processor'
 import { countAttempt, isThrottled, requestIp, throttleKey } from '@/lib/security-guards'
 
 export const runtime = 'nodejs'
-export const maxDuration = 10
+export const maxDuration = 30
 const MAX_BODY = 256 * 1024
 
 export async function POST(req: Request) {
@@ -36,6 +39,11 @@ export async function POST(req: Request) {
       if (evt.kind === 'IGNORADO') console.info('[cakto] evento ignorado:', evt.type)
       await processPaymentEvent(caktoProvider.name, evt)
     }
+    if(studioBonusEnabled())after(async()=>{
+      const emails=[...new Set(events.map(event=>event.email).filter(Boolean))].slice(0,5)
+      const users=await db.user.findMany({where:{email:{in:emails}},select:{id:true}})
+      await Promise.allSettled(users.map(user=>deliverStudioBonus(user.id)))
+    })
     return Response.json({ ok: true })
   } catch (error) {
     // Nunca registrar segredos nem dados do comprador em logs.

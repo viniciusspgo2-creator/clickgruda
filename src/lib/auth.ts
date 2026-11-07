@@ -20,6 +20,7 @@ export type SessionUser = {
   name: string
   email: string
   role: string
+  isTrial?: boolean
   hasAccess: boolean
   isDemo: boolean
   isPreview: boolean
@@ -124,6 +125,7 @@ export async function resolveSession(): Promise<SessionResolution> {
         email: user.email,
         role: user.role,
         hasAccess: user.hasAccess,
+        isTrial: user.accessType === "TRIAL",
         isDemo: user.isDemo || user.isPreview,
         isPreview: user.isPreview,
         status: user.status,

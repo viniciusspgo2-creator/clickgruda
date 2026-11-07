@@ -35,6 +35,6 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
     amountCents: payment.amountCents,
     approvedAt: fresh?.approvedAt,
     createdAt: payment.createdAt,
-    hasAccess: user?.hasAccess || false,
+    hasAccess: (user?.hasAccess && user.accessType !== "TRIAL") || false,
   })
 }

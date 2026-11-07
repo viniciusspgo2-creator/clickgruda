@@ -1,4 +1,5 @@
 import { Prisma } from '@prisma/client'
+import {grantCompleteBenefits,queueStudioEntitlement} from '@/lib/studio-bonus'
 import { db } from '@/lib/db'
 import type { NormalizedPaymentEvent } from './provider'
 
@@ -28,9 +29,10 @@ export async function processPaymentEvent(provider: string, evt: NormalizedPayme
           FROM pg_advisory_xact_lock(hashtextextended(${key}, 0))
         `
 
-        const existingUser = evt.email
+        let existingUser = evt.email
           ? await tx.user.findUnique({ where: { email: evt.email } })
           : null
+        if(existingUser){await tx.$queryRaw`SELECT id FROM "User" WHERE id=${existingUser.id} FOR UPDATE`;existingUser=await tx.user.findUnique({where:{id:existingUser.id}})}
         await tx.paymentWebhookEvent.create({ data: {
           provider,
           externalId: evt.externalId,
@@ -67,6 +69,7 @@ export async function processPaymentEvent(provider: string, evt: NormalizedPayme
             accessSource: 'PURCHASE',
             status: 'ACTIVE',
           } })
+          await grantCompleteBenefits(tx,existingUser)
         } else if (
           existingUser.accessProvider === provider &&
           existingUser.accessReference === evt.externalId &&
@@ -80,6 +83,7 @@ export async function processPaymentEvent(provider: string, evt: NormalizedPayme
             accessReference: evt.externalId,
             accessSource: null,
           } })
+          await queueStudioEntitlement(tx,existingUser,'REVOKED',evt.kind==='CHARGEBACK'?'CHARGEBACK':'REFUND')
           await tx.userSession.updateMany({
             where: { userId: existingUser.id, revokedAt: null },
             data: { revokedAt: new Date(), revokedReason: 'PAYMENT_REVOKED' },

@@ -1,5 +1,6 @@
 'use client'
 
+import {StudioBonusCard} from '@/components/portal/StudioBonusCard'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient, type InfiniteData } from '@tanstack/react-query'
 import { AnimatePresence, motion } from 'framer-motion'
@@ -333,6 +334,8 @@ export function PortalView() {
 
   const quota = catalogQ.data?.quota
   const quotaExhausted = Boolean(quota?.exhausted)
+  useEffect(()=>{queryClient.invalidateQueries({queryKey:['catalog']})},[user?.isTrial,queryClient])
+  useEffect(()=>{if(!quota?.expiresAt||quota.exhausted)return;const delay=Math.max(0,Date.parse(quota.expiresAt)-Date.now());const timer=setTimeout(()=>{queryClient.invalidateQueries({queryKey:['catalog']});queryClient.invalidateQueries({queryKey:['arts']})},Math.min(delay+100,2147483647));return()=>clearTimeout(timer)},[quota?.expiresAt,quota?.exhausted,queryClient])
   const protectedPreview = Boolean(user?.isDemo || quotaExhausted)
 
   // Ao esgotar/reativar a cota, recarrega as URLs de prévia (protegidas no servidor).
@@ -805,16 +808,17 @@ export function PortalView() {
         </div>
       )}
 
+      {!user.isDemo && user.role!=='ADMIN' && <StudioBonusCard/>}
       {quota && !user.isDemo && (
         <section className="border-b border-orange-400/20 bg-[#141d2e] px-4 py-4 sm:px-7" role="status" aria-live="polite">
           <div className="mx-auto flex w-full max-w-[1600px] flex-wrap items-center justify-between gap-4">
             <div>
               <p className="flex items-center gap-2 text-sm font-extrabold text-orange-300"><Download className="h-4 w-4" /> {quotaExhausted ? 'Seu período de teste chegou ao limite' : 'Sua conta está em modo de teste'}</p>
               <p className="mt-1 text-sm leading-6 text-slate-200">{quotaExhausted
-                ? `Você utilizou os ${quota.limit} downloads disponíveis. As artes estão em modo de prévia protegida. Garanta o acesso completo para desbloquear os downloads ilimitados!`
-                : `Você utilizou ${quota.used} de ${quota.limit} downloads. Restam ${quota.remaining} downloads de teste.`}</p>
+                ? `${quota.expired?'O prazo de 24 horas terminou.':`Você utilizou os ${quota.limit} downloads disponíveis.`} As artes estão em modo de prévia protegida. Garanta o acesso completo para desbloquear os downloads ilimitados!`
+                : `Você utilizou ${quota.used} de ${quota.limit} downloads. Restam ${quota.remaining} downloads de teste.${quota.expiresAt ? ` Disponíveis até ${new Date(quota.expiresAt).toLocaleString('pt-BR',{timeZone:'America/Sao_Paulo',dateStyle:'short',timeStyle:'short'})} (Brasília).` : ''}`}</p>
             </div>
-            <a href={WHATSAPP.link('Olá! Meu acesso de teste na Click & Gruda terminou e quero garantir meu acesso completo. Como faço para comprar?')} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-xl bg-orange-500 px-5 py-2.5 text-sm font-extrabold text-white shadow-lg shadow-orange-600/20 transition-colors hover:bg-orange-400"><Crown className="h-4 w-4" /> Garanta seu acesso completo <ArrowRight className="h-4 w-4" /></a>
+            <a href="/comprar" className="inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-xl bg-orange-500 px-5 py-2.5 text-sm font-extrabold text-white shadow-lg shadow-orange-600/20 transition-colors hover:bg-orange-400"><Crown className="h-4 w-4" /> Garanta seu acesso completo <ArrowRight className="h-4 w-4" /></a>
           </div>
         </section>
       )}
@@ -1233,7 +1237,7 @@ export function PortalView() {
           </DialogHeader>
           {mockupArt && <div className="min-w-0 max-w-full rounded-xl border border-orange-400/25 bg-orange-400/[.07] p-3 text-xs leading-relaxed text-slate-200 sm:p-4"><strong className="mb-1 block break-words text-orange-200">Arte selecionada: {formatArtTitle(mockupArt.title)}</strong><p>O Studio não importa a estampa automaticamente. {protectedPreview ? 'No modo de prévia protegida, o arquivo de impressão fica bloqueado. Garanta o acesso completo para baixar a arte e enviá-la ao Studio.' : 'Baixe a arte pelo botão abaixo e envie o arquivo ao Studio para visualizar a caneca em 3D.'}</p></div>}
           <DialogFooter className={`cg-access-actions mt-1 grid min-w-0 grid-cols-1 gap-2 ${mockupArt ? "sm:grid-cols-3" : "sm:grid-cols-2"}`}>
-            {protectedPreview ? <div className="min-w-0 sm:col-span-2">{user.isDemo ? <DemoConversionActions /> : <a href={WHATSAPP.link('Olá! Meu acesso de teste na Click & Gruda terminou e quero garantir meu acesso completo. Como faço para comprar?')} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-11 items-center justify-center rounded-xl bg-orange-500 px-4 py-2 text-sm font-bold text-white">Garanta seu acesso completo</a>}</div> : <>
+            {protectedPreview ? <div className="min-w-0 sm:col-span-2">{user.isDemo ? <DemoConversionActions /> : <a href="/comprar" className="inline-flex min-h-11 items-center justify-center rounded-xl bg-orange-500 px-4 py-2 text-sm font-bold text-white">Garanta seu acesso completo</a>}</div> : <>
               <Button type="button" variant="outline" onClick={() => window.open(WHATSAPP.link(mockupSupportMessage), '_blank', 'noopener,noreferrer')} className="min-h-11 h-auto min-w-0 whitespace-normal rounded-xl border-white/20 bg-white/5 px-3 py-2 text-center text-slate-100 hover:bg-white/10 hover:text-white">Solicitar código grátis</Button>
               {mockupArt && <Button type="button" variant="outline" disabled={downloadStates[mockupArt.id] === 'loading'} onClick={() => handleDownload(mockupArt)} className="min-h-11 h-auto min-w-0 whitespace-normal rounded-xl border-white/20 bg-white/5 px-3 py-2 text-center text-slate-100 hover:bg-white/10 hover:text-white"><Download className="mr-1.5 h-4 w-4 shrink-0" /> Baixar esta arte</Button>}
               <Button type="button" onClick={() => { setMockupDialogOpen(false); openExternal('https://clicktools.vercel.app/', 'mockup_platform_open') }} className="min-h-11 h-auto min-w-0 whitespace-normal rounded-xl bg-orange-500 px-3 py-2 text-center font-bold text-white hover:bg-orange-600">Abrir Studio Mockup 3D</Button>

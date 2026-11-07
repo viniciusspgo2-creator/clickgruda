@@ -16,6 +16,7 @@ function loadProcessor(db) {
   const requireMock = (name) => {
     if (name === '@prisma/client') return { Prisma: { TransactionIsolationLevel: { ReadCommitted: 'ReadCommitted' } } }
     if (name === '@/lib/db') return { db }
+    if (name === '@/lib/studio-bonus') return {grantCompleteBenefits:async()=>{},queueStudioEntitlement:async()=>{},deliverStudioBonus:async()=>{}}
     throw new Error('Import inesperado ' + name)
   }
   new Function('require', 'module', 'exports', output.outputText)(requireMock, module, module.exports)
@@ -57,9 +58,9 @@ function createFakeDb() {
       if (conflictsLeft > 0) { conflictsLeft--; throw Object.assign(new Error('write conflict'), { code: 'P2034' }) }
       let unlock = null
       const tx = {
-        async $queryRaw(_fragments, key) { unlock = await acquire(key); return [{ acquired: 1 }] },
+        async $queryRaw(_fragments, key) { if(_fragments[0].includes('FROM "User"'))return [{id:user.id}]; unlock = await acquire(key); return [{ acquired: 1 }] },
         user: {
-          async findUnique({ where }) { return where.email === user.email ? { ...user } : null },
+          async findUnique({ where }) { return where.email === user.email || where.id === user.id ? { ...user } : null },
           async update({ data }) { Object.assign(user, data) },
         },
         paymentWebhookEvent: {

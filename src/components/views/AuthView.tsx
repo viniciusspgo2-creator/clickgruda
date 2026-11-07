@@ -23,6 +23,8 @@ export function AuthView() {
   const pendingIntent = useStore((s) => s.pendingIntent)
   const setPendingIntent = useStore((s) => s.setPendingIntent)
 
+  const [freeSignup,setFreeSignup]=useState(false)
+  useEffect(()=>{let current=true;fetch('/api/auth/options').then(r=>r.json()).then(d=>{if(current)setFreeSignup(d.freeSignup===true)}).catch(()=>{});return()=>{current=false}},[])
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -170,7 +172,7 @@ export function AuthView() {
                 : 'Crie sua conta para finalizar a compra do acesso vitalício.'}
             </p>
 
-            {authMode === 'register' && <div className="mt-5 rounded-2xl border border-orange-200 bg-orange-50 p-4 text-sm leading-6 text-zinc-700" role="note"><p className="flex items-center gap-2 font-extrabold text-zinc-950"><ShieldCheck className="h-4 w-4 text-orange-600" /> Acesso liberado após o pagamento</p><p className="mt-1">Crie sua conta e finalize a compra em seguida. Assim que o pagamento for confirmado, seu acesso vitalício é liberado automaticamente. Use o mesmo e-mail no cadastro e na compra.</p></div>}
+            {authMode === 'register' && <div className="mt-5 rounded-2xl border border-orange-200 bg-orange-50 p-4 text-sm leading-6 text-zinc-700" role="note"><p className="flex items-center gap-2 font-extrabold text-zinc-950"><ShieldCheck className="h-4 w-4 text-orange-600" /> {freeSignup?'Comece seu teste grátis':'Acesso liberado após o pagamento'}</p><p className="mt-1">{freeSignup?'Crie sua conta para baixar até 20 artes em 24 horas e testar o Studio Mockup e o Editor por 7 dias desde o cadastro. Depois, adquira o acesso completo para continuar.':'Crie sua conta e finalize a compra em seguida. Assim que o pagamento for confirmado, seu acesso vitalício é liberado automaticamente. Use o mesmo e-mail no cadastro e na compra.'}</p></div>}
 
             <form onSubmit={submit} className="mt-6 space-y-4">
               <div aria-hidden="true" className="absolute -left-[10000px] h-px w-px overflow-hidden"><Label htmlFor="cg-website">Não preencha este campo</Label><Input tabIndex={-1} id="cg-website" autoComplete="off" value={website} onChange={e => setWebsite(e.target.value)} /></div>
@@ -265,7 +267,7 @@ export function AuthView() {
                   </>
                 ) : (
                   <>
-                    Criar conta e continuar para o pagamento <ArrowRight className="ml-1.5 h-4.5 w-4.5" />
+                    {freeSignup?'Criar conta grátis':'Criar conta e continuar para o pagamento'} <ArrowRight className="ml-1.5 h-4.5 w-4.5" />
                   </>
                 )}
               </Button>

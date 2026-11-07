@@ -46,6 +46,7 @@ import { Label } from '@/components/ui/label'
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet'
 import { Logo } from '@/components/shared/Logo'
 import { AdminArtsSection, AdminCategoriesSection, AdminSuggestionsSection, AdminTagsSection, AdminSeasonalSection, AdminSettingsSection } from '@/components/views/AdminSections'
+import { ManualPaymentDialog, VoidManualPaymentDialog } from '@/components/admin/ManualPaymentDialog'
 import { NewUserDialog } from '@/components/admin/NewUserDialog'
 import { DownloadLimitDialog } from '@/components/admin/DownloadLimitDialog'
 import { MemberAccessDialog } from '@/components/admin/MemberAccessDialog'
@@ -433,7 +434,7 @@ function DashboardSection({ onNavigate }: { onNavigate?: (s: AdminSection) => vo
                       p.status === 'APPROVED' ? 'bg-emerald-100 text-emerald-700' : p.status === 'PENDING' ? 'bg-orange-100 text-orange-700' : 'bg-zinc-100 text-zinc-500'
                     )}
                   >
-                    {p.status === 'APPROVED' ? 'Aprovado' : p.status === 'PENDING' ? 'Pendente' : p.status}
+                    {p.status === 'APPROVED' ? 'Aprovado' : p.status === 'PENDING' ? 'Pendente' : p.status === 'VOIDED' ? 'Anulado' : p.status}
                   </Badge>
                 </div>
               </div>
@@ -593,6 +594,7 @@ function UsersSection() {
       <div className="flex flex-wrap gap-2"><PreviewAccountDialog /><NewUserDialog /></div>
     </div>
     <div className="overflow-hidden rounded-2xl border border-zinc-200 bg-white">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b p-4"><p className="text-sm text-zinc-600">Recebimentos aprovados entram na receita total. Contas com cortesia não geram faturamento.</p><ManualPaymentDialog /></div>
       <Table>
         <TableHeader>
           <TableRow className="bg-zinc-50">
@@ -643,6 +645,7 @@ function UsersSection() {
                 <div className="flex items-center justify-end gap-1.5">
                   {!u.isPreview && u.role !== 'ADMIN' && <DownloadLimitDialog user={u} />}
                   {!u.isPreview && u.role !== 'ADMIN' && <MemberAccessDialog user={u} />}
+                  {!u.isPreview && !u.isDemo && u.role !== 'ADMIN' && <ManualPaymentDialog user={u} />}
                   {!u.isPreview && <Button
                     size="sm"
                     variant="outline"
@@ -798,6 +801,8 @@ type AdminPayment = {
   userName: string
   userEmail: string
   provider: string
+  method: string
+  reference?: string | null
   amountCents: number
   status: string
   createdAt: string
@@ -839,6 +844,7 @@ function PaymentsSection() {
 
   return (
     <div className="overflow-hidden rounded-2xl border border-zinc-200 bg-white">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b p-4"><p className="text-sm text-zinc-600">Recebimentos aprovados entram na receita total. Contas com cortesia não geram faturamento.</p><ManualPaymentDialog /></div>
       <Table>
         <TableHeader>
           <TableRow className="bg-zinc-50">
@@ -860,14 +866,14 @@ function PaymentsSection() {
           )}
           {data?.payments.map((p) => (
             <TableRow key={p.id}>
-              <TableCell className="text-sm text-zinc-500">{new Date(p.createdAt).toLocaleDateString('pt-BR')}</TableCell>
+              <TableCell className="text-sm text-zinc-500">{new Date(p.approvedAt || p.createdAt).toLocaleDateString('pt-BR', {timeZone:'America/Sao_Paulo'})}</TableCell>
               <TableCell>
                 <p className="text-sm font-bold text-zinc-900">{p.userName}</p>
-                <p className="text-xs text-zinc-400">{p.userEmail}</p>
+                <p className="text-xs text-zinc-400">{p.userEmail}</p>{p.reference && <p className="mt-1 text-xs text-zinc-500">Comprovante: {p.reference}</p>}
               </TableCell>
-              <TableCell className="hidden">
+              <TableCell className="hidden md:table-cell">
                 <Badge variant="outline" className="rounded-lg font-bold text-zinc-500">
-                  {p.provider === 'MANUAL_PIX' ? 'PIX Manual' : p.provider}
+                  {p.provider === 'ADMIN_MANUAL' ? `Manual · ${p.method}` : p.provider === 'MANUAL_PIX' ? 'PIX Manual' : p.provider}
                 </Badge>
               </TableCell>
               <TableCell className="text-sm font-black text-zinc-900">{formatBRL(p.amountCents)}</TableCell>
@@ -882,11 +888,11 @@ function PaymentsSection() {
                         : 'bg-zinc-100 text-zinc-500'
                   )}
                 >
-                  {p.status === 'APPROVED' ? 'Aprovado' : p.status === 'PENDING' ? 'Pendente' : p.status}
+                  {p.status === 'APPROVED' ? 'Aprovado' : p.status === 'PENDING' ? 'Pendente' : p.status === 'VOIDED' ? 'Anulado' : p.status}
                 </Badge>
               </TableCell>
               <TableCell className="text-right">
-                {p.status === 'PENDING' ? (
+                {p.provider === 'ADMIN_MANUAL' && p.status === 'APPROVED' ? <VoidManualPaymentDialog paymentId={p.id} /> : p.status === 'PENDING' ? (
                   <Button
                     size="sm"
                     className="h-8 rounded-lg bg-emerald-500 text-xs font-bold text-white hover:bg-emerald-600"

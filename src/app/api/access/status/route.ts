@@ -11,5 +11,5 @@ export async function GET(req: Request) {
     await countAttempt(accountKey, 150, 1)
   }
   if (!user || user.isDemo || user.status === 'BLOCKED') return Response.json({ active: false }, { status: 401, headers: { 'Cache-Control': 'private, no-store' } })
-  return Response.json({ active: user.hasAccess, status: user.hasAccess ? 'ATIVO' : 'SEM_ACESSO' }, { headers: { 'Cache-Control': 'private, no-store' } })
+  return Response.json({ active: (user.hasAccess && !user.isTrial), status: (user.hasAccess && !user.isTrial) ? 'ATIVO' : 'SEM_ACESSO' }, { headers: { 'Cache-Control': 'private, no-store' } })
 }

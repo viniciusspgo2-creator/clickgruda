@@ -21,6 +21,7 @@ function memoryDb() {
   const settings = new Map(), payments = new Map(), users = new Map()
   let counter = 0, grants = 0
   const db = {
+    $queryRaw:async()=>[],
     setting: {
       findUnique: async ({where}) => settings.has(where.key) ? {key:where.key,value:settings.get(where.key)} : null,
       findMany: async args => [...settings].filter(([key])=>!args?.where || (args.where.key.in ? args.where.key.in.includes(key) : key.startsWith(args.where.key.startsWith))).map(([key,value])=>({key,value})),
@@ -149,7 +150,7 @@ test('PIX manual registra o desconto e fica pendente de conferência',async()=>{
 })
 test('API pública de artes usa somente a última categoria, mesmo se um cliente antigo enviar duas',async()=>{
  let received
- const route=load('src/app/api/arts/route.ts',{'@/lib/auth':{getSessionUser:async()=>({id:'member',hasAccess:true}),jsonError:()=>{}},'@/lib/arts':{queryArts:async args=>{received=args;return {arts:[],total:0}}},'@/lib/search-miss':{recordSearchMiss:async()=>{}}})
+ const route=load('src/app/api/arts/route.ts',{'@/lib/auth':{getSessionUser:async()=>({id:'member',hasAccess:true}),jsonError:()=>{}},'@/lib/download-quota':{getDownloadQuota:async()=>null},'@/lib/arts':{queryArts:async args=>{received=args;return {arts:[],total:0}}},'@/lib/search-miss':{recordSearchMiss:async()=>{}}})
  await route.GET(new Request('https://www.clickgruda.com.br/api/arts?categories=religiao,frases'))
  assert.deepEqual(received.categoryIds,['frases'])
 })

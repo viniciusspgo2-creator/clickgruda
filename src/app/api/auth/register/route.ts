@@ -1,3 +1,4 @@
+import {freeSignupEnabled,queueStudioEntitlement,deliverStudioBonus} from '@/lib/studio-bonus'
 import { db } from '@/lib/db'
 import { hashPassword, setSessionCookie, jsonError, getSessionUser } from '@/lib/auth'
 import { startSession } from '@/lib/sessions'
@@ -29,20 +30,23 @@ export async function POST(req: Request) {
     const exists = await db.user.findUnique({ where: { email } })
     if (exists) return jsonError('Não foi possível criar a conta. Verifique os dados ou faça login.', 409)
 
+    const trial = freeSignupEnabled()
     const hashed = await hashPassword(password)
     const user = await db.$transaction(async tx => {
-      const created = await tx.user.create({ data: { name, email, password: hashed } })
-      await saveMemberProfile(created.id, { whatsapp, extraDevices: 0, contactPurpose: 'pagamento e suporte desta conta', registeredAt: new Date().toISOString() }, tx)
+      const created = await tx.user.create({ data: { name, email, password: hashed, ...(trial ? {hasAccess:true,accessType:"TRIAL",accessStatus:"TRIAL",accessSource:"FREE_TRIAL"} : {}) } })
+      await saveMemberProfile(created.id, { whatsapp, extraDevices: 0, contactPurpose: 'pagamento e suporte desta conta', registeredAt: created.createdAt.toISOString(), ...(trial ? {downloadLimit:20,downloadExpiresAt:new Date(created.createdAt.getTime()+86400000).toISOString()} : {}) }, tx)
       // Não reivindica compras anteriores apenas pelo e-mail digitado: antes é necessário comprovar titularidade.
       // As compras ficam registradas em PendingPurchase para reconciliação administrativa segura.
+      if(trial) await queueStudioEntitlement(tx,created,'TRIAL')
       return created
     })
 
+    if(trial) await deliverStudioBonus(user.id).catch(()=>{})
     const session = await startSession(user, req)
     await setSessionCookie(session.token)
 
     return Response.json({
-      user: { id: user.id, name: user.name, email: user.email, role: user.role, hasAccess: user.hasAccess, isDemo: user.isDemo, status: user.status },
+      user: { id: user.id, name: user.name, email: user.email, role: user.role, hasAccess: user.hasAccess, isTrial:user.accessType === "TRIAL", isDemo: user.isDemo, status: user.status },
     })
   } catch {
     return jsonError('Erro ao criar conta. Tente novamente.', 500)

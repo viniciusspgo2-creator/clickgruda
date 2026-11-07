@@ -9,6 +9,7 @@ export async function PATCH(_req: Request, { params }: { params: Promise<{ id: s
 
   const payment = await db.payment.findUnique({ where: { id } })
   if (!payment) return jsonError('Pagamento não encontrado', 404)
+  if(payment.provider === 'ADMIN_MANUAL' || payment.status==='VOIDED')return jsonError('Use as ações próprias do lançamento manual.',400)
 
   await approvePayment(id)
   return Response.json({ ok: true })
