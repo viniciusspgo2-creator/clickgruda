@@ -1,11 +1,13 @@
 import { db } from '@/lib/db'
 import { MANUAL_PROVIDER, RECEIPT_PREFIX } from '@/lib/manual-receipts'
+import { isCaktoTestEmail } from './payment-classification'
 import { CAKTO_FINANCE_PREFIX, parseCaktoFinance } from './cakto-finance'
 
 export type FinancialPayment = {
   id: string; userName: string; userEmail: string; provider: string; method: string
   reference: string | null; externalId: string | null; amountCents: number | null
   status: string; createdAt: string; approvedAt: string | null
+  isTest: boolean
   pendingPurchaseId?: string; currency?: string | null
 }
 
@@ -43,6 +45,7 @@ export async function financialLedger() {
     }
     return { id: p.id, userName: p.user.name, userEmail: p.user.email,
       provider: p.provider, method: p.method, reference, externalId: p.externalId,
+      isTest: p.provider === 'CAKTO' && isCaktoTestEmail(purchase?.email || p.user.email),
       amountCents: p.amountCents, status: purchase?.status === 'REVOKED' ? 'REVOKED' : p.status,
       createdAt: p.createdAt.toISOString(), approvedAt: p.approvedAt?.toISOString() || null,
     }
@@ -54,12 +57,15 @@ export async function financialLedger() {
     rows.push({ id: 'cakto:' + p.id, pendingPurchaseId: p.id, userName: user?.name || 'Cliente Cakto', userEmail: p.email,
       provider: 'CAKTO', method: info?.method || 'CAKTO', reference: info?.reference || p.externalId,
       externalId: p.externalId, amountCents: info?.amountCents ?? null, currency: info?.currency,
+      isTest: isCaktoTestEmail(p.email),
       status: p.status, createdAt: p.createdAt.toISOString(), approvedAt: info?.paidAt || null,
     })
   }
   rows.sort((a, b) => Date.parse(b.approvedAt || b.createdAt) - Date.parse(a.approvedAt || a.createdAt) || a.id.localeCompare(b.id))
-  const approved = rows.filter(r => r.status === 'APPROVED')
+  const approved = rows.filter(r => !r.isTest && r.status === 'APPROVED')
   return { payments: rows, stats: {
+    pendingPayments: rows.filter(r => !r.isTest && r.status === 'PENDING').length,
+    testPaymentsCount: rows.filter(r => r.isTest).length,
     revenueCents: approved.reduce((total, p) => total + (p.amountCents ?? 0), 0),
     approvedPayments: approved.filter(p => p.amountCents !== null).length,
     missingCaktoAmounts: approved.filter(p => p.provider === 'CAKTO' && p.amountCents === null).length,

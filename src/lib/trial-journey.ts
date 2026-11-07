@@ -1,3 +1,4 @@
+import { CAKTO_TEST_EMAIL_PATTERN } from '@/lib/payments/payment-classification'
 import { db } from '@/lib/db'
 
 /** Marcador criado somente no novo cadastro grátis; não reclassifica contas antigas. */
@@ -8,17 +9,18 @@ export async function getTrialJourney(from: Date, to: Date) {
     registered: bigint; downloaded: bigint; purchased: bigint; trackedSince: Date | null
   }[]>`
     WITH tracked AS (
-      SELECT u.id, u."createdAt" FROM "User" u
+      SELECT u.id, u.email, u."createdAt" FROM "User" u
       INNER JOIN "Setting" marker ON marker.key = 'trial-origin:' || u.id
       WHERE u.role = 'USER' AND u."isDemo" = false AND u."isPreview" = false
     ), cohort AS (
-      SELECT id FROM tracked WHERE "createdAt" >= ${from} AND "createdAt" < ${to}
+      SELECT id, email FROM tracked WHERE "createdAt" >= ${from} AND "createdAt" < ${to}
     ), steps AS (
       SELECT c.id,
         EXISTS(SELECT 1 FROM "Download" d WHERE d."userId" = c.id) AS downloaded,
         (EXISTS(SELECT 1 FROM "Payment" p WHERE p."userId" = c.id AND p.status = 'APPROVED' AND p.provider <> 'DEMO' AND p."amountCents" > 0
+          AND (p.provider <> 'CAKTO' OR btrim(c.email) !~* ${CAKTO_TEST_EMAIL_PATTERN})
           AND NOT EXISTS(SELECT 1 FROM "PendingPurchase" r WHERE r.provider = p.provider AND r."externalId" = p."externalId" AND r.status = 'REVOKED'))
-         OR EXISTS(SELECT 1 FROM "PendingPurchase" p WHERE p."claimedUserId" = c.id AND p.status = 'APPROVED')) AS purchased
+         OR EXISTS(SELECT 1 FROM "PendingPurchase" p WHERE p."claimedUserId" = c.id AND p.status = 'APPROVED' AND btrim(p.email) !~* ${CAKTO_TEST_EMAIL_PATTERN})) AS purchased
       FROM cohort c
     )
     SELECT COUNT(*) AS registered,

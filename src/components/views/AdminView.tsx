@@ -1,4 +1,5 @@
 'use client'
+import { CaktoAuditPanel } from '@/components/admin/CaktoAuditPanel'
 import { CaktoReconciliationDialog } from '@/components/admin/CaktoReconciliationDialog'
 
 import { useState } from 'react'
@@ -812,21 +813,15 @@ type AdminPayment = {
   approvedAt: string | null
   pendingPurchaseId?: string
   currency?: string | null
-}
-
-type CaktoAudit = { events: { id: string; provider: string; eventType: string; customerEmail: string; outcome: string; receivedAt: string }[]; purchases: { id: string; email: string; externalId: string; createdAt: string }[] }
-function CaktoAuditPanel() {
-  const { data } = useQuery<CaktoAudit>({ queryKey: ['admin-cakto-audit'], queryFn: async () => { const r = await fetch('/api/admin/cakto-audit'); if (!r.ok) throw new Error('Falha'); return r.json() }, staleTime: 30000 })
-  return <div className="mt-7 rounded-2xl border border-zinc-200 bg-white p-5">
-    <h3 className="text-lg font-black text-zinc-900">Cakto · Eventos e conciliação</h3><p className="mt-1 text-xs leading-6 text-zinc-500">Eventos autenticados recebidos. Compras sem conta vinculada exigem confirmação de titularidade pelo administrador.</p>
-    {!!data?.purchases.length && <div className="mt-5 rounded-xl border border-orange-200 bg-orange-50 p-4"><p className="text-sm font-bold text-orange-800">Compras pagas aguardando conciliação</p><div className="mt-2 space-y-2">{data.purchases.map(a => <p key={a.id} className="text-xs text-orange-900">{a.email} · {new Date(a.createdAt).toLocaleDateString('pt-BR')} · ref. {a.externalId}</p>)}</div><p className="mt-3 text-xs text-orange-800">Para vincular uma compra, confirme o e-mail com o cliente e use o procedimento de conciliação administrativa documentado.</p></div>}
-    <div className="mt-4 overflow-x-auto"><table className="min-w-full text-left text-xs"><thead className="text-zinc-500"><tr><th className="py-2">Recebido</th><th>Evento</th><th>Cliente</th><th>Resultado</th></tr></thead><tbody>{(data?.events || []).map(e => <tr key={e.id} className="border-t border-zinc-100 text-zinc-700"><td className="py-3">{new Date(e.receivedAt).toLocaleString('pt-BR')}</td><td className="pr-3 font-semibold">{e.provider} · {e.eventType}</td><td className="pr-3">{e.customerEmail}</td><td>{e.outcome}</td></tr>)}</tbody></table></div>
-  </div>
+  isTest: boolean
 }
 
 function PaymentsSection() {
   const queryClient = useQueryClient()
-  const { data, isLoading, isError, refetch } = useQuery<{ payments: AdminPayment[]; missingCaktoAmounts: number }>({
+  const [paymentView, setPaymentView] = useState<'real' | 'tests'>('real')
+  const [paymentSearch, setPaymentSearch] = useState('')
+  const [paymentSource, setPaymentSource] = useState('all')
+  const { data, isLoading, isError, refetch } = useQuery<{ payments: AdminPayment[]; testPayments: AdminPayment[]; realPaymentsCount: number; testPaymentsCount: number; revenueCents: number; missingCaktoAmounts: number }>({
     queryKey: ['admin-payments'],
     queryFn: async () => { const r = await fetch('/api/admin/payments'); if (!r.ok) throw Error('Falha ao consultar pagamentos.'); return r.json() },
   })
@@ -845,6 +840,13 @@ function PaymentsSection() {
     onError: () => toast.error('Erro ao aprovar pagamento.'),
   })
 
+  const normalizeSearch = (value: string) => value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLocaleLowerCase('pt-BR')
+  const displayedPayments = (paymentView === 'tests' ? data?.testPayments || [] : data?.payments || []).filter(p => {
+    const manual = p.provider === 'ADMIN_MANUAL' || p.provider === 'MANUAL_PIX'
+    const sourceMatch = paymentSource === 'all' || (paymentSource === 'manual' ? manual : paymentSource === 'other' ? !manual && p.provider !== 'CAKTO' : p.provider === 'CAKTO')
+    return sourceMatch && normalizeSearch([p.userName, p.userEmail, p.reference, p.provider, p.method].join(' ')).includes(normalizeSearch(paymentSearch.trim()))
+  })
+
   if (isLoading) return <div className="h-72 animate-pulse rounded-2xl bg-zinc-200/70" />
   if (isError) return <div role="alert">Não foi possível carregar os pagamentos. <Button onClick={() => refetch()}>Tentar novamente</Button></div>
 
@@ -852,6 +854,19 @@ function PaymentsSection() {
     <div className="overflow-hidden rounded-2xl border border-zinc-200 bg-white">
       <div className="flex flex-wrap items-center justify-between gap-3 border-b p-4"><p className="text-sm text-zinc-600">Recebimentos aprovados entram na receita total. Contas com cortesia não geram faturamento.</p><ManualPaymentDialog /></div>
       {!!data?.missingCaktoAmounts && <p role="status" className="border-b bg-orange-50 p-4 text-sm text-orange-900">{data.missingCaktoAmounts} compra(s) Cakto sem valor salvo. Confira o comprovante ou reenvie o webhook original pela Cakto. Valores a confirmar ficam fora da receita.</p>}
+      <div className="space-y-4 border-b p-4">
+        <div className="grid gap-3 sm:grid-cols-3">
+          <div className="rounded-xl bg-emerald-50 p-3"><p className="text-xs font-semibold text-emerald-800">Receita real aprovada</p><p className="mt-1 text-xl font-black text-emerald-900">{formatBRL(data?.revenueCents || 0)}</p></div>
+          <div className="rounded-xl bg-zinc-50 p-3"><p className="text-xs font-semibold text-zinc-600">Lançamentos reais no histórico</p><p className="mt-1 text-xl font-black text-zinc-900">{data?.realPaymentsCount || 0}</p></div>
+          <div className="rounded-xl bg-violet-50 p-3"><p className="text-xs font-semibold text-violet-800">Testes Cakto · fora da receita</p><p className="mt-1 text-xl font-black text-violet-900">{data?.testPaymentsCount || 0}</p></div>
+        </div>
+        <div className="flex flex-wrap gap-2" aria-label="Tipo de lançamento">
+          {([{id:'real',label:'Recebimentos reais'},{id:'tests',label:'Testes Cakto'}] as const).map(item => <Button key={item.id} variant={paymentView === item.id ? 'default' : 'outline'} aria-pressed={paymentView === item.id} onClick={() => {setPaymentView(item.id);setPaymentSource('all');setPaymentSearch('')}}>{item.label} ({item.id === 'real' ? data?.realPaymentsCount || 0 : data?.testPaymentsCount || 0})</Button>)}
+        </div>
+        <p className="text-xs leading-5 text-zinc-500">{paymentView === 'tests' ? 'Simulações da integração, incluindo e-mails de exemplo da Cakto. Histórico preservado; estes registros não geram faturamento nem pendência de valor.' : 'Pagamentos manuais e compras reais dos gateways. Cortesias não geram lançamentos. Os testes da integração ficam em uma aba própria.'}</p>
+        <div className="flex flex-wrap gap-3"><Input aria-label="Buscar pagamentos" value={paymentSearch} onChange={e => setPaymentSearch(e.target.value)} placeholder="Buscar cliente, e-mail ou comprovante" className="min-w-48 flex-1" />{paymentView === 'real' && <select aria-label="Origem do pagamento" value={paymentSource} onChange={e => setPaymentSource(e.target.value)} className="h-10 rounded-lg border bg-white px-3 text-sm"><option value="all">Todas as origens</option><option value="CAKTO">Cakto</option><option value="manual">Pagamentos manuais</option><option value="other">Outros gateways</option></select>}</div>
+        <p className="text-xs text-zinc-500">{displayedPayments.length} registro(s) nesta seleção{(paymentView === 'tests' ? data?.testPaymentsCount || 0 : data?.realPaymentsCount || 0) > 300 ? ' · exibindo até 300 por aba' : ''}.</p>
+      </div>
       <Table>
         <TableHeader>
           <TableRow className="bg-zinc-50">
@@ -864,14 +879,14 @@ function PaymentsSection() {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {data?.payments.length === 0 && (
+          {displayedPayments.length === 0 && (
             <TableRow>
               <TableCell colSpan={6} className="py-10 text-center text-sm text-zinc-400">
-                Nenhum pagamento registrado ainda.
+                Nenhum registro nesta seleção.
               </TableCell>
             </TableRow>
           )}
-          {data?.payments.map((p) => (
+          {displayedPayments.map((p) => (
             <TableRow key={p.id}>
               <TableCell className="text-sm text-zinc-500">{new Date(p.approvedAt || p.createdAt).toLocaleDateString('pt-BR', {timeZone:'America/Sao_Paulo'})}{p.provider === 'CAKTO' && !p.approvedAt && <span className="block text-xs">Recebido na integração</span>}</TableCell>
               <TableCell>
@@ -883,7 +898,7 @@ function PaymentsSection() {
                   {p.provider === 'ADMIN_MANUAL' ? `Manual · ${p.method}` : p.provider === 'MANUAL_PIX' ? 'PIX Manual' : p.provider}
                 </Badge>
               </TableCell>
-              <TableCell className="text-sm font-black text-zinc-900">{p.amountCents === null ? 'Valor a confirmar' : formatBRL(p.amountCents)}</TableCell>
+              <TableCell className="text-sm font-black text-zinc-900">{p.amountCents === null ? p.isTest ? 'Não informado no teste' : 'Valor a confirmar' : formatBRL(p.amountCents)}</TableCell>
               <TableCell>
                 <Badge
                   className={cn(
@@ -895,11 +910,11 @@ function PaymentsSection() {
                         : 'bg-zinc-100 text-zinc-500'
                   )}
                 >
-                  {p.status === 'APPROVED' ? 'Aprovado' : p.status === 'PENDING' ? 'Pendente' : p.status === 'VOIDED' ? 'Anulado' : p.status === 'REVOKED' ? 'Estornado' : p.status}
+                  {p.isTest && 'Teste · '}{p.status === 'APPROVED' ? 'Aprovado' : p.status === 'PENDING' ? 'Pendente' : p.status === 'VOIDED' ? 'Anulado' : p.status === 'REVOKED' ? 'Estornado' : p.status}
                 </Badge>
               </TableCell>
               <TableCell className="text-right">
-                {p.provider === 'CAKTO' && p.pendingPurchaseId && p.status === 'APPROVED' && p.amountCents === null && (!p.currency || p.currency === 'BRL') ? <CaktoReconciliationDialog purchaseId={p.pendingPurchaseId} email={p.userEmail} reference={p.reference || null} /> : p.provider === 'ADMIN_MANUAL' && p.status === 'APPROVED' ? <VoidManualPaymentDialog paymentId={p.id} /> : p.status === 'PENDING' ? (
+                {p.isTest ? <span className="text-xs font-semibold text-violet-700">Sem faturamento</span> : p.provider === 'CAKTO' && p.pendingPurchaseId && p.status === 'APPROVED' && p.amountCents === null && (!p.currency || p.currency === 'BRL') ? <CaktoReconciliationDialog purchaseId={p.pendingPurchaseId} email={p.userEmail} reference={p.reference || null} /> : p.provider === 'ADMIN_MANUAL' && p.status === 'APPROVED' ? <VoidManualPaymentDialog paymentId={p.id} /> : p.status === 'PENDING' ? (
                   <Button
                     size="sm"
                     className="h-8 rounded-lg bg-emerald-500 text-xs font-bold text-white hover:bg-emerald-600"
