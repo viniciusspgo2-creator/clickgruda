@@ -3,7 +3,8 @@ on:
   workflow_dispatch:
   schedule:
     - cron: '*/5 * * * *'
-permissions: {}
+permissions:
+  id-token: write
 concurrency:
   group: studio-bonus-retry
   cancel-in-progress: false
@@ -12,15 +13,17 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 2
     steps:
-      - name: Reenviar lote pendente com autenticação exclusiva
-        env:
-          BONUS_CRON_SECRET: ${{ secrets.STUDIO_BONUS_CRON_SECRET }}
+      - name: Reenviar lote pendente com identidade temporária do GitHub
         shell: bash
         run: |
-          if [ -z "$BONUS_CRON_SECRET" ]; then
-            echo 'Integração aguardando configuração do segredo de retentativa.'
-            exit 0
-          fi
-          printf 'header = "Authorization: Bearer %s"\n' "$BONUS_CRON_SECRET" |
+          set -euo pipefail
+          workflow_token=$(
+            printf 'header = "Authorization: Bearer %s"\n' "$ACTIONS_ID_TOKEN_REQUEST_TOKEN" |
+              curl --config - --fail --silent --show-error --max-time 15 \
+                --get --data-urlencode 'audience=https://www.clickgruda.com.br/api/integrations/studio/retry' \
+                "$ACTIONS_ID_TOKEN_REQUEST_URL" |
+              jq -er '.value | select(type == "string" and length > 0)'
+          )
+          printf 'header = "Authorization: Bearer %s"\n' "$workflow_token" |
             curl --config - --fail --silent --show-error --max-time 55 \
               --request POST https://www.clickgruda.com.br/api/integrations/studio/retry

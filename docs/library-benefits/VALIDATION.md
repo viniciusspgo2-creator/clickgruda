@@ -12,3 +12,11 @@
 Base revisada: `546649d34d5de6021d1f46fd2eef7afee8cb6c6a`. Artefatos locais da execução final: `/tmp/library-benefits-BQbX07/` (build, log do servidor e capturas fictícias). O teste local encaminha o POST do navegador ao servidor compilado com origem HTTPS de homologação para reproduzir a origem recebida atrás do proxy de produção.
 
 As flags automáticas permanecem desligadas por padrão. Publicação do código e ativação da integração são etapas distintas, conforme o procedimento em `README.md`.
+# Retentativas com identidade temporária — 2026-11-07
+
+O worker aceita opcionalmente OIDC do workflow exato da main, além do bearer operacional anterior. Nenhuma dependência ou schema foi alterado. `jose` já fazia parte do projeto.
+
+- `node scripts/studio-bonus-worker.test.cjs`: 21 verificações com JWTs e assinaturas RS256 reais em chaves isoladas. Incluem fluxo agendado/manual válido, assinatura errada, emissor/audiência, fork/repositório recriado/proprietário, branch/workflow/subject/evento/runner incorretos, expiração, idade, emissão futura, campos ausentes, token inválido e flag fechada por padrão.
+- `STUDIO_SOURCE=/workspace/work/clickteste node scripts/library-benefits-integration.cjs --reuse-build`: 20 cenários passaram novamente com dois PostgreSQL locais. Exercita o handler atualizado do worker com o bearer anterior; não usa banco de produção.
+- TypeScript, ESLint dos arquivos novos/alterados e verificação de 239 arquivos TS/TSX passaram.
+- Em produção, assinatura ausente/incorreta/expirada foi recusada pelo Studio; assinatura correta com corpo vazio chegou à validação estrita e foi recusada sem criar códigos. Teste autenticado de conta real não foi feito e credenciais administrativas não foram acessadas.

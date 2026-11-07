@@ -1,5 +1,6 @@
 import { db } from '@/lib/db'
 import { jsonError } from '@/lib/auth'
+import { validBonusGithubAction } from '@/lib/studio-bonus-worker-auth'
 import {
   STUDIO_PREFIX,
   deliverStudioBonus,
@@ -9,7 +10,8 @@ import {
 export const runtime = 'nodejs'
 export const maxDuration = 60
 export async function POST(req: Request) {
-  if (!validBonusCron(req)) return jsonError('Não autorizado', 401)
+  if (!validBonusCron(req) && !(await validBonusGithubAction(req)))
+    return jsonError('Não autorizado', 401)
   if (!studioBonusEnabled()) return jsonError('Integração desativada', 404)
   // Busca pendências por conteúdo; não depende de percorrer apenas os primeiros clientes já entregues.
   const rows = await db.$queryRaw<
