@@ -19,6 +19,17 @@ function kindOf(value: string): PaymentEventKind {
 
 export class InvalidCaktoWebhook extends Error {}
 
+// A documentação oficial envia data.amount em unidades da moeda (5.0 = R$ 5).
+// Nunca usa offer.price: descontos e juros podem alterar o valor cobrado.
+export function moneyCents(value: unknown): number | null {
+  if (typeof value !== 'number' && typeof value !== 'string') return null
+  const text = String(value)
+  if (!/^\d{1,9}(\.\d{1,2})?$/.test(text)) return null
+  const [whole, fraction = ''] = text.split('.')
+  const cents = Number(whole) * 100 + Number(fraction.padEnd(2, '0'))
+  return Number.isSafeInteger(cents) && cents <= 2_147_483_647 ? cents : null
+}
+
 export const caktoProvider: PaymentProvider = {
   name: 'CAKTO',
   checkoutUrl(_email: string) {
@@ -58,7 +69,11 @@ export const caktoProvider: PaymentProvider = {
       const id = typeof data.id === 'string' || typeof data.id === 'number' ? String(data.id).trim() : ''
       const reference = typeof data.refId === 'string' ? data.refId.trim() : id
       // Sem identificador externo, não processar aprovação/revogação: impossível garantir idempotência.
-      return { kind: (id && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) ? kind : 'IGNORADO', type: type || 'unknown', externalId: id || `invalid-${index}`, reference, email }
+      const currency = typeof data.currency === 'string' ? data.currency.toUpperCase() : null
+      const paidAt = typeof data.paidAt === 'string' && /^\d{4}-\d\d-\d\dT.*(?:Z|[+-]\d\d:\d\d)$/.test(data.paidAt) && Number.isFinite(Date.parse(data.paidAt)) ? new Date(data.paidAt).toISOString() : null
+      return { kind: (id && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) ? kind : 'IGNORADO', type: type || 'unknown', externalId: id || `invalid-${index}`, reference, email,
+        finance: { amountCents: currency === 'BRL' ? moneyCents(data.amount) : null, currency, paidAt, method: typeof data.paymentMethod === 'string' ? data.paymentMethod.slice(0, 40) : 'CAKTO' },
+      }
     })
   },
 }

@@ -1,4 +1,5 @@
 'use client'
+import { CaktoReconciliationDialog } from '@/components/admin/CaktoReconciliationDialog'
 
 import { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
@@ -287,6 +288,7 @@ type AdminStats = {
     events: number
     downloads: number
     revenueCents: number
+    missingCaktoAmounts?: number
     approvedPayments: number
     pendingPayments: number
     pendingManualCount?: number
@@ -297,7 +299,7 @@ type AdminStats = {
     userName: string
     userEmail: string
     provider: string
-    amountCents: number
+    amountCents: number | null
     status: string
     createdAt: string
   }[]
@@ -340,7 +342,7 @@ function DashboardSection({ onNavigate }: { onNavigate?: (s: AdminSection) => vo
 
   const s = data.stats
   const cards = [
-    { label: 'Receita total', value: formatBRL(s.revenueCents), icon: TrendingUp, hint: `${s.approvedPayments} pagamentos aprovados`, accent: true },
+    { label: 'Receita bruta aprovada', value: formatBRL(s.revenueCents), icon: TrendingUp, hint: `${s.approvedPayments} pagamentos aprovados`, accent: true },
     { label: 'Usuários', value: s.users, icon: Users, hint: `${s.usersWithAccess} com acesso ativo` },
     { label: 'Artes no acervo', value: s.arts, icon: Image, hint: `${s.categories} categorias · ${s.tags} tags` },
     { label: 'Downloads', value: s.downloads, icon: Download, hint: s.pendingPayments === 1 ? '1 pagamento pendente' : `${s.pendingPayments} pagamentos pendentes` },
@@ -349,6 +351,7 @@ function DashboardSection({ onNavigate }: { onNavigate?: (s: AdminSection) => vo
   return (
     <div className="space-y-6">
       <LandingAnalyticsPanel />
+      {!!s.missingCaktoAmounts && <div role="status" className="rounded-xl border border-orange-200 bg-orange-50 p-4 text-sm text-orange-900">{s.missingCaktoAmounts} compra(s) Cakto aprovada(s) sem valor confirmado. Esses valores ainda não estão na receita. <Button variant="link" onClick={() => onNavigate?.('payments')}>Conferir em Pagamentos</Button></div>}
       {/* Aguardando liberação (PIX manual) */}
       {(data.pendingManualUsers?.length ?? 0) > 0 && (
         <div className="rounded-2xl border-2 border-orange-300 bg-orange-50/70 p-5">
@@ -427,14 +430,14 @@ function DashboardSection({ onNavigate }: { onNavigate?: (s: AdminSection) => vo
                   </p>
                 </div>
                 <div className="shrink-0 text-right">
-                  <p className="text-sm font-black text-zinc-900">{formatBRL(p.amountCents)}</p>
+                  <p className="text-sm font-black text-zinc-900">{p.amountCents === null ? 'Valor a confirmar' : formatBRL(p.amountCents)}</p>
                   <Badge
                     className={cn(
                       'text-[9px] font-black uppercase',
                       p.status === 'APPROVED' ? 'bg-emerald-100 text-emerald-700' : p.status === 'PENDING' ? 'bg-orange-100 text-orange-700' : 'bg-zinc-100 text-zinc-500'
                     )}
                   >
-                    {p.status === 'APPROVED' ? 'Aprovado' : p.status === 'PENDING' ? 'Pendente' : p.status === 'VOIDED' ? 'Anulado' : p.status}
+                    {p.status === 'APPROVED' ? 'Aprovado' : p.status === 'PENDING' ? 'Pendente' : p.status === 'VOIDED' ? 'Anulado' : p.status === 'REVOKED' ? 'Estornado' : p.status}
                   </Badge>
                 </div>
               </div>
@@ -803,10 +806,12 @@ type AdminPayment = {
   provider: string
   method: string
   reference?: string | null
-  amountCents: number
+  amountCents: number | null
   status: string
   createdAt: string
   approvedAt: string | null
+  pendingPurchaseId?: string
+  currency?: string | null
 }
 
 type CaktoAudit = { events: { id: string; provider: string; eventType: string; customerEmail: string; outcome: string; receivedAt: string }[]; purchases: { id: string; email: string; externalId: string; createdAt: string }[] }
@@ -821,9 +826,9 @@ function CaktoAuditPanel() {
 
 function PaymentsSection() {
   const queryClient = useQueryClient()
-  const { data, isLoading } = useQuery<{ payments: AdminPayment[] }>({
+  const { data, isLoading, isError, refetch } = useQuery<{ payments: AdminPayment[]; missingCaktoAmounts: number }>({
     queryKey: ['admin-payments'],
-    queryFn: async () => (await fetch('/api/admin/payments')).json(),
+    queryFn: async () => { const r = await fetch('/api/admin/payments'); if (!r.ok) throw Error('Falha ao consultar pagamentos.'); return r.json() },
   })
 
   const approve = useMutation({
@@ -841,10 +846,12 @@ function PaymentsSection() {
   })
 
   if (isLoading) return <div className="h-72 animate-pulse rounded-2xl bg-zinc-200/70" />
+  if (isError) return <div role="alert">Não foi possível carregar os pagamentos. <Button onClick={() => refetch()}>Tentar novamente</Button></div>
 
   return (
     <div className="overflow-hidden rounded-2xl border border-zinc-200 bg-white">
       <div className="flex flex-wrap items-center justify-between gap-3 border-b p-4"><p className="text-sm text-zinc-600">Recebimentos aprovados entram na receita total. Contas com cortesia não geram faturamento.</p><ManualPaymentDialog /></div>
+      {!!data?.missingCaktoAmounts && <p role="status" className="border-b bg-orange-50 p-4 text-sm text-orange-900">{data.missingCaktoAmounts} compra(s) Cakto sem valor salvo. Confira o comprovante ou reenvie o webhook original pela Cakto. Valores a confirmar ficam fora da receita.</p>}
       <Table>
         <TableHeader>
           <TableRow className="bg-zinc-50">
@@ -866,7 +873,7 @@ function PaymentsSection() {
           )}
           {data?.payments.map((p) => (
             <TableRow key={p.id}>
-              <TableCell className="text-sm text-zinc-500">{new Date(p.approvedAt || p.createdAt).toLocaleDateString('pt-BR', {timeZone:'America/Sao_Paulo'})}</TableCell>
+              <TableCell className="text-sm text-zinc-500">{new Date(p.approvedAt || p.createdAt).toLocaleDateString('pt-BR', {timeZone:'America/Sao_Paulo'})}{p.provider === 'CAKTO' && !p.approvedAt && <span className="block text-xs">Recebido na integração</span>}</TableCell>
               <TableCell>
                 <p className="text-sm font-bold text-zinc-900">{p.userName}</p>
                 <p className="text-xs text-zinc-400">{p.userEmail}</p>{p.reference && <p className="mt-1 text-xs text-zinc-500">Comprovante: {p.reference}</p>}
@@ -876,7 +883,7 @@ function PaymentsSection() {
                   {p.provider === 'ADMIN_MANUAL' ? `Manual · ${p.method}` : p.provider === 'MANUAL_PIX' ? 'PIX Manual' : p.provider}
                 </Badge>
               </TableCell>
-              <TableCell className="text-sm font-black text-zinc-900">{formatBRL(p.amountCents)}</TableCell>
+              <TableCell className="text-sm font-black text-zinc-900">{p.amountCents === null ? 'Valor a confirmar' : formatBRL(p.amountCents)}</TableCell>
               <TableCell>
                 <Badge
                   className={cn(
@@ -888,11 +895,11 @@ function PaymentsSection() {
                         : 'bg-zinc-100 text-zinc-500'
                   )}
                 >
-                  {p.status === 'APPROVED' ? 'Aprovado' : p.status === 'PENDING' ? 'Pendente' : p.status === 'VOIDED' ? 'Anulado' : p.status}
+                  {p.status === 'APPROVED' ? 'Aprovado' : p.status === 'PENDING' ? 'Pendente' : p.status === 'VOIDED' ? 'Anulado' : p.status === 'REVOKED' ? 'Estornado' : p.status}
                 </Badge>
               </TableCell>
               <TableCell className="text-right">
-                {p.provider === 'ADMIN_MANUAL' && p.status === 'APPROVED' ? <VoidManualPaymentDialog paymentId={p.id} /> : p.status === 'PENDING' ? (
+                {p.provider === 'CAKTO' && p.pendingPurchaseId && p.status === 'APPROVED' && p.amountCents === null && (!p.currency || p.currency === 'BRL') ? <CaktoReconciliationDialog purchaseId={p.pendingPurchaseId} email={p.userEmail} reference={p.reference || null} /> : p.provider === 'ADMIN_MANUAL' && p.status === 'APPROVED' ? <VoidManualPaymentDialog paymentId={p.id} /> : p.status === 'PENDING' ? (
                   <Button
                     size="sm"
                     className="h-8 rounded-lg bg-emerald-500 text-xs font-bold text-white hover:bg-emerald-600"

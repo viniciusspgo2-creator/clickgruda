@@ -2,6 +2,7 @@ import { Prisma } from '@prisma/client'
 import {grantCompleteBenefits,queueStudioEntitlement} from '@/lib/studio-bonus'
 import { db } from '@/lib/db'
 import type { NormalizedPaymentEvent } from './provider'
+import { captureCaktoFinance } from './cakto-finance'
 
 /**
  * A Cakto pode entregar eventos de uma mesma compra em paralelo.
@@ -19,7 +20,7 @@ function prismaCode(error: unknown): string | undefined {
 export async function processPaymentEvent(provider: string, evt: NormalizedPaymentEvent): Promise<'duplicate' | 'processed'> {
   for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
     try {
-      await db.$transaction(async (tx) => {
+      const duplicate = await db.$transaction(async (tx) => {
         // hashtextextended recebe uma chave textual parametrizada.
         // O lock protege as atualizações de PendingPurchase e da conta
         // contra eventos simultâneos da MESMA compra.
@@ -28,6 +29,20 @@ export async function processPaymentEvent(provider: string, evt: NormalizedPayme
           SELECT 1::integer AS acquired
           FROM pg_advisory_xact_lock(hashtextextended(${key}, 0))
         `
+
+        const priorEvent = await tx.paymentWebhookEvent.findUnique({
+          where: { provider_externalId_eventType: { provider, externalId: evt.externalId, eventType: evt.type } },
+          select: { id: true },
+        })
+        if (priorEvent) {
+          // Um reenvio autenticado pode recuperar o valor perdido pelo código
+          // antigo. Mantém os efeitos de acesso originais e a precedência de estorno.
+          if (provider === 'CAKTO' && evt.finance && evt.kind === 'PAGO') {
+            const purchase = await tx.pendingPurchase.findUnique({ where: { provider_externalId: { provider, externalId: evt.externalId } } })
+            if (purchase) await captureCaktoFinance(tx, purchase.id, evt)
+          }
+          return true
+        }
 
         let existingUser = evt.email
           ? await tx.user.findUnique({ where: { email: evt.email } })
@@ -49,11 +64,12 @@ export async function processPaymentEvent(provider: string, evt: NormalizedPayme
         })
         // Reembolso/chargeback têm precedência sobre uma aprovação atrasada.
         const newStatus = revoked || previous?.status === 'REVOKED' ? 'REVOKED' : 'APPROVED'
-        await tx.pendingPurchase.upsert({
+        const purchase = await tx.pendingPurchase.upsert({
           where: { provider_externalId: { provider, externalId: evt.externalId } },
           create: { provider, externalId: evt.externalId, email: evt.email, status: newStatus, claimedUserId: existingUser?.id },
           update: { status: newStatus, claimedUserId: existingUser?.id ?? previous?.claimedUserId },
         })
+        if (provider === 'CAKTO') await captureCaktoFinance(tx, purchase.id, evt)
         if (!existingUser || existingUser.isDemo || existingUser.isPreview) return
 
         if (newStatus === 'APPROVED') {
@@ -96,7 +112,7 @@ export async function processPaymentEvent(provider: string, evt: NormalizedPayme
         maxWait: 2000,
         timeout: 5000,
       })
-      return 'processed'
+      return duplicate ? 'duplicate' : 'processed'
     } catch (error) {
       const code = prismaCode(error)
       if (code === 'P2002') {
