@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { BadgeCheck, Box, CalendarHeart, Copy, Download, Eye, EyeOff, Heart, Loader2, Lock, Star } from 'lucide-react'
+import { BadgeCheck, Box, CalendarHeart, Copy, Download, Eye, EyeOff, Heart, Loader2, Lock, Star, Trash2 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
 import type { ArtItem } from '@/lib/types'
@@ -19,10 +19,11 @@ type ArtCardProps = {
   onToggleFavorite?: (art: ArtItem) => void
   onPreview?: (art: ArtItem) => void
   onOpenMockup?: (art: ArtItem) => void
+  onDelete?: (art: ArtItem) => void
 }
 
 /** Download e favoritos ficam acessíveis sem hover. Overlay: somente Studio e prévia ampliada. */
-export function ArtCard({ art, locked = false, demo = false, downloadState = 'idle', onDownload, onToggleFavorite, onPreview, onOpenMockup }: ArtCardProps) {
+export function ArtCard({ art, locked = false, demo = false, downloadState = 'idle', onDownload, onToggleFavorite, onPreview, onOpenMockup, onDelete }: ArtCardProps) {
   const title = formatArtTitle(art.title)
   const isBocao = art.title.startsWith('Bocão da arte ')
   const canDownload = !demo && !locked && downloadState !== 'loading'
@@ -51,6 +52,7 @@ export function ArtCard({ art, locked = false, demo = false, downloadState = 'id
             {onOpenMockup && <button type="button" onClick={() => onOpenMockup(art)} className="pointer-events-auto inline-flex min-h-8 w-full max-w-[215px] items-center justify-center gap-1.5 rounded-lg bg-orange-500 px-2 py-1 text-center text-[11px] font-bold leading-snug text-white shadow-lg hover:bg-orange-400"><Box className="h-4 w-4 shrink-0" /> Studio · Mockup + Editor ↗</button>}
             {!locked && onPreview && <button type="button" onClick={() => onPreview(art)} className="pointer-events-auto inline-flex min-h-8 w-full max-w-[215px] items-center justify-center gap-1.5 rounded-lg border border-white/25 bg-white/15 px-2 py-1 text-center text-[11px] font-semibold text-white hover:bg-white/25"><Eye className="h-4 w-4 shrink-0" /> Visualizar arte maior</button>}
           </div>
+          {onDelete && <button type="button" onClick={event => { event.stopPropagation(); onDelete(art) }} aria-label={`Excluir arte ${code}`} className="cg-art-admin-delete absolute right-2 top-2 z-[6] inline-flex min-h-8 items-center gap-1.5 rounded-lg border border-red-300/40 bg-red-950/95 px-2.5 py-1.5 text-[11px] font-bold text-red-100 shadow-lg hover:bg-red-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-300"><Trash2 className="h-3.5 w-3.5" aria-hidden="true" /> Excluir arte</button>}
         </div>
         <div className="cg-art-info flex min-w-0 flex-1 flex-col gap-2 p-3 sm:p-3.5">
           <h3 className="cg-art-card-title line-clamp-2 min-w-0 text-[12px] font-semibold leading-snug text-white sm:text-sm" title={art.title}>{title}</h3>

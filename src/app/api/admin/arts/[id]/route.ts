@@ -1,3 +1,4 @@
+import { isSafeOrigin } from '@/lib/security-guards'
 import { db } from '@/lib/db'
 import { getSessionUser, jsonError } from '@/lib/auth'
 
@@ -35,12 +36,22 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
   return Response.json({ art })
 }
 
-export async function DELETE(_req: Request, { params }: { params: Promise<{ id: string }> }) {
-  if (!(await requireAdmin())) return jsonError('Não autorizado', 401)
+export async function DELETE(req: Request, { params }: { params: Promise<{ id: string }> }) {
+  const admin = await requireAdmin()
+  if (!admin || admin.isDemo || admin.isPreview) return jsonError('Não autorizado', 401)
+  if (!isSafeOrigin(req)) return jsonError('Solicitação inválida', 403)
   const { id } = await params
-  await db.artTag.deleteMany({ where: { artId: id } })
-  await db.favorite.deleteMany({ where: { artId: id } })
-  await db.download.deleteMany({ where: { artId: id } })
-  await db.art.delete({ where: { id } })
-  return Response.json({ ok: true })
+  try {
+    // Mesma exclusão do Admin, agora atômica para não remover vínculos parcialmente.
+    await db.$transaction([
+      db.artTag.deleteMany({ where: { artId: id } }),
+      db.favorite.deleteMany({ where: { artId: id } }),
+      db.download.deleteMany({ where: { artId: id } }),
+      db.art.delete({ where: { id } }),
+    ])
+    return Response.json({ ok: true })
+  } catch (error) {
+    if (error && typeof error === 'object' && 'code' in error && error.code === 'P2025') return jsonError('Esta arte já foi removida.', 404)
+    return jsonError('Não foi possível excluir a arte. Tente novamente.', 503)
+  }
 }

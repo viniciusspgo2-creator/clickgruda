@@ -1,5 +1,6 @@
 'use client'
 
+import { PortalDeleteArtDialog } from '@/components/portal/PortalDeleteArtDialog'
 import { MemberAccessSummary } from '@/components/portal/MemberAccessSummary'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient, type InfiniteData } from '@tanstack/react-query'
@@ -231,6 +232,7 @@ export function PortalView() {
   const resultsRef = useRef<HTMLDivElement>(null)
   const [searchFocused, setSearchFocused] = useState(false)
   const [previewId, setPreviewId] = useState<string | null>(null)
+  const [deleteTarget, setDeleteTarget] = useState<ArtItem | null>(null)
   const [downloadStates, setDownloadStates] = useState<DownloadStates>({})
   const [suggestionOpen, setSuggestionOpen] = useState(false)
   const [enhanceOpen, setEnhanceOpen] = useState(false)
@@ -343,6 +345,19 @@ export function PortalView() {
   // Nenhum efeito reativa o próximo evento depois que o cliente limpa o filtro.
 
   const selectedEvent = catalogQ.data?.events.find((e) => e.id === seasonalEventId)
+
+  const canDeleteFromPortal = user?.role === 'ADMIN' && !user.isDemo && !user.isPreview
+  const onArtDeleted = (art: ArtItem) => {
+    queryClient.setQueriesData<InfiniteData<ArtsPage, number>>({ queryKey: ['arts'] }, old => old ? {
+      ...old,
+      pages: old.pages.map(page => ({ ...page, arts: page.arts.filter(item => item.id !== art.id).map(item => item.pairedArt?.id === art.id ? { ...item, pairedArt: null } : item) })),
+    } : old)
+    if (previewId === art.id) setPreviewId(null)
+    if (mockupArt?.id === art.id) { setMockupArt(null); setMockupDialogOpen(false) }
+    setDeleteTarget(null)
+    for (const key of ['arts', 'catalog', 'art-suggestions', 'admin-arts', 'admin-stats', 'admin-categories', 'admin-tags', 'admin-seasonal']) queryClient.invalidateQueries({ queryKey: [key] })
+    toast.success('Arte excluída da Biblioteca.')
+  }
 
   // ---------- Favorite (optimistic) ----------
   const favMutation = useMutation({
@@ -469,8 +484,11 @@ export function PortalView() {
   const showStudioCode = () => {
     setMockupDialogOpen(false)
     window.requestAnimationFrame(() => {
-      document.getElementById('member-access-summary')?.scrollIntoView({ block: 'start', behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' })
-      document.getElementById('member-access-title')?.focus({ preventScroll: true })
+      const details = document.getElementById('member-access-details')
+      if (details instanceof HTMLDetailsElement) details.open = true
+      const target = document.getElementById('studio-access-code') || document.getElementById('member-access-toggle')
+      target?.scrollIntoView({ block: 'center', behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' })
+      target?.focus({ preventScroll: true })
     })
   }
   const studioLocked = Boolean(user?.isDemo || user?.isPreview)
@@ -1085,12 +1103,12 @@ export function PortalView() {
                     <span className="text-xs text-slate-300">Duas peças para a mesma caneca · downloads individuais</span>
                   </div>
                   <div className="grid grid-cols-2 gap-3 sm:gap-5">
-                    {art.pairedArt ? <div><p className="mb-2 text-xs font-black uppercase tracking-wide text-white/75"><span className="text-orange-400">01</span> · Arte principal</p><ArtCard art={art.pairedArt} demo={protectedPreview} downloadState={downloadStates[art.pairedArt.id] || 'idle'} onDownload={handleDownload} onToggleFavorite={toggleFavorite} onPreview={(chosen) => setPreviewId(chosen.id)} onOpenMockup={openMockup} /></div> : <div className="flex min-h-40 flex-col justify-center rounded-xl border border-dashed border-white/15 bg-white/[.035] p-4 text-center"><p className="font-bold text-white/80">01 · Arte principal</p><p className="mt-2 text-xs leading-6 text-white/50">Arte vinculada não encontrada neste acervo.</p></div>}
-                    <div className="cg-bocao-cell"><p className="mb-2 text-xs font-black uppercase tracking-wide text-white/75"><span className="text-orange-400">02</span> · Bocão complementar</p><ArtCard art={art} demo={protectedPreview} downloadState={downloadStates[art.id] || 'idle'} onDownload={handleDownload} onToggleFavorite={toggleFavorite} onPreview={(chosen) => setPreviewId(chosen.id)} onOpenMockup={openMockup} /></div>
+                    {art.pairedArt ? <div><p className="mb-2 text-xs font-black uppercase tracking-wide text-white/75"><span className="text-orange-400">01</span> · Arte principal</p><ArtCard art={art.pairedArt} demo={protectedPreview} downloadState={downloadStates[art.pairedArt.id] || 'idle'} onDownload={handleDownload} onToggleFavorite={toggleFavorite} onPreview={(chosen) => setPreviewId(chosen.id)} onOpenMockup={openMockup} onDelete={canDeleteFromPortal ? setDeleteTarget : undefined} /></div> : <div className="flex min-h-40 flex-col justify-center rounded-xl border border-dashed border-white/15 bg-white/[.035] p-4 text-center"><p className="font-bold text-white/80">01 · Arte principal</p><p className="mt-2 text-xs leading-6 text-white/50">Arte vinculada não encontrada neste acervo.</p></div>}
+                    <div className="cg-bocao-cell"><p className="mb-2 text-xs font-black uppercase tracking-wide text-white/75"><span className="text-orange-400">02</span> · Bocão complementar</p><ArtCard art={art} demo={protectedPreview} downloadState={downloadStates[art.id] || 'idle'} onDownload={handleDownload} onToggleFavorite={toggleFavorite} onPreview={(chosen) => setPreviewId(chosen.id)} onOpenMockup={openMockup} onDelete={canDeleteFromPortal ? setDeleteTarget : undefined} /></div>
                   </div>
                 </article>
               ) : (
-                <ArtCard key={art.id} art={art} demo={protectedPreview} downloadState={downloadStates[art.id] || 'idle'} onDownload={handleDownload} onToggleFavorite={toggleFavorite} onPreview={(chosen) => setPreviewId(chosen.id)} onOpenMockup={openMockup} />
+                <ArtCard key={art.id} art={art} demo={protectedPreview} downloadState={downloadStates[art.id] || 'idle'} onDownload={handleDownload} onToggleFavorite={toggleFavorite} onPreview={(chosen) => setPreviewId(chosen.id)} onOpenMockup={openMockup} onDelete={canDeleteFromPortal ? setDeleteTarget : undefined} />
               ))}
             </AnimatePresence>
           </div>
@@ -1239,6 +1257,8 @@ export function PortalView() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {canDeleteFromPortal && deleteTarget && <PortalDeleteArtDialog key={deleteTarget.id} art={deleteTarget} onClose={() => setDeleteTarget(null)} onDeleted={onArtDeleted} />}
 
       <AnnouncementDialog userId={user.id} />
 
