@@ -13,6 +13,7 @@ import { track } from '@/lib/analytics'
 import { DemoAccessButton } from '@/components/shared/DemoAccessButton'
 import { TurnstileChallenge } from '@/components/shared/TurnstileChallenge'
 import { WHATSAPP } from '@/lib/site'
+import { useFreeSignup } from '@/hooks/use-free-signup'
 
 export function AuthView() {
   const user = useStore((s) => s.user)
@@ -23,8 +24,7 @@ export function AuthView() {
   const pendingIntent = useStore((s) => s.pendingIntent)
   const setPendingIntent = useStore((s) => s.setPendingIntent)
 
-  const [freeSignup,setFreeSignup]=useState(false)
-  useEffect(()=>{let current=true;fetch('/api/auth/options').then(r=>r.json()).then(d=>{if(current)setFreeSignup(d.freeSignup===true)}).catch(()=>{});return()=>{current=false}},[])
+  const freeSignup = useFreeSignup()
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -40,9 +40,10 @@ export function AuthView() {
     if (user?.hasAccess) setView('portal')
   }, [user, setView])
 
-  const routeAfterAuth = (u: { hasAccess: boolean } | null | undefined) => {
-    if (pendingIntent === 'checkout') setPendingIntent(null)
-    if (!u?.hasAccess) { window.location.assign('/comprar'); return }
+  const routeAfterAuth = (u: { hasAccess: boolean; isTrial?: boolean } | null | undefined) => {
+    const wantsCheckout = pendingIntent === 'checkout'
+    if (wantsCheckout) setPendingIntent(null)
+    if (!u?.hasAccess || (wantsCheckout && u.isTrial)) { window.location.assign('/comprar'); return }
     setView('portal')
   }
 
@@ -97,7 +98,7 @@ export function AuthView() {
             favoritos em um só lugar.
           </p>
           <ul className="mt-6 space-y-2.5 text-sm font-medium text-zinc-300">
-            {['Downloads ilimitados com seu acesso ativo', 'Use nas canecas que você vende', 'Liberação automática após o pagamento'].map((i) => (
+            {['Downloads ilimitados no acesso completo', 'Use nas canecas que você vende', 'Liberação automática após o pagamento'].map((i) => (
               <li key={i} className="flex items-center gap-2.5">
                 <span className="flex h-5 w-5 items-center justify-center rounded-full bg-orange-500/20">
                   <Check className="h-3 w-3 text-orange-400" />

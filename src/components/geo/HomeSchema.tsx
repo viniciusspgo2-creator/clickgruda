@@ -12,7 +12,7 @@ export function HomeSchema({ priceCents }: { priceCents: number }) {
   return <JsonLd id="home-schema" data={{ '@context': 'https://schema.org', '@graph': [
     {
       '@type': 'WebPage', '@id': `${SITE_URL}/#webpage`, url: `${SITE_URL}/`,
-      name: 'Artes para canecas e mockup 3D — Click & Gruda',
+      name: 'Biblioteca de Artes para Canecas — Click & Gruda',
       description: SITE.shortAnswer, inLanguage: 'pt-BR', dateModified: CONTENT_UPDATED_ISO,
       isPartOf: { '@id': `${SITE_URL}/#website` }, about: { '@id': `${SITE_URL}/#organization` },
       mainEntity: { '@id': serviceId }, primaryImageOfPage: image,
@@ -20,7 +20,7 @@ export function HomeSchema({ priceCents }: { priceCents: number }) {
     {
       '@type': 'Service', '@id': serviceId,
       name: promo ? 'Acesso Vitalício Click & Gruda' : 'Acesso à plataforma Click & Gruda',
-      alternateName: 'Biblioteca de artes, mockups 3D e ferramentas para sublimadores',
+      alternateName: 'Biblioteca de artes para canecas com Studio Mockup e Editor incluídos',
       serviceType: 'Plataforma digital de artes para sublimação de canecas',
       description: SITE.description, url: `${SITE_URL}/`,
       provider: { '@id': `${SITE_URL}/#organization` }, areaServed: { '@type': 'Country', name: 'Brasil' },
