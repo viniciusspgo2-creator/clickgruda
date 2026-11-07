@@ -34,7 +34,8 @@ export async function verifyBonusWorkflowToken(
       payload.sub === `repo:${repository}:ref:${ref}` &&
       payload.runner_environment === 'github-hosted' &&
       (payload.event_name === 'schedule' ||
-        payload.event_name === 'workflow_dispatch')
+        payload.event_name === 'workflow_dispatch' ||
+        payload.event_name === 'push')
     )
   } catch {
     return false

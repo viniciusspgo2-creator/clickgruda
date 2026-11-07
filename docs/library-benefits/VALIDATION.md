@@ -16,7 +16,7 @@ As flags automáticas permanecem desligadas por padrão. Publicação do código
 
 O worker aceita opcionalmente OIDC do workflow exato da main, além do bearer operacional anterior. Nenhuma dependência ou schema foi alterado. `jose` já fazia parte do projeto.
 
-- `node scripts/studio-bonus-worker.test.cjs`: 21 verificações com JWTs e assinaturas RS256 reais em chaves isoladas. Incluem fluxo agendado/manual válido, assinatura errada, emissor/audiência, fork/repositório recriado/proprietário, branch/workflow/subject/evento/runner incorretos, expiração, idade, emissão futura, campos ausentes, token inválido e flag fechada por padrão.
+- `node scripts/studio-bonus-worker.test.cjs`: 22 verificações com JWTs e assinaturas RS256 reais em chaves isoladas. Incluem fluxo agendado/manual/publicação válido, assinatura errada, emissor/audiência, fork/repositório recriado/proprietário, branch/workflow/subject/evento/runner incorretos, expiração, idade, emissão futura, campos ausentes, token inválido e flag fechada por padrão.
 - `STUDIO_SOURCE=/workspace/work/clickteste node scripts/library-benefits-integration.cjs --reuse-build`: 20 cenários passaram novamente com dois PostgreSQL locais. Exercita o handler atualizado do worker com o bearer anterior; não usa banco de produção.
 - TypeScript, ESLint dos arquivos novos/alterados e verificação de 239 arquivos TS/TSX passaram.
 - Em produção, assinatura ausente/incorreta/expirada foi recusada pelo Studio; assinatura correta com corpo vazio chegou à validação estrita e foi recusada sem criar códigos. Teste autenticado de conta real não foi feito e credenciais administrativas não foram acessadas.

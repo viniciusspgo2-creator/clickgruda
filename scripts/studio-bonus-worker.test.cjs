@@ -44,6 +44,9 @@ test('aceita workflow agendado com assinatura e identidade corretas', async () =
 test('aceita execução manual somente da main', async () => {
   assert.equal(await verifyBonusWorkflowToken(await token({ event_name: 'workflow_dispatch' }), keys), true)
 })
+test('aceita publicação do workflow na main com a mesma identidade restrita', async () => {
+  assert.equal(await verifyBonusWorkflowToken(await token({ event_name: 'push' }), keys), true)
+})
 for (const [name, changes] of [
   ['outro emissor', { iss: 'https://example.com' }],
   ['outro destinatário', { aud: 'https://example.com' }],

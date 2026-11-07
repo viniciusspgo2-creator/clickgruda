@@ -1,5 +1,8 @@
 name: Reenviar bônus pendentes do Studio
 on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/studio-bonus-retry.yml']
   workflow_dispatch:
   schedule:
     - cron: '*/5 * * * *'
@@ -26,4 +29,5 @@ jobs:
           )
           printf 'header = "Authorization: Bearer %s"\n' "$workflow_token" |
             curl --config - --fail --silent --show-error --max-time 55 \
+              --retry 5 --retry-all-errors --retry-delay 15 --retry-max-time 90 \
               --request POST https://www.clickgruda.com.br/api/integrations/studio/retry
