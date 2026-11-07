@@ -127,7 +127,7 @@ export function LandingView() {
               <div className="flex items-center gap-3 text-white/60"><Layers3 size={23} aria-hidden="true" /><span className="text-xs font-bold uppercase tracking-widest">Bônus incluídos</span></div>
               <h3 className="mt-5 text-xl font-bold">Studio Mockup + Editor</h3>
               <p className="mt-3 text-sm leading-7 text-white/65">Monte sua composição no Editor e apresente a caneca no Studio Mockup. Os dois fazem parte do pacote de quem tem acesso à Biblioteca.</p>
-              <p className="mt-5 border-t border-white/10 pt-5 text-sm leading-7 text-white/75">Seu código de ativação fica no <strong className="text-[#ffb780]">Resumo do seu acesso</strong>, no topo do portal. Um caminho claro da escolha da arte à apresentação.</p>
+              <p className="mt-5 border-t border-white/10 pt-5 text-sm leading-7 text-white/75">Seu código de ativação fica no <strong className="text-[#ffb780]">Meu acesso e código do Studio</strong>, no topo do portal. Um caminho claro da escolha da arte à apresentação.</p>
             </article>
           </div>
         </div>
@@ -143,7 +143,7 @@ export function LandingView() {
             <p className="cg-sales-eyebrow">Bônus do acesso à Biblioteca</p>
             <h2 id="studio-mockup-title">Monte no Editor. Apresente no Studio Mockup.</h2>
             <p>Use o Editor para montar sua composição e o Studio Mockup para mostrar a estampa em uma caneca virtual antes de produzir.</p>
-            <p className="cg-home-studio-access"><ShieldCheck size={15} aria-hidden="true" /><span><strong>Incluídos no pacote da Biblioteca.</strong> No portal, encontre seu código no Resumo do seu acesso e clique em Copiar código. O Studio abre em outra plataforma e reúne os dois recursos.</span></p>
+            <p className="cg-home-studio-access"><ShieldCheck size={15} aria-hidden="true" /><span><strong>Incluídos no pacote da Biblioteca.</strong> No portal, encontre seu código no Meu acesso e código do Studio e clique em Copiar código. O Studio abre em outra plataforma e reúne os dois recursos.</span></p>
           </div>
           <div className="cg-home-studio-actions">
             <a href={SALES.STUDIO_URL} target="_blank" rel="noopener noreferrer" onClick={() => track('cta_click', { location: 'landing_studio', intent: 'mockup', destination: SALES.STUDIO_URL })} className="cg-sales-outline-button px-6 py-3.5 text-sm" aria-label="Abrir Studio com Mockup e Editor em outra plataforma">Studio · Mockup + Editor <ArrowUpRight size={17} /></a>
