@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { ArrowRight, Check, ChevronDown, Copy, Download, ExternalLink, Layers3, Loader2, RefreshCw, ShieldCheck } from 'lucide-react'
 import { toast } from 'sonner'
-import { WHATSAPP, WHATSAPP_MESSAGES } from '@/lib/site'
+import { STUDIO_URL, WHATSAPP, WHATSAPP_MESSAGES } from '@/lib/site'
 import type { CatalogData } from '@/lib/types'
 
 type Bonus = {
@@ -90,12 +90,12 @@ export function MemberAccessSummary({ userId, isTrial, quota, quotaReady, quotaE
     } finally { setBusy(false) }
   }
 
-  return <section className="border-b border-white/10 bg-[#111b2b] px-4 py-5 text-white sm:px-7" aria-labelledby="member-access-title">
+  return <section id="member-access-summary" className="border-b border-white/10 bg-[#111b2b] px-4 py-5 text-white sm:px-7" aria-labelledby="member-access-title">
     <div className="mx-auto max-w-[1600px]">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <p className="text-[10px] font-bold uppercase tracking-[.16em] text-orange-300">Tudo começa na Biblioteca</p>
-          <h2 id="member-access-title" className="mt-1 text-lg font-extrabold">Resumo do seu acesso</h2>
+          <h2 tabIndex={-1} id="member-access-title" className="mt-1 text-lg font-extrabold">Resumo do seu acesso</h2>
         </div>
         {isTrial && <a href="/comprar" className={`${actionClass} bg-orange-500 text-white hover:bg-orange-400`}>Ativar acesso completo <ArrowRight size={16} aria-hidden="true" /></a>}
         {complete && <span className="inline-flex items-center gap-2 rounded-full border border-emerald-400/25 bg-emerald-400/10 px-3 py-2 text-xs font-bold text-emerald-200"><ShieldCheck size={15} aria-hidden="true" /> Acesso completo</span>}
@@ -116,15 +116,15 @@ export function MemberAccessSummary({ userId, isTrial, quota, quotaReady, quotaE
           <button type="button" onClick={onExplore} className={`${actionClass} mt-3 border border-white/15 text-white hover:bg-white/10`}>Explorar artes <ArrowRight size={15} aria-hidden="true" /></button>
         </div>
         <div className="rounded-2xl border border-white/10 bg-white/[.035] p-4 sm:p-5" aria-label="Seu bônus Studio e Editor">
-          <h3 className="flex items-center gap-2 text-sm font-extrabold"><Layers3 size={17} className="text-orange-300" aria-hidden="true" /> Bônus: Studio Mockup e Editor</h3>
+          <h3 className="flex items-center gap-2 text-sm font-extrabold"><Layers3 size={17} className="text-orange-300" aria-hidden="true" /> Seu Studio · Mockup + Editor</h3>
           {query.isPending ? <p className="mt-3 flex items-center gap-2 text-sm text-slate-300"><Loader2 size={15} className="animate-spin" aria-hidden="true" /> Consultando seu código…</p> : query.isError ? <div className="mt-3"><p role="alert" className="text-sm text-orange-100">Não foi possível consultar o código. Seus dados não foram alterados.</p><button type="button" onClick={() => query.refetch()} className={`${actionClass} mt-2 border border-white/15 text-white`}><RefreshCw size={15} aria-hidden="true" /> Tentar novamente</button></div> : !bonus ? <p className="mt-3 text-sm leading-6 text-slate-300">O bônus ainda não está disponível nesta conta. <a className="underline underline-offset-4" href={WHATSAPP.link(WHATSAPP_MESSAGES.support)} target="_blank" rel="noopener noreferrer">Consultar suporte</a></p> : <>
             <p className="mt-3 text-sm font-bold text-orange-200">{blocked ? 'Acesso ao bônus bloqueado' : bonus.state === 'pending' ? 'Sincronizando seu código' : bonusExpired ? 'O teste dos bônus terminou' : bonus.entitlement === 'TRIAL' ? remaining(bonusDeadline, now) ?? 'Teste dos bônus' : bonus.state === 'unlinked' ? 'Obtenha seu código na Biblioteca' : 'Incluídos no seu acesso completo'}</p>
             {blocked ? <p className="mt-2 text-sm leading-6 text-slate-300">Fale com o suporte para conferir a liberação do bônus.</p> : bonus.state === 'pending' ? <p role="status" className="mt-2 text-sm leading-6 text-slate-300">Estamos atualizando seu acesso. A sincronização mantém seu código e a data original do teste.</p> : bonus.entitlement === 'TRIAL' ? <p className="mt-2 text-xs leading-6 text-slate-300">{bonusExpired ? 'Ative o pacote completo da Biblioteca para continuar com os bônus.' : `Disponíveis até ${dateBR(bonus.trialEndsAt)} (Brasília). O prazo é independente dos downloads da Biblioteca.`}</p> : <p className="mt-2 text-sm leading-6 text-slate-300">{bonus.state === 'unlinked' ? 'Gere seu código abaixo para abrir o Studio e o Editor.' : 'O código acompanha seu pacote, sem a validade de 7 dias do teste.'}</p>}
-            {bonus.code && <div className="mt-3 rounded-xl border border-white/10 bg-black/20 px-3 py-2.5"><p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Seu código</p><p id="studio-access-code" className="mt-1 break-all font-mono text-sm font-bold tracking-wide" tabIndex={-1}>{bonus.code}</p></div>}
+            {bonus.code && <div className="mt-3 rounded-xl border border-white/10 bg-black/20 px-3 py-2.5"><p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Seu código de ativação do Studio</p><p id="studio-access-code" className="mt-1 break-all font-mono text-sm font-bold tracking-wide" tabIndex={-1}>{bonus.code}</p></div>}
             <div className="mt-3 flex flex-wrap gap-2">
               {bonus.code && !blocked && !bonusExpired && <button type="button" className={`${actionClass} border border-white/15 text-white hover:bg-white/10`} onClick={async () => { try { await navigator.clipboard.writeText(bonus.code!); toast.success('Código copiado!') } catch { toast.error('Selecione o código para copiar.') } }}><Copy size={15} aria-hidden="true" /> Copiar código</button>}
               {!blocked && (bonus.state === 'unlinked' || bonus.state === 'pending') && <button type="button" disabled={busy} onClick={requestCode} className={`${actionClass} bg-orange-500 text-white`}>{busy ? 'Sincronizando…' : isTrial ? 'Atualizar código' : 'Gerar meu código'}</button>}
-              {bonusAvailable && bonus.code && <a href="https://clickteste.vercel.app" target="_blank" rel="noopener noreferrer" className={`${actionClass} bg-orange-500 text-white hover:bg-orange-400`}>Abrir Studio e Editor <ExternalLink size={15} aria-hidden="true" /></a>}
+              {bonusAvailable && bonus.code && <a href={STUDIO_URL} target="_blank" rel="noopener noreferrer" className={`${actionClass} bg-orange-500 text-white hover:bg-orange-400`}>Acessar Studio · Mockup + Editor <ExternalLink size={15} aria-hidden="true" /></a>}
             </div>
             {error && <p role="alert" className="mt-2 text-sm text-red-200">{error}</p>}
           </>}

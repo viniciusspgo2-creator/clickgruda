@@ -18,12 +18,9 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
 
   if ((await getDownloadQuota(session))?.exhausted) return jsonError(QUOTA_ENDED_MESSAGE, 403)
 
-  // ?via=zip → a arte está sendo baixada dentro de um ZIP de backup
-  const viaZip = new URL(req.url).searchParams.get('via') === 'zip'
-
   // Registra somente quando o arquivo/link existir e estiver pronto para entrega.
   // Uma falha no armazenamento não deve gerar um download bem-sucedido no histórico.
-  const recordSuccess = async () => recordSuccessfulDownload(session, id, viaZip)
+  const recordSuccess = async () => recordSuccessfulDownload(session, id)
 
   const filename = `${formatArtCode(art.code)}-${slugify(art.title) || 'arte'}`
 

@@ -432,7 +432,7 @@ export function AdminEnhanceSection() {
           <div>
             <p className="text-sm font-black text-zinc-900">Artes enviadas para melhorar a qualidade</p>
             <p className="text-xs text-zinc-500">
-              Os assinantes mandam aqui as artes próprias que estão pixelizadas ou em baixa qualidade. Abra a imagem, melhore a qualidade e devolva para o assinante pelo contato dele.
+              Solicitações de pequenas adaptações, melhoria de nitidez e redução de pixelização, conforme o arquivo permitir. Este atendimento não inclui edição de conteúdo, troca de nomes/personagens ou criação de artes. Avalie e retorne ao membro pelo contato cadastrado.
             </p>
           </div>
         </div>

@@ -16,7 +16,7 @@ const MAX_NOTE = 400
 /**
  * EnhanceRequestDialog — envio de arte própria pixelizada / em baixa qualidade.
  * O arquivo vai direto para o Painel Admin Master (ArtEnhanceRequest) e a
- * equipe devolve a arte com a qualidade melhorada.
+ * equipe avalia pequenas adaptações e melhorias de nitidez, sem edição de conteúdo.
  */
 export function EnhanceRequestDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (o: boolean) => void }) {
   const [file, setFile] = useState<File | null>(null)
@@ -90,7 +90,7 @@ export function EnhanceRequestDialog({ open, onOpenChange }: { open: boolean; on
             <Wand2 className="h-5 w-5 text-orange-400" /> Melhorar qualidade da arte
           </DialogTitle>
           <DialogDescription id="enhance-desc" className="text-sm font-medium text-zinc-400">
-            Sua arte está pixelizada ou de baixa qualidade? Nós melhoramos ela pra você — grátis para assinantes.
+            Pequenas adaptações, melhoria de nitidez e redução de pixelização, conforme o arquivo permitir. Incluído para membros; não oferecemos edição de conteúdo.
           </DialogDescription>
         </DialogHeader>
 
@@ -107,7 +107,7 @@ export function EnhanceRequestDialog({ open, onOpenChange }: { open: boolean; on
               </motion.div>
               <h3 className="mt-4 text-lg font-black text-zinc-900">Arte enviada! ✨</h3>
               <p className="mx-auto mt-1.5 max-w-xs text-sm leading-relaxed text-zinc-500">
-                Recebemos a sua arte. Nossa equipe vai melhorar a qualidade e você vai receber o resultado em breve.
+                Recebemos a sua arte para avaliar as melhorias possíveis. O atendimento cobre ajustes de qualidade e pequenas adaptações; não inclui edição ou criação de uma nova arte.
               </p>
               <Button
                 onClick={() => onOpenChange(false)}
@@ -118,6 +118,7 @@ export function EnhanceRequestDialog({ open, onOpenChange }: { open: boolean; on
             </motion.div>
           ) : (
             <form onSubmit={submit} className="space-y-4">
+              <p className="rounded-xl border border-orange-200 bg-orange-50 p-3 text-xs leading-6 text-zinc-700" role="note"><strong>O que está incluído:</strong> ajustes simples de qualidade e nitidez. Não fazemos edição, troca de nomes ou personagens, nem criação ou reconstrução da composição.</p>
               {/* Área de upload */}
               {file && previewUrl ? (
                 <div className="relative overflow-hidden rounded-xl border border-zinc-200 bg-zinc-50">
@@ -164,7 +165,7 @@ export function EnhanceRequestDialog({ open, onOpenChange }: { open: boolean; on
                   id="enhance-note"
                   value={note}
                   onChange={(e) => setNote(e.target.value.slice(0, MAX_NOTE))}
-                  placeholder="ex: quero usar numa caneca, precisa ficar bem nítida..."
+                  placeholder="Ex.: a imagem está pixelizada; gostaria de melhorar a nitidez."
                   rows={2}
                   className="w-full resize-none rounded-xl border border-zinc-200 bg-white p-3 text-sm text-zinc-800 shadow-sm outline-none transition-all placeholder:text-zinc-400 focus:border-orange-400 focus:ring-2 focus:ring-orange-200"
                 />

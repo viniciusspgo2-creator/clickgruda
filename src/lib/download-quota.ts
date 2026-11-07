@@ -7,7 +7,7 @@ export class DownloadQuotaExceededError extends Error {
   constructor() { super(QUOTA_ENDED_MESSAGE); this.name = 'DownloadQuotaExceededError' }
 }
 
-/** Conta cada solicitação de download bem-sucedida, inclusive repetição e arquivo enviado por ZIP.
+/** Conta cada solicitação de download bem-sucedida, inclusive repetição.
  * Contas com cota nula não possuem qualquer restrição. */
 export async function getDownloadQuota(user: { id: string; role: string; isDemo: boolean }) {
   if (user.role === 'ADMIN' || user.isDemo) return null
@@ -23,8 +23,8 @@ export async function getDownloadQuota(user: { id: string; role: string; isDemo:
 
 /** Transação por usuário: impede ultrapassar a cota com requisições simultâneas.
  * Só executamos após o original estar disponível (URL assinada ou bytes carregados).
- * O SELECT FOR UPDATE serializa as concorrentes, inclusive as de um ZIP. */
-export async function recordSuccessfulDownload(user: { id: string; role: string; isDemo: boolean }, artId: string, viaZip: boolean) {
+ * O SELECT FOR UPDATE serializa as concorrentes, sem ultrapassar o saldo disponível. */
+export async function recordSuccessfulDownload(user: { id: string; role: string; isDemo: boolean }, artId: string) {
   await db.$transaction(async tx => {
     await tx.$queryRaw`SELECT id FROM "User" WHERE id = ${user.id} FOR UPDATE`
     if (user.role !== 'ADMIN' && !user.isDemo) {
@@ -35,7 +35,7 @@ export async function recordSuccessfulDownload(user: { id: string; role: string;
         if (used >= downloadLimit) throw new DownloadQuotaExceededError()
       }
     }
-    await tx.download.create({ data: { userId: user.id, artId, viaZip } })
+    await tx.download.create({ data: { userId: user.id, artId } })
     await tx.art.update({ where: { id: artId }, data: { downloadsCount: { increment: 1 } } })
   }, { maxWait: 10000, timeout: 15000 })
 }
