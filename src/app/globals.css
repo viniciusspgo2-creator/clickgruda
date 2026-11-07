@@ -2163,3 +2163,12 @@
 .cg-portal:not(.cg-theme-light) .cg-member-artcard .cg-art-card-surface:hover {
   box-shadow:0 14px 29px rgba(0,7,22,.2),0 0 0 1px rgba(255,129,39,.09);
 }
+
+/* Biblioteca como entrada principal: cota do teste antes da ação. */
+.cg-home-trial-summary { display:flex; flex-direction:column; gap:5px; max-width:485px; margin-top:20px; padding-left:13px; border-left:2px solid #ff9852; font-size:13px; line-height:1.65; }
+.cg-home-trial-summary strong { color:#ffc394; font-weight:750; }
+.cg-home-trial-summary span { color:#d1cbca; font-size:12px; }
+@media (max-width:767px) {
+  .cg-home-trial-summary { order:3; width:100%; margin:17px 0 0; font-size:12px; }
+  .cg-home-trial-summary span { font-size:11px; }
+}

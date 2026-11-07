@@ -11,7 +11,7 @@ import { LIFETIME_PRICE_CENTS } from '@/lib/payments/config'
 // voltar a publicar canonicals/sitemaps para clickgruda.vercel.app.
 // A hospedagem já redireciona o domínio sem www para esta versão.
 export const SITE_URL = 'https://www.clickgruda.com.br'
-export const CONTENT_UPDATED_ISO = '2026-10-27'
+export const CONTENT_UPDATED_ISO = '2026-11-07'
 export const SOCIAL_IMAGE = '/uploads/rebrand/mascote-principal.webp'
 
 export const SITE = {
@@ -20,9 +20,9 @@ export const SITE = {
   url: SITE_URL,
   tagline: 'Artes digitais para sublimação de canecas, com biblioteca e ferramentas organizadas',
   description:
-    'A Click & Gruda é uma plataforma de artes para sublimação de canecas, com biblioteca organizada por categorias e datas sazonais, novidades semanais, mockups 3D e ferramentas para personalizados. Consulte o preço e as condições atuais na página inicial. Os downloads são ilimitados para contas com acesso ativo.',
+    'Biblioteca de artes para sublimação de canecas, organizada por temas e datas sazonais. Teste grátis com até 20 downloads em 24 horas e bônus Studio Mockup e Editor por 7 dias desde o cadastro. O acesso completo inclui downloads ilimitados e os dois bônus.',
   shortAnswer:
-    'A Click & Gruda reúne artes digitais para sublimação de canecas, mockup 3D e ferramentas para personalizados. A biblioteca tem busca, categorias e datas sazonais, com novidades semanais. Os downloads são ilimitados para contas com acesso ativo; consulte o plano vigente na plataforma.',
+    'Tudo começa na Biblioteca Click & Gruda: artes para canecas, busca e categorias. A conta grátis oferece até 20 downloads em 24 horas e Studio Mockup e Editor por 7 dias. Ao ativar o pacote completo, os downloads ficam ilimitados e o mesmo código dos bônus passa a definitivo.',
   email: 'contato@clickgruda.com.br',
   areaServed: 'BR',
   inLanguage: 'pt-BR',

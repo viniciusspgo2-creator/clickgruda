@@ -12,7 +12,7 @@ import { SITE } from '@/lib/site'
 import { LIFETIME_PRICE_CENTS } from '@/lib/payments/config'
 import { formatBRL } from '@/lib/types'
 
-export const LANDING_FAQ_INDICES = [16, 0, 1, 2, 3, 6, 8, 9, 11, 17, 14] as const
+export const LANDING_FAQ_INDICES = [18, 19, 20, 21, 22, 2, 8, 9, 11, 17, 14, 16] as const
 
 export const PRICE = formatBRL(LIFETIME_PRICE_CENTS)
 
@@ -22,7 +22,7 @@ export const PRICE = formatBRL(LIFETIME_PRICE_CENTS)
 export const KEY_TAKEAWAYS: string[] = [
   'Durante a oferta promocional até 31/12/2026, o acesso vitalício custa R$ 47,90 em pagamento único; depois, consulte os planos disponíveis.',
   'Cada arquivo já vem na medida exata da caneca (21 × 9,5 cm) — é imprimir e prensar, sem mexer no editor.',
-  'O acervo cresce com lançamentos frequentes — e o seu preço continua o mesmo: zero.',
+  'O acesso completo inclui lançamentos frequentes, Studio Mockup e Editor, sem contratar os bônus separadamente.',
   'Use as artes nas canecas que você vende — sem cobrança por peça.',
   'A aba Sazonal mostra a próxima data comemorativa e separa as artes — você lança antes da concorrência.',
   'Busca, filtros, tags e favoritos para achar a arte certa em segundos, não em horas.',
@@ -38,7 +38,7 @@ export const KEY_TAKEAWAYS: string[] = [
 export const ENTITY_DEFINITION = SITE.description
 
 export const ENTITY_PRACTICAL =
-  'Na prática, você pode conhecer a demonstração sem cadastro. Para contratar, cadastre seus dados e WhatsApp e conclua o pagamento pelo checkout da Cakto. Após a confirmação, seu acesso é ativado automaticamente. Navegue pela biblioteca por categorias e tags, favorite suas preferidas, acompanhe os lançamentos e baixe artes para produzir personalizados.'
+  'Tudo começa na Biblioteca. A conta grátis oferece até 20 downloads em 24 horas e gera um código para testar Studio Mockup e Editor por 7 dias desde o cadastro. Os prazos são independentes. A confirmação do acesso completo libera downloads sem a cota do teste e mantém o mesmo código dos bônus sem o prazo de teste. Também existe demonstração com prévias protegidas, sem cadastro.'
 
 /* ============================================================
  * 3. FAQ — 13 perguntas consolidadas + 3 objeções de conversão (edição, liberação do PIX, exclusividade)
@@ -46,7 +46,7 @@ export const ENTITY_PRACTICAL =
 export const FAQ_ITEMS: { q: string; a: string }[] = [
   {
     q: 'Como recebo meu acesso?',
-    a: 'Crie sua conta informando seu e-mail e WhatsApp, depois finalize a compra pelo checkout seguro da Cakto. Seu acesso é liberado automaticamente após a confirmação do pagamento via webhook.',
+    a: 'Crie sua conta na Biblioteca com seu e-mail e WhatsApp para começar o teste grátis. Para liberar o pacote completo, finalize a compra pelo checkout da Cakto. Após a confirmação, os downloads deixam de ter a cota do teste e o mesmo código do Studio e do Editor passa a definitivo.',
   },
   {
     q: 'Qual o formato das artes?',
@@ -79,7 +79,7 @@ export const FAQ_ITEMS: { q: string; a: string }[] = [
   },
   {
     q: 'Posso baixar a mesma arte mais de uma vez?',
-    a: 'Sim. Os downloads são ilimitados para contas com acesso ativo. Você pode baixar artes diferentes e baixar novamente as mesmas artes, sem cota diária.',
+    a: 'Sim. No teste grátis, cada download conta na cota de 20, inclusive repetições, dentro das 24 horas desde o cadastro. No acesso completo, os downloads são ilimitados, incluindo baixar a mesma arte novamente.',
   },
   {
     q: 'Preciso saber editar arquivo para usar as artes?',
@@ -111,6 +111,11 @@ export const FAQ_ITEMS: { q: string; a: string }[] = [
   },
   { q: 'Posso conhecer a plataforma antes de comprar?', a: 'Sim. Use Conhecer por dentro na página inicial ou no login. A demonstração dispensa cadastro e permite explorar a busca, as categorias e as datas sazonais. As imagens são prévias protegidas, com nitidez limitada e marca-d’água. Downloads e ações de membro ficam bloqueados.' },
   { q: 'Posso acessar em vários aparelhos ao mesmo tempo?', a: 'O acesso é individual e permite um dispositivo conectado por vez. Ao entrar em outro aparelho, a sessão anterior é encerrada. Para usar mais dispositivos simultaneamente, solicite um acesso adicional (IP adicional) de R$ 14,90 ao suporte, que informa as condições e habilita o adicional após a confirmação.' },
+  { q: 'Como funciona o teste grátis da Biblioteca?', a: 'Ao criar sua conta grátis, você pode fazer até 20 downloads individuais em até 24 horas. O prazo começa no cadastro e o teste da Biblioteca termina ao atingir a cota ou completar as 24 horas, o que acontecer primeiro. Não é necessário cartão para criar a conta.' },
+  { q: 'Se as 24 horas acabarem, perco o teste do Studio e do Editor?', a: 'Não. Os bônus têm prazo próprio: 7 dias desde a criação da conta na Biblioteca. Atingir os 20 downloads ou encerrar as 24 horas da Biblioteca não reduz os 7 dias do Studio e do Editor.' },
+  { q: 'Como recebo meu código do Studio e do Editor?', a: 'O código é gerado automaticamente ao criar a conta grátis e fica disponível na área da sua conta na Biblioteca. Use esse código para ativar os bônus. Quem já é membro pode acessar a área do Studio no portal da Biblioteca para obter seu código.' },
+  { q: 'O que muda quando ativo o acesso completo?', a: 'A confirmação da compra libera a Biblioteca sem a cota de downloads do teste. O mesmo código do Studio e do Editor passa a definitivo, sem a validade de 7 dias. Isso também vale se você ativar o pacote antes de o teste terminar.' },
+  { q: 'O Studio e o Editor são comprados separadamente?', a: 'Não. A Biblioteca é o produto principal. Studio Mockup e Editor são bônus incluídos no pacote de quem ativa o acesso completo à Biblioteca. Você também recebe 7 dias para testá-los ao criar a conta grátis.' },
 ]
 
 /* ============================================================
@@ -344,11 +349,11 @@ export const KEY_FACTS = {
   price: PRICE,
   artFormatCm: '21 × 9,5 cm',
   mugStandard: 'Canecas de porcelana de 325 ml',
-  downloads: 'Downloads ilimitados para contas com acesso ativo, incluindo re-download',
+  downloads: 'Teste grátis: até 20 downloads em 24 horas desde o cadastro, incluindo repetições. Acesso completo: downloads ilimitados',
   commercialUse: 'Para produzir e vender as suas canecas',
   newArtsFrequency: 'Lançamentos frequentes inclusos no acesso',
   payment:
-    'Pagamento e ativação com atendimento pelo WhatsApp oficial +55 62 9838-7816; opções automáticas somente quando habilitadas no checkout',
+    'Compra pelo checkout da Cakto, com liberação após confirmação. Atendimento e ativações assistidas pelo WhatsApp oficial +55 62 9838-7816',
   portalFeatures:
     'Busca com filtros, tags, favoritos, abas Lançamentos e Sazonal com contagem regressiva da próxima data comemorativa',
 }

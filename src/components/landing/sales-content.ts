@@ -1,6 +1,6 @@
 /**
  * Conteúdo editável da página de vendas. Não altera dados do portal.
- * Na home não anunciar quantidades de artes. Preço fixo aprovado em uma única constante.
+ * Não anunciar tamanho do acervo; 20 downloads é a cota do teste. Preço aprovado em uma única constante.
  */
 import { LIFETIME_PRICE_CENTS } from '@/lib/payments/config'
 
@@ -13,15 +13,15 @@ export const SALES = {
   CHECKOUT_URL: null as string | null,
   /** Link já presente no rodapé da landing original. */
   EXTERNAL_CATALOG_URL: 'https://www.clickgruda.com.br',
-  STUDIO_URL: 'https://clickmockup.vercel.app/',
+  STUDIO_URL: 'https://clickteste.vercel.app/',
   heroKicker: 'Biblioteca de artes para canecas',
-  heroTitle: ['Seu próximo pedido', 'começa com a', 'arte certa.'],
-  heroDescription: 'Artes para sublimação selecionadas a dedo e organizadas por tema. Encontre a sua, baixe o arquivo e dê vida à próxima caneca do seu cliente.',
+  heroTitle: ['Sua próxima caneca', 'começa na', 'Biblioteca.'],
+  heroDescription: 'Artes para sublimação organizadas por tema, ocasião e estilo. Escolha a estampa, baixe o arquivo e prepare o próximo pedido do seu cliente. Sua conta também reúne os bônus Studio Mockup e Editor.',
   categories: ['Todas', 'Flork', 'Frases', 'Fé & espiritualidade', 'Datas especiais', 'Geek', 'Futebol', 'Música', 'Amizade', 'Humor'],
   steps: [
-    { num: '01', title: 'Encontre', subtitle: 'A arte certa, sem caçar arquivo.', description: 'Pesquise, explore categorias e descubra coleções para cada ocasião. Chega de abrir pasta por pasta.' },
-    { num: '02', title: 'Apresente em 3D', subtitle: 'Ajude seu cliente a visualizar a ideia.', description: 'Aplique a arte no Studio Mockup 3D e apresente a caneca antes de produzir. Assinantes da biblioteca podem solicitar o código de acesso ao suporte.' },
-    { num: '03', title: 'Baixe e produza', subtitle: 'Da escolha para a sua bancada.', description: 'Baixe o arquivo e prepare a impressão no seu fluxo de trabalho. Confira a área de estampa e os ajustes do seu modelo de caneca.' },
+    { num: '01', title: 'Comece pela Biblioteca', subtitle: 'Crie sua conta e encontre sua próxima arte.', description: 'Busque por tema, explore categorias e escolha o arquivo que combina com o pedido do seu cliente.' },
+    { num: '02', title: 'Crie e apresente', subtitle: 'Editor e Studio Mockup como bônus.', description: 'Seu código fica na área da sua conta na Biblioteca. Use o Editor para montar a arte e o Studio para apresentar a caneca antes de produzir.' },
+    { num: '03', title: 'Ative o acesso completo', subtitle: 'Continue com a Biblioteca e os bônus.', description: 'A confirmação da compra libera os downloads sem a cota do teste. O mesmo código do Studio e do Editor passa a definitivo, sem precisar começar de novo.' },
   ],
   artworks: [
     { src: '/uploads/showcase/arte-flork-casal-nesmo.webp', title: 'Frase de atitude', category: 'Frases' },
