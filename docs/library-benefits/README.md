@@ -29,7 +29,7 @@ A Biblioteca usa `User.id` como identidade imutável, não e-mail/nome. A fila �
 
 O envio é HMAC-SHA256 sobre método, caminho, timestamp e corpo UTF-8 exato, conforme o contrato `docs/studio-access/library-api.md` do CLICKTESTE. Retentativas mantêm evento/versão/cadastro e reassinam com timestamp atual. Falha HTTP não desfaz cadastro nem pagamento. Resposta perdida depois da confirmação é recuperada por reenvio idempotente. Uma entrega antiga não sobrescreve uma mudança mais nova na fila (atualização condicionada ao valor anterior).
 
-O cadastro tenta a entrega imediatamente. A área do cliente tenta pendências a cada 30 segundos enquanto aberta, respeitando o recuo do servidor. O workflow `studio-bonus-retry.yml` tenta até cinco clientes pendentes a cada execução. GitHub Actions tem horários aproximados: pode atrasar ou desativar agendamentos de repositórios públicos sem atividade; acompanhe o workflow. É possível usar outro agendador autenticado no mesmo endpoint.
+O cadastro tenta a entrega imediatamente. A área do cliente tenta pendências a cada 30 segundos enquanto aberta, respeitando o recuo do servidor. O workflow `studio-bonus-retry.yml` tenta até cinco clientes pendentes a cada execução. Autentica com identidade temporária OIDC do GitHub, sem segredo estático no repositório: assinatura RS256/chaves oficiais, emissor e destinatário exatos, IDs imutáveis do repositório/proprietário, workflow e branch main, subject, runner hospedado e evento schedule/workflow_dispatch. Tokens com mais de cinco minutos são recusados. Não aceita forks, outras branches/workflows ou pull requests. GitHub Actions tem horários aproximados: pode atrasar ou desativar agendamentos de repositórios públicos sem atividade; acompanhe o workflow. É possível usar outro agendador com o bearer exclusivo no mesmo endpoint.
 
 O webhook Cakto confirma primeiro o processamento local e usa `after()` para a entrega acessória, com fila persistente caso o envio falhe. O tempo de resposta da compra não depende de o Studio estar disponível. Reembolso/chargeback e bloqueio/revogação administrativos têm motivos explícitos. Expiração/cota da Biblioteca não é motivo de revogação do bônus. Conta com vínculo não pode ser excluída até a revogação ter sido sincronizada; histórico do vínculo é preservado.
 
@@ -44,8 +44,9 @@ O webhook Cakto confirma primeiro o processamento local e usa `after()` para a e
 | `STUDIO_API_ORIGIN` | `https://clickteste.vercel.app` em produção, sem caminho/query |
 | `STUDIO_LIBRARY_WEBHOOK_SECRET` | segredo exclusivo de pelo menos 32 caracteres, igual ao Studio do mesmo ambiente |
 | `STUDIO_BONUS_CRON_SECRET` | outro segredo exclusivo, pelo menos 32 caracteres, para autorizar retentativas |
+| `STUDIO_BONUS_GITHUB_OIDC_ENABLED` | `0` padrão; `1` autoriza exclusivamente o workflow revisado do GitHub |
 
-Para o workflow, configure também o secret de repositório `STUDIO_BONUS_CRON_SECRET` com o valor do worker da Biblioteca. Nunca colocar segredos em `NEXT_PUBLIC_*`, URL, código, logs ou chat. Não reutilizar `AUTH_SECRET`, senha ou segredo do Admin Master. Homologação usa bancos/chaves separados.
+Para o workflow, habilite `STUDIO_BONUS_GITHUB_OIDC_ENABLED=1` na Biblioteca. Não é necessário cadastrar segredo no GitHub. O bearer `STUDIO_BONUS_CRON_SECRET` continua disponível para operação/agendadores externos. Nunca colocar segredos em `NEXT_PUBLIC_*`, URL, código, logs ou chat. Não reutilizar `AUTH_SECRET`, senha ou segredo do Admin Master. Homologação usa bancos/chaves separados.
 
 Sequência:
 
