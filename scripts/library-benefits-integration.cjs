@@ -186,6 +186,7 @@ async function main() {
       name: 'Master QA',
       email: 'master@qa.invalid',
       role: 'ADMIN',
+      hasAccess: true,
       password: await auth.hashPassword('qa-password-123'),
     },
   })
@@ -934,6 +935,25 @@ async function main() {
     for(const row of balances)assert.deepEqual(await db.setting.findUnique({where:{key:row.key}}),row)
     assert.deepEqual(await db.user.findUnique({where:{id:fake.id}}),originalUser)
   })
+  await check('exclusão exige admin real e origem válida; remove somente a arte e seus vínculos',async()=>{
+    const disposable=await db.art.create({data:{title:'Arte descartável API QA',imageUrl:'/uploads/qa.png',tags:{create:{tag:{create:{name:'Tag exclusão QA'}}}}}})
+    await db.favorite.create({data:{userId:customer.id,artId:disposable.id}})
+    await db.download.create({data:{userId:customer.id,artId:disposable.id}})
+    const params={params:Promise.resolve({id:disposable.id})}
+    const endpoint='/api/admin/arts/'+disposable.id
+    const payments=await db.payment.findMany({orderBy:{id:'asc'}})
+    assert.equal((await guest.route('admin/arts/[id]').DELETE(request(endpoint,{},'DELETE'),params)).status,401)
+    assert.equal((await learner.route('admin/arts/[id]').DELETE(request(endpoint,{},'DELETE'),params)).status,401)
+    assert.equal((await admin.route('admin/arts/[id]').DELETE(request(endpoint,{},'DELETE','https://outro.invalid'),params)).status,403)
+    assert.ok(await db.art.findUnique({where:{id:disposable.id}}))
+    assert.equal((await admin.route('admin/arts/[id]').DELETE(request(endpoint,{},'DELETE'),params)).status,200)
+    assert.equal(await db.art.findUnique({where:{id:disposable.id}}),null)
+    for(const model of [db.artTag,db.favorite,db.download])assert.equal(await model.count({where:{artId:disposable.id}}),0)
+    assert.ok(await db.art.findUnique({where:{id:art.id}}))
+    assert.deepEqual(await db.payment.findMany({orderBy:{id:'asc'}}),payments)
+    assert.deepEqual(await db.user.findUnique({where:{id:owner.id}}),masterBefore)
+    assert.equal((await admin.route('admin/arts/[id]').DELETE(request(endpoint,{},'DELETE'),params)).status,404)
+  })
   await check(
     'admin mestre e configuração original permanecem intactos',
     async () => {
@@ -1003,6 +1023,7 @@ async function main() {
       )
     }
     const browserPurchase = await db.pendingPurchase.create({data:{provider:'CAKTO',externalId:'QA-BROWSER-CAKTO',email:'browser-cakto@qa.invalid',status:'APPROVED'}})
+    const disposableArt=await db.art.create({data:{title:'Arte descartável Portal QA',imageUrl:'/uploads/art-flork-cafe.png'}})
     const httpPort = await freePort()
     server = spawn(
       process.execPath,
@@ -1067,6 +1088,12 @@ async function main() {
           })
           await route.fulfill({ response })
         } else await route.continue()
+      })
+      await ctx.route('**/api/admin/arts/*',async route=>{
+        if(route.request().method()==='DELETE'){
+          const response=await route.fetch({headers:{...route.request().headers(),origin:'https://www.clickgruda.com.br'}})
+          await route.fulfill({response})
+        }else await route.continue()
       })
       await ctx.addCookies([
         {
@@ -1194,6 +1221,33 @@ async function main() {
         'PASS Chromium: formulários reais manual e Cakto atualizam o faturamento sem duplicar compra',
       )
       checks++
+      await page.getByRole('button',{name:'Ver portal',exact:true}).first().click()
+      const disposableCard=page.locator('.cg-member-artcard').filter({hasText:'Arte descartável Portal QA'})
+      await disposableCard.waitFor();await disposableCard.hover()
+      await disposableCard.getByRole('button',{name:/Excluir arte CG-/}).click()
+      const deleteDialog=page.getByRole('alertdialog',{name:'Excluir esta arte da Biblioteca?',exact:true})
+      await deleteDialog.getByText('Arte descartável Portal QA',{exact:true}).waitFor()
+      await deleteDialog.getByText('CG-'+String(disposableArt.code).padStart(4,'0'),{exact:true}).waitFor()
+      await deleteDialog.getByRole('button',{name:'Cancelar',exact:true}).click()
+      await deleteDialog.waitFor({state:'hidden'})
+      assert.ok(await db.art.findUnique({where:{id:disposableArt.id}}))
+      await disposableCard.hover();await disposableCard.getByRole('button',{name:/Excluir arte CG-/}).click()
+      await page.screenshot({path:path.join(folder,'browser','portal-delete-confirmation.png'),fullPage:true})
+      // Falha simulada somente na rede do teste: mantém arte e permite tentar novamente.
+      const failDelete=route=>route.fulfill({status:503,contentType:'application/json',body:JSON.stringify({error:'Falha temporária QA'})})
+      await page.route('**/api/admin/arts/'+disposableArt.id,failDelete)
+      await deleteDialog.getByRole('button',{name:'Confirmar exclusão',exact:true}).click()
+      await deleteDialog.getByRole('alert').filter({hasText:'Falha temporária QA'}).waitFor()
+      assert.ok(await db.art.findUnique({where:{id:disposableArt.id}}))
+      await page.unroute('**/api/admin/arts/'+disposableArt.id,failDelete)
+      await deleteDialog.getByRole('button',{name:'Confirmar exclusão',exact:true}).click()
+      await deleteDialog.waitFor({state:'hidden'});await disposableCard.waitFor({state:'detached'})
+      assert.equal(await db.art.findUnique({where:{id:disposableArt.id}}),null)
+      await page.locator('.cg-member-artcard').filter({hasText:'Arte QA'}).waitFor()
+      assert.deepEqual(await db.user.findUnique({where:{id:owner.id}}),masterBefore)
+      assert.deepEqual(errors,[])
+      console.log('PASS Chromium: Admin exclui pelo portal, confirma/cancela, preserva arte na falha e atualiza lista')
+      checks++
       // Jornada por HTTP real: navegador → API compilada → dois bancos → HMAC HTTPS.
       const memberContext=await browser.newContext({viewport:{width:1440,height:1000},acceptDownloads:true})
       await memberContext.route('**/api/auth/register',async route=>{const response=await route.fetch({headers:{...route.request().headers(),origin:'https://www.clickgruda.com.br'}});await route.fulfill({response})})
@@ -1208,10 +1262,20 @@ async function main() {
       // O widget oficial em modo de teste deve emitir o token de teste.
       await memberPage.waitForFunction(()=>Boolean(document.querySelector('[name="cf-turnstile-response"]')?.value),{},{timeout:30000})
       await memberPage.getByRole('button',{name:'Criar conta grátis',exact:true}).click()
-      const summary=memberPage.getByRole('region',{name:'Resumo do seu acesso',exact:true})
+      const summary=memberPage.getByRole('region',{name:'Meu acesso e código do Studio',exact:true})
       await summary.waitFor({timeout:20000})
       await summary.getByText('20',{exact:false}).first().waitFor()
+      const accessDetails=summary.locator('#member-access-details')
+      const accessToggle=summary.locator('#member-access-toggle')
+      assert.equal(await accessDetails.evaluate(el=>el.open),false)
+      assert.ok((await summary.boundingBox()).height<140)
+      assert.equal(await summary.getByRole('button',{name:'Copiar código'}).isVisible(),false)
+      await memberPage.screenshot({path:path.join(folder,'browser','member-access-compact.png'),fullPage:true})
+      await accessToggle.focus();await memberPage.keyboard.press('Enter')
       await summary.getByRole('button',{name:'Copiar código'}).waitFor()
+      await accessToggle.click();assert.equal(await accessDetails.evaluate(el=>el.open),false)
+      assert.equal(await memberPage.getByRole('button',{name:/Excluir arte CG-/}).count(),0)
+      assert.equal((await memberContext.request.delete(base+'/api/admin/arts/'+art.id)).status(),401)
       const browserTrial=await db.user.findUnique({where:{email:'journey-browser@qa.invalid'}})
       assert.ok(browserTrial);assert.equal(browserTrial.accessType,'TRIAL')
       const firstLink=await studioDb.studioLibraryLink.findUnique({where:{externalUserId:browserTrial.id},include:{code:true}})
@@ -1252,7 +1316,7 @@ async function main() {
       await studioHeaderButton.click()
       await studioDialog.getByRole('button',{name:'Ver meu código do Studio',exact:true}).click()
       await studioDialog.waitFor({state:'hidden'})
-      await memberPage.waitForFunction(()=>document.activeElement?.id==='member-access-title')
+      await memberPage.waitForFunction(()=>document.activeElement?.id==='studio-access-code')
       await memberPage.getByRole('button',{name:'Melhorar minha arte',exact:true}).first().click()
       const enhance=memberPage.getByRole('dialog',{name:'Melhorar qualidade da arte',exact:true})
       await enhance.getByText(/Não fazemos edição, troca de nomes/).waitFor()
@@ -1271,24 +1335,33 @@ async function main() {
       // Encerra somente a janela de downloads de uma conta fictícia, preservando o bônus.
       await profileApi.saveMemberProfile(browserTrial.id,{whatsapp:'5562966665555',extraDevices:0,downloadLimit:20,downloadExpiresAt:new Date(Date.now()-1000).toISOString()})
       await memberPage.reload({waitUntil:'domcontentloaded'})
-      await summary.getByText('Seu Studio e Editor continuam disponíveis até',{exact:false}).waitFor()
+      assert.equal(await accessDetails.evaluate(el=>el.open),false)
       await studioHeaderButton.click();await studioDialog.getByRole('button',{name:'Ver meu código do Studio',exact:true}).waitFor()
       await studioDialog.getByRole('button',{name:'Ver meu código do Studio',exact:true}).click();await studioDialog.waitFor({state:'hidden'})
 
+      await summary.getByText('Seu Studio e Editor continuam disponíveis até',{exact:false}).waitFor()
       const originalCode=await summary.locator('#studio-access-code').innerText()
       const blockedDownload=await memberContext.request.get(base+'/api/arts/'+art.id+'/download');assert.equal(blockedDownload.status(),403)
       const paymentResponse=await memberContext.request.post(base+'/api/webhooks/cakto',{data:{secret:process.env.CAKTO_WEBHOOK_SECRET,event:'purchase_approved',data:{id:'QA-BROWSER-PACKAGE',customer:{email:browserTrial.email},amount:47.9,currency:'BRL',paidAt:new Date().toISOString(),paymentMethod:'pix'}}})
       assert.equal(paymentResponse.status(),200)
       await memberPage.reload({waitUntil:'domcontentloaded'})
+      await summary.getByText('Acesso completo',{exact:true}).first().waitFor()
+      assert.equal(await accessDetails.evaluate(el=>el.open),false)
+      await accessToggle.click()
       await summary.getByText('Downloads ilimitados',{exact:true}).waitFor()
       await summary.getByText('Incluídos no seu acesso completo',{exact:true}).waitFor({timeout:20000})
       assert.equal(await summary.locator('#studio-access-code').innerText(),originalCode)
       const permanentLink=await studioDb.studioLibraryLink.findUnique({where:{externalUserId:browserTrial.id},include:{code:true}})
       assert.equal(permanentLink.codeId,firstLink.codeId);assert.equal(permanentLink.state,'MEMBER');assert.equal(permanentLink.code.expiresAt,null)
       assert.deepEqual(memberErrors,[])
+      await accessToggle.click()
       await memberPage.setViewportSize({width:390,height:844})
       await memberPage.evaluate(()=>window.scrollTo(0,0));await memberPage.waitForTimeout(200)
       await memberPage.screenshot({path:path.join(folder,'browser','member-complete-mobile.png'),fullPage:true})
+      assert.equal(await memberPage.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true)
+      assert.ok((await summary.boundingBox()).height<165)
+      await accessToggle.click();await summary.getByRole('button',{name:'Copiar código'}).waitFor()
+      await memberPage.screenshot({path:path.join(folder,'browser','member-complete-mobile-open.png'),fullPage:true})
       assert.equal(await memberPage.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true)
       await memberContext.close()
       console.log('PASS Chromium: cadastro grátis, captcha de teste, download real, 24h independente do bônus e compra convertem o mesmo código via HTTPS')

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
-import { ArrowRight, Check, ChevronDown, Copy, Download, ExternalLink, Layers3, Loader2, RefreshCw, ShieldCheck } from 'lucide-react'
+import { ArrowRight, Check, ChevronDown, Copy, Download, ExternalLink, KeyRound, Layers3, Loader2, RefreshCw, ShieldCheck } from 'lucide-react'
 import { toast } from 'sonner'
 import { STUDIO_URL, WHATSAPP, WHATSAPP_MESSAGES } from '@/lib/site'
 import type { CatalogData } from '@/lib/types'
@@ -75,6 +75,7 @@ export function MemberAccessSummary({ userId, isTrial, quota, quotaReady, quotaE
   const libraryExpired = Boolean(quota?.expired) || (libraryDeadline != null && libraryDeadline <= now)
   const ended = Boolean(quota?.exhausted) || libraryExpired
   const complete = quotaReady && !quotaError && !quota && !isTrial
+  const compactLabel = quotaError ? 'Conferir acesso' : !quotaReady ? 'Consultando acesso…' : complete ? 'Acesso completo' : quota ? ended ? isTrial ? 'Teste da Biblioteca encerrado' : 'Cota de downloads encerrada' : `${quota.remaining} downloads restantes` : 'Consultar meu acesso'
   const actionClass = 'inline-flex min-h-11 items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-bold transition focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-orange-300 disabled:opacity-50'
 
   async function requestCode() {
@@ -90,13 +91,20 @@ export function MemberAccessSummary({ userId, isTrial, quota, quotaReady, quotaE
     } finally { setBusy(false) }
   }
 
-  return <section id="member-access-summary" className="border-b border-white/10 bg-[#111b2b] px-4 py-5 text-white sm:px-7" aria-labelledby="member-access-title">
-    <div className="mx-auto max-w-[1600px]">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <p className="text-[10px] font-bold uppercase tracking-[.16em] text-orange-300">Tudo começa na Biblioteca</p>
-          <h2 tabIndex={-1} id="member-access-title" className="mt-1 text-lg font-extrabold">Resumo do seu acesso</h2>
+  return <section id="member-access-summary" className="px-4 pt-4 text-white sm:px-7" aria-labelledby="member-access-title">
+    <details key={`${userId}:${isTrial}`} id="member-access-details" className="group mx-auto max-w-[1600px] rounded-2xl border border-white/10 bg-white/[.025]">
+      <summary id="member-access-toggle" aria-labelledby="member-access-title" aria-describedby="member-access-hint" className="flex min-h-[76px] cursor-pointer list-none items-center gap-3 rounded-2xl px-4 py-3 transition-colors hover:bg-white/[.035] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-400 [&::-webkit-details-marker]:hidden">
+        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-orange-400/20 bg-orange-400/[.08] text-orange-300"><KeyRound size={19} aria-hidden="true" /></span>
+        <div className="min-w-0 flex-1">
+          <h2 id="member-access-title" className="text-sm font-bold sm:text-[15px]">Meu acesso e código do Studio</h2>
+          <p id="member-access-hint" className="mt-1 flex flex-wrap gap-x-2 gap-y-1 text-xs leading-5"><span className={complete ? 'font-semibold text-emerald-300' : 'text-orange-200'}>{compactLabel}</span><span aria-hidden="true" className="text-slate-600">·</span><span className="text-slate-400">Código, prazos e recursos do seu pacote</span></p>
         </div>
+        <span className="hidden shrink-0 text-xs font-semibold text-slate-400 sm:block"><span className="group-open:hidden">Ver detalhes</span><span className="hidden group-open:inline">Recolher</span></span>
+        <ChevronDown size={17} aria-hidden="true" className="shrink-0 text-orange-300 transition-transform group-open:rotate-180 motion-reduce:transition-none" />
+      </summary>
+      <div id="member-access-content" className="border-t border-white/10 p-4 sm:p-5">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <p className="text-sm text-slate-300">Seus downloads e o acesso ao Studio, reunidos na sua conta.</p>
         {isTrial && <a href="/comprar" className={`${actionClass} bg-orange-500 text-white hover:bg-orange-400`}>Ativar acesso completo <ArrowRight size={16} aria-hidden="true" /></a>}
         {complete && <span className="inline-flex items-center gap-2 rounded-full border border-emerald-400/25 bg-emerald-400/10 px-3 py-2 text-xs font-bold text-emerald-200"><ShieldCheck size={15} aria-hidden="true" /> Acesso completo</span>}
       </div>
@@ -120,7 +128,7 @@ export function MemberAccessSummary({ userId, isTrial, quota, quotaReady, quotaE
           {query.isPending ? <p className="mt-3 flex items-center gap-2 text-sm text-slate-300"><Loader2 size={15} className="animate-spin" aria-hidden="true" /> Consultando seu código…</p> : query.isError ? <div className="mt-3"><p role="alert" className="text-sm text-orange-100">Não foi possível consultar o código. Seus dados não foram alterados.</p><button type="button" onClick={() => query.refetch()} className={`${actionClass} mt-2 border border-white/15 text-white`}><RefreshCw size={15} aria-hidden="true" /> Tentar novamente</button></div> : !bonus ? <p className="mt-3 text-sm leading-6 text-slate-300">O bônus ainda não está disponível nesta conta. <a className="underline underline-offset-4" href={WHATSAPP.link(WHATSAPP_MESSAGES.support)} target="_blank" rel="noopener noreferrer">Consultar suporte</a></p> : <>
             <p className="mt-3 text-sm font-bold text-orange-200">{blocked ? 'Acesso ao bônus bloqueado' : bonus.state === 'pending' ? 'Sincronizando seu código' : bonusExpired ? 'O teste dos bônus terminou' : bonus.entitlement === 'TRIAL' ? remaining(bonusDeadline, now) ?? 'Teste dos bônus' : bonus.state === 'unlinked' ? 'Obtenha seu código na Biblioteca' : 'Incluídos no seu acesso completo'}</p>
             {blocked ? <p className="mt-2 text-sm leading-6 text-slate-300">Fale com o suporte para conferir a liberação do bônus.</p> : bonus.state === 'pending' ? <p role="status" className="mt-2 text-sm leading-6 text-slate-300">Estamos atualizando seu acesso. A sincronização mantém seu código e a data original do teste.</p> : bonus.entitlement === 'TRIAL' ? <p className="mt-2 text-xs leading-6 text-slate-300">{bonusExpired ? 'Ative o pacote completo da Biblioteca para continuar com os bônus.' : `Disponíveis até ${dateBR(bonus.trialEndsAt)} (Brasília). O prazo é independente dos downloads da Biblioteca.`}</p> : <p className="mt-2 text-sm leading-6 text-slate-300">{bonus.state === 'unlinked' ? 'Gere seu código abaixo para abrir o Studio e o Editor.' : 'O código acompanha seu pacote, sem a validade de 7 dias do teste.'}</p>}
-            {bonus.code && <div className="mt-3 rounded-xl border border-white/10 bg-black/20 px-3 py-2.5"><p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Seu código de ativação do Studio</p><p id="studio-access-code" className="mt-1 break-all font-mono text-sm font-bold tracking-wide" tabIndex={-1}>{bonus.code}</p></div>}
+            {bonus.code && <div className="mt-3 rounded-xl border border-white/10 bg-black/20 px-3 py-2.5"><p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Seu código de ativação do Studio</p><p id="studio-access-code" className="mt-1 break-all font-mono text-sm font-bold tracking-wide" tabIndex={-1}>{bonus.code}</p><p className="mt-2 text-xs leading-5 text-slate-400">Este código fica salvo na sua conta. Volte aqui sempre que precisar.</p></div>}
             <div className="mt-3 flex flex-wrap gap-2">
               {bonus.code && !blocked && !bonusExpired && <button type="button" className={`${actionClass} border border-white/15 text-white hover:bg-white/10`} onClick={async () => { try { await navigator.clipboard.writeText(bonus.code!); toast.success('Código copiado!') } catch { toast.error('Selecione o código para copiar.') } }}><Copy size={15} aria-hidden="true" /> Copiar código</button>}
               {!blocked && (bonus.state === 'unlinked' || bonus.state === 'pending') && <button type="button" disabled={busy} onClick={requestCode} className={`${actionClass} bg-orange-500 text-white`}>{busy ? 'Sincronizando…' : isTrial ? 'Atualizar código' : 'Gerar meu código'}</button>}
@@ -131,7 +139,7 @@ export function MemberAccessSummary({ userId, isTrial, quota, quotaReady, quotaE
         </div>
       </div>
       {ended && isTrial && bonusAvailable && bonus?.entitlement === 'TRIAL' && bonusDeadline != null && <p role="status" className="mt-3 rounded-xl border border-emerald-400/20 bg-emerald-400/10 px-4 py-3 text-sm leading-6 text-emerald-100">O teste de downloads da Biblioteca terminou. Seu Studio e Editor continuam disponíveis até {dateBR(bonus?.trialEndsAt)} (Brasília). Você pode usar o mesmo código até essa data.</p>}
-      {isTrial && <details open={quota?.used === 0 && !ended} className="mt-4 rounded-2xl border border-white/10 bg-black/10 px-4 py-3">
+      {isTrial && <details className="mt-4 rounded-2xl border border-white/10 bg-black/10 px-4 py-3">
         <summary className="flex min-h-8 cursor-pointer list-none items-center justify-between gap-3 text-sm font-bold text-slate-100">Primeiros passos na Biblioteca <ChevronDown size={16} aria-hidden="true" /></summary>
         <ol className="mt-3 grid gap-4 text-sm leading-6 text-slate-300 md:grid-cols-3">
           <li><p className="flex items-center gap-2 font-bold text-white"><Check size={14} className="text-orange-300" aria-hidden="true" /> 1. Escolha sua arte</p><p className="mt-1">Use a busca e as categorias. O botão Explorar artes leva você até o acervo.</p></li>
@@ -139,6 +147,7 @@ export function MemberAccessSummary({ userId, isTrial, quota, quotaReady, quotaE
           <li><p className="flex items-center gap-2 font-bold text-white"><Check size={14} className="text-orange-300" aria-hidden="true" /> 3. Conheça os bônus</p><p className="mt-1">Copie seu código e abra o Studio e o Editor. Ative o pacote completo quando quiser continuar.</p></li>
         </ol>
       </details>}
-    </div>
+      </div>
+    </details>
   </section>
 }

@@ -2184,3 +2184,9 @@
 @media (prefers-reduced-motion:reduce) {
   .cg-portal .cg-member-artcard .cg-art-download:not(:disabled) {animation:none;}
 }
+
+/* Ação administrativa discreta: visível no hover, foco pelo teclado ou toque. */
+.cg-art-admin-delete {opacity:0;visibility:hidden;pointer-events:none;transition:opacity .16s ease-out,visibility .16s ease-out;}
+.cg-member-artcard:hover .cg-art-admin-delete,.cg-member-artcard:focus-within .cg-art-admin-delete {opacity:1;visibility:visible;pointer-events:auto;}
+@media (hover:none),(pointer:coarse) {.cg-art-admin-delete {opacity:1;visibility:visible;pointer-events:auto;}}
+@media (prefers-reduced-motion:reduce) {.cg-art-admin-delete {transition:none;}}
