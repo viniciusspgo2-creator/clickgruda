@@ -11,7 +11,7 @@ import { LIFETIME_PRICE_CENTS } from '@/lib/payments/config'
 // voltar a publicar canonicals/sitemaps para clickgruda.vercel.app.
 // A hospedagem já redireciona o domínio sem www para esta versão.
 export const SITE_URL = 'https://www.clickgruda.com.br'
-export const STUDIO_URL = 'https://clickteste.vercel.app/'
+export const STUDIO_URL = 'https://studio.clickgruda.com.br/'
 export const CONTENT_UPDATED_ISO = '2026-11-07'
 export const SOCIAL_IMAGE = '/uploads/rebrand/mascote-principal.webp'
 
