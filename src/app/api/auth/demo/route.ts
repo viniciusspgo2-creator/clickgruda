@@ -1,6 +1,7 @@
 import { cookies } from 'next/headers'
 import { db } from '@/lib/db'
 import { createPublicDemoSession, getSessionUser, jsonError } from '@/lib/auth'
+import { isSafeOrigin } from '@/lib/security-guards'
 import {
   ANALYTICS_IGNORE_COOKIE, ANALYTICS_IGNORE_IPS_KEY, ANALYTICS_IGNORE_VISITORS_KEY,
   getClientIp, isInternalCookie, readStringList, validVisitorId, visitorHash,
@@ -34,8 +35,12 @@ async function recordDemoEntry(req: Request, body: unknown) {
 }
 
 export async function POST(req: Request) {
+  // Na VPS o Next.js standalone monta req.url com o endereço interno do
+  // servidor (localhost:3000), não com o domínio público — a comparação
+  // direta com req.url rejeitava até a origem correta. Usa o mesmo
+  // isSafeOrigin do login (host ou NEXT_PUBLIC_SITE_URL).
   const origin = req.headers.get('origin')
-  if (origin && origin !== new URL(req.url).origin) return jsonError('Origem não permitida.', 403)
+  if (origin && !isSafeOrigin(req)) return jsonError('Origem não permitida.', 403)
   try {
     const body: unknown = await req.json().catch(() => null)
     const existing = await getSessionUser()

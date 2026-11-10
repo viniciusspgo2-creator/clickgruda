@@ -1,6 +1,7 @@
 import { cookies } from 'next/headers'
 import { db } from '@/lib/db'
 import { getSessionUser, jsonError } from '@/lib/auth'
+import { isSafeOrigin } from '@/lib/security-guards'
 import {
   ANALYTICS_IGNORE_COOKIE, ANALYTICS_IGNORE_IPS_KEY, ANALYTICS_IGNORE_VISITORS_KEY,
   readStringList, signedInternalCookie, validIgnoredIps, validVisitorId, visitorHash,
@@ -9,8 +10,9 @@ import {
 export async function POST(req: Request) {
   const user = await getSessionUser()
   if (!user || user.role !== 'ADMIN') return jsonError('Não autorizado', 401)
+  // Mesmo motivo da rota de demo: no standalone, req.url é localhost:3000.
   const origin = req.headers.get('origin')
-  if (origin && origin !== new URL(req.url).origin) return jsonError('Origem não permitida', 403)
+  if (origin && !isSafeOrigin(req)) return jsonError('Origem não permitida', 403)
 
   const body = await req.json().catch(() => null)
   if (!body || typeof body !== 'object') return jsonError('Dados inválidos', 400)
