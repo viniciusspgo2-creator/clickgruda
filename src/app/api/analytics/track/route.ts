@@ -1,16 +1,22 @@
 import { cookies } from 'next/headers'
 import { db } from '@/lib/db'
 import { getSessionUser } from '@/lib/auth'
+import { SITE_URL } from '@/lib/site'
 import {
   ANALYTICS_IGNORE_COOKIE, ANALYTICS_IGNORE_IPS_KEY, ANALYTICS_IGNORE_VISITORS_KEY,
   getClientIp, isInternalCookie, readStringList, validVisitorId, visitorHash,
 } from '@/lib/analytics-privacy'
 
 const ALLOWED = new Set(['landing_view', 'cta_click', 'faq_open', 'scroll_depth', 'feature_click'])
+/** Origens públicas do site. NÃO usar `new URL(req.url).origin` aqui: atrás do
+ * reverse proxy (Caddy → http://127.0.0.1:3000) o req.url não reflete a
+ * origem pública https, e todo navegador real recebia 403 — nenhuma visita
+ * era contabilizada. */
+const ALLOWED_ORIGINS = new Set([SITE_URL, 'https://clickgruda.com.br'])
 /** Registra apenas eventos da landing; não persiste endereço IP. */
 export async function POST(req: Request) {
   const origin = req.headers.get('origin')
-  if (origin && origin !== new URL(req.url).origin) return new Response(null, { status: 403 })
+  if (origin && !ALLOWED_ORIGINS.has(origin)) return new Response(null, { status: 403 })
   const body = await req.json().catch(() => null)
   if (!body || !ALLOWED.has(body.event) || !validVisitorId(body.visitorId)) {
     return Response.json({ error: 'Evento inválido.' }, { status: 400 })
