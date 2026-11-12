@@ -20,6 +20,7 @@ model User {
   isStudioOnly Boolean     @default(false) // conta universal só-Studio: Studio 3D/2D liberado, resto bloqueado
   previewMaxSessions Int  @default(10) // limite de acessos simultâneos da conta universal (Preview ou só-Studio) (1..500)
   accessSource String? // PURCHASE | ADMIN_GRANT
+  signupIpHash String? // SHA-256 do IP no cadastro: 1 teste grátis por rede (bloqueia novo cadastro com outro e-mail do mesmo IP)
   // Modelo novo é aditivo: hasAccess continua compatível com o sistema existente.
   accessStatus String @default("SEM_ACESSO") // SEM_ACESSO | ATIVO | REVOGADO
   accessType String? // VITALICIO | MANUAL
@@ -40,6 +41,8 @@ model User {
   waitlist     CatalogoWaitlist[]
   limitHits    DownloadLimitHit[]
   enhanceRequests ArtEnhanceRequest[]
+
+  @@index([signupIpHash])
 }
 
 model Category {

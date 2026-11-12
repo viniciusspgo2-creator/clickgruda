@@ -7,6 +7,11 @@ function ipOf(req: Request) {
 function hashed(text: string) { return createHash('sha256').update(text).digest('hex') }
 export function throttleKey(kind: string, input: string): string { return `${kind}:${hashed(input)}` }
 export function requestIp(req: Request): string { return ipOf(req) }
+/** Hash do IP para o bloqueio de teste grátis (1 por rede). Retorna null quando o IP não pode ser identificado — nesse caso não bloqueia nem grava. */
+export function hashIp(ip: string): string | null {
+  if (!ip || ip === 'unknown') return null
+  return hashed(ip)
+}
 
 export function isSafeOrigin(req: Request): boolean {
   const origin = req.headers.get('origin')

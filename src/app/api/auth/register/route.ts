@@ -3,7 +3,7 @@ import { db } from '@/lib/db'
 import { hashPassword, setSessionCookie, jsonError, getSessionUser } from '@/lib/auth'
 import { startSession } from '@/lib/sessions'
 import { normalizeWhatsapp, saveMemberProfile } from '@/lib/member-profile'
-import { countAttempt, isSafeOrigin, isThrottled, requestIp, throttleKey, verifyTurnstile } from '@/lib/security-guards'
+import { countAttempt, hashIp, isSafeOrigin, isThrottled, requestIp, throttleKey, verifyTurnstile } from '@/lib/security-guards'
 import { TRIAL_ORIGIN_PREFIX } from '@/lib/trial-journey'
 
 export async function POST(req: Request) {
@@ -31,10 +31,19 @@ export async function POST(req: Request) {
     const exists = await db.user.findUnique({ where: { email } })
     if (exists) return jsonError('Não foi possível criar a conta. Verifique os dados ou faça login.', 409)
 
+    // Bloqueio por IP: 1 teste grátis por rede. Se este IP já criou uma conta gratuita
+    // (mesmo com outro e-mail), bloqueia o novo cadastro e mostra a mensagem.
+    // O IP não é guardado em texto — só o hash SHA-256. Contas pagas não bloqueiam.
+    const ipHash = hashIp(requestIp(req))
+    if (ipHash) {
+      const trialFromThisIp = await db.user.findFirst({ where: { signupIpHash: ipHash, accessType: 'TRIAL' } })
+      if (trialFromThisIp) return jsonError('Já existe uma conta gratuita criada a partir desta conexão. Faça login na sua conta para continuar, ou fale com o suporte se precisar de ajuda.', 403)
+    }
+
     const trial = freeSignupEnabled()
     const hashed = await hashPassword(password)
     const user = await db.$transaction(async tx => {
-      const created = await tx.user.create({ data: { name, email, password: hashed, ...(trial ? {hasAccess:true,accessType:"TRIAL",accessStatus:"TRIAL",accessSource:"FREE_TRIAL"} : {}) } })
+      const created = await tx.user.create({ data: { name, email, password: hashed, ...(ipHash ? { signupIpHash: ipHash } : {}), ...(trial ? {hasAccess:true,accessType:"TRIAL",accessStatus:"TRIAL",accessSource:"FREE_TRIAL"} : {}) } })
       await saveMemberProfile(created.id, { whatsapp, extraDevices: 0, contactPurpose: 'pagamento e suporte desta conta', registeredAt: created.createdAt.toISOString(), ...(trial ? {downloadLimit:20,downloadExpiresAt:new Date(created.createdAt.getTime()+86400000).toISOString()} : {}) }, tx)
       // Não reivindica compras anteriores apenas pelo e-mail digitado: antes é necessário comprovar titularidade.
       // As compras ficam registradas em PendingPurchase para reconciliação administrativa segura.
