@@ -12,7 +12,7 @@ import { LIFETIME_PRICE_CENTS } from '@/lib/payments/config'
 // A hospedagem já redireciona o domínio sem www para esta versão.
 export const SITE_URL = 'https://www.clickgruda.com.br'
 export const STUDIO_URL = 'https://studio.clickgruda.com.br/'
-export const CONTENT_UPDATED_ISO = '2026-11-07'
+export const CONTENT_UPDATED_ISO = '2026-11-12'
 export const SOCIAL_IMAGE = '/uploads/rebrand/mascote-principal.webp'
 
 export const SITE = {
