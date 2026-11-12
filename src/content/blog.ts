@@ -1,5 +1,5 @@
 /**
- * BLOG — 6 artigos estratégicos de SEO (topic cluster do nicho).
+ * BLOG — 8 artigos estratégicos de SEO (topic cluster do nicho).
  *
  * Estratégia de palavras-chave (busca orgânica BR):
  *  1. artes para sublimação de canecas (head term)
@@ -8,6 +8,8 @@
  *  4. onde encontrar artes para sublimação (BOFU — money keyword)
  *  5. como sublimar canecas passo a passo (tutorial/HowTo)
  *  6. datas comemorativas para vender canecas (sazonal/tráfego recorrente)
+ *  7. tendências de artes para canecas 2026 (tendências)
+ *  8. macetes de sublimação de canecas (dicas práticas)
  *
  * Cada artigo alimenta: rotas SSG /blog/[slug], sitemap, JSON-LD
  * (BlogPosting + FAQPage + BreadcrumbList), linkagem interna com a
@@ -50,6 +52,9 @@ export const BLOG_CATEGORY_LABELS: Record<string, string> = {
   equipamentos: 'Equipamentos',
   artes: 'Artes & Design',
   sazonal: 'Sazonalidade',
+  dicas: 'Dicas & Macetes',
+  tendencias: 'Tendências',
+  novidades: 'Novidades',
 }
 
 const AUTHOR_NOTE =
@@ -652,7 +657,201 @@ const ART6: BlogArticle = {
   related: ['artes-para-sublimacao-de-canecas-guia', 'onde-encontrar-artes-para-sublimacao', 'como-sublimar-canecas-passo-a-passo'],
 }
 
-export const BLOG_ARTICLES: BlogArticle[] = [ART1, ART2, ART3, ART4, ART5, ART6]
+/* ============================================================
+ * ARTIGO 7 — tendências: o que está vendendo em 2026
+ * ============================================================ */
+const ART7: BlogArticle = {
+  slug: 'tendencias-artes-para-canecas-2026',
+  title: 'Tendências de artes para canecas em 2026: o que está vendendo agora',
+  seoTitle: 'Tendências de Artes para Canecas em 2026: O Que Está Vendendo',
+  description:
+    'Tendências de artes para canecas em 2026: os estilos em alta, os nichos que mais giram e como atualizar seu catálogo sem ficar para trás.',
+  keywords: [
+    'tendências artes para canecas 2026',
+    'artes para caneca em alta',
+    'o que vende em sublimação',
+    'tendências sublimação',
+    'estilos de caneca personalizada',
+  ],
+  category: 'tendencias',
+  emoji: '🔥',
+  cover: '/uploads/art-flork-cafe.png',
+  coverAlt: 'Caneca sublimada com arte de humor em alta nas tendências de 2026',
+  readTime: '7 min',
+  datePublished: '2026-11-12',
+  dateModified: '2026-11-12',
+  lead:
+    'O mercado de canecas personalizadas muda rápido: o estilo que vendia muito há um ano pode estar saturado hoje, enquanto um nicho novo explode do nada. Este artigo resume as tendências de artes para canecas em 2026 — os estilos em alta, os nichos que mais giram e como atualizar seu catálogo sem gastar com arte que não vende.',
+  blocks: [
+    { type: 'h2', text: 'As 5 tendências de artes para canecas em 2026', id: 'tendencias-2026' },
+    {
+      type: 'p',
+      text: 'Tendência em sublimação não é achismo: é o que os clientes pedem no balcão e no WhatsApp, semana após semana. Os cinco movimentos abaixo são os que mais aparecem nos pedidos de 2026 — e cada um deles abre um nicho de venda.',
+    },
+    {
+      type: 'table',
+      caption: 'Tendências de artes para canecas em 2026',
+      head: ['Tendência', 'O que é', 'Quem compra', 'Quando vende mais'],
+      rows: [
+        ['Humor e memes (Flork)', 'Frases engraçadas e situações do dia a dia', 'Casais, amizades, colegas de trabalho', 'Ano inteiro, pico em Namorados e Dia do Amigo'],
+        ['Profissões com identidade', 'Artes que celebram a profissão de quem recebe', 'Presente corporativo e homenagens', 'Datas de valorização profissional'],
+        ['Fé e frases de força', 'Versículos, mensagens de fé e gratidão', 'Público cristão e católico', 'Ano inteiro, picos em Páscoa e Natal'],
+        ['Pets personalizados', 'Ilustrações de cães e gatos, com ou sem nome', 'Tutores de animais', 'Ano inteiro, pico em datas de presente'],
+        ['Minimalista e tipografia', 'Frases curtas, fonte bonita, pouco desenho', 'Público jovem e corporativo', 'Ano inteiro, forte em brindes'],
+      ],
+    },
+    { type: 'h2', text: 'Por que o humor continua dominando', id: 'humor-domina' },
+    {
+      type: 'p',
+      text: 'A caneca de humor é o presente "sem erro": quem compra não precisa conhecer o gosto de quem vai receber em detalhe — uma frase engraçada sobre café, segunda-feira ou casal funciona para quase todo mundo. É o estilo com maior giro e menor risco de encalhe, por isso é a base do catálogo de quem vende volume. O segredo é renovar as frases: o meme do ano passado já foi visto, o deste ano ainda é novidade.',
+    },
+    {
+      type: 'callout',
+      title: 'Como não ficar para trás',
+      text: 'Separe 30% do seu catálogo para renovação: a cada mês, troque as artes que menos giraram por lançamentos do estilo em alta. A Click & Gruda lança artes novas com frequência — quem acompanha os lançamentos vende a tendência antes de ela saturar.',
+    },
+    { type: 'h2', text: 'Nichos que estão crescendo em 2026', id: 'nichos-crescendo' },
+    {
+      type: 'ul',
+      items: [
+        'Canecas para profissões de saúde e educação: enfermagem, professores e cuidadores compram (e ganham) muito — e o presente costuma ser em grupo, ou seja, várias unidades por pedido.',
+        'Canecas de fé com versículos: público fiel, compra recorrente e pouco sensível a preço — a mensagem importa mais que o desconto.',
+        'Brindes corporativos com logo: empresas pedem lotes com a marca. Uma arte minimalista com o logotipo do cliente vira pedido de dezenas de unidades.',
+        'Canecas de pets com nome: personalização com o nome do animal aumenta o valor percebido e o preço que o cliente aceita pagar.',
+      ],
+    },
+    { type: 'h2', text: 'Como atualizar seu catálogo sem desperdício', id: 'atualizar-catalogo' },
+    {
+      type: 'p',
+      text: 'A regra é simples: não compre (nem baixe) tudo de uma vez. Acompanhe o que gira no seu balcão por 30 dias, identifique os 3 estilos que mais venderam e reforce eles; os que não giraram, substitua por lançamentos da tendência. Biblioteca organizada por tema e data ajuda nisso: você vê o que é novidade e o que é sazonal sem caçar arquivo por arquivo.',
+    },
+    {
+      type: 'faq',
+      items: [
+        {
+          q: 'Qual estilo de arte para caneca mais vende em 2026?',
+          a: 'Humor e memes (Flork) continuam com o maior giro no varejo, seguidos por profissões e fé. O segredo é o mix: humor como base de volume e nichos (profissões, fé, pets) como margem.',
+        },
+        {
+          q: 'Com que frequência devo renovar as artes do meu catálogo?',
+          a: 'A cada mês, renove cerca de 30% das artes — troque as que menos giraram por lançamentos da tendência. Em datas comemorativas, antecipe 3 semanas.',
+        },
+        {
+          q: 'Vale a pena investir em arte minimalista e tipografia?',
+          a: 'Sim, principalmente para brindes corporativos e público jovem. São artes rápidas de produzir, com pouco risco de erro de impressão e boa aceitação em lotes.',
+        },
+      ],
+    },
+    {
+      type: 'cta',
+      text: 'As artes das tendências de 2026 já estão no portal — com lançamentos frequentes.',
+      label: 'Ver as artes em alta',
+      href: '/#preco',
+    },
+  ],
+  related: ['artes-para-sublimacao-de-canecas-guia', 'datas-comemorativas-para-vender-canecas', 'onde-encontrar-artes-para-sublimacao'],
+}
+
+/* ============================================================
+ * ARTIGO 8 — dicas/macetes: truques para não errar a prensa
+ * ============================================================ */
+const ART8: BlogArticle = {
+  slug: 'macetes-sublimacao-de-canecas',
+  title: 'Macetes de sublimação de canecas: 12 truques para não errar a prensa',
+  seoTitle: 'Macetes de Sublimação de Canecas: 12 Truques para Não Errar',
+  description:
+    'Macetes de sublimação de canecas: 12 truques práticos para cores vivas, sem manchas, sem desbotar e sem desperdiçar papel e tinta.',
+  keywords: [
+    'macetes sublimação de canecas',
+    'dicas sublimação caneca',
+    'erros sublimação caneca',
+    'como sublimar caneca sem erro',
+    'sublimação cores vivas',
+  ],
+  category: 'dicas',
+  emoji: '💡',
+  cover: '/uploads/hero-press.png',
+  coverAlt: 'Prensa de canecas pronta para sublimação com arte posicionada',
+  readTime: '8 min',
+  datePublished: '2026-11-12',
+  dateModified: '2026-11-12',
+  lead:
+    'A diferença entre uma caneca sublimada que impressiona e uma que desbota está nos detalhes — e a maioria deles não está no manual da prensa. Estes 12 macetes de sublimação de canecas reúnem o que sublimadores experientes fazem no dia a dia para ter cores vivas, acabamento limpo e zero desperdício.',
+  blocks: [
+    { type: 'h2', text: 'Antes de prensar: os macetes que evitam retrabalho', id: 'antes-de-prensar' },
+    {
+      type: 'ul',
+      items: [
+        'Imprima sempre espelhado. A transferência inverte a imagem — se esquecer de espelhar, o texto sai ao contrário na caneca.',
+        'Deixe a arte secar antes de posicionar. Papel sublimático úmido mancha e borra na transferência.',
+        'Use fita térmica nas bordas. Ela segura o papel no lugar e evita o "fantasma" (imagem duplicada por deslocamento).',
+        'Confira a medida antes de imprimir: 21 × 9,5 cm é o padrão da caneca de 325 ml. Arte menor deixa faixa sem estampa; maior, dobra e marca.',
+        'Pré-aqueça a caneca por alguns segundos. Caneca fria rouba calor da prensa e a cor sai apagada nas bordas.',
+      ],
+    },
+    { type: 'h2', text: 'Temperatura e tempo: o ajuste que decide a cor', id: 'temperatura-tempo' },
+    {
+      type: 'p',
+      text: 'A maioria das canecas de porcelana trabalha bem em torno de 180 °C por 180 segundos, mas cada prensa tem sua calibragem — e a mesma prensa varia com a temperatura ambiente. Faça um teste com uma caneca de sacrifício sempre que trocar de lote de papel, tinta ou caneca. Se a cor saiu apagada, aumente o tempo em 10 segundos antes de mexer na temperatura; se saiu amarelada ou com mancha, reduza o tempo.',
+    },
+    {
+      type: 'callout',
+      title: 'O macete do teste',
+      text: 'Guarde uma caneca branca só para testes. Antes de uma leva grande, prense nela a arte do pedido: você confere cor, posição e nitidez sem arriscar o lote — e o custo de uma caneca de teste é menor que o de refazer um pedido.',
+    },
+    { type: 'h2', text: 'Os 12 macetes resumidos', id: 'macetes-resumidos' },
+    {
+      type: 'table',
+      caption: '12 macetes de sublimação de canecas',
+      head: ['#', 'Macete', 'Por que funciona'],
+      rows: [
+        ['1', 'Imprimir espelhado', 'A transferência inverte a imagem'],
+        ['2', 'Secar o papel antes de posicionar', 'Evita borrão e mancha'],
+        ['3', 'Fita térmica nas bordas', 'Evita deslocamento e "fantasma"'],
+        ['4', 'Conferir a medida (21 × 9,5 cm)', 'Evita faixa sem estampa ou dobra'],
+        ['5', 'Pré-aquecer a caneca', 'Cor uniforme até as bordas'],
+        ['6', 'Testar em caneca de sacrifício', 'Valida cor e posição sem arriscar o lote'],
+        ['7', 'Ajustar tempo antes da temperatura', 'Correção mais precisa da cor'],
+        ['8', 'Pressão firme e uniforme', 'Pressão fraca deixa a cor falhada'],
+        ['9', 'Retirar o papel ainda quente', 'Evita que a tinta volte para o papel'],
+        ['10', 'Deixar esfriar antes de embalar', 'Evita condensação e mancha na embalagem'],
+        ['11', 'Guardar papel em local seco', 'Papel úmido transfere mal'],
+        ['12', 'Limpar a prensa entre levas', 'Resíduo de tinta mancha a próxima caneca'],
+      ],
+    },
+    { type: 'h2', text: 'Depois da prensa: acabamento e conservação', id: 'depois-da-prensa' },
+    {
+      type: 'p',
+      text: 'Retire o papel ainda quente, com um movimento firme e contínuo — puxar devagar ou parar no meio pode deixar marca. Deixe a caneca esfriar em local ventilado antes de embalar: embalar caneca quente cria condensação dentro da embalagem e pode manchar a estampa. E lembre o cliente: caneca sublimada vai ao micro-ondas, mas não gosta de esponja abrasiva — lavar com o lado macio da esponja mantém a cor viva por muito mais tempo.',
+    },
+    {
+      type: 'faq',
+      items: [
+        {
+          q: 'Por que minha caneca sublimada saiu com a cor apagada?',
+          a: 'As causas mais comuns são tempo insuficiente, temperatura baixa ou caneca fria no início. Pré-aqueça a caneca e aumente o tempo em 10 segundos por vez até a cor ficar viva — e faça o teste em caneca de sacrifício antes do lote.',
+        },
+        {
+          q: 'O que é o efeito "fantasma" na sublimação?',
+          a: 'É a imagem duplicada/deslocada, causada pelo papel que se move durante a prensagem. Resolve com fita térmica nas bordas e pressão uniforme da prensa.',
+        },
+        {
+          q: 'Posso lavar caneca sublimada na lava-louças?',
+          a: 'Pode, mas a durabilidade da estampa é maior lavando à mão com o lado macio da esponja. Avise o cliente: sem esponja abrasiva e sem deixar de molho por horas.',
+        },
+      ],
+    },
+    {
+      type: 'cta',
+      text: 'Com a técnica certa e a arte certa, a caneca sai perfeita. As artes estão no portal.',
+      label: 'Ver as artes para sublimar',
+      href: '/#preco',
+    },
+  ],
+  related: ['como-sublimar-canecas-passo-a-passo', 'prensa-de-canecas-como-escolher', 'artes-para-sublimacao-de-canecas-guia'],
+}
+
+export const BLOG_ARTICLES: BlogArticle[] = [ART1, ART2, ART3, ART4, ART5, ART6, ART7, ART8]
 
 export function getArticle(slug: string): BlogArticle | undefined {
   return BLOG_ARTICLES.find((a) => a.slug === slug)

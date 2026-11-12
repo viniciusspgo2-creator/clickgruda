@@ -25,6 +25,7 @@ import {
   SearchX,
   Settings,
   BellRing,
+  BookOpen,
   ShieldAlert,
   ShieldCheck,
   ShoppingBag,
@@ -58,6 +59,7 @@ import { AdminSeoSection } from '@/components/admin/AdminSeoSection'
 import { AdminCouponsSection } from '@/components/admin/AdminCouponsSection'
 import { AdminMercadoPagoSection } from '@/components/admin/AdminMercadoPagoSection'
 import { AdminAnnouncementSection } from '@/components/admin/AdminAnnouncementSection'
+import { AdminBlogSection } from '@/components/admin/AdminBlogSection'
 import { AdminEnhanceSection, AdminSearchMissesSection, AdminSecuritySection } from '@/components/views/AdminGrowthSections'
 import { useStore } from '@/lib/store'
 import { formatBRL } from '@/lib/types'
@@ -80,6 +82,7 @@ export type AdminSection =
   | 'seo'
   | 'coupons'
   | 'mercadopago'
+  | 'blog'
 
 const SECTIONS: { id: AdminSection; label: string; icon: React.ElementType }[] = [
   { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
@@ -98,13 +101,14 @@ const SECTIONS: { id: AdminSection; label: string; icon: React.ElementType }[] =
   { id: 'avisos', label: 'Avisos / Pop-up', icon: BellRing },
   { id: 'settings', label: 'Configurações', icon: Settings },
   { id: 'seo', label: 'SEO e Integrações', icon: Globe },
+  { id: 'blog', label: 'Blog', icon: BookOpen },
 ]
 
 const SECTION_GROUPS: { label: string; sections: AdminSection[] }[] = [
   { label: 'Visão geral', sections: ['dashboard'] },
   { label: 'Acervo', sections: ['arts', 'categories', 'tags', 'seasonal'] },
   { label: 'Membros e vendas', sections: ['users', 'payments', 'coupons', 'mercadopago'] },
-  { label: 'Relacionamento', sections: ['sugestoes', 'buscas', 'melhorias', 'avisos'] },
+  { label: 'Relacionamento', sections: ['sugestoes', 'buscas', 'melhorias', 'avisos', 'blog'] },
   { label: 'Configurações', sections: ['seguranca', 'seo', 'settings'] },
 ]
 
@@ -263,6 +267,7 @@ export function AdminView() {
             {section === 'melhorias' && <AdminEnhanceSection />}
             {section === 'seguranca' && <AdminSecuritySection />}
             {section === 'seo' && <AdminSeoSection />}
+            {section === 'blog' && <AdminBlogSection />}
             {section === 'mercadopago' && <AdminMercadoPagoSection />}
             {section === 'coupons' && <AdminCouponsSection />}
             {section === 'settings' && <AdminSettingsSection />}

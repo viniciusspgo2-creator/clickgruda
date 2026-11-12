@@ -142,6 +142,27 @@ model Setting {
   value String
 }
 
+// Artigos do blog criados pelo admin (o blog estático de src/content/blog.ts continua).
+// O conteúdo é Markdown. Só artigos published aparecem no /blog público.
+model BlogPost {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  title       String
+  seoTitle    String?
+  description String
+  category    String   @default("dicas")
+  keywords    String[] @default([])
+  cover       String?
+  coverAlt    String?
+  content     String
+  published   Boolean  @default(false)
+  publishedAt DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([published, publishedAt])
+}
+
 model ThemeSuggestion {
   id        String   @id @default(cuid())
   message   String

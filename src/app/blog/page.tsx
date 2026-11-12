@@ -4,8 +4,11 @@ import Image from 'next/image'
 import { ArrowRight, CalendarDays, Clock3 } from 'lucide-react'
 import { SiteHeader, SiteFooter, MobileNote } from '@/components/blog/SiteChrome'
 import { PageViewTracker } from '@/components/blog/PageViewTracker'
-import { BLOG_ARTICLES, BLOG_CATEGORY_LABELS } from '@/content/blog'
+import { getAllBlogListItems } from '@/lib/blog-posts'
 import { SITE, SITE_URL, CONTENT_UPDATED_ISO } from '@/lib/site'
+
+// Revalida a cada 60 s: artigos criados no admin entram na lista sem novo deploy.
+export const revalidate = 60
 
 export const metadata: Metadata = {
   title: 'Blog do Sublimador — Guias, Custos e Artes para Canecas',
@@ -34,9 +37,10 @@ export const metadata: Metadata = {
   },
 }
 
-export default function BlogPage() {
-  const featured = BLOG_ARTICLES[0]
-  const rest = BLOG_ARTICLES.slice(1)
+export default async function BlogPage() {
+  const articles = await getAllBlogListItems()
+  const featured = articles[0]
+  const rest = articles.slice(1)
 
   const blogSchema = {
     '@context': 'https://schema.org',
@@ -60,7 +64,7 @@ export default function BlogPage() {
         url: `${SITE_URL}/blog`,
         publisher: { '@id': `${SITE_URL}/#organization` },
         inLanguage: 'pt-BR',
-        blogPost: BLOG_ARTICLES.map((a) => ({
+        blogPost: articles.map((a) => ({
           '@type': 'BlogPosting',
           headline: a.title,
           description: a.description,
@@ -132,7 +136,7 @@ export default function BlogPage() {
             <div className="flex flex-col justify-center gap-3 p-6 sm:p-8">
               <div className="flex items-center gap-2 text-xs font-bold">
                 <span className="rounded-full bg-orange-500 px-3 py-1 uppercase tracking-wider text-white">
-                  {BLOG_CATEGORY_LABELS[featured.category]}
+                  {featured.categoryLabel}
                 </span>
                 <span className="flex items-center gap-1 text-zinc-400">
                   <Clock3 className="h-3.5 w-3.5" /> {featured.readTime}
@@ -170,7 +174,7 @@ export default function BlogPage() {
                 <div className="flex flex-col gap-2.5 p-5">
                   <div className="flex items-center justify-between gap-2 text-xs font-bold">
                     <span className="rounded-full bg-orange-100 px-2.5 py-1 uppercase tracking-wider text-orange-600">
-                      {BLOG_CATEGORY_LABELS[a.category]}
+                      {a.categoryLabel}
                     </span>
                     <span className="flex items-center gap-1 text-zinc-400">
                       <Clock3 className="h-3.5 w-3.5" /> {a.readTime}
