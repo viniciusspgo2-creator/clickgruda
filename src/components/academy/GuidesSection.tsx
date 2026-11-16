@@ -18,10 +18,10 @@ const GUIDES: Guide[] = [
     title: 'Kit Essencial para Iniciantes',
     description: 'O que você precisa para imprimir suas primeiras artes: da impressão à venda.',
     images: [
-      { src: '/guias/kit-capa.jpg', label: 'Capa — Kit essencial' },
-      { src: '/guias/kit-etapa1.jpg', label: 'Etapa 1 — Impressão' },
-      { src: '/guias/kit-etapa2.jpg', label: 'Etapa 2 — Prensagem' },
-      { src: '/guias/kit-etapa3.jpg', label: 'Etapa 3 — Acabamento e venda' },
+      { src: '/guias/kit-capa.webp', label: 'Capa — Kit essencial' },
+      { src: '/guias/kit-etapa1.webp', label: 'Etapa 1 — Impressão' },
+      { src: '/guias/kit-etapa2.webp', label: 'Etapa 2 — Prensagem' },
+      { src: '/guias/kit-etapa3.webp', label: 'Etapa 3 — Acabamento e venda' },
     ],
   },
   {
@@ -30,8 +30,8 @@ const GUIDES: Guide[] = [
     title: 'Guia de Tempo & Temperatura',
     description: 'Parâmetros iniciais para 5 produtos. Sempre confira a ficha do fabricante.',
     images: [
-      { src: '/guias/guia-tempo-capa.png', label: 'Capa — Tempo & temperatura' },
-      { src: '/guias/guia-tempo-tabela.png', label: 'Tabela — 5 produtos' },
+      { src: '/guias/guia-tempo-capa.webp', label: 'Capa — Tempo & temperatura' },
+      { src: '/guias/guia-tempo-tabela.webp', label: 'Tabela — 5 produtos' },
     ],
   },
   {
@@ -40,8 +40,8 @@ const GUIDES: Guide[] = [
     title: 'Aumente seu Ticket Médio',
     description: 'Embalagem bonita valoriza a caneca, melhora a percepção e ajuda a cobrar mais.',
     images: [
-      { src: '/guias/ticket-capa.png', label: 'Capa — Ticket médio' },
-      { src: '/guias/ticket-info.png', label: 'Embalagem em valor' },
+      { src: '/guias/ticket-capa.webp', label: 'Capa — Ticket médio' },
+      { src: '/guias/ticket-info.webp', label: 'Embalagem em valor' },
     ],
   },
   {
@@ -50,8 +50,8 @@ const GUIDES: Guide[] = [
     title: 'Gabaritos para Canecas',
     description: 'Medidas prontas para diagramar suas artes com precisão: tarja branca e tradicional.',
     images: [
-      { src: '/guias/gabaritos-capa.png', label: 'Capa — Gabaritos' },
-      { src: '/guias/gabaritos-medidas.png', label: 'Medidas prontas' },
+      { src: '/guias/gabaritos-capa.webp', label: 'Capa — Gabaritos' },
+      { src: '/guias/gabaritos-medidas.webp', label: 'Medidas prontas' },
     ],
   },
 ]
