@@ -73,7 +73,6 @@ import { ArtPreviewDialog } from '@/components/portal/ArtPreviewDialog'
 import { DemoConversionActions } from '@/components/portal/DemoConversionActions'
 import { EnhanceRequestDialog } from '@/components/portal/EnhanceRequestDialog'
 import { LoadMoreFooter } from '@/components/shared/LoadMoreFooter'
-import { AnnouncementDialog } from '@/components/portal/AnnouncementDialog'
 import { STUDIO_URL, WHATSAPP, WHATSAPP_MESSAGES } from '@/lib/site'
 import { formatArtTitle } from '@/lib/format-art-title'
 import { getCategoryIcon } from '@/lib/category-icons'
@@ -1260,8 +1259,6 @@ export function PortalView() {
       </Dialog>
 
       {canDeleteFromPortal && deleteTarget && <PortalDeleteArtDialog key={deleteTarget.id} art={deleteTarget} onClose={() => setDeleteTarget(null)} onDeleted={onArtDeleted} />}
-
-      <AnnouncementDialog userId={user.id} />
 
       {/* ================= SUGESTÃO DE TEMA (envia ao Admin Master) ================= */}
       <ArtPreviewDialog art={previewArt} open={!!previewArt} onOpenChange={(open) => !open && setPreviewId(null)} demo={protectedPreview} downloadState={previewArt ? downloadStates[previewArt.id] || 'idle' : 'idle'} onDownload={handleDownload} onFavorite={toggleFavorite} onCategory={toggleCategory} onTag={viewTag} onSeasonal={viewSeasonal} />

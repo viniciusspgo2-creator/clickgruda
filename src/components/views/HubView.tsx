@@ -10,6 +10,7 @@ import {
 } from 'lucide-react'
 import { toast } from 'sonner'
 import AcademyPage from '@/components/academy/AcademyPage'
+import { AnnouncementDialog } from '@/components/portal/AnnouncementDialog'
 import SublimationChatBot from '@/components/hub/SublimationChatBot'
 import { useStore } from '@/lib/store'
 
@@ -252,5 +253,6 @@ export function HubView(){
     <div className="mt-6 flex flex-wrap gap-3">{canLaunch?<a href={UNIFIED_SSO?`/api/sso/studio/start?tool=${studioDialog}`:STUDIO_BASE+studioRoutes[studioDialog]} className="inline-flex items-center gap-2 rounded-xl bg-orange-500 px-5 py-3 text-sm font-extrabold text-black">Abrir Studio {UNIFIED_SSO?<ShieldCheck size={17}/>:<ExternalLink size={17}/>}</a>:<span className="inline-flex items-center gap-2 rounded-xl border border-white/10 px-5 py-3 text-sm text-zinc-400"><LockKeyhole size={16}/> Acesso indisponível</span>}<button type="button" onClick={()=>setStudioDialog(null)} className="rounded-xl border border-white/15 px-5 py-3 text-sm font-bold text-zinc-300">Voltar</button></div></>}
   </section></div>}
   <SublimationChatBot />
+  <AnnouncementDialog userId={user.id} />
  </div>
 }
