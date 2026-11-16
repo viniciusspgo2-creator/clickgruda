@@ -58,8 +58,8 @@ export const SALES = {
   testimonials: [] as { name: string; role: string; quote: string; result: string }[],
   steps: [
     { num: '01', title: 'Comece pela Biblioteca', subtitle: 'Crie sua conta e encontre sua próxima arte.', description: 'Busque por tema, explore categorias e escolha o arquivo que combina com o pedido do seu cliente.' },
-    { num: '02', title: 'Crie e apresente', subtitle: 'Mockup e Editor reunidos no Studio.', description: 'Monte a composição no Editor e mostre a caneca em 3D no Mockup. O Studio acompanha seu pacote e abre em outra plataforma.' },
-    { num: '03', title: 'Ative o acesso completo', subtitle: 'Produza agora e acompanhe a evolução da plataforma.', description: 'A confirmação da compra libera os downloads sem a cota do teste. Seu código do Studio passa a definitivo e você continua com o acervo e as ferramentas do pacote.' },
+    { num: '02', title: 'Crie e apresente', subtitle: 'Mockup e Editor reunidos no Studio.', description: 'Monte a composição no Editor e mostre a caneca em 3D no Mockup. O cliente vê antes, aprova na hora — e você só produz depois de vender.' },
+    { num: '03', title: 'Ative o acesso completo', subtitle: 'Produza agora e acompanhe a evolução da plataforma.', description: 'A confirmação da compra libera os downloads sem a cota do teste. Biblioteca, Studio e Editor ficam com você para sempre — sem prazo, sem mensalidade.' },
   ],
   artworks: [
     { src: '/uploads/showcase/arte-flork-casal-nesmo.webp', title: 'Frase de atitude', category: 'Frases' },
