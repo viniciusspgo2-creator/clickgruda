@@ -12,7 +12,7 @@ import { SITE } from '@/lib/site'
 import { LIFETIME_PRICE_CENTS } from '@/lib/payments/config'
 import { formatBRL } from '@/lib/types'
 
-export const LANDING_FAQ_INDICES = [18, 19, 20, 2, 3, 9, 17, 23, 24] as const
+export const LANDING_FAQ_INDICES = [18, 19, 2, 3, 9, 17, 23, 24] as const
 
 export const PRICE = formatBRL(LIFETIME_PRICE_CENTS)
 
