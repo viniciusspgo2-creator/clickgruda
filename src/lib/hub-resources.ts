@@ -39,7 +39,7 @@ export const BONUS_GROUPS:BonusGroup[]=[
    ...numbered(['1OmZ7Nmy3Y7RrjMZhmf2rvISLrFtXGtiW','1Zpi2oRYrN0TBTuMgXRXI-K7Tw25D70Dv','1561Gg9YDywIMvKmJARLfZEulcZpH2Fee','1KQtJGIm3-VSdG3XW70M9cpuH80svC5nJ','1qapejhIxPH4MqO2mnQp3fVAvRh3x-Sd8'],'Alfabeto','Alfabetos'),
    {id:'alfabeto-mickey',name:'Alfabeto Mickey e Minnie',description:'Alfabeto temático Mickey e Minnie.',url:drive('14LpJHI4FAfBXiFdTJseIVJbVhxhWR9x1'),theme:'Alfabetos'},
    // --- Natal ---
-   {id:'natal-elementos',name:'Elementos de Natal',description:'Elementos natalinos para suas artes.',url:drive('1eRddMBmDz8Vk8LuvrN3BKnuO7PPegkoU'),theme:'Natal'},
+   {id:'natal-elementos',name:'Elementos de Natal',description:'24 coleções de Natal com quase 1.000 arquivos: Grinch, Disney, Bluey, Papai Noel, frases e mais.',url:drive('1eRddMBmDz8Vk8LuvrN3BKnuO7PPegkoU'),theme:'Natal'},
    {id:'alfabeto-natalino',name:'Alfabeto Natalino',description:'Alfabeto temático de Natal.',url:drive('1cuae3rTpleCUzO8xHHOaqkmrai2ZN-gd'),theme:'Natal'},
    // --- Datas comemorativas ---
    {id:'festa',name:'Festa — 650 arquivos',description:'Arquivos de festa para suas artes.',url:drive('1kJ7QVU_j69AvI9UfFjh0RGRCxCGD1NDy'),theme:'Datas comemorativas'},
