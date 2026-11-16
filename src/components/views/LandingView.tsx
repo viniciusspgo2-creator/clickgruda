@@ -30,8 +30,15 @@ export function LandingView() {
   const setAuthMode = useStore(s => s.setAuthMode)
   const setPendingIntent = useStore(s => s.setPendingIntent)
   const [menuOpen, setMenuOpen] = useState(false)
+  const [showSticky, setShowSticky] = useState(false)
   const reduced = useReducedMotion()
   const freeSignup = useFreeSignup()
+  useEffect(() => {
+    const onScroll = () => setShowSticky(window.scrollY > 480)
+    onScroll()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
   // A campanha tem preço aprovado fixo; nunca ocultá-lo enquanto o catálogo carrega.
   const priceCents = SALES.defaultPriceCents
   const price = formatBRL(priceCents)
@@ -258,6 +265,14 @@ export function LandingView() {
       <BlogHomeSection />
     </main>
     <footer className="border-t border-white/10 px-5 py-10 text-white/55 sm:px-8"><div className="mx-auto flex max-w-7xl flex-col justify-between gap-7 md:flex-row md:items-center"><Logo dark /><nav aria-label="Links do rodapé" className="flex flex-wrap gap-x-6 gap-y-3 text-xs font-semibold"><Link href="/blog" className="hover:text-white">Blog do sublimador</Link><a href={SALES.STUDIO_URL} target="_blank" rel="noopener noreferrer" className="hover:text-white" onClick={() => track('cta_click', { location: 'footer_studio', intent: 'mockup' })}>Studio · Mockup + Editor ↗</a><Link href="/guia" className="hover:text-white">Guia completo</Link><Link href="/sobre" className="hover:text-white">Sobre a Click & Gruda</Link><a href={WHATSAPP.link(WHATSAPP_MESSAGES.support)} target="_blank" rel="noopener noreferrer" className="hover:text-white">Suporte</a></nav><p className="text-[11px]">© {new Date().getFullYear()} Click & Gruda</p></div></footer>
-    <div className="fixed inset-x-0 bottom-0 z-40 border-t border-white/10 bg-[#100d12]/95 px-4 py-3 backdrop-blur-xl lg:hidden"><button onClick={() => goPurchase('mobile_sticky_buy')} className="cg-sales-button flex min-h-12 w-full items-center justify-between gap-3 px-4 py-3 text-sm"><span className="flex flex-col items-start leading-tight"><span className="font-bold">{price} · pagamento único</span><span className="text-[11px] font-medium opacity-80">Acesso vitalício</span></span><span className="flex items-center gap-1.5 font-bold">{buyLabel} <ArrowUpRight size={17} /></span></button></div>
+    <div className={`fixed inset-x-0 bottom-0 z-40 border-t border-white/10 bg-[#100d12]/95 shadow-[0_-12px_40px_rgba(0,0,0,.45)] backdrop-blur-xl transition-transform duration-300 lg:hidden ${showSticky ? 'translate-y-0' : 'translate-y-full'}`} style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
+      <div className="flex items-center justify-between gap-3 px-4 py-3">
+        <div className="min-w-0 leading-tight">
+          <p className="truncate text-base font-extrabold tracking-tight text-white">{price}</p>
+          <p className="truncate text-[11px] font-medium text-white/55">pagamento único · acesso vitalício</p>
+        </div>
+        <button onClick={() => goPurchase('mobile_sticky_buy')} className="cg-sales-button shrink-0 px-5 py-3 text-sm">{hasFullAccess ? 'Minha biblioteca' : 'Garantir acesso'} <ArrowUpRight size={16} /></button>
+      </div>
+    </div>
   </div>
 }
