@@ -27,7 +27,7 @@ const modules:Module[]=[
  {id:'3d',name:'Studio Mockup 3D',description:'Canecas em 3D com iluminação, perspectiva e acabamento realista.',image:'/hub2/hero-main.webp',icon:Box,eyebrow:'REALISMO & MOVIMENTO',tag:'STUDIO 3D',span:''},
  {id:'2d',name:'Studio Mockup 2D',description:'Cenários calibrados para apresentar seus personalizados.',image:'/hub2/hero-tools.webp',icon:MonitorPlay,eyebrow:'COMPOSIÇÃO PROFISSIONAL',tag:'STUDIO 2D',span:''},
  {id:'editor',name:'Studio Editor',description:'Edite suas artes e encontre fundos, personagens, PNGs e ferramentas.',image:'/hub2/hero-editor.webp',icon:PenTool,eyebrow:'EDIÇÃO & RECURSOS',tag:'SEU ESTÚDIO CRIATIVO',span:'lg:col-span-2'},
- {id:'conhecimento',name:'Conhecimento Técnico',description:'Trilhas, videoaulas, diagnósticos e guias práticos para dominar a sublimação.',image:'/guias/kit-capa.jpg',icon:GraduationCap,eyebrow:'APRENDA & EVOLUA',tag:'ACADEMIA',span:''},
+ {id:'conhecimento',name:'Conhecimento Técnico',description:'Trilhas, videoaulas, diagnósticos e guias práticos para dominar a sublimação.',image:'/guias/kit-capa.webp',icon:GraduationCap,eyebrow:'APRENDA & EVOLUA',tag:'ACADEMIA',span:''},
  {id:'bonus',name:'Área Bônus',description:'Cursos, livros, planilhas, packs e conteúdos para evoluir.',image:'/hub2/hero-bonus.webp',icon:Gift,eyebrow:'CONTEÚDOS EXCLUSIVOS',tag:'ASSINANTES',span:''},
 ]
 const nav:{id:string;label:string;icon:LucideIcon}[]=[
