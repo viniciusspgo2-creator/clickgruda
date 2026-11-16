@@ -851,7 +851,533 @@ const ART8: BlogArticle = {
   related: ['como-sublimar-canecas-passo-a-passo', 'prensa-de-canecas-como-escolher', 'artes-para-sublimacao-de-canecas-guia'],
 }
 
-export const BLOG_ARTICLES: BlogArticle[] = [ART1, ART2, ART3, ART4, ART5, ART6, ART7, ART8]
+/* ============================================================
+ * ARTIGO 9 — "tempo e temperatura para sublimar caneca"
+ * ============================================================ */
+const ART9: BlogArticle = {
+  slug: 'tempo-temperatura-sublimar-caneca-tabela',
+  title: 'Tempo e temperatura para sublimar caneca: tabela completa por material',
+  seoTitle: 'Tempo e Temperatura para Sublimar Caneca: Tabela Completa (2026)',
+  description:
+    'Tabela de tempo e temperatura para sublimar caneca por material: porcelana, alumínio, vidro, mágica e mais — e como calibrar a sua prensa sem desperdiçar peças.',
+  keywords: [
+    'tempo e temperatura para sublimar caneca',
+    'tabela tempo temperatura sublimação',
+    'temperatura sublimar caneca porcelana',
+    'tempo prensa caneca',
+    'temperatura prensa sublimação',
+  ],
+  category: 'guias',
+  emoji: '🌡️',
+  cover: '/uploads/hero-press.png',
+  coverAlt: 'Prensa de canecas ajustada com tempo e temperatura para sublimação',
+  readTime: '7 min',
+  datePublished: '2026-11-16',
+  dateModified: '2026-11-16',
+  lead:
+    'Tempo e temperatura para sublimar caneca são os dois ajustes que mais decidem se a estampa sai viva ou apagada. Temperatura baixa demais não transfere a tinta por completo; alta demais queima o papel e mancha a peça. A boa notícia é que cada material tem uma faixa conhecida — e este artigo traz a tabela completa por material, além do método para calibrar a sua prensa sem desperdiçar caneca.',
+  blocks: [
+    { type: 'h2', text: 'Por que o tempo e a temperatura decidem a cor da caneca', id: 'por-que-tempo-temperatura' },
+    {
+      type: 'p',
+      text: 'A sublimação é uma transferência por calor: a tinta do papel vira gás e penetra no revestimento da caneca. Esse processo só acontece dentro de uma janela de calor e tempo. Se a prensa não chega à temperatura certa, parte da tinta fica no papel e a cor sai apagada, principalmente nas bordas. Se passa do ponto, o papel amarela, a tinta queima e a estampa perde o brilho. Ou seja, não existe "prensar mais forte resolve": o que resolve é a combinação certa de temperatura, tempo e pressão para aquele material.',
+    },
+    {
+      type: 'p',
+      text: 'Cada prensa tem a sua calibragem e cada material reage de um jeito. Por isso a tabela deste artigo é o ponto de partida — não uma regra gravada em pedra. O ajuste fino sempre vem do teste: uma caneca de sacrifício, com a arte do pedido, mostra se a cor ficou viva, se a emenda fechou e se as bordas transferiram por completo. Quem pula o teste economiza uma caneca e arrisca o lote inteiro.',
+    },
+    { type: 'h2', text: 'Tabela completa: tempo e temperatura por material', id: 'tabela-tempo-temperatura' },
+    {
+      type: 'p',
+      text: 'Os valores abaixo são referências de mercado para prensas de canecas, com pressão média. Comece por eles e ajuste em passos pequenos, conforme o resultado da caneca de teste. Se a sua prensa é manual, o tempo de fechamento e abertura também entra na conta — seja consistente no movimento para o teste valer.',
+    },
+    {
+      type: 'table',
+      caption: 'Tempo e temperatura para sublimar caneca por material',
+      head: ['Material', 'Temperatura', 'Tempo', 'Pressão'],
+      rows: [
+        ['Caneca de porcelana', '200 °C', '200 a 210 s', 'Média'],
+        ['Caneca de alumínio', '185 °C', '160 s', 'Média'],
+        ['Caneca de plástico', '170 °C', '170 s', 'Média'],
+        ['Caneca de vidro', '175 °C', '200 s', 'Média'],
+        ['Caneca mágica', '185 °C', '190 s', 'Média'],
+        ['Caneca chopp (vidro)', '180 °C', '215 s', 'Média'],
+        ['Squeeze de alumínio', '200 °C', '160 s', 'Média'],
+        ['Azulejo de cerâmica (prensa plana)', '165 °C', '30 s', 'Média'],
+      ],
+    },
+    {
+      type: 'callout',
+      title: 'Os valores são ponto de partida',
+      text: 'A mesma configuração pode variar entre prensas: uma prensa nova e uma prensa antiga, mesmo marcando a mesma temperatura no visor, nem sempre entregam o mesmo calor real. Por isso, antes de uma leva grande, faça sempre uma caneca de teste com a arte do pedido e só avance quando a cor estiver viva e a emenda fechada.',
+    },
+    { type: 'h2', text: 'Como calibrar a sua prensa sem desperdiçar canecas', id: 'como-calibrar' },
+    {
+      type: 'p',
+      text: 'Calibrar é descobrir o ponto exato da sua prensa para aquele material. O método é simples e barato: separe uma caneca branca para sacrifício e use a tabela como ponto de partida. Prensou, avaliou, ajustou. O segredo é mudar uma coisa de cada vez — se você mexe em temperatura, tempo e papel ao mesmo tempo, não sabe o que resolveu o problema nem o que causou o próximo.',
+    },
+    {
+      type: 'ul',
+      items: [
+        'Comece pelos valores da tabela para o material da caneca que você vai produzir.',
+        'Se a cor saiu apagada, aumente o tempo em 10 segundos antes de mexer na temperatura.',
+        'Ajuste em passos de 10 segundos por vez, sempre com uma caneca de teste entre os ajustes.',
+        'Anote a configuração que funcionou para cada material — vira a sua tabela pessoal, mais confiável que qualquer tabela genérica.',
+        'Refaça o teste quando trocar de lote de papel, tinta ou caneca: o material muda e o ponto ideal muda junto.',
+      ],
+    },
+    {
+      type: 'p',
+      text: 'A regra de ajustar o tempo antes da temperatura existe por um motivo: o tempo é o ajuste mais fino. Dez segundos a mais transferem mais tinta sem o risco de queimar o papel que um salto de temperatura traz. Só mexa na temperatura quando o tempo já estiver no limite e a cor continuar apagada — e, nesse caso, suba de 5 em 5 graus, nunca de uma vez.',
+    },
+    { type: 'h2', text: 'O giro de 180°: o truque para cobrir as bordas', id: 'giro-180' },
+    {
+      type: 'p',
+      text: 'As bordas da caneca — perto da alça e nas extremidades do papel — recebem menos calor que o centro do cilindro. É por isso que muita estampa sai perfeita no meio e apagada nas pontas. O truque é o giro de 180°: depois do primeiro ciclo, abra a prensa, gire a caneca em 180 graus e prense por mais 60 segundos. O segundo ciclo cobre justamente as áreas que ficaram mais frias no primeiro, e a emenda fecha por completo.',
+    },
+    {
+      type: 'p',
+      text: 'O giro não dobra o tempo total da prensagem — são 60 segundos a mais, não um ciclo inteiro. E ele faz diferença principalmente em artes que cobrem a caneca inteira, o cobre-caneca de 21 × 9,5 cm, porque a emenda e as bordas são as primeiras a denunciar falta de calor. Em canecas de vidro e chopp, que são mais grossas e demoram mais para aquecer, o giro é quase obrigatório.',
+    },
+    { type: 'h2', text: 'Erros comuns de tempo e temperatura', id: 'erros-comuns' },
+    {
+      type: 'ul',
+      items: [
+        'Prensar a caneca fria: a caneca rouba calor da prensa no início e a cor sai apagada nas bordas. Pré-aqueça a caneca por alguns segundos antes de posicionar o papel.',
+        'Abrir a prensa no meio do ciclo: interromper a transferência no meio deixa a cor falhada e a emenda aberta.',
+        'Papel úmido: papel guardado em local úmido solta vapor na prensa e lava a cor da estampa.',
+        'Pressão fraca: sem contato firme entre papel e caneca, a tinta não transfere por completo e a cor fica manchada.',
+        'Copiar a configuração de outra prensa: o visor marca a temperatura, mas o calor real varia entre equipamentos — calibre a sua.',
+      ],
+    },
+    {
+      type: 'p',
+      text: 'Se você já cometeu um desses erros, não é o fim do mundo: a caneca perdida vira caneca de teste para a próxima calibragem. O prejuízo de verdade é repetir o erro em uma leva inteira sem testar antes. Uma caneca de sacrifício custa pouco; refazer um pedido inteiro custa o lote, o prazo e a confiança do cliente.',
+    },
+    {
+      type: 'faq',
+      items: [
+        {
+          q: 'Qual a temperatura ideal para sublimar caneca de porcelana?',
+          a: 'A referência de mercado é 200 °C por 200 a 210 segundos, com pressão média. Use esses valores como ponto de partida e calibre com uma caneca de teste: se a cor sair apagada, aumente o tempo em 10 segundos antes de mexer na temperatura.',
+        },
+        {
+          q: 'Posso usar a mesma configuração para todos os tipos de caneca?',
+          a: 'Não. Cada material tem a sua faixa: porcelana trabalha em 200 °C, alumínio em 185 °C, vidro em 175 °C e plástico em 170 °C, com tempos diferentes para cada um. A tabela completa deste artigo traz os valores por material.',
+        },
+        {
+          q: 'Minha caneca saiu desbotada: aumento a temperatura ou o tempo?',
+          a: 'Aumente o tempo primeiro, em passos de 10 segundos, e teste de novo. O tempo é o ajuste mais fino e não queima o papel. Só aumente a temperatura se o tempo já estiver no limite e a cor continuar apagada.',
+        },
+      ],
+    },
+    {
+      type: 'cta',
+      text: 'Com tempo e temperatura calibrados, falta só a arte na medida exata para a sua caneca.',
+      label: 'Ver as artes para sublimar',
+      href: '/#preco',
+    },
+  ],
+  related: ['como-sublimar-canecas-passo-a-passo', 'macetes-sublimacao-de-canecas', 'prensa-de-canecas-como-escolher'],
+}
+
+/* ============================================================
+ * ARTIGO 10 — "caneca mágica sublimação"
+ * ============================================================ */
+const ART10: BlogArticle = {
+  slug: 'caneca-magica-sublimacao-como-fazer',
+  title: 'Caneca mágica: como sublimar, tempo e temperatura (sem errar)',
+  seoTitle: 'Caneca Mágica Sublimação: Como Fazer, Tempo e Temperatura',
+  description:
+    'Como sublimar caneca mágica: o que é a película termocrômica, tempo e temperatura certos, os cuidados obrigatórios e ideias de venda.',
+  keywords: [
+    'caneca mágica sublimação',
+    'como sublimar caneca mágica',
+    'caneca mágica tempo temperatura',
+    'caneca que muda de cor sublimação',
+  ],
+  category: 'guias',
+  emoji: '🪄',
+  cover: '/uploads/hero-mug.png',
+  coverAlt: 'Caneca mágica preta revelando a estampa com líquido quente',
+  readTime: '7 min',
+  datePublished: '2026-11-16',
+  dateModified: '2026-11-16',
+  lead:
+    'A caneca mágica sublimação é um dos produtos que mais chamam atenção no balcão: fria, ela é preta e não mostra nada; com líquido quente, a estampa aparece como mágica. O processo de sublimação é o mesmo da caneca branca — o que muda são o tempo, a temperatura e alguns cuidados obrigatórios. Este guia mostra o passo a passo completo, a configuração certa e os erros que estragam a peça.',
+  blocks: [
+    { type: 'h2', text: 'O que é a caneca mágica (e por que ela muda de cor)', id: 'o-que-e-caneca-magica' },
+    {
+      type: 'p',
+      text: 'A caneca mágica tem uma película termocrômica por fora: fria, a película é preta e opaca, escondendo tudo o que está por baixo. Com líquido quente — acima de aproximadamente 60 °C — a película fica transparente e revela a arte sublimada. Quando a caneca esfria, a película escurece de novo e a imagem some. É um efeito físico, não é truque de impressão: a "mágica" está no revestimento da caneca.',
+    },
+    {
+      type: 'p',
+      text: 'A arte fica sublimada na camada de resina da caneca, exatamente como na caneca branca comum. A diferença é que, por cima da arte, existe essa película sensível ao calor. Por isso o processo de sublimação é o mesmo — imprimir espelhado, posicionar, prensar — mas o tempo, a temperatura e, principalmente, os cuidados depois da prensa mudam. Tratar a caneca mágica como uma caneca branca comum é o erro que mais estraga peças.',
+    },
+    { type: 'h2', text: 'Tempo e temperatura para sublimar caneca mágica', id: 'tempo-temperatura' },
+    {
+      type: 'p',
+      text: 'A configuração sugerida para a caneca mágica é 185 °C por 190 segundos, com pressão média. Existe também uma segunda referência usada por sublimadores, de 190 °C por 180 segundos. As duas funcionam — a diferença é o equilíbrio entre calor e tempo da sua prensa. Comece pela configuração sugerida e só mude se o teste mostrar cor apagada ou mancha.',
+    },
+    {
+      type: 'table',
+      caption: 'Parâmetros de referência para sublimar caneca mágica',
+      head: ['Configuração', 'Temperatura', 'Tempo', 'Pressão'],
+      rows: [
+        ['Sugerida', '185 °C', '190 s', 'Média'],
+        ['Alternativa', '190 °C', '180 s', 'Média'],
+      ],
+    },
+    {
+      type: 'p',
+      text: 'Um detalhe que muita gente ignora: a base da caneca mágica é mais grossa que a da caneca branca comum, e por isso ela demora mais para aquecer. Se a cor sair apagada nas bordas, o problema pode não ser a temperatura — pode ser o tempo. Antes de subir a temperatura, aumente o tempo em 10 segundos e teste de novo. E faça o teste sempre em uma caneca de sacrifício, com a arte do pedido, antes de prensar o lote.',
+    },
+    { type: 'h2', text: 'Passo a passo: como sublimar caneca mágica', id: 'passo-a-passo' },
+    {
+      type: 'ul',
+      items: [
+        'Prepare o papel: antes de imprimir, aqueça o papel sublimático na prensa por 5 segundos para tirar a umidade — papel seco transfere melhor.',
+        'Imprima a arte espelhada: configure a impressão invertida no papel sublimático, na maior qualidade da impressora. Sem espelhamento, o texto sai ao contrário na caneca.',
+        'Aqueça a prensa: ajuste para 185 °C e deixe a prensa estabilizar antes de começar.',
+        'Posicione e fixe: envolva a caneca com o papel, com a arte virada para a caneca, e fixe com fita térmica nas bordas.',
+        'Prensar: feche a prensa com pressão média e aguarde os 190 segundos sem abrir no meio do ciclo.',
+        'Esfriar antes de mexer: retire a caneca da prensa e espere esfriar antes de retirar o papel e a fita térmica.',
+        'Conferir o efeito: despeje água quente na caneca e veja a arte aparecer; quando esfriar, ela some de novo.',
+      ],
+    },
+    {
+      type: 'callout',
+      title: 'A etapa que não pode ser pulada',
+      text: 'Esperar a caneca esfriar antes de retirar o papel e a fita térmica não é capricho: a camada termocrômica fica sensível enquanto está quente. Mexer nela quente é o erro mais comum — e o que mais estraga canecas mágicas que, de resto, saíram perfeitas.',
+    },
+    { type: 'h2', text: 'Cuidados obrigatórios com a caneca mágica', id: 'cuidados' },
+    {
+      type: 'ul',
+      items: [
+        'Não remova a fita térmica com a caneca quente: a camada termocrômica fica sensível ao calor e pode ser danificada na remoção.',
+        'Não resfrie a caneca na água: o choque térmico pode danificar a arte ou trincar a caneca. Deixe esfriar naturalmente, em local ventilado.',
+        'Espere esfriar antes de retirar o papel: retire o papel só depois que a caneca estiver fria ao toque.',
+        'Lembre que a base é mais grossa: a caneca mágica demora mais para aquecer — respeite o tempo da tabela e teste antes do lote.',
+        'Guarde em local seco: umidade no papel ou na caneca compromete a transferência e mancha a estampa.',
+      ],
+    },
+    {
+      type: 'p',
+      text: 'Esses cuidados valem para a produção e para a orientação ao cliente. Quem compra uma caneca mágica precisa saber que ela não gosta de choque térmico: nada de tirar da prensa e jogar na água fria, nada de gelo direto na caneca quente. Avise no bilhete que acompanha a entrega — é um cuidado simples que evita reclamação e devolução.',
+    },
+    { type: 'h2', text: 'Ideias de venda: quem compra caneca mágica', id: 'ideias-de-venda' },
+    {
+      type: 'p',
+      text: 'A caneca mágica vende pelo efeito: o cliente compra a reação de quem vai receber. Por isso ela funciona muito bem como presente — a pessoa ganha uma caneca preta comum e, no primeiro café, descobre a mensagem, a foto ou o desenho escondido. É um produto de impacto, e o preço pode acompanhar esse impacto: caneca mágica não compete com caneca branca comum, ela compete com presente criativo.',
+    },
+    {
+      type: 'ul',
+      items: [
+        'Presente com foto ou nome: a foto do casal, do filho ou do pet aparece só com o líquido quente — é o presente que surpreende duas vezes.',
+        'Revelação: chá revelação, pedido de namoro, pedido de casamento e anúncio de gravidez funcionam muito bem com a mensagem escondida.',
+        'Dia dos Namorados: a data mais forte para a caneca mágica — frases românticas e fotos do casal são os pedidos mais comuns.',
+        'Lembrança de evento: aniversário, formatura e chá de bebê ganham uma lembrança que ninguém joga fora.',
+        'Brinde corporativo: a logo da empresa aparece com o café — um brinde que o cliente usa todo dia e mostra para os colegas.',
+      ],
+    },
+    {
+      type: 'p',
+      text: 'Para vender mais, mostre o efeito: grave um vídeo curto despejando água quente na caneca e poste no Instagram e no WhatsApp. O vídeo da revelação vende sozinho — é o tipo de conteúdo que o cliente encaminha para alguém. E ofereça a caneca mágica como upgrade: quem já vai comprar uma caneca comum topa pagar a diferença para levar a versão que muda de cor.',
+    },
+    {
+      type: 'faq',
+      items: [
+        {
+          q: 'Qual o tempo e a temperatura para sublimar caneca mágica?',
+          a: 'A configuração sugerida é 185 °C por 190 segundos, com pressão média. Existe uma segunda referência de 190 °C por 180 segundos. Comece pela sugerida e ajuste em passos de 10 segundos se o teste mostrar cor apagada.',
+        },
+        {
+          q: 'Por que não posso resfriar a caneca mágica na água?',
+          a: 'O choque térmico pode danificar a arte sublimada ou trincar a caneca. Deixe a caneca esfriar naturalmente, em local ventilado, e só retire o papel e a fita térmica depois que ela estiver fria ao toque.',
+        },
+        {
+          q: 'A sublimação da caneca mágica é diferente da caneca branca?',
+          a: 'O processo é o mesmo — imprimir espelhado, posicionar, prensar. O que muda são o tempo e a temperatura (185 °C por 190 segundos) e os cuidados depois da prensa, porque a camada termocrômica fica sensível enquanto a caneca está quente.',
+        },
+      ],
+    },
+    {
+      type: 'cta',
+      text: 'A caneca mágica precisa de uma arte que valha a revelação — veja as artes prontas.',
+      label: 'Ver as artes para sublimar',
+      href: '/#preco',
+    },
+  ],
+  related: ['tempo-temperatura-sublimar-caneca-tabela', 'como-sublimar-canecas-passo-a-passo', 'datas-comemorativas-para-vender-canecas'],
+}
+
+/* ============================================================
+ * ARTIGO 11 — "quanto cobrar caneca personalizada"
+ * ============================================================ */
+const ART11: BlogArticle = {
+  slug: 'quanto-cobrar-caneca-personalizada-preco',
+  title: 'Quanto cobrar por uma caneca personalizada? Fórmula de preço que dá lucro',
+  seoTitle: 'Quanto Cobrar por Caneca Personalizada? Preço e Fórmula (2026)',
+  description:
+    'Quanto cobrar por caneca personalizada: a conta completa de custos, a fórmula de preço com taxa de marketplace e como montar kits que aumentam o ticket médio.',
+  keywords: [
+    'quanto cobrar caneca personalizada',
+    'preço caneca sublimada',
+    'precificação caneca personalizada',
+    'quanto custa caneca personalizada',
+  ],
+  category: 'negocios',
+  emoji: '💰',
+  cover: '/uploads/art-frase-cafe.png',
+  coverAlt: 'Caneca personalizada com frase pronta para venda',
+  readTime: '7 min',
+  datePublished: '2026-11-16',
+  dateModified: '2026-11-16',
+  lead:
+    'Quanto cobrar por uma caneca personalizada é a pergunta que mais trava quem começa a vender: preço baixo demais e o lucro some; preço alto demais e o cliente some. A resposta não é copiar o preço do vizinho — é fazer a conta. Este artigo mostra o que entra no custo, a conta completa de uma caneca e a fórmula de preço que protege a sua margem, inclusive quando há taxa de marketplace.',
+  blocks: [
+    { type: 'h2', text: 'O que entra no custo de uma caneca personalizada', id: 'o-que-entra-no-custo' },
+    {
+      type: 'p',
+      text: 'O custo de insumos por caneca sublimada fica, em geral, entre R$ 9 e R$ 15: caneca, papel, tinta e energia. Mas insumo é só parte da conta. Quem precifica só pelo material esquece os custos que não aparecem na nota fiscal — e é aí que o lucro some sem ninguém perceber.',
+    },
+    {
+      type: 'ul',
+      items: [
+        'Caneca: a peça em branco, com revestimento para sublimação.',
+        'Papel sublimático e tinta: o custo por impressão é pequeno, mas existe em cada peça.',
+        'Energia elétrica: prensa e impressora ligadas entram na conta de luz do mês.',
+        'Embalagem: caixa, proteção e fita — o cliente recebe a caneca inteira por causa dela.',
+        'Desgaste do equipamento: prensa e impressora têm vida útil, e cada peça consome um pedaço dela.',
+        'Mão de obra: o seu tempo de produzir, embalar e atender o cliente vale dinheiro.',
+        'Perdas: canecas de teste e peças com defeito fazem parte da produção e precisam estar no preço.',
+      ],
+    },
+    {
+      type: 'p',
+      text: 'E tem um custo que muita gente esquece: a personalização com nome é trabalho extra e se cobra. Colocar o nome do cliente, trocar a foto ou adaptar a frase leva tempo de atendimento e de edição — e tempo é o insumo mais caro do negócio. Personalização não é brinde: é um serviço, e entra no preço como adicional.',
+    },
+    { type: 'h2', text: 'A conta completa: do custo ao preço de venda', id: 'conta-completa' },
+    {
+      type: 'p',
+      text: 'Vamos à conta de uma caneca, item por item. O exemplo abaixo usa valores de referência do mercado brasileiro: o material soma R$ 9,70 e a produção, R$ 4,00. O custo total fica em R$ 13,70. Com o lucro desejado de R$ 16,30, o preço de venda é R$ 30,00 — dentro da faixa de referência do varejo, que fica entre R$ 25 e R$ 60 por caneca personalizada.',
+    },
+    {
+      type: 'table',
+      caption: 'Exemplo de custo de uma caneca sublimada',
+      head: ['Item', 'Valor'],
+      rows: [
+        ['Caneca', 'R$ 8,00'],
+        ['Papel sublimático', 'R$ 0,15'],
+        ['Tinta', 'R$ 0,05'],
+        ['Embalagem', 'R$ 1,50'],
+        ['Material (subtotal)', 'R$ 9,70'],
+        ['Produção (energia, desgaste, mão de obra, perdas)', 'R$ 4,00'],
+        ['Custo total', 'R$ 13,70'],
+        ['Lucro desejado', 'R$ 16,30'],
+        ['Preço de venda', 'R$ 30,00'],
+      ],
+    },
+    {
+      type: 'p',
+      text: 'Repare que o lucro é uma decisão, não um acidente. Você define quanto quer ganhar por peça e o preço nasce da soma — não o contrário. Quem define o preço primeiro e torce para sobrar margem no final sempre acaba trabalhando de graça em parte do mês. Faça a sua conta com os seus valores reais: troque os números da tabela pelos seus e veja onde o seu preço precisa estar.',
+    },
+    { type: 'h2', text: 'A fórmula do preço (com taxa de marketplace)', id: 'formula-do-preco' },
+    {
+      type: 'p',
+      text: 'Quando a venda passa por marketplace, entra a taxa do canal — e ela não pode sair do seu lucro. A fórmula é: Preço = (custos + lucro + taxa fixa) / (1 - taxa percentual). A taxa percentual vai no denominador porque ela incide sobre o preço final, não sobre o custo: é o preço que precisa ser grande o bastante para, depois da taxa, sobrar o que você planejou.',
+    },
+    {
+      type: 'p',
+      text: 'No exemplo da caneca de R$ 30,00, com taxa de 10% do marketplace, o preço final é R$ 30,00 / 0,90 = R$ 33,34. Ou seja, para continuar ganhando os mesmos R$ 16,30 de lucro por peça, o preço no marketplace precisa ser R$ 33,34 — não R$ 30,00. Quem vende a R$ 30,00 no marketplace entrega R$ 3,00 de taxa e fica com R$ 27,00, ou seja, perde R$ 3,00 de lucro em cada peça sem perceber.',
+    },
+    {
+      type: 'callout',
+      title: 'A taxa não é desconto',
+      text: 'Nunca desconte a taxa do marketplace do seu lucro: recalcule o preço com a fórmula. O cliente do marketplace paga o preço do canal — e o preço do canal inclui a taxa. Se o preço ficar alto demais para o canal, a decisão é não vender lá, não é vender no prejuízo.',
+    },
+    { type: 'h2', text: 'Preço por quantidade: desconto progressivo sem começar pelo desconto', id: 'preco-por-quantidade' },
+    {
+      type: 'p',
+      text: 'Pedido em quantidade merece preço diferente — produzir 20 canecas iguais custa menos por peça do que produzir 20 canecas diferentes. Mas o desconto precisa ser progressivo e calculado: defina o preço cheio primeiro e só depois crie as faixas. Um desconto que começa alto demais vira o seu preço normal na cabeça do cliente, e depois ninguém aceita pagar o valor cheio.',
+    },
+    {
+      type: 'ul',
+      items: [
+        'Defina o preço unitário cheio antes de qualquer faixa de quantidade.',
+        'Dê desconto por faixa (por exemplo, a partir de 10, 20 e 50 unidades), nunca um percentual fixo para qualquer quantidade.',
+        'O desconto precisa sair do ganho de escala real — menos tempo de setup por peça — e não do seu lucro.',
+        'Pedido corporativo com logo é outro produto: cobre a personalização do lote à parte, não embuta no desconto.',
+        'Deixe claro que o desconto vale para artes iguais no mesmo pedido: 20 artes diferentes são 20 trabalhos, não um lote.',
+      ],
+    },
+    { type: 'h2', text: 'Kits e ticket médio: venda mais por pedido', id: 'kits-ticket-medio' },
+    {
+      type: 'p',
+      text: 'O jeito mais rápido de ganhar mais por pedido não é subir o preço da caneca — é aumentar o ticket médio com kits. A caneca com um item dentro (chocolate, colher, sachê de café, mini pelúcia) vira presente pronto, e presente pronto vende por mais. O cliente que compraria só a caneca leva o kit; o cliente que compraria o kit não compraria a caneca sozinha.',
+    },
+    {
+      type: 'ul',
+      items: [
+        'Kit café: caneca + sachê de café especial + colher — o clássico que nunca encalha.',
+        'Kit presente: caneca + chocolate + cartão com a mensagem do cliente.',
+        'Kit casal: duas canecas combinando, com desconto pequeno no conjunto e preço maior por pedido.',
+        'Kit data comemorativa: caneca + item da data (Páscoa, Natal, Dia das Mães) montado como presente pronto.',
+      ],
+    },
+    {
+      type: 'p',
+      text: 'Monte o kit com o que você já tem em estoque e precifique o conjunto pela soma — com um pequeno desconto no total que ainda preserve a sua margem. O kit também resolve o problema do "só uma caneca é pouco para presente": quando o cliente vê o conjunto pronto, ele não precisa pensar no que mais comprar. E para você, cada pedido vale mais, sem precisar de mais clientes.',
+    },
+    {
+      type: 'faq',
+      items: [
+        {
+          q: 'Quanto custa produzir uma caneca personalizada?',
+          a: 'O custo de insumos por caneca sublimada fica, em geral, entre R$ 9 e R$ 15. No exemplo detalhado deste artigo, o material soma R$ 9,70 e a produção, R$ 4,00 — custo total de R$ 13,70 por peça.',
+        },
+        {
+          q: 'Qual o preço médio de uma caneca personalizada?',
+          a: 'A faixa de referência do varejo brasileiro fica entre R$ 25 e R$ 60 por caneca personalizada. O valor exato depende do seu mercado, do canal de venda e do nível de personalização — caneca mágica e kit com itens valem mais que a caneca simples.',
+        },
+        {
+          q: 'Como precificar para vender no marketplace?',
+          a: 'Use a fórmula Preço = (custos + lucro + taxa fixa) / (1 - taxa percentual). No exemplo deste artigo, uma caneca de R$ 30,00 com taxa de 10% precisa ser vendida a R$ 33,34 para manter o mesmo lucro por peça.',
+        },
+      ],
+    },
+    {
+      type: 'cta',
+      text: 'Preço definido? Falta a arte que vende — veja o acervo pronto para sublimar.',
+      label: 'Ver as artes para sublimar',
+      href: '/#preco',
+    },
+  ],
+  related: ['quanto-custa-sublimar-canecas', 'datas-comemorativas-para-vender-canecas', 'tendencias-artes-para-canecas-2026'],
+}
+
+/* ============================================================
+ * ARTIGO 12 — "caneca sublimada desbotada / defeitos"
+ * ============================================================ */
+const ART12: BlogArticle = {
+  slug: 'caneca-sublimada-desbotada-defeitos-como-resolver',
+  title: 'Caneca sublimada desbotada, manchada ou com fantasma: causas e como resolver',
+  seoTitle: 'Caneca Sublimada Desbotada? Causas e Como Resolver Cada Defeito',
+  description:
+    'Caneca sublimada desbotada, manchada ou com fantasma: tabela de diagnóstico com causa provável e correção para cada defeito da sublimação.',
+  keywords: [
+    'caneca sublimada desbotada',
+    'sublimação desbotada',
+    'caneca manchada sublimação',
+    'efeito fantasma sublimação',
+    'sublimação borrada',
+  ],
+  category: 'dicas',
+  emoji: '🔍',
+  cover: '/uploads/hero-press.png',
+  coverAlt: 'Caneca sublimada com defeito de impressão sendo analisada',
+  readTime: '7 min',
+  datePublished: '2026-11-16',
+  dateModified: '2026-11-16',
+  lead:
+    'Caneca sublimada desbotada, manchada ou com fantasma não é azar: quase todo defeito da sublimação tem uma causa conhecida — e uma correção conhecida. O problema é que, no susto, muita gente muda temperatura, tempo e papel ao mesmo tempo e nunca descobre o que resolveu. Este artigo traz a tabela de diagnóstico completa (defeito, causa provável e correção) e o método para nunca mais perder um lote inteiro.',
+  blocks: [
+    { type: 'h2', text: 'Diagnóstico rápido: defeito, causa e correção', id: 'diagnostico' },
+    {
+      type: 'p',
+      text: 'Antes de qualquer coisa, identifique o defeito com calma. A tabela abaixo resume os cinco defeitos mais comuns da sublimação de canecas, a causa provável de cada um e a correção. Guarde esta tabela perto da prensa: na hora do problema, ela vale mais que qualquer palpite.',
+    },
+    {
+      type: 'table',
+      caption: 'Tabela de diagnóstico dos defeitos da sublimação',
+      head: ['Defeito', 'Causa provável', 'Correção'],
+      rows: [
+        ['Cor apagada / desbotada', 'Calor ou tempo insuficiente, pressão fraca, caneca fria, papel do lado errado', 'Aumentar o tempo em 10 s, conferir a pressão, pré-aquecer a caneca e imprimir no lado certo do papel'],
+        ['Borrada / fantasma (imagem duplicada)', 'Papel se moveu na prensa, fita térmica mal fixada', 'Fixar bem com fita térmica e retirar o papel num movimento firme e contínuo, com a caneca quente'],
+        ['Mancha amarelada / marrom', 'Tempo ou temperatura demais, umidade no papel ou na caneca', 'Reduzir tempo e temperatura; guardar papel e caneca em local seco'],
+        ['Sem brilho', 'Pressão ou calor demais', 'Reduzir a pressão e o calor da prensagem'],
+        ['Faixa branca na emenda', 'Arte mais estreita que a circunferência da caneca', 'Medir a caneca e dar uma pequena sobreposição na arte'],
+      ],
+    },
+    {
+      type: 'callout',
+      title: 'Regra de ouro: mude uma coisa de cada vez',
+      text: 'Se você mudar temperatura, tempo e papel ao mesmo tempo, não vai saber o que resolveu o problema — e na próxima vez ele volta. Ajuste um parâmetro por vez, teste em uma caneca de sacrifício e só então ajuste o próximo. É mais lento, mas é o único jeito de descobrir a causa de verdade.',
+    },
+    { type: 'h2', text: 'Cor apagada ou desbotada', id: 'cor-apagada' },
+    {
+      type: 'p',
+      text: 'A cor apagada é o defeito mais comum — e o mais fácil de resolver. Na maioria das vezes, a causa é calor ou tempo insuficiente: a tinta não terminou de transferir do papel para a caneca. Pressão fraca tem o mesmo efeito, porque sem contato firme a tinta não migra por completo. Caneca fria no início da prensagem também rouba calor e deixa as bordas apagadas.',
+    },
+    {
+      type: 'p',
+      text: 'Tem ainda um erro bobo e frequente: imprimir no lado errado do papel sublimático. O papel tem um lado de impressão e um lado de suporte — se a arte for impressa no lado errado, quase nada transfere e a caneca sai fantasma, pálida. Confira o lado certo do papel antes de imprimir: é um erro de cinco segundos que custa uma caneca. A correção segue a ordem: primeiro aumente o tempo em 10 segundos, depois confira a pressão e o pré-aquecimento, e só então pense em subir a temperatura.',
+    },
+    { type: 'h2', text: 'Borrada ou com fantasma (imagem duplicada)', id: 'fantasma' },
+    {
+      type: 'p',
+      text: 'O efeito fantasma é a imagem duplicada, como se a arte tivesse sido impressa duas vezes com um pequeno deslocamento. A causa é o papel que se moveu durante a prensagem: ele desliza um milímetro quando a prensa abre ou fecha, e a tinta transfere na segunda posição. Fita térmica mal fixada é a culpada quase sempre — pouca fita, fita solta ou fita colocada só de um lado.',
+    },
+    {
+      type: 'p',
+      text: 'A correção tem duas partes. Na fixação, use fita térmica nas bordas, dos dois lados, e confira se o papel está esticado antes de fechar a prensa. Na retirada, retire o papel num movimento firme e contínuo, com a caneca quente. Parar no meio do movimento deixa marca; puxar com pressa demais pode deslocar o papel ainda quente.',
+    },
+    { type: 'h2', text: 'Mancha amarelada ou marrom', id: 'mancha-amarelada' },
+    {
+      type: 'p',
+      text: 'A mancha amarelada ou marrom é o sinal clássico de tempo ou temperatura demais: o papel queimou e a queimadura transferiu para a caneca. A outra causa é umidade no papel ou na caneca — o vapor que se forma na prensa mancha a estampa de amarelo. Se a mancha aparece sempre no mesmo lugar, suspeite de umidade; se aparece em toda a peça, suspeite de excesso de calor.',
+    },
+    {
+      type: 'p',
+      text: 'A correção é reduzir o tempo e a temperatura em passos pequenos e guardar papel e caneca em local seco, longe de umidade. E um aviso honesto: a peça manchada não tem conserto — a mancha está na resina da caneca. O que se corrige são os parâmetros, para a próxima peça sair limpa. Por isso a caneca de teste existe: é nela que o erro aparece, não no pedido do cliente.',
+    },
+    { type: 'h2', text: 'Sem brilho e faixa branca na emenda', id: 'sem-brilho-faixa' },
+    {
+      type: 'p',
+      text: 'A caneca sem brilho, com a estampa opaca, geralmente é pressão ou calor demais: o excesso "achata" a transferência e a cor perde a vivacidade. Reduza a pressão primeiro — é o ajuste mais direto — e depois o calor, em passos pequenos. Se o problema for só em uma área, confira se a pressão está uniforme em todo o cilindro: prensa com cilindro gasto pressiona mais no meio que nas pontas.',
+    },
+    {
+      type: 'p',
+      text: 'A faixa branca na emenda tem outra causa: a arte é mais estreita que a circunferência da caneca e sobra um pedaço sem estampa na junção. A correção é medir a caneca e dar uma pequena sobreposição na arte — alguns milímetros a mais no comprimento para que as pontas do papel se encontrem. O padrão de 21 × 9,5 cm já cobre a circunferência da caneca de 325 ml; se a faixa aparece, confira se a arte não foi reduzida na impressão.',
+    },
+    { type: 'h2', text: 'Quando a culpa é da caneca', id: 'culpa-da-caneca' },
+    {
+      type: 'p',
+      text: 'Nem todo defeito é culpa do processo: às vezes a culpa é da caneca. O revestimento de resina é o que recebe a tinta — se a resina for ruim, fina ou mal aplicada, a transferência falha mesmo com os parâmetros certos. O sintoma é claro: os mesmos parâmetros que funcionam em outras canecas falham sempre no mesmo lote. Se uma caixa inteira sai desbotada e a caixa anterior saiu perfeita, suspeite do lote de canecas, não da sua prensa.',
+    },
+    {
+      type: 'p',
+      text: 'Nesses casos, a solução é trocar de fornecedor ou de lote e registrar o problema: anote o fornecedor, a data e o defeito. Caneca barata demais costuma sair cara — o prejuízo de um lote com defeito é maior que a economia na compra. E guarde uma caneca do lote bom como referência: quando o defeito aparecer, compare com ela antes de mexer em qualquer parâmetro.',
+    },
+    {
+      type: 'faq',
+      items: [
+        {
+          q: 'Por que minha caneca sublimada saiu desbotada?',
+          a: 'As causas mais comuns são calor ou tempo insuficiente, pressão fraca, caneca fria no início da prensagem ou impressão no lado errado do papel. A correção segue a ordem: aumente o tempo em 10 segundos, confira a pressão e pré-aqueça a caneca — e teste em uma caneca de sacrifício antes do lote.',
+        },
+        {
+          q: 'O que causa o efeito fantasma na sublimação?',
+          a: 'O efeito fantasma é a imagem duplicada, causada pelo papel que se moveu durante a prensagem. A correção é fixar bem o papel com fita térmica nas bordas e retirar o papel devagar, com a caneca quente, em um movimento único e contínuo.',
+        },
+        {
+          q: 'Mancha amarelada na caneca tem conserto?',
+          a: 'A peça manchada não tem conserto: a mancha está na resina da caneca. O que se corrige são os parâmetros para a próxima peça — reduza o tempo e a temperatura e guarde papel e caneca em local seco, porque a mancha vem de excesso de calor ou de umidade.',
+        },
+      ],
+    },
+    {
+      type: 'cta',
+      text: 'Defeito resolvido, a próxima caneca sai perfeita — e a arte certa já está no portal.',
+      label: 'Ver as artes para sublimar',
+      href: '/#preco',
+    },
+  ],
+  related: ['macetes-sublimacao-de-canecas', 'tempo-temperatura-sublimar-caneca-tabela', 'como-sublimar-canecas-passo-a-passo'],
+}
+
+export const BLOG_ARTICLES: BlogArticle[] = [ART1, ART2, ART3, ART4, ART5, ART6, ART7, ART8, ART9, ART10, ART11, ART12]
 
 export function getArticle(slug: string): BlogArticle | undefined {
   return BLOG_ARTICLES.find((a) => a.slug === slug)
