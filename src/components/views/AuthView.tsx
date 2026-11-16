@@ -37,14 +37,14 @@ export function AuthView() {
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    if (user?.hasAccess) setView('portal')
+    if (user?.hasAccess) setView('hub')
   }, [user, setView])
 
   const routeAfterAuth = (u: { hasAccess: boolean; isTrial?: boolean } | null | undefined) => {
     const wantsCheckout = pendingIntent === 'checkout'
     if (wantsCheckout) setPendingIntent(null)
     if (!u?.hasAccess || (wantsCheckout && u.isTrial)) { window.location.assign('/comprar'); return }
-    setView('portal')
+    setView('hub')
   }
 
   const submit = async (e: React.FormEvent) => {

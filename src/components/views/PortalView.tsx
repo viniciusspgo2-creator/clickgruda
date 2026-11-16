@@ -597,6 +597,7 @@ export function PortalView() {
               <ArrowRight className="ml-auto h-4 w-4" />
             </button>
           </div>
+          <button type="button" className="cg-sidebar-link" onClick={() => setView('hub')}><House className="h-[18px] w-[18px]"/><span>Minha Central 2.0</span><ArrowRight className="ml-auto h-4 w-4"/></button>
           <p className="cg-sidebar-heading mt-6">ACESSO RÁPIDO</p>
           <nav className="cg-sidebar-nav" aria-label="Atalhos da plataforma">
             <button type="button" className="cg-sidebar-link" onClick={() => { setMenuOpen(true) }}><SlidersHorizontal className="h-[18px] w-[18px]"/><span>Categorias e filtros</span><ArrowUpRight className="ml-auto h-3.5 w-3.5 opacity-50"/></button>
@@ -674,18 +675,17 @@ export function PortalView() {
             )}
           </div>
 
-          {/* Acessos rápidos: mesmos destinos dos cards já existentes. */}
+          {/* Voltar à Central: acesso rápido ao Hub. */}
           <div className="cg-header-quicklinks hidden shrink-0 items-center gap-2 md:flex" aria-label="Acessos rápidos">
             <button
               type="button"
-              aria-label="Acessar Studio: Mockup e Editor em outra plataforma"
-              title="Studio · Mockup + Editor"
-              onClick={() => openMockup()}
+              aria-label="Voltar à Central"
+              title="Voltar à Central"
+              onClick={() => setView('hub')}
               className="cg-header-quicklink cg-header-mockup"
             >
-              <Box className="h-4 w-4 shrink-0" />
-              <span className="cg-header-quicklabel">Studio · Mockup + Editor</span>
-              <ExternalLink className="cg-header-external h-3 w-3 shrink-0" />
+              <House className="h-4 w-4 shrink-0" />
+              <span className="cg-header-quicklabel">Voltar à Central</span>
             </button>
             <button type="button" onClick={toggleTheme} className="cg-theme-toggle" aria-label={portalTheme === 'dark' ? 'Ativar tema claro' : 'Ativar tema escuro'} title={portalTheme === 'dark' ? 'Tema claro' : 'Tema escuro'}>
               {portalTheme === 'dark' ? <SunMedium className="h-4 w-4" /> : <MoonStar className="h-4 w-4" />}
@@ -734,6 +734,7 @@ export function PortalView() {
                   <Settings2 className="mr-2 h-4 w-4" /> Painel Master
                 </DropdownMenuItem>
               )}
+              <DropdownMenuItem onClick={() => setView('hub')}><House className="mr-2 h-4 w-4" /> Minha Central 2.0</DropdownMenuItem>
               <DropdownMenuItem onClick={() => setView('landing')}>
                 <Sparkles className="mr-2 h-4 w-4" /> Ver landing page
               </DropdownMenuItem>
@@ -753,8 +754,8 @@ export function PortalView() {
 
         {/* Atalhos próprios do mobile — mantêm a busca legível no cabeçalho. */}
         <nav className="cg-mobile-quicklinks mx-auto flex w-full max-w-[1600px] items-center gap-2 px-4 pb-2.5 md:hidden sm:px-7" aria-label="Ferramentas rápidas">
-          <button type="button" onClick={() => openMockup()} className="cg-header-quicklink cg-header-mockup flex-1 justify-center">
-            <Box className="h-4 w-4" /> Studio · Mockup + Editor <ExternalLink className="h-3 w-3" />
+          <button type="button" onClick={() => setView('hub')} className="cg-header-quicklink cg-header-mockup flex-1 justify-center">
+            <House className="h-4 w-4" /> Voltar à Central
           </button>
           <button type="button" onClick={toggleTheme} className="cg-theme-toggle flex-none px-3">
             {portalTheme === 'dark' ? <SunMedium className="h-4 w-4" /> : <MoonStar className="h-4 w-4" />}

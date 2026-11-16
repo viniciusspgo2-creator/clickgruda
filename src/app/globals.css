@@ -6,8 +6,8 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-jakarta);
+  --font-mono: var(--font-jakarta);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -121,6 +121,7 @@
   }
   body {
     @apply bg-background text-foreground;
+    font-family: var(--font-sans);
   }
   ::selection {
     background: oklch(0.705 0.213 47.604 / 0.25);
@@ -248,7 +249,7 @@
   --cg-ink: #111319;
   --cg-cream: #f7f3ed;
   --cg-gray: #686765;
-  font-family: var(--font-geist-sans, 'Trebuchet MS'), 'Trebuchet MS', sans-serif;
+  font-family: var(--font-jakarta, system-ui), system-ui, sans-serif;
   background: var(--cg-cream);
   color: var(--cg-ink);
   -webkit-font-smoothing: antialiased;
@@ -259,7 +260,7 @@
 .cg-container { width: min(100% - 72px, 1300px); margin-inline: auto; }
 .cg-sales em { font-style: normal; color: var(--cg-orange); }
 .cg-sales ::selection { background: var(--cg-orange); color: var(--cg-ink); }
-.cg-heading { max-width: 850px; font-size: clamp(3rem, 6.1vw, 6.4rem); font-weight: 900; line-height: 1.06; letter-spacing: -.069em; font-family: 'Trebuchet MS', var(--font-geist-sans, system-ui), sans-serif; }
+.cg-heading { max-width: 850px; font-size: clamp(3rem, 6.1vw, 6.4rem); font-weight: 900; line-height: 1.06; letter-spacing: -.069em; font-family: var(--font-jakarta, system-ui), system-ui, sans-serif; }
 .cg-heading-light { color: #fff; }
 .cg-overline { display: inline-flex; align-items: center; gap: 13px; font-size: 11px; letter-spacing: .185em; font-weight: 850; text-transform: uppercase; }
 .cg-overline-line { width: 23px; height: 2px; background: var(--cg-orange); display: inline-block; flex-shrink: 0; }
@@ -300,7 +301,7 @@
 .cg-hero-inner { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,.94fr); align-items: center; gap: min(5vw, 95px); padding-block: 90px 65px; min-height: 660px; }
 .cg-hero-copy { position: relative; z-index: 3; }
 .cg-hero-eyebrow { width: max-content; max-width: 100%; display: flex; align-items: center; gap: 11px; border: 1px solid rgba(249,115,22,.22); background: rgba(249,115,22,.07); border-radius: 100px; padding: 9px 15px; font-size: 11px; font-weight: 850; letter-spacing: .08em; color: #ffc08b; text-transform: uppercase; }
-.cg-hero-title { margin: 29px 0 0; font-family: 'Trebuchet MS', var(--font-geist-sans, system-ui), sans-serif; font-weight: 950; font-size: clamp(3.25rem,5.65vw,6rem); letter-spacing: -.078em; line-height: 1.04; }
+.cg-hero-title { margin: 29px 0 0; font-family:  var(--font-jakarta, system-ui), sans-serif; font-weight: 950; font-size: clamp(3.25rem,5.65vw,6rem); letter-spacing: -.078em; line-height: 1.04; }
 .cg-title-line { overflow: hidden; display: block; padding-bottom: .04em; }
 .cg-title-line > span { display: block; }
 .cg-title-line em { color: #ff872d; }
@@ -333,7 +334,7 @@
 @keyframes cg-wall-flow { to { transform: translateY(-50%); } }
 .cg-hero-metrics { border-top: 1px solid rgba(255,255,255,.13); display: flex; align-items: center; gap: 22px; padding-block: 30px 33px; }
 .cg-hero-count { display: flex; align-items: center; gap: 23px; }
-.cg-count-number { display: inline-flex; align-items: baseline; font-size: clamp(42px,5vw,73px); font-family: 'Trebuchet MS',sans-serif; line-height: 1; font-weight: 900; letter-spacing: -.075em; white-space: nowrap; }
+.cg-count-number { display: inline-flex; align-items: baseline; font-size: clamp(42px,5vw,73px); font-family: sans-serif; line-height: 1; font-weight: 900; letter-spacing: -.075em; white-space: nowrap; }
 .cg-count-number small { font-size: .52em; color: #c5c4c6; margin-right: 2px; }
 .cg-count-number b { color: var(--cg-orange); font-size: .75em; }
 .cg-count-label { font-size: 14px; font-weight: 700; color: #e2e1e0; }
@@ -355,7 +356,7 @@
 .cg-problem-layout { display: grid; grid-template-columns: .27fr 1fr; gap: 6%; }
 .cg-problem-label { display: flex; flex-direction: column; height: 100%; justify-content: space-between; gap: 22px; font-size: 11px; font-weight: 900; letter-spacing: .16em; }
 .cg-problem-spark { font-size: clamp(80px,12vw,170px); line-height: .9; color: var(--cg-orange); }
-.cg-problem h2 { font-family: 'Trebuchet MS', sans-serif; font-size: clamp(2.8rem,5.05vw,5.1rem); letter-spacing: -.063em; line-height: 1.15; font-weight: 900; }
+.cg-problem h2 { font-family:  sans-serif; font-size: clamp(2.8rem,5.05vw,5.1rem); letter-spacing: -.063em; line-height: 1.15; font-weight: 900; }
 .cg-problem h2 em { display: inline-block; margin-top: 10px; }
 .cg-problem p { margin-top: 25px; max-width: 760px; color: #6d6864; font-size: 17px; line-height: 1.9; }
 .cg-problem .cg-simple-link { margin-top: 25px; }
@@ -492,7 +493,7 @@
 .cg-final { background: var(--cg-orange); color: #171719; overflow: hidden; }.cg-final-inner { position: relative; padding-block: 103px 112px; }
 .cg-final-inner > div { position: relative; z-index: 3; }
 .cg-final-inner > div > span { font-size: 11px; font-weight: 900; letter-spacing: .19em; }
-.cg-final h2 { font-family: 'Trebuchet MS',sans-serif; max-width: 940px; font-size: clamp(3.2rem,6.4vw,7rem); font-weight: 950; letter-spacing: -.08em; line-height: 1.08; margin-top: 26px; }
+.cg-final h2 { font-family: sans-serif; max-width: 940px; font-size: clamp(3.2rem,6.4vw,7rem); font-weight: 950; letter-spacing: -.08em; line-height: 1.08; margin-top: 26px; }
 .cg-final h2 em { color: #fff6eb; }.cg-final p { max-width: 600px; font-size: 16px; margin-top: 25px; font-weight: 680; line-height: 1.75; }
 .cg-button-dark { min-height: 62px; margin-top: 30px; padding-inline: 27px; background: #171920; border-color: #171920; color: #fff; box-shadow: 0 15px 32px rgba(0,0,0,.18); }
 .cg-button-dark:hover { background: #303039; box-shadow: 0 17px 40px rgba(0,0,0,.28); }
@@ -1372,7 +1373,7 @@
 .cg-video-hero-inner { max-width:1135px; text-align:center; }
 .cg-video-eyebrow { display:inline-flex; align-items:center; gap:12px; max-width:100%; padding:11px 20px; border:1px solid rgba(255,155,77,.28); background:rgba(249,115,22,.075); border-radius:100px; color:#ffd7b8; font-size:11px; font-weight:850; letter-spacing:.085em; text-transform:uppercase; }
 .cg-video-eyebrow svg { color:#fb923c; }
-.cg-video-heading { max-width:1060px; margin:25px auto 0; font-family:'Trebuchet MS',var(--font-geist-sans,system-ui),sans-serif; font-size:clamp(3rem,6.1vw,6.65rem); line-height:1.02; font-weight:950; letter-spacing:-.079em; text-wrap:balance; }
+.cg-video-heading { max-width:1060px; margin:25px auto 0; font-family:var(--font-jakarta,system-ui),sans-serif; font-size:clamp(3rem,6.1vw,6.65rem); line-height:1.02; font-weight:950; letter-spacing:-.079em; text-wrap:balance; }
 .cg-video-heading em { background:linear-gradient(110deg,#fb923c,#ffb36d); background-clip:text; color:transparent; }
 .cg-video-subtitle { max-width:750px; margin:24px auto 36px; font-size:clamp(15px,1.55vw,19px); line-height:1.74; color:#bdc0c8; text-wrap:pretty; }
 .cg-video-stage { position:relative; max-width:1030px; margin:0 auto; padding:9px; border:1px solid rgba(255,191,139,.37); border-radius:25px; background:linear-gradient(140deg,rgba(255,255,255,.2),rgba(249,115,22,.15) 43%,rgba(255,255,255,.075) 80%); box-shadow:0 38px 120px rgba(0,0,0,.48),0 0 65px rgba(249,115,22,.1); text-align:left; }
@@ -1415,7 +1416,7 @@
 /* A landing atual tem um escopo próprio. O tema creme de .cg-sales pertence
    à landing antiga e não pode sobrescrever as utilities da página atual. */
 .cg-sales-page {
-  font-family: var(--font-geist-sans), Arial, sans-serif;
+  font-family: var(--font-jakarta), Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   background-color: #0c0b0e;
   color: #fff;
@@ -2190,3 +2191,13 @@
 .cg-member-artcard:hover .cg-art-admin-delete,.cg-member-artcard:focus-within .cg-art-admin-delete {opacity:1;visibility:visible;pointer-events:auto;}
 @media (hover:none),(pointer:coarse) {.cg-art-admin-delete {opacity:1;visibility:visible;pointer-events:auto;}}
 @media (prefers-reduced-motion:reduce) {.cg-art-admin-delete {transition:none;}}
+
+/* Click & Gruda 2.0 - native snap carousel; cards remain accessible on touch and keyboard. */
+.cg2-carousel-scroll { scrollbar-width:none; -ms-overflow-style:none; scroll-padding-inline:4px; overscroll-behavior-inline:contain; }
+.cg2-carousel-scroll::-webkit-scrollbar { display:none; }
+@media (prefers-reduced-motion: reduce) { .cg2-hub *, .cg2-hub *::before, .cg2-hub *::after { scroll-behavior:auto!important; animation-duration:.01ms!important; transition-duration:.01ms!important; } }
+
+/* Hub 2.0 — carrossel automático das marcas de IA (Ferramentas Guru) */
+@keyframes cg2-guru-marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+.cg2-guru-marquee { animation: cg2-guru-marquee 32s linear infinite; }
+.cg2-guru-marquee:hover { animation-play-state: paused; }

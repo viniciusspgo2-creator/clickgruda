@@ -1,5 +1,6 @@
 import { getSessionUser, jsonError } from '@/lib/auth'
 import { db } from '@/lib/db'
+import { userStudioDecision } from '@/lib/unified-studio-access'
 import { isSafeOrigin } from '@/lib/security-guards'
 import {
   deliverStudioBonus,
@@ -10,8 +11,10 @@ import {
 export async function GET() {
   const user = await getSessionUser()
   if (!user || user.isDemo) return jsonError('Faça login na sua conta.', 401)
+  const account = await db.user.findUnique({where:{id:user.id},select:{id:true,role:true,hasAccess:true,status:true,isDemo:true,isPreview:true,accessType:true,createdAt:true}})
+  const unified = account ? await userStudioDecision(account) : null
   return Response.json(
-    { bonus: await studioBonusForUser(user.id) },
+    { bonus: await studioBonusForUser(user.id), unified },
     { headers: { 'Cache-Control': 'private, no-store' } },
   )
 }

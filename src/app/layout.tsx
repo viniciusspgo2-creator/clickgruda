@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
 import { GeoSchema } from "@/components/geo/GeoSchema";
@@ -10,14 +10,16 @@ import { getPublicMarketing } from '@/lib/public-marketing';
 
 export const revalidate = 300;
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+const jakartaSans = localFont({
+  variable: "--font-jakarta",
+  display: "swap",
+  src: [
+    { path: "./fonts/plus-jakarta-sans-400.woff2", weight: "400", style: "normal" },
+    { path: "./fonts/plus-jakarta-sans-500.woff2", weight: "500", style: "normal" },
+    { path: "./fonts/plus-jakarta-sans-600.woff2", weight: "600", style: "normal" },
+    { path: "./fonts/plus-jakarta-sans-700.woff2", weight: "700", style: "normal" },
+    { path: "./fonts/plus-jakarta-sans-800.woff2", weight: "800", style: "normal" },
+  ],
 });
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -107,9 +109,9 @@ export default async function RootLayout({
 }>) {
   const { config } = await getPublicMarketing();
   return (
-    <html lang="pt-BR" suppressHydrationWarning>
+    <html lang="pt-BR" suppressHydrationWarning className={jakartaSans.variable}>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background text-foreground`}
+        className="antialiased bg-background text-foreground"
       >
         {/* Entidades da marca no HTML; schemas de conteúdo ficam em cada página. */}
         <GeoSchema socialUrls={config.socialUrls} />

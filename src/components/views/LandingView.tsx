@@ -48,14 +48,14 @@ export function LandingView() {
     track('cta_click', { location, intent: 'checkout', price_cents: priceCents })
     setMenuOpen(false)
     if (user?.isDemo) { try { await leaveDemoForAccount(queryClient, 'register') } catch (e) { toast.error((e as Error).message) }; return }
-    if (hasFullAccess) { setView('portal'); return }
+    if (hasFullAccess) { setView('hub'); return }
     if (user) { window.location.assign('/comprar'); return }
     setAuthMode('register'); setPendingIntent('checkout'); setView('auth')
   }
   const goStart = async (location: string) => {
     track('cta_click', { location, intent: hasAccess ? 'portal' : 'free_signup' })
     setMenuOpen(false)
-    if (hasAccess) { setView('portal'); return }
+    if (hasAccess) { setView('hub'); return }
     if (user?.isDemo) {
       try { await leaveDemoForAccount(queryClient, 'register', false) }
       catch (error) { toast.error((error as Error).message) }

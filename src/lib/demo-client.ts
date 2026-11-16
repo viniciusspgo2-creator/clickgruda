@@ -25,7 +25,7 @@ export async function enterPublicDemo(queryClient: QueryClient, location: string
   state.resetFilters()
   state.setPendingIntent(null)
   state.setUser(data.user as SessionUser)
-  state.setView('portal')
+  state.setView('hub')
   track('feature_click', { location, intent: 'public_demo' })
 }
 

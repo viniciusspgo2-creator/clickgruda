@@ -61,6 +61,9 @@ import { AdminMercadoPagoSection } from '@/components/admin/AdminMercadoPagoSect
 import { AdminAnnouncementSection } from '@/components/admin/AdminAnnouncementSection'
 import { AdminBlogSection } from '@/components/admin/AdminBlogSection'
 import { AdminEnhanceSection, AdminSearchMissesSection, AdminSecuritySection } from '@/components/views/AdminGrowthSections'
+import { AdminHubBannersSection } from '@/components/admin/AdminHubBannersSection'
+import { AdminStudioSection } from '@/components/admin/AdminStudioSection'
+import { AdminPhdVideosSection } from '@/components/admin/AdminPhdVideosSection'
 import { useStore } from '@/lib/store'
 import { formatBRL } from '@/lib/types'
 import { cn } from '@/lib/utils'
@@ -83,6 +86,9 @@ export type AdminSection =
   | 'coupons'
   | 'mercadopago'
   | 'blog'
+  | 'hub-banners'
+  | 'studio-master'
+  | 'phd-videos'
 
 const SECTIONS: { id: AdminSection; label: string; icon: React.ElementType }[] = [
   { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
@@ -102,13 +108,16 @@ const SECTIONS: { id: AdminSection; label: string; icon: React.ElementType }[] =
   { id: 'settings', label: 'Configurações', icon: Settings },
   { id: 'seo', label: 'SEO e Integrações', icon: Globe },
   { id: 'blog', label: 'Blog', icon: BookOpen },
+  { id: 'hub-banners', label: 'Carrosséis 2.0', icon: Image },
+  { id: 'studio-master', label: 'Admin do Studio', icon: ShieldCheck },
+  { id: 'phd-videos', label: 'Videoaulas da Academia', icon: BookOpen },
 ]
 
 const SECTION_GROUPS: { label: string; sections: AdminSection[] }[] = [
   { label: 'Visão geral', sections: ['dashboard'] },
   { label: 'Acervo', sections: ['arts', 'categories', 'tags', 'seasonal'] },
-  { label: 'Membros e vendas', sections: ['users', 'payments', 'coupons', 'mercadopago'] },
-  { label: 'Relacionamento', sections: ['sugestoes', 'buscas', 'melhorias', 'avisos', 'blog'] },
+  { label: 'Membros e vendas', sections: ['users', 'studio-master', 'payments', 'coupons', 'mercadopago'] },
+  { label: 'Relacionamento', sections: ['sugestoes', 'buscas', 'melhorias', 'avisos', 'blog', 'hub-banners', 'phd-videos'] },
   { label: 'Configurações', sections: ['seguranca', 'seo', 'settings'] },
 ]
 
@@ -208,7 +217,7 @@ export function AdminView() {
 
         <div className="mt-auto space-y-1.5 border-t border-zinc-800/80 pt-3">
           <button
-            onClick={() => setView('portal')}
+            onClick={() => setView('hub')}
             className="flex w-full items-center gap-3 rounded-xl px-3.5 py-2.5 text-sm font-bold text-zinc-400 transition-colors hover:bg-zinc-800/70 hover:text-white"
           >
             <ExternalLink className="h-4.5 w-4.5" /> Ver portal
@@ -243,7 +252,7 @@ export function AdminView() {
             {section === 'arts' && <a href="/api/admin/arts/export" download title="Exportar títulos, códigos, categorias e tags (CSV)" className="inline-flex h-9 items-center justify-center gap-1.5 rounded-xl border border-zinc-200 bg-white px-3 text-xs font-bold text-zinc-700 transition-colors hover:border-orange-300 hover:text-orange-700"><FileDown className="h-4 w-4" /><span className="hidden sm:inline">Exportar artes</span></a>}
             <Button variant="outline" size="sm" title="Atualizar dados desta seção" aria-label="Atualizar dados do painel" onClick={() => { queryClient.invalidateQueries({ predicate: (query) => String(query.queryKey[0] ?? '').startsWith('admin-') }); toast.info('Atualizando dados do painel...'); }} className="h-9 rounded-xl border-zinc-200 text-zinc-600"><RefreshCw className="h-4 w-4" /><span className="ml-1.5 hidden sm:inline">Atualizar</span></Button>
             <Button
-              onClick={() => setView('portal')}
+              onClick={() => setView('hub')}
               variant="outline"
               className="hidden h-9 rounded-xl border-zinc-200 text-sm font-bold text-zinc-600 sm:inline-flex"
             >
@@ -268,6 +277,9 @@ export function AdminView() {
             {section === 'seguranca' && <AdminSecuritySection />}
             {section === 'seo' && <AdminSeoSection />}
             {section === 'blog' && <AdminBlogSection />}
+            {section === 'hub-banners' && <AdminHubBannersSection />}
+            {section === 'studio-master' && <AdminStudioSection />}
+            {section === 'phd-videos' && <AdminPhdVideosSection />}
             {section === 'mercadopago' && <AdminMercadoPagoSection />}
             {section === 'coupons' && <AdminCouponsSection />}
             {section === 'settings' && <AdminSettingsSection />}

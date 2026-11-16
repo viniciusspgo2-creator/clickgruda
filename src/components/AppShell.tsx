@@ -14,9 +14,10 @@ import { SessionAccessDialog } from '@/components/shared/SessionAccessDialog'
 const AuthView = dynamic(() => import('@/components/views/AuthView').then(module => module.AuthView))
 const CheckoutView = dynamic(() => import('@/components/views/CheckoutView').then(module => module.CheckoutView))
 const PortalView = dynamic(() => import('@/components/views/PortalView').then(module => module.PortalView))
+const HubView = dynamic(() => import('@/components/views/HubView').then(module => module.HubView))
 const AdminView = dynamic(() => import('@/components/views/AdminView').then(module => module.AdminView))
 
-const VALID_VIEWS: View[] = ['landing', 'auth', 'checkout', 'portal', 'admin']
+const VALID_VIEWS: View[] = ['landing', 'auth', 'checkout', 'portal', 'hub', 'admin']
 
 /**
  * AppShell — casca client-side da SPA.
@@ -97,7 +98,7 @@ export function AppShell() {
         // da sessão anterior e ocultar a seção que o visitante solicitou.
         const landingAnchors = ['preco', 'investimento', 'faq', 'perguntas', 'artes', 'biblioteca', 'recursos', 'como-funciona', 'studio-mockup', 'video', 'blog']
         if (landingAnchors.includes(window.location.hash.slice(1))) return
-        if (next === 'portal' && (!data.user || !data.user.hasAccess)) return
+        if ((next === 'portal' || next === 'hub') && (!data.user || !data.user.hasAccess)) return
         if (next === 'admin' && (!data.user || data.user.role !== 'ADMIN')) return
         if (next === 'checkout' && !data.user) return
         if (next !== useStore.getState().view) setView(next)
@@ -190,6 +191,7 @@ export function AppShell() {
             {view === 'auth' && <AuthView />}
             {view === 'checkout' && <CheckoutView />}
             {view === 'portal' && <PortalView />}
+            {view === 'hub' && <HubView />}
             {view === 'admin' && <AdminView />}
           </motion.div>
         </AnimatePresence>
