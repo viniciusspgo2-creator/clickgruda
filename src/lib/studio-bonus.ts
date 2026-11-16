@@ -58,7 +58,7 @@ export async function queueStudioEntitlement(
     name: user.name.slice(0, 120),
     registeredAt,
     trialEndsAt: new Date(
-      Date.parse(registeredAt) + 7 * 86400000,
+      Date.parse(registeredAt) + 3 * 86400000,
     ).toISOString(),
     entitlement,
     ...(reason ? { revocationReason: reason } : {}),

@@ -1,7 +1,9 @@
 import 'server-only'
 import { db } from '@/lib/db'
 
-/** Aditivo: aproveita a tabela Setting existente. Nenhum dado de cliente é migrado. */
+/** Teste do Studio/Editor/2D: 3 dias desde o cadastro (conta grátis). */
+export const STUDIO_TRIAL_DAYS = 3
+export const STUDIO_TRIAL_MS = STUDIO_TRIAL_DAYS * 86400000
 export const STUDIO_GRANT_PREFIX = 'hub2:studio-permission:'
 export const SSO_TICKET_PREFIX = 'hub2:studio-ticket:'
 export type StudioGrant = { mode: 'inherit' | 'grant' | 'block'; expiresAt: string | null; updatedAt: string }
@@ -25,7 +27,7 @@ export function accessDecision(user:StudioUser, grant:StudioGrant, now=Date.now(
  if(user.role==='ADMIN')return {allowed:true,kind:'MEMBER',expiresAt:null,override:grant.mode}
  if(!user.hasAccess)return {allowed:false,kind:'UNAVAILABLE',expiresAt:null,override:grant.mode}
  if(user.accessType==='TRIAL'){
-  const trialEnds=new Date(user.createdAt.getTime()+7*86400000).toISOString()
+  const trialEnds=new Date(user.createdAt.getTime()+STUDIO_TRIAL_MS).toISOString()
   return {allowed:now<Date.parse(trialEnds),kind:now<Date.parse(trialEnds)?'TRIAL':'EXPIRED',expiresAt:trialEnds,override:grant.mode}
  }
  return {allowed:true,kind:'MEMBER',expiresAt:null,override:grant.mode}

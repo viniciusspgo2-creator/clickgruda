@@ -3,11 +3,12 @@ import { ACADEMY_TRACKS, ACADEMY_LESSONS, ACADEMY_DIAGNOSES, ACADEMY_CHECKLIST, 
 
 export const dynamic = 'force-dynamic'
 
-/** Aula e diagnóstico completos só saem do servidor após autorização. O conteúdo público
- * permite explorar o programa sem expor aulas exclusivas ao modo visitante ou teste. */
+/** Conhecimento Técnico é livre para qualquer conta real (grátis, teste ou assinante),
+ * mesmo depois dos 20 downloads e do fim dos 3 dias de Studio. Só o modo visitante
+ * e o preview ficam com a prévia, sem o conteúdo completo. */
 export async function GET() {
  const user = await getSessionUser()
- const canAccess = Boolean(user && !user.isDemo && !user.isPreview && (user.role === 'ADMIN' || (user.hasAccess && !user.isTrial)))
+ const canAccess = Boolean(user && !user.isDemo && !user.isPreview)
  return Response.json({
   canAccess,
   tracks: ACADEMY_TRACKS,

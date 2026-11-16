@@ -21,9 +21,9 @@ export const SITE = {
   url: SITE_URL,
   tagline: 'Artes digitais para sublimação de canecas, com biblioteca e ferramentas organizadas',
   description:
-    'Biblioteca de artes para sublimação de canecas, organizada por temas e datas sazonais. Teste grátis com até 20 downloads em 24 horas e bônus Studio Mockup e Editor por 7 dias desde o cadastro. O acesso completo inclui downloads ilimitados e os dois bônus.',
+    'Biblioteca de artes para sublimação de canecas, organizada por temas e datas sazonais. Teste grátis com até 20 downloads em 24 horas e bônus Studio Mockup e Editor por 3 dias desde o cadastro. O acesso completo inclui downloads ilimitados e os dois bônus.',
   shortAnswer:
-    'Tudo começa na Biblioteca Click & Gruda: artes para canecas, busca e categorias. A conta grátis oferece até 20 downloads em 24 horas e Studio Mockup e Editor por 7 dias. Ao ativar o pacote completo, os downloads ficam ilimitados e o mesmo código dos bônus passa a definitivo.',
+    'Tudo começa na Biblioteca Click & Gruda: artes para canecas, busca e categorias. A conta grátis oferece até 20 downloads em 24 horas e Studio Mockup e Editor por 3 dias. Ao ativar o pacote completo, os downloads ficam ilimitados e o mesmo código dos bônus passa a definitivo.',
   email: 'contato@clickgruda.com.br',
   areaServed: 'BR',
   inLanguage: 'pt-BR',
