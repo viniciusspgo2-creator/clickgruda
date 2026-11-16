@@ -16,9 +16,50 @@ export const SALES = {
   EXTERNAL_CATALOG_URL: 'https://www.clickgruda.com.br',
   STUDIO_URL,
   heroKicker: 'Biblioteca de artes para canecas',
-  heroTitle: ['Sua próxima caneca', 'começa na', 'Biblioteca.'],
-  heroDescription: 'Artes para sublimação organizadas por tema, ocasião e estilo. Escolha a estampa, baixe o arquivo e prepare o próximo pedido do seu cliente. Sua conta também reúne os bônus Studio Mockup e Editor.',
+  heroTitle: ['Sua próxima caneca', 'pronta para vender', 'sem criar do zero.'],
+  heroDescription: 'Artes para sublimação organizadas por tema, ocasião e estilo — e as ferramentas para apresentar cada uma: Studio Mockup 3D, Editor Online e Academia. Escolha a estampa, monte a composição e mostre a caneca ao cliente antes de produzir.',
   categories: ['Todas', 'Flork', 'Frases', 'Fé & espiritualidade', 'Datas especiais', 'Geek', 'Futebol', 'Música', 'Amizade', 'Humor'],
+  /** Dores que a seção de problema/agitação nomeia. */
+  problems: [
+    { title: 'Perdeu o pedido', text: 'O cliente pediu uma arte e você não tinha nada pronto para mostrar. Ele foi para outro lugar.' },
+    { title: 'Compra pack por pack', text: 'Cada pack novo é um gasto, e a maioria das artes nem serve para o seu público.' },
+    { title: 'Cria tudo do zero', text: 'Horas desenhando para um pedido que paga pouco — e o prazo apertando.' },
+    { title: 'Não consegue mostrar antes', text: 'O cliente só vê a caneca depois de pronta. Se não gostar, o prejuízo é seu.' },
+  ],
+  /** Benefícios como resultado (não como recurso). */
+  benefits: [
+    { title: 'Ache a arte em segundos', text: 'Busca e categorias por tema, ocasião e estilo. Nada de pastas bagunçadas.' },
+    { title: 'Venda antes de produzir', text: 'Mostre a caneca em 3D ao cliente antes de gastar tinta e porcelana.' },
+    { title: 'Monte sem programa pago', text: 'O Editor Online monta a composição sem Corel nem Photoshop.' },
+    { title: 'Aprenda e evolua', text: 'Academia e curso de impressão para dominar a sublimação de verdade.' },
+    { title: 'Renove o acervo sempre', text: 'Novos lançamentos e atualizações incluídos no seu acesso vitalício.' },
+  ],
+  /** Para quem é / para quem não é. */
+  forWho: [
+    'Sublimadores que vendem canecas personalizadas',
+    'Quem faz lembranças, presentes e brindes',
+    'Quem quer parar de comprar pack por pack',
+    'Quem está começando e precisa de arte pronta',
+  ],
+  notForWho: [
+    'Quem quer arte exclusiva sob medida (aqui as artes são um acervo compartilhado)',
+    'Quem não trabalha com sublimação de canecas',
+  ],
+  /** Tudo que está incluído — pilha de valor (sem preço inventado por item). */
+  valueStack: [
+    { name: 'Biblioteca de artes para canecas', detail: 'Acervo com curadoria, organizado por tema e ocasião, com novos lançamentos.', tag: 'CARRO-CHEFE' },
+    { name: 'Studio Mockup 3D', detail: 'Apresente a caneca em 3D ao cliente antes de produzir.', tag: 'INCLUÍDO' },
+    { name: 'Editor Online (Mockup 2D)', detail: 'Monte a composição da caneca direto no navegador.', tag: 'INCLUÍDO' },
+    { name: 'Academia de Sublimação + curso de impressão', detail: 'Trilhas, videoaulas e guias para dominar a técnica.', tag: 'INCLUÍDO' },
+    { name: 'Área Bônus', detail: 'Recursos extras, ferramentas e materiais de apoio.', tag: 'INCLUÍDO' },
+    { name: 'Atualizações vitalícias', detail: 'Novas artes e novos recursos entram no seu acesso sem custo extra.', tag: 'INCLUÍDO' },
+  ],
+  /** Depoimentos reais — só entram os autorizados, com nome e resultado. Vazio = seção não aparece. */
+  testimonials: [] as { name: string; role: string; quote: string; result: string }[],
+  guarantee: {
+    title: 'Risco zero: 7 dias de garantia incondicional',
+    text: 'Teste por 7 dias. Se não for para você, devolvemos 100% do valor — sem perguntas, sem burocracia. É o seu direito (art. 49 do CDC) e a nossa garantia. E o teste grátis (20 downloads) já deixa você decidir antes de pagar.',
+  },
   steps: [
     { num: '01', title: 'Comece pela Biblioteca', subtitle: 'Crie sua conta e encontre sua próxima arte.', description: 'Busque por tema, explore categorias e escolha o arquivo que combina com o pedido do seu cliente.' },
     { num: '02', title: 'Crie e apresente', subtitle: 'Mockup e Editor reunidos no Studio.', description: 'Monte a composição no Editor e mostre a caneca em 3D no Mockup. O Studio acompanha seu pacote e abre em outra plataforma.' },
