@@ -149,7 +149,7 @@ export function LandingView() {
             <article className="rounded-[24px] border border-orange-400/30 bg-[#21181a] p-6 sm:p-8 lg:col-span-2">
               <div className="flex items-center gap-3 text-[#ffad74]"><Download size={23} aria-hidden="true" /><span className="text-xs font-bold uppercase tracking-widest">Seu acesso principal · Carro-chefe</span></div>
               <h3 className="mt-5 text-2xl font-bold">Biblioteca de artes para canecas</h3>
-              <p className="mt-3 max-w-2xl text-sm leading-7 text-white/70">Encontre artes por tema, ocasião e estilo. Explore categorias, salve favoritas e acompanhe os lançamentos para preparar os pedidos que chegam até você.</p>
+              <p className="mt-3 max-w-2xl text-sm leading-7 text-white/70">Milhares de artes por tema, ocasião e estilo. Explore categorias, salve favoritas e acompanhe os lançamentos para preparar os pedidos que chegam até você.</p>
               <ul className="mt-5 space-y-2 text-sm text-white/75"><li>Busca e categorias para encontrar a opção certa.</li><li>Favoritos para guardar suas próximas ideias.</li><li>Lançamentos para renovar as opções que você oferece.</li></ul>
               <button type="button" onClick={() => goStart('package_trial')} className="cg-sales-button mt-6 px-6 py-3.5 text-sm">{startLabel} <ArrowRight size={17} /></button>
             </article>

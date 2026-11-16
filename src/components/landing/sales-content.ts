@@ -1,6 +1,6 @@
 /**
  * Conteúdo editável da página de vendas. Não altera dados do portal.
- * Não anunciar tamanho do acervo; 20 downloads é a cota do teste. Preço aprovado em uma única constante.
+ * REGRA DO VINICIUS (2026-11-16): nunca o número exato de artes — usar só "milhares de artes" e manter o mistério. 20 downloads é a cota do teste. Preço aprovado em uma única constante.
  */
 import { STUDIO_URL } from '@/lib/site'
 import { LIFETIME_PRICE_CENTS } from '@/lib/payments/config'
@@ -17,7 +17,7 @@ export const SALES = {
   STUDIO_URL,
   heroKicker: 'Biblioteca de artes para canecas',
   heroTitle: ['Sua próxima caneca', 'pronta para vender', 'sem criar do zero.'],
-  heroDescription: 'Artes para sublimação organizadas por tema, ocasião e estilo — e as ferramentas para apresentar cada uma: Studio Mockup 3D, Editor Online e Academia. Escolha a estampa, monte a composição e mostre a caneca ao cliente antes de produzir.',
+  heroDescription: 'Milhares de artes para sublimação organizadas por tema, ocasião e estilo — e as ferramentas para apresentar cada uma: Studio Mockup 3D, Editor Online e Academia. Escolha a estampa, monte a composição e mostre a caneca ao cliente antes de produzir.',
   categories: ['Todas', 'Flork', 'Frases', 'Fé & espiritualidade', 'Datas especiais', 'Geek', 'Futebol', 'Música', 'Amizade', 'Humor'],
   /** Dores que a seção de problema/agitação nomeia. */
   problems: [
@@ -47,7 +47,7 @@ export const SALES = {
   ],
   /** Tudo que está incluído — pilha de valor (sem preço inventado por item). */
   valueStack: [
-    { name: 'Biblioteca de artes para canecas', detail: 'Acervo com curadoria, organizado por tema e ocasião, com novos lançamentos.', tag: 'CARRO-CHEFE' },
+    { name: 'Biblioteca de artes para canecas', detail: 'Milhares de artes com curadoria, organizadas por tema e ocasião, com novos lançamentos.', tag: 'CARRO-CHEFE' },
     { name: 'Studio Mockup 3D', detail: 'Apresente a caneca em 3D ao cliente antes de produzir.', tag: 'INCLUÍDO' },
     { name: 'Editor Online (Mockup 2D)', detail: 'Monte a composição da caneca direto no navegador.', tag: 'INCLUÍDO' },
     { name: 'Academia de Sublimação + curso de impressão', detail: 'Trilhas, videoaulas e guias para dominar a técnica.', tag: 'INCLUÍDO' },
