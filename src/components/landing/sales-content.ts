@@ -56,10 +56,6 @@ export const SALES = {
   ],
   /** Depoimentos reais — só entram os autorizados, com nome e resultado. Vazio = seção não aparece. */
   testimonials: [] as { name: string; role: string; quote: string; result: string }[],
-  guarantee: {
-    title: 'Risco zero: 7 dias de garantia incondicional',
-    text: 'Teste por 7 dias. Se não for para você, devolvemos 100% do valor — sem perguntas, sem burocracia. É o seu direito (art. 49 do CDC) e a nossa garantia. E o teste grátis (20 downloads) já deixa você decidir antes de pagar.',
-  },
   steps: [
     { num: '01', title: 'Comece pela Biblioteca', subtitle: 'Crie sua conta e encontre sua próxima arte.', description: 'Busque por tema, explore categorias e escolha o arquivo que combina com o pedido do seu cliente.' },
     { num: '02', title: 'Crie e apresente', subtitle: 'Mockup e Editor reunidos no Studio.', description: 'Monte a composição no Editor e mostre a caneca em 3D no Mockup. O Studio acompanha seu pacote e abre em outra plataforma.' },
