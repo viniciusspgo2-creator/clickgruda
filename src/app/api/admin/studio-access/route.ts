@@ -8,7 +8,7 @@ const headers={'Cache-Control':'private, no-store'}
 async function allowed(){const u=await getSessionUser();return u?.role==='ADMIN'&&!u.isDemo&&!u.isPreview}
 export async function GET(){
  if(!await allowed())return Response.json({error:'Não autorizado.'},{status:401,headers})
- const users=await db.user.findMany({select:{id:true,name:true,email:true,createdAt:true,hasAccess:true,accessType:true,status:true,isDemo:true,isPreview:true,role:true},orderBy:{createdAt:'desc'},take:500})
+ const users=await db.user.findMany({select:{id:true,name:true,email:true,createdAt:true,hasAccess:true,accessType:true,status:true,isDemo:true,isPreview:true,isStudioOnly:true,role:true},orderBy:{createdAt:'desc'},take:500})
  const overrides=await db.setting.findMany({where:{key:{startsWith:STUDIO_GRANT_PREFIX}},select:{key:true,value:true}})
  const grants=new Map(overrides.map(x=>[x.key.slice(STUDIO_GRANT_PREFIX.length),parseStudioGrant(x.value)]))
  let overview=null,error:string|null=null
@@ -23,7 +23,7 @@ export async function PATCH(req:Request){
  if(!/^[a-zA-Z0-9_-]{1,100}$/.test(id)||!['inherit','grant','block'].includes(mode))return Response.json({error:'Parâmetros inválidos.'},{status:400,headers})
  const expiresAt=mode==='grant'&&body.expiresAt?String(body.expiresAt):null
  if(expiresAt&&(!Number.isFinite(Date.parse(expiresAt))||Date.parse(expiresAt)<=Date.now()))return Response.json({error:'A validade deve ser futura.'},{status:400,headers})
- const user=await db.user.findUnique({where:{id},select:{id:true,name:true,role:true,hasAccess:true,status:true,isDemo:true,isPreview:true,accessType:true,createdAt:true}})
+ const user=await db.user.findUnique({where:{id},select:{id:true,name:true,role:true,hasAccess:true,status:true,isDemo:true,isPreview:true,isStudioOnly:true,accessType:true,createdAt:true}})
  if(!user)return Response.json({error:'Cliente não encontrado.'},{status:404,headers})
  if(user.isDemo||user.isPreview)return Response.json({error:'Conta de visualização não recebe acesso premium.'},{status:403,headers})
  const value=JSON.stringify({mode,expiresAt,updatedAt:new Date().toISOString()})

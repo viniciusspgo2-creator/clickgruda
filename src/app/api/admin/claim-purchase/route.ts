@@ -19,7 +19,7 @@ export async function POST(req: Request) {
         tx.user.findUnique({ where: { id: userId } }),
       ])
       if (!purchase || purchase.status !== 'APPROVED' || purchase.claimedUserId) throw new Error('Pagamento indisponível')
-      if (!user || user.email.toLowerCase() !== purchase.email || user.isDemo || user.isPreview || user.status === 'BLOCKED') throw new Error('Conta ou e-mail inválido')
+      if (!user || user.email.toLowerCase() !== purchase.email || user.isDemo || user.isPreview || user.isStudioOnly || user.status === 'BLOCKED') throw new Error('Conta ou e-mail inválido')
       await tx.pendingPurchase.update({ where: { id }, data: { claimedUserId: user.id } })
       await tx.user.update({ where: { id: user.id }, data: { hasAccess: true, accessStatus: 'ATIVO', accessType: 'VITALICIO', activatedAt: new Date(), accessProvider: purchase.provider, accessReference: purchase.externalId, accessSource: 'PURCHASE' } })
       await grantCompleteBenefits(tx,user)

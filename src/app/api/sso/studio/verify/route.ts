@@ -24,14 +24,14 @@ export async function POST(req:Request){
   const consumed=await tx.setting.deleteMany({where:{key,value:ticketRow.value}})
   if(consumed.count!==1)return null
   const [user,grantRow]=await Promise.all([
-   tx.user.findUnique({where:{id:userId},select:{id:true,name:true,role:true,hasAccess:true,status:true,isDemo:true,isPreview:true,accessType:true,createdAt:true}}),
+   tx.user.findUnique({where:{id:userId},select:{id:true,name:true,role:true,hasAccess:true,status:true,isDemo:true,isPreview:true,isStudioOnly:true,previewMaxSessions:true,accessType:true,createdAt:true}}),
    tx.setting.findUnique({where:{key:STUDIO_GRANT_PREFIX+userId}}),
   ])
   if(!user)return null
   const decision=accessDecision(user,parseStudioGrant(grantRow?.value))
   if(!decision.allowed)return null
   if(!['3d','2d','editor'].includes(data.tool))return null
-  return {id:user.id,name:user.name,registeredAt:user.createdAt.toISOString(),tool:data.tool,kind:decision.kind,expiresAt:decision.expiresAt,override:decision.override}
+  return {id:user.id,name:user.name,registeredAt:user.createdAt.toISOString(),tool:data.tool,kind:decision.kind,expiresAt:decision.expiresAt,override:decision.override,maxSessions:user.isStudioOnly?Math.max(1,Math.min(500,user.previewMaxSessions||10)):null}
  })
  if(!verified)return Response.json({ok:false},{status:403,headers:noStore})
  return Response.json({ok:true,user:verified},{headers:noStore})

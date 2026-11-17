@@ -6,7 +6,7 @@ export const dynamic='force-dynamic'
 export async function GET(){
  const user=await getSessionUser()
  // Curso PhD faz parte do Conhecimento Técnico: livre para qualquer conta real.
- const canAccess=Boolean(user && !user.isDemo && !user.isPreview)
+ const canAccess=Boolean(user && !user.isDemo && !user.isPreview && !user.isStudioOnly)
  if(!canAccess)return Response.json({canAccess:false,videos:[]},{headers:{'Cache-Control':'private, no-store'}})
  const row=await db.setting.findUnique({where:{key:'cg2:academy:phd:youtube-ids:v1'}})
  let overrides:Record<string,string>={}

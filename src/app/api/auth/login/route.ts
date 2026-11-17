@@ -27,9 +27,9 @@ export async function POST(req: Request) {
     await setSessionCookie(session.token)
 
     return Response.json({
-      sessionNotice: session.displaced && !user.isPreview ? 'NEW_LOGIN' : null,
+      sessionNotice: session.displaced && !user.isPreview && !user.isStudioOnly ? 'NEW_LOGIN' : null,
       deviceLimit: session.limit,
-      user: { id: user.id, name: user.name, email: user.email, role: user.role, hasAccess: user.hasAccess, isTrial:user.accessType === "TRIAL", isDemo: user.isDemo || user.isPreview, isPreview: user.isPreview, status: user.status },
+      user: { id: user.id, name: user.name, email: user.email, role: user.role, hasAccess: user.hasAccess, isTrial:user.accessType === "TRIAL", isDemo: user.isDemo || user.isPreview, isPreview: user.isPreview, isStudioOnly: user.isStudioOnly, status: user.status },
     })
   } catch {
     return jsonError('Erro ao entrar. Tente novamente.', 500)

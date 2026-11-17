@@ -11,7 +11,7 @@ export async function POST(req: Request) {
   const key = throttleKey('register-ip', requestIp(req))
   if (await isThrottled(key)) return jsonError('Muitas solicitações. Tente novamente mais tarde.', 429)
   const existingSession = await getSessionUser()
-  if (existingSession?.isPreview) return jsonError('Saia do modo Preview para criar uma conta própria.', 403)
+  if (existingSession?.isPreview || existingSession?.isStudioOnly) return jsonError('Saia do modo de acesso compartilhado para criar uma conta própria.', 403)
   try {
     const body = await req.json()
     if (body.website) return jsonError('Não foi possível criar a conta.', 400) // honeypot

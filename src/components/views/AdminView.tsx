@@ -558,6 +558,7 @@ type AdminUser = {
   status: string
   isDemo?: boolean
   isPreview?: boolean
+  isStudioOnly?: boolean
   previewMaxSessions?: number
   whatsapp?: string
   extraDevices?: number
@@ -645,7 +646,7 @@ function UsersSection() {
                   </span>
                   <div className="min-w-0">
                     <p className="truncate text-sm font-bold text-zinc-900">
-                      {u.name} {u.isPreview && <Badge className="ml-1 bg-violet-100 text-[9px] font-black text-violet-700">PREVIEW · {u.previewMaxSessions ?? 10} acessos</Badge>} {u.role === 'ADMIN' && <Badge className="ml-1 bg-orange-100 text-[9px] font-black text-orange-600">MASTER</Badge>}
+                      {u.name} {u.isPreview && <Badge className="ml-1 bg-violet-100 text-[9px] font-black text-violet-700">PREVIEW · {u.previewMaxSessions ?? 10} acessos</Badge>} {u.isStudioOnly && <Badge className="ml-1 bg-sky-100 text-[9px] font-black text-sky-700">STUDIO · {u.previewMaxSessions ?? 10} acessos</Badge>} {u.role === 'ADMIN' && <Badge className="ml-1 bg-orange-100 text-[9px] font-black text-orange-600">MASTER</Badge>}
                     </p>
                     <p className="truncate text-xs text-zinc-400">{u.email}</p>
                     {u.whatsapp && <a href={`https://wa.me/${u.whatsapp}?text=${encodeURIComponent(`Olá, ${u.name.split(' ')[0]}! Sou da equipe Click & Gruda. Vi seu cadastro e posso ajudar com o pagamento e a ativação da sua conta.`)}`} target="_blank" rel="noopener noreferrer" className="mt-1 inline-flex min-h-7 items-center gap-1 text-xs font-bold text-emerald-700 underline underline-offset-2">WhatsApp: +{u.whatsapp}</a>}
@@ -673,10 +674,10 @@ function UsersSection() {
               </TableCell>
               <TableCell>
                 <div className="flex items-center justify-end gap-1.5">
-                  {!u.isPreview && u.role !== 'ADMIN' && <DownloadLimitDialog user={u} />}
-                  {!u.isPreview && u.role !== 'ADMIN' && <MemberAccessDialog user={u} />}
-                  {!u.isPreview && !u.isDemo && u.role !== 'ADMIN' && <ManualPaymentDialog user={u} />}
-                  {!u.isPreview && <Button
+                  {!u.isPreview && !u.isStudioOnly && u.role !== 'ADMIN' && <DownloadLimitDialog user={u} />}
+                  {!u.isPreview && !u.isStudioOnly && u.role !== 'ADMIN' && <MemberAccessDialog user={u} />}
+                  {!u.isPreview && !u.isStudioOnly && !u.isDemo && u.role !== 'ADMIN' && <ManualPaymentDialog user={u} />}
+                  {!u.isPreview && !u.isStudioOnly && <Button
                     size="sm"
                     variant="outline"
                     disabled={u.status === 'BLOCKED'}
@@ -688,7 +689,7 @@ function UsersSection() {
                   >
                     {u.hasAccess ? 'Revogar' : 'Liberar'}
                   </Button>}
-                  {!u.isPreview && <Button
+                  {!u.isPreview && !u.isStudioOnly && <Button
                     size="sm"
                     variant="outline"
                     className="h-8 rounded-lg text-xs font-bold text-zinc-500"
@@ -696,8 +697,8 @@ function UsersSection() {
                   >
                     {u.role === 'ADMIN' ? 'Tornar cliente' : 'Tornar master'}
                   </Button>}
-                  {u.isPreview && <PreviewAccountDialog user={u} />}
-                  {!u.isPreview && <ResetPasswordDialog
+                  {(u.isPreview || u.isStudioOnly) && <PreviewAccountDialog user={u} />}
+                  {!u.isPreview && !u.isStudioOnly && <ResetPasswordDialog
                     user={{ id: u.id, name: u.name }}
                     onSaved={(msg) => {
                       toast.success(msg)

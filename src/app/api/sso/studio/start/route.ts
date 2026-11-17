@@ -16,7 +16,9 @@ export async function GET(req:Request){
  if(!tools.has(tool))return Response.json({error:'Ferramenta inválida.'},{status:400})
  const session=await getSessionUser()
  if(!session||session.isDemo||session.isPreview)return NextResponse.redirect(new URL('/',req.url))
- const user=await db.user.findUnique({where:{id:session.id},select:{id:true,role:true,hasAccess:true,status:true,isDemo:true,isPreview:true,accessType:true,createdAt:true}})
+ // Acesso só-Studio: só o Studio 3D e o 2D; o Editor de Artes fica fora.
+ if(session.isStudioOnly&&tool==='editor')return Response.json({error:'Este acesso é só para o Studio 3D e 2D.'},{status:403,headers:{'Cache-Control':'no-store'}})
+ const user=await db.user.findUnique({where:{id:session.id},select:{id:true,role:true,hasAccess:true,status:true,isDemo:true,isPreview:true,isStudioOnly:true,previewMaxSessions:true,accessType:true,createdAt:true}})
  if(!user)return Response.json({error:'Conta não encontrada.'},{status:401})
  const access=await userStudioDecision(user)
  if(!access.allowed)return Response.json({error:'Seu Studio não está ativo. Confira o prazo ou procure o suporte.'},{status:403,headers:{'Cache-Control':'no-store'}})

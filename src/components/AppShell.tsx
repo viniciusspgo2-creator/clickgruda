@@ -98,7 +98,8 @@ export function AppShell() {
         // da sessão anterior e ocultar a seção que o visitante solicitou.
         const landingAnchors = ['preco', 'investimento', 'faq', 'perguntas', 'artes', 'biblioteca', 'recursos', 'como-funciona', 'studio-mockup', 'video', 'blog']
         if (landingAnchors.includes(window.location.hash.slice(1))) return
-        if ((next === 'portal' || next === 'hub') && (!data.user || !data.user.hasAccess)) return
+        if (next === 'portal' && (!data.user || !data.user.hasAccess)) return
+        if (next === 'hub' && (!data.user || (!data.user.hasAccess && !data.user.isStudioOnly))) return
         if (next === 'admin' && (!data.user || data.user.role !== 'ADMIN')) return
         if (next === 'checkout' && !data.user) return
         if (next !== useStore.getState().view) setView(next)

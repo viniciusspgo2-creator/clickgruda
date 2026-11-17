@@ -32,13 +32,13 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
     // Liberação da conta sempre encerra o estado "aguardando PIX manual"
     if (body.hasAccess) data.status = 'ACTIVE'
   }
-  const target = await db.user.findUnique({ where: { id }, select: { isPreview: true, status: true, role: true,accessType:true } })
+  const target = await db.user.findUnique({ where: { id }, select: { isPreview: true, isStudioOnly: true, status: true, role: true,accessType:true } })
   if (!target) return jsonError('Usuário não encontrado.', 404)
   if (body.blocked === true) data.status = 'BLOCKED'
   else if (body.blocked === false && target.status === 'BLOCKED') data.status = 'ACTIVE'
-  if (target?.isPreview && (body.role === 'ADMIN' || body.hasAccess === false || typeof body.password === 'string')) return jsonError('A conta Preview só pode ser gerenciada pela opção Preview.', 403)
+  if ((target?.isPreview || target?.isStudioOnly) && (body.role === 'ADMIN' || body.hasAccess === false || typeof body.password === 'string')) return jsonError('A conta universal só pode ser gerenciada pela opção Preview/Studio.', 403)
   if(body.downloadLimit!==undefined && target.accessType==='TRIAL')return jsonError('O teste público tem 20 downloads em 24 horas. Use Liberar para conceder acesso completo.',400)
-  if (body.downloadLimit !== undefined && (target.isPreview || target.role === 'ADMIN' || body.role === 'ADMIN')) return jsonError('O limitador só pode ser configurado para usuários comuns.', 400)
+  if (body.downloadLimit !== undefined && (target.isPreview || target.isStudioOnly || target.role === 'ADMIN' || body.role === 'ADMIN')) return jsonError('O limitador só pode ser configurado para usuários comuns.', 400)
   if (body.role === 'USER' || body.role === 'ADMIN') data.role = body.role
   // Redefinição de senha pelo Admin Master (não há recuperação automática por enquanto)
   if (typeof body.password === 'string') {

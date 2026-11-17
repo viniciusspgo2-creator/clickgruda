@@ -16,6 +16,7 @@ export type SessionUser = {
   hasAccess: boolean
   isDemo?: boolean
   isPreview?: boolean
+  isStudioOnly?: boolean
   isPublicDemo?: boolean
   /** ACTIVE | PENDING_MANUAL (aguardando liberação do PIX manual) */
   status?: string

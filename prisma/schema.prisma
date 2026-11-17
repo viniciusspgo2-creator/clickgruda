@@ -17,7 +17,8 @@ model User {
   hasAccess    Boolean     @default(false)
   isDemo       Boolean     @default(false) // conta demo: navega no portal com artes embaçadas, sem download
   isPreview    Boolean     @default(false) // conta universal de apresentação; nunca permite downloads ou gravações
-  previewMaxSessions Int  @default(10) // limite de acessos simultâneos dessa conta (1..100)
+  isStudioOnly Boolean     @default(false) // conta universal só-Studio: Studio 3D/2D liberado, resto bloqueado
+  previewMaxSessions Int  @default(10) // limite de acessos simultâneos da conta universal (Preview ou só-Studio) (1..500)
   accessSource String? // PURCHASE | ADMIN_GRANT
   // Modelo novo é aditivo: hasAccess continua compatível com o sistema existente.
   accessStatus String @default("SEM_ACESSO") // SEM_ACESSO | ATIVO | REVOGADO

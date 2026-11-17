@@ -7,7 +7,7 @@ export const STUDIO_TRIAL_MS = STUDIO_TRIAL_DAYS * 86400000
 export const STUDIO_GRANT_PREFIX = 'hub2:studio-permission:'
 export const SSO_TICKET_PREFIX = 'hub2:studio-ticket:'
 export type StudioGrant = { mode: 'inherit' | 'grant' | 'block'; expiresAt: string | null; updatedAt: string }
-export type AccessDecision = { allowed: boolean; kind: 'MEMBER' | 'TRIAL' | 'GRANT' | 'BLOCKED' | 'EXPIRED' | 'UNAVAILABLE'; expiresAt: string | null; override: StudioGrant['mode'] }
+export type AccessDecision = { allowed: boolean; kind: 'MEMBER' | 'TRIAL' | 'GRANT' | 'BLOCKED' | 'EXPIRED' | 'UNAVAILABLE' | 'STUDIO'; expiresAt: string | null; override: StudioGrant['mode'] }
 export function parseStudioGrant(value: string | null | undefined): StudioGrant {
  try {
   const g = JSON.parse(value ?? '{}') as Partial<StudioGrant>
@@ -15,10 +15,12 @@ export function parseStudioGrant(value: string | null | undefined): StudioGrant 
  } catch { /* configuração antiga ou vazia */ }
  return {mode:'inherit',expiresAt:null,updatedAt:''}
 }
-export type StudioUser = {id:string;role:string;hasAccess:boolean;status:string;isDemo:boolean;isPreview:boolean;accessType:string|null;createdAt:Date}
+export type StudioUser = {id:string;role:string;hasAccess:boolean;status:string;isDemo:boolean;isPreview:boolean;isStudioOnly:boolean;accessType:string|null;createdAt:Date}
 export function accessDecision(user:StudioUser, grant:StudioGrant, now=Date.now()):AccessDecision {
  if(user.status==='BLOCKED'||user.isDemo||user.isPreview) return {allowed:false,kind:'BLOCKED',expiresAt:null,override:grant.mode}
  if(grant.mode==='block')return {allowed:false,kind:'BLOCKED',expiresAt:null,override:grant.mode}
+ // Conta universal só-Studio: Studio 3D/2D liberado sem prazo; o resto da plataforma fica bloqueado por hasAccess=false.
+ if(user.isStudioOnly) return {allowed:true,kind:'STUDIO',expiresAt:null,override:grant.mode}
  if(grant.mode==='grant'){
   const expires=grant.expiresAt?Date.parse(grant.expiresAt):NaN
   if(grant.expiresAt&&(!Number.isFinite(expires)||expires<=now))return {allowed:false,kind:'EXPIRED',expiresAt:grant.expiresAt,override:grant.mode}

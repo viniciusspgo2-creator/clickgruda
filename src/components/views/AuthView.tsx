@@ -37,13 +37,13 @@ export function AuthView() {
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    if (user?.hasAccess) setView('hub')
+    if (user?.hasAccess || user?.isStudioOnly) setView('hub')
   }, [user, setView])
 
-  const routeAfterAuth = (u: { hasAccess: boolean; isTrial?: boolean } | null | undefined) => {
+  const routeAfterAuth = (u: { hasAccess: boolean; isTrial?: boolean; isStudioOnly?: boolean } | null | undefined) => {
     const wantsCheckout = pendingIntent === 'checkout'
     if (wantsCheckout) setPendingIntent(null)
-    if (!u?.hasAccess || (wantsCheckout && u.isTrial)) { window.location.assign('/comprar'); return }
+    if ((!u?.hasAccess && !u?.isStudioOnly) || (wantsCheckout && u.isTrial)) { window.location.assign('/comprar'); return }
     setView('hub')
   }
 

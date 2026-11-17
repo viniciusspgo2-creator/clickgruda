@@ -14,15 +14,18 @@ export async function POST(req: Request) {
   const email = String(body.email || '').trim().toLowerCase().slice(0, 120)
   const password = String(body.password || '')
   const maxSessions = Number(body.maxSessions)
+  const studioOnly = body.studioOnly === true
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return jsonError('Informe um e-mail válido.', 400)
   if (password.length < 8 || password.length > 128) return jsonError('Use uma senha de 8 a 128 caracteres.', 400)
-  if (!Number.isInteger(maxSessions) || maxSessions < 1 || maxSessions > 100) return jsonError('Escolha um limite entre 1 e 100 acessos.', 400)
+  if (!Number.isInteger(maxSessions) || maxSessions < 1 || maxSessions > 500) return jsonError('Escolha um limite entre 1 e 500 acessos.', 400)
   const exists = await db.user.findUnique({ where: { email }, select: { id: true } })
   if (exists) return jsonError('Já existe uma conta com este e-mail.', 409)
   const user = await db.user.create({ data: {
     name, email, password: await hashPassword(password), role: 'USER', status: 'ACTIVE',
-    hasAccess: true, accessSource: 'ADMIN_GRANT', isDemo: true, isPreview: true, previewMaxSessions: maxSessions,
-  }, select: { id: true, name: true, email: true, previewMaxSessions: true } })
+    hasAccess: studioOnly ? false : true, accessSource: 'ADMIN_GRANT', accessType: studioOnly ? 'STUDIO' : null,
+    isDemo: studioOnly ? false : true, isPreview: studioOnly ? false : true, isStudioOnly: studioOnly,
+    previewMaxSessions: maxSessions,
+  }, select: { id: true, name: true, email: true, previewMaxSessions: true, isStudioOnly: true } })
   return Response.json({ user }, { status: 201 })
 }
 
@@ -32,16 +35,22 @@ export async function PATCH(req: Request) {
   const body = await req.json().catch(() => ({}))
   const id = String(body.id || '')
   const user = await db.user.findUnique({ where: { id } })
-  if (!user?.isPreview) return jsonError('Conta Preview não encontrada.', 404)
+  if (!user?.isPreview && !user?.isStudioOnly) return jsonError('Conta universal não encontrada.', 404)
   const limit = Number(body.maxSessions)
-  if (!Number.isInteger(limit) || limit < 1 || limit > 100) return jsonError('O limite deve estar entre 1 e 100.', 400)
+  if (!Number.isInteger(limit) || limit < 1 || limit > 500) return jsonError('O limite deve estar entre 1 e 500.', 400)
   const nextPassword = typeof body.password === 'string' ? body.password : ''
   if (nextPassword && (nextPassword.length < 8 || nextPassword.length > 128)) return jsonError('Senha com 8 a 128 caracteres.', 400)
   const update = await db.user.update({ where: { id }, data: {
     previewMaxSessions: limit,
     ...(nextPassword ? { password: await hashPassword(nextPassword) } : {}),
-    isDemo: true, isPreview: true, hasAccess: true, role: 'USER',
-  }, select: { id: true, name: true, email: true, previewMaxSessions: true } })
+    // Preserva o tipo da conta: Preview continua Preview, só-Studio continua só-Studio.
+    isDemo: user.isStudioOnly ? false : true,
+    isPreview: user.isStudioOnly ? false : true,
+    isStudioOnly: user.isStudioOnly,
+    hasAccess: user.isStudioOnly ? false : true,
+    accessType: user.isStudioOnly ? 'STUDIO' : user.accessType,
+    role: 'USER',
+  }, select: { id: true, name: true, email: true, previewMaxSessions: true, isStudioOnly: true } })
   if (nextPassword) {
     await db.userSession.updateMany({ where: { userId: id, revokedAt: null }, data: { revokedAt: new Date(), revokedReason: 'ADMIN' } })
   } else if (limit < user.previewMaxSessions) {

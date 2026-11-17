@@ -33,6 +33,7 @@ export async function GET() {
       status: u.status,
       isDemo: u.isDemo,
       isPreview: u.isPreview,
+      isStudioOnly: u.isStudioOnly,
       previewMaxSessions: u.previewMaxSessions,
       accessSource: u.accessSource,
       accessStatus: u.accessStatus,

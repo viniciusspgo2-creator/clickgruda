@@ -24,6 +24,7 @@ export type SessionUser = {
   hasAccess: boolean
   isDemo: boolean
   isPreview: boolean
+  isStudioOnly: boolean
   isPublicDemo?: boolean
   /** ACTIVE | PENDING_MANUAL (cadastro aguardando atendimento e ativação manual) */
   status: string
@@ -59,7 +60,7 @@ export async function setSessionCookie(token: string, maxAge = 60 * 60 * 24 * 30
 /** Visita sem senha, sem criar usuários ou sessões no banco.
  * As permissões vêm do servidor, nunca de flags enviadas pelo visitante. */
 export function publicDemoUser(id: string): SessionUser {
-  return { id, name: 'Visitante', email: '', role: 'USER', hasAccess: true, isDemo: true, isPreview: true, isPublicDemo: true, status: 'ACTIVE' }
+  return { id, name: 'Visitante', email: '', role: 'USER', hasAccess: true, isDemo: true, isPreview: true, isStudioOnly: false, isPublicDemo: true, status: 'ACTIVE' }
 }
 
 export async function createPublicDemoSession() {
@@ -128,6 +129,7 @@ export async function resolveSession(): Promise<SessionResolution> {
         isTrial: user.accessType === "TRIAL",
         isDemo: user.isDemo || user.isPreview,
         isPreview: user.isPreview,
+        isStudioOnly: user.isStudioOnly,
         status: user.status,
       },
       revoked: false,

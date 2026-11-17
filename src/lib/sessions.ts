@@ -48,14 +48,14 @@ export function clientIp(req: Request): string {
  * (e gera um alerta no painel quando isso acontece várias vezes).
  * Administradores e demonstrações públicas ficam fora da regra individual; Preview privado usa seu limite próprio.
  */
-export async function startSession(user: { id: string; role: string; isDemo: boolean; isPreview?: boolean; previewMaxSessions?: number }, req: Request): Promise<{ token: string; displaced: boolean; limit: number }> {
+export async function startSession(user: { id: string; role: string; isDemo: boolean; isPreview?: boolean; isStudioOnly?: boolean; previewMaxSessions?: number }, req: Request): Promise<{ token: string; displaced: boolean; limit: number }> {
   const currentSid = await getCurrentSessionId()
   const ua = req.headers.get('user-agent') || ''
   for (let attempt = 0; attempt < 3; attempt++) {
     try {
       const result = await db.$transaction(async tx => {
         const profile = await getMemberProfile(user.id, tx)
-        const limit = user.isPreview ? Math.max(1, Math.min(100, user.previewMaxSessions || 10)) : DEFAULT_MAX_DEVICES + profile.extraDevices
+        const limit = (user.isPreview || user.isStudioOnly) ? Math.max(1, Math.min(500, user.previewMaxSessions || 10)) : DEFAULT_MAX_DEVICES + profile.extraDevices
         const enforced = user.role !== 'ADMIN' && (!user.isDemo || user.isPreview)
         // Refazer login no mesmo navegador substitui apenas a sua sessão.
         if (currentSid) await tx.userSession.updateMany({ where: { id: currentSid, userId: user.id, revokedAt: null }, data: { revokedAt: new Date(), revokedReason: 'RELOGIN' } })
@@ -71,7 +71,7 @@ export async function startSession(user: { id: string; role: string; isDemo: boo
         const session = await tx.userSession.create({ data: { userId: user.id, device: describeDevice(ua).slice(0, 80), ip: clientIp(req) } })
         return { session, displaced, limit }
       }, { isolationLevel: Prisma.TransactionIsolationLevel.Serializable })
-      if (result.displaced && !user.isPreview) await flagDeviceChurn(user.id, result.limit)
+      if (result.displaced && !user.isPreview && !user.isStudioOnly) await flagDeviceChurn(user.id, result.limit)
       return { token: await createSessionToken(user.id, result.session.id), displaced: result.displaced, limit: result.limit }
     } catch (error) {
       if (attempt < 2 && (error as { code?: string }).code === 'P2034') continue
