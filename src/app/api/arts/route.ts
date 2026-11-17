@@ -15,8 +15,10 @@ export async function GET(req: Request) {
   // Somente sessões com acesso visualizam os metadados e URLs das artes.
   // O modo demonstração continua disponível a quem recebeu acesso de demo;
   // a proteção de arquivos originais deve continuar no endpoint de download/storage.
+  // Acesso só-Studio também navega no acervo, mas só vê a prévia protegida
+  // (imagem reduzida + marca-d'água) e não baixa — o download segue bloqueado.
   if (!session) return jsonError('Entre na sua conta para consultar o acervo', 401)
-  if (!session.hasAccess && session.role !== 'ADMIN') return jsonError('Acesso necessário para consultar o acervo', 403)
+  if (!session.hasAccess && !session.isStudioOnly && session.role !== 'ADMIN') return jsonError('Acesso necessário para consultar o acervo', 403)
 
   const allowedTabs = new Set(['todas', 'lancamentos', 'selecionadas', 'sazonal', 'favoritas', 'downloads', 'reprovadas', 'bocoes'])
   const tabParam = url.searchParams.get('tab') || 'todas'
@@ -34,7 +36,7 @@ export async function GET(req: Request) {
 
   const result = await queryArts({ userId: session?.id ?? null, tab, q, categoryIds, tagIds, eventId, sort, page, pageSize })
   const quota = await getDownloadQuota(session)
-  if (session.isDemo || quota?.exhausted) {
+  if (session.isDemo || session.isStudioOnly || quota?.exhausted) {
     for (const art of result.arts) {
       art.imageUrl = `/api/arts/${art.id}/preview`
       if (art.pairedArt) art.pairedArt.imageUrl = `/api/arts/${art.pairedArt.id}/preview`

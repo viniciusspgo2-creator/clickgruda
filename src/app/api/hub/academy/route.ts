@@ -8,7 +8,7 @@ export const dynamic = 'force-dynamic'
  * e o preview ficam com a prévia, sem o conteúdo completo. */
 export async function GET() {
  const user = await getSessionUser()
- const canAccess = Boolean(user && !user.isDemo && !user.isPreview && !user.isStudioOnly)
+ const canAccess = Boolean(user && !user.isDemo && !user.isPreview)
  return Response.json({
   canAccess,
   tracks: ACADEMY_TRACKS,

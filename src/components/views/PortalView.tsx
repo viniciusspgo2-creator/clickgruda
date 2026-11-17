@@ -282,7 +282,9 @@ export function PortalView() {
   useEffect(() => {
     const currentView = useStore.getState().view
     if (!user && currentView === 'portal') setView('auth')
-    else if (user && !user.hasAccess && currentView === 'portal') setView('checkout')
+    // Acesso só-Studio navega na Biblioteca (prévia protegida, sem download)
+    // — só vai ao checkout quem não tem acesso nem é só-Studio.
+    else if (user && !user.hasAccess && !user.isStudioOnly && currentView === 'portal') setView('checkout')
   }, [user, setView])
 
   const catalogQ = useQuery<CatalogData>({
@@ -303,7 +305,7 @@ export function PortalView() {
       if (!response.ok) throw new Error('Sugestões indisponíveis')
       return response.json()
     },
-    enabled: !!user?.hasAccess && searchFocused && q.length >= 2,
+    enabled: !!(user?.hasAccess || user?.isStudioOnly) && searchFocused && q.length >= 2,
     staleTime: 30_000,
     retry: false,
   })
@@ -326,7 +328,7 @@ export function PortalView() {
       return res.json()
     },
     getNextPageParam: (last) => (last.hasMore ? last.page + 1 : undefined),
-    enabled: !!user?.hasAccess ,
+    enabled: !!(user?.hasAccess || user?.isStudioOnly) ,
     staleTime: 15_000,
     retry: 1,
   })
@@ -335,7 +337,9 @@ export function PortalView() {
   const quotaExhausted = Boolean(quota?.exhausted)
   useEffect(()=>{queryClient.invalidateQueries({queryKey:['catalog']})},[user?.isTrial,queryClient])
   useEffect(()=>{if(!quota?.expiresAt||quota.exhausted)return;const delay=Math.max(0,Date.parse(quota.expiresAt)-Date.now());const timer=setTimeout(()=>{queryClient.invalidateQueries({queryKey:['catalog']});queryClient.invalidateQueries({queryKey:['arts']})},Math.min(delay+100,2147483647));return()=>clearTimeout(timer)},[quota?.expiresAt,quota?.exhausted,queryClient])
-  const protectedPreview = Boolean(user?.isDemo || quotaExhausted)
+  // Acesso só-Studio vê a Biblioteca em prévia protegida (arte ofuscada,
+  // download com cadeado) — igual ao modo demonstração / cota esgotada.
+  const protectedPreview = Boolean(user?.isDemo || user?.isStudioOnly || quotaExhausted)
 
   // Ao esgotar/reativar a cota, recarrega as URLs de prévia (protegidas no servidor).
   useEffect(() => { queryClient.invalidateQueries({ queryKey: ['arts'] }) }, [quotaExhausted, queryClient])
@@ -408,6 +412,12 @@ export function PortalView() {
       return
     }
     if (!user.hasAccess) {
+      // Acesso só-Studio: download bloqueado, sem jogar para o checkout
+      // (o e-mail da conta é compartilhado e não pode aparecer na compra).
+      if (user.isStudioOnly) {
+        toast.info('Downloads são exclusivos do acesso vitalício. Crie sua conta para comprar o acesso completo!')
+        return
+      }
       setView('checkout')
       return
     }
@@ -521,7 +531,8 @@ export function PortalView() {
 
   const { hasNextPage, isFetchingNextPage, fetchNextPage } = artsQ
 
-  if (!user || !user.hasAccess) return null
+  // Acesso só-Studio navega na Biblioteca em prévia protegida.
+  if (!user || (!user.hasAccess && !user.isStudioOnly)) return null
 
   const counts = catalogQ.data?.counts
 
