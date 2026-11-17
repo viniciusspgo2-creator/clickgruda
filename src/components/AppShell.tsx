@@ -70,8 +70,9 @@ export function AppShell() {
         const data = await res.json()
         if (cancelled || useStore.getState().sessionRevision !== sessionRevision) return
         setUser(data.user || null)
-        // Conta comum sem acesso vai para o checkout; ADMIN e DEMO mantêm navegação própria.
-        if (data.user && !data.user.hasAccess && !data.user.isDemo && data.user.role !== 'ADMIN' && !window.location.hash) {
+        // Conta comum sem acesso vai para o checkout; ADMIN, DEMO e só-Studio
+        // mantêm navegação própria (só-Studio volta para a Central, não p/ a compra).
+        if (data.user && !data.user.hasAccess && !data.user.isDemo && !data.user.isStudioOnly && data.user.role !== 'ADMIN' && !window.location.hash) {
           window.location.replace('/comprar'); return
         }
         if (data.reason === 'SESSION_REVOKED' || data.reason === 'ACCOUNT_BLOCKED') {
@@ -98,7 +99,7 @@ export function AppShell() {
         // da sessão anterior e ocultar a seção que o visitante solicitou.
         const landingAnchors = ['preco', 'investimento', 'faq', 'perguntas', 'artes', 'biblioteca', 'recursos', 'como-funciona', 'studio-mockup', 'video', 'blog']
         if (landingAnchors.includes(window.location.hash.slice(1))) return
-        if (next === 'portal' && (!data.user || !data.user.hasAccess)) return
+        if (next === 'portal' && (!data.user || (!data.user.hasAccess && !data.user.isStudioOnly))) return
         if (next === 'hub' && (!data.user || (!data.user.hasAccess && !data.user.isStudioOnly))) return
         if (next === 'admin' && (!data.user || data.user.role !== 'ADMIN')) return
         if (next === 'checkout' && !data.user) return

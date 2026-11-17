@@ -15,10 +15,12 @@ const imageResponse = (bytes: Buffer) => new Response(new Uint8Array(bytes), { h
 
 /** Prévia de demonstração ou acesso de teste esgotado: não entrega arquivos de impressão.
  * Imagem reduzida, levemente suavizada e com marca-d’água.
- * Os originais R2 permanecem privados e nunca são enviados a esta sessão. */
+ * Os originais R2 permanecem privados e nunca são enviados a esta sessão.
+ * Acesso só-Studio também usa a prévia protegida (navega na Biblioteca
+ * com a arte ofuscada e o download bloqueado). */
 export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
   const user = await getSessionUser()
-  if (!user?.hasAccess || (!user.isDemo && !(await getDownloadQuota(user))?.exhausted)) return jsonError('Recurso disponível apenas para demonstração protegida.', 403)
+  if ((!user?.hasAccess && !user?.isStudioOnly) || (!user.isDemo && !user.isStudioOnly && !(await getDownloadQuota(user))?.exhausted)) return jsonError('Recurso disponível apenas para demonstração protegida.', 403)
   const { id } = await params
   const art = await db.art.findUnique({ where: { id }, select: { imageUrl: true } })
   if (!art) return jsonError('Arte não encontrada.', 404)
