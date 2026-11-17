@@ -19,7 +19,7 @@ export type StudioUser = {id:string;role:string;hasAccess:boolean;status:string;
 export function accessDecision(user:StudioUser, grant:StudioGrant, now=Date.now()):AccessDecision {
  if(user.status==='BLOCKED'||user.isDemo||user.isPreview) return {allowed:false,kind:'BLOCKED',expiresAt:null,override:grant.mode}
  if(grant.mode==='block')return {allowed:false,kind:'BLOCKED',expiresAt:null,override:grant.mode}
- // Conta universal só-Studio: Studio 3D/2D liberado sem prazo; o resto da plataforma fica bloqueado por hasAccess=false.
+ // Conta universal só-Studio: Studio 3D/2D liberado sem prazo; Biblioteca navegável em prévia protegida e Academia liberada, downloads/bônus bloqueados por hasAccess=false.
  if(user.isStudioOnly) return {allowed:true,kind:'STUDIO',expiresAt:null,override:grant.mode}
  if(grant.mode==='grant'){
   const expires=grant.expiresAt?Date.parse(grant.expiresAt):NaN
