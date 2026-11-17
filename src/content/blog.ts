@@ -1377,7 +1377,249 @@ const ART12: BlogArticle = {
   related: ['macetes-sublimacao-de-canecas', 'tempo-temperatura-sublimar-caneca-tabela', 'como-sublimar-canecas-passo-a-passo'],
 }
 
-export const BLOG_ARTICLES: BlogArticle[] = [ART1, ART2, ART3, ART4, ART5, ART6, ART7, ART8, ART9, ART10, ART11, ART12]
+/* ============================================================
+ * ARTIGO 13 — sazonal: "canecas de natal para vender"
+ * ============================================================ */
+const ART13: BlogArticle = {
+  slug: 'canecas-de-natal-para-vender-ideias',
+  title: 'Canecas de Natal para vender: ideias, calendário e preços para o fim de ano',
+  seoTitle: 'Canecas de Natal para Vender: Ideias, Calendário e Preços (2026)',
+  description:
+    'Canecas de Natal para vender: as ideias que mais saem, o calendário de produção até 25 de dezembro e quanto cobrar por cada caneca personalizada.',
+  keywords: [
+    'canecas de natal para vender',
+    'caneca de natal personalizada',
+    'sublimação natal',
+    'ideias natal sublimação',
+    'quanto cobrar caneca natal',
+  ],
+  category: 'sazonal',
+  emoji: '🎄',
+  cover: '/uploads/art-sazonal-natal.png',
+  coverAlt: 'Canecas de Natal personalizadas com artes natalinas',
+  readTime: '8 min',
+  datePublished: '2026-11-17',
+  dateModified: '2026-11-17',
+  lead:
+    'O Natal é a melhor época do ano para quem vende caneca personalizada: a procura começa a subir em outubro, dobra em novembro e chega ao pico na primeira quinzena de dezembro. A caneca é o presente mais fácil de personalizar — cabe em qualquer orçamento, serve para família, amigo secreto, professora e empresa — e quem mostra as opções no começo de novembro pega a fila inteira de encomendas. Este artigo traz as ideias que mais vendem, o calendário de produção do Natal 2026 e quanto cobrar por cada peça.',
+  blocks: [
+    { type: 'h2', text: 'Por que o Natal é a melhor época para vender canecas', id: 'por-que-natal' },
+    {
+      type: 'p',
+      text: 'O Natal concentra tudo o que a sublimação faz de melhor: presente afetivo, prazo curto e pedido em lote. A procura por caneca de Natal começa a subir em outubro, dobra em novembro e chega ao pico na primeira quinzena de dezembro — e quem deixa para divulgar em dezembro disputa as últimas encomendas com todo mundo. Quem mostra o catálogo na primeira semana de novembro pega a fila inteira: o cliente decide com calma, paga o sinal e você produz sem correria.',
+    },
+    {
+      type: 'p',
+      text: 'A caneca tem outra vantagem sobre os outros presentes personalizados: ela não precisa de medida, não precisa provar e não tem troca por tamanho errado. É um presente que serve para qualquer pessoa e qualquer bolso, do colega de trabalho ao avô. E cada caneca vendida vira propaganda: ela fica na mesa do escritório, na cozinha e na foto do café da manhã — e quem vê pergunta onde foi feita.',
+    },
+    { type: 'h2', text: 'As ideias de caneca de Natal que mais vendem', id: 'ideias' },
+    {
+      type: 'p',
+      text: 'Não adianta ter cinquenta artes se nenhuma fala com quem compra. O Natal tem cinco públicos bem definidos, e cada um procura uma coisa diferente. Monte o catálogo por público — não por tema solto — e o cliente encontra a caneca dele em segundos:',
+    },
+    {
+      type: 'ul',
+      items: [
+        'Família e presente afetivo: a caneca para a mãe, para a avó, para o casal, para dar no almoço de Natal. É o maior volume do fim de ano — arte aconchegante, nome e frase de carinho.',
+        'Amigo secreto e humor: o pedido que chega em lote e com prazo curto, para a firma, a academia e a turma da faculdade. Arte engraçada, com o nome de quem vai receber.',
+        'Natal cristão: para quem vive a data como festa religiosa, arte com o nascimento de Jesus, anjo e mensagem de fé.',
+        'Lembrancinha de professora: caneca com nome e frase de agradecimento, encomendada pelos pais no fim do ano letivo — geralmente em quantidade.',
+        'Brinde corporativo: a empresa que quer presentear funcionário ou cliente com o nome e a marca. Troque o texto pela identidade da empresa e a mesma arte vira brinde em minutos por caneca.',
+        'Foto e pet: caneca com a foto da família ou do cachorro e do gato, que já fazem parte da família. É o presente mais pessoal — e o que menos tem concorrência de pronta-entrega.',
+      ],
+    },
+    { type: 'h2', text: 'Calendário de produção do Natal 2026', id: 'calendario' },
+    {
+      type: 'p',
+      text: 'O Natal não perdoa quem produz sem calendário: a data não muda, o correio atrasa e a prensa não trabalha mais rápido porque você aceitou encomenda demais. Use as datas abaixo como trava — e avise cada uma delas ao cliente antes de fechar o pedido:',
+    },
+    {
+      type: 'table',
+      caption: 'Calendário de produção do Natal 2026',
+      head: ['Data', 'O que fazer'],
+      rows: [
+        ['Até 17 de novembro', 'Catálogo pronto, com fotos das canecas, e pré-venda aberta. Divulgue no status do WhatsApp, no Instagram e para os clientes antigos. Peça sinal na encomenda.'],
+        ['27 de novembro (sexta)', 'Black Friday. Uma condição especial para pedidos de Natal feitos até essa data antecipa a produção e enche a agenda cedo.'],
+        ['Até 30 de novembro', 'Prazo da primeira parcela do 13º salário. Muita gente decide o presente de Natal nesta semana — é o melhor momento para lembrar o cliente indeciso.'],
+        ['Por volta de 12 de dezembro', 'Corte das encomendas personalizadas com nome. Defina a data, avise antes e mantenha. Depois dela, só pronta-entrega.'],
+        ['25 de dezembro (sexta)', 'Natal. Quem deixou para a última hora só compra o que já está pronto.'],
+        ['1º de janeiro de 2027 (sexta)', 'Ano Novo. Canecas com mensagem de recomeço e de ano novo vendem na última semana de dezembro.'],
+      ],
+    },
+    {
+      type: 'callout',
+      title: 'Peça sinal antes de produzir',
+      text: 'Caneca com nome não tem revenda: se o cliente desistir, a peça fica parada. Peça o sinal na encomenda — ele cobre o custo da caneca, do papel e da tinta — e só ligue a prensa depois que o sinal cair. O cliente que paga o sinal é o cliente que busca a encomenda.',
+    },
+    { type: 'h2', text: 'Quanto cobrar pela caneca de Natal', id: 'preco' },
+    {
+      type: 'p',
+      text: 'Como referência de mercado, o custo de uma caneca sublimada — caneca, papel, tinta e energia — fica em geral entre R$ 9 e R$ 15, e o preço de venda vai de R$ 25 a R$ 60. A diferença entre o piso e o teto é a personalização: a caneca com arte pronta vale o preço base; a caneca com nome, foto e frase sob medida vale o topo da faixa, porque o cliente não encontra igual em lugar nenhum.',
+    },
+    {
+      type: 'p',
+      text: 'No Natal, o kit vale mais que a peça solta. Monte o kit com a caneca, uma caixinha e um cartão com a mensagem — o custo extra é pequeno e o preço final sobe sem discussão, porque o cliente compra um presente pronto, não uma caneca. E não faça desconto por volume sem calcular: dez canecas com nomes diferentes dão dez vezes o trabalho de arte. O desconto do lote vale para a mesma arte repetida; com nome diferente, o preço é por peça.',
+    },
+    { type: 'h2', text: 'Como personalizar rápido sem errar o nome', id: 'personalizar' },
+    {
+      type: 'p',
+      text: 'O erro mais caro do Natal não é a cor desbotada — é o nome errado. O nome vem do cliente, e o cliente digita errado, abrevia e troca letra sem perceber. A regra é simples: peça o nome por escrito, copie e cole exatamente como ele mandou e mande a arte para aprovação antes de prensar. A aprovação por escrito protege os dois lados: o cliente vê o nome antes da caneca existir, e você não refaz peça de graça.',
+    },
+    {
+      type: 'p',
+      text: 'Na produção, organize por lote e por entrega, não por ordem de chegada. Separe as canecas por data de entrega, anote o nome em cada papel antes de prensar e confira a pilha antes de embalar. E guarde uma arte pronta para cada público do catálogo: quando o pedido chega com pressa, você troca só o nome e prensa — sem abrir o editor do zero, sem perder o prazo e sem errar a grafia.',
+    },
+    {
+      type: 'faq',
+      items: [
+        {
+          q: 'Quando começar a vender canecas de Natal?',
+          a: 'A procura começa a subir em outubro e dobra em novembro. O ideal é ter o catálogo pronto e a pré-venda aberta na primeira semana de novembro: quem mostra as opções cedo pega a fila inteira de encomendas. Quem deixa para dezembro disputa as últimas.',
+        },
+        {
+          q: 'Quanto cobrar por uma caneca de Natal personalizada?',
+          a: 'Como referência de mercado, o custo de uma caneca sublimada fica em geral entre R$ 9 e R$ 15, e o preço de venda vai de R$ 25 a R$ 60. A caneca com arte pronta vale o preço base; com nome, foto e frase sob medida, vale o topo da faixa. Monte kits com caixa e cartão para subir o preço final sem discussão.',
+        },
+        {
+          q: 'Até quando aceitar encomenda de caneca de Natal personalizada?',
+          a: 'Defina um corte por volta de 12 de dezembro para encomendas com nome, avise a data antes e mantenha. Depois dela, venda só pronta-entrega. O corte protege o prazo, a qualidade e a sua agenda — encomenda aceita sem prazo vira caneca atrasada no dia 24.',
+        },
+      ],
+    },
+    {
+      type: 'cta',
+      text: 'O Natal já começou para quem vende caneca — e as artes de Natal já estão no portal.',
+      label: 'Ver as artes para sublimar',
+      href: '/#preco',
+    },
+  ],
+  related: ['datas-comemorativas-para-vender-canecas', 'quanto-cobrar-caneca-personalizada-preco', 'tendencias-artes-para-canecas-2026'],
+}
+
+/* ============================================================
+ * ARTIGO 14 — negócios: "vender canecas personalizadas instagram whatsapp"
+ * ============================================================ */
+const ART14: BlogArticle = {
+  slug: 'vender-canecas-personalizadas-instagram-whatsapp',
+  title: 'Como vender canecas personalizadas no Instagram e no WhatsApp: do catálogo à encomenda',
+  seoTitle: 'Vender Canecas Personalizadas no Instagram e WhatsApp: Guia Prático',
+  description:
+    'Como vender canecas personalizadas no Instagram e no WhatsApp: catálogo, atendimento, sinal, prazo e controle de encomendas sem bagunça.',
+  keywords: [
+    'vender canecas personalizadas',
+    'vender canecas instagram',
+    'vender canecas whatsapp',
+    'encomendas canecas personalizadas',
+    'whatsapp business canecas',
+  ],
+  category: 'negocios',
+  emoji: '📱',
+  cover: '/uploads/hero-mug.png',
+  coverAlt: 'Caneca personalizada pronta para venda no Instagram e no WhatsApp',
+  readTime: '8 min',
+  datePublished: '2026-11-17',
+  dateModified: '2026-11-17',
+  lead:
+    'Você não precisa de loja virtual para vender caneca personalizada: o Instagram vende e o WhatsApp fecha. O Instagram mostra a peça, o bastidor e a prova de quem já comprou; o WhatsApp recebe o pedido, confirma o nome, cobra o sinal e combina a entrega. O problema é que a maioria vende no improviso — pedido em áudio solto, nome copiado de mensagem antiga, arte enviada em baixa resolução — e o erro aparece na prensa. Este guia organiza o caminho do catálogo à encomenda, sem bagunça e sem prejuízo.',
+  blocks: [
+    { type: 'h2', text: 'Instagram vende, WhatsApp fecha: entenda o papel de cada um', id: 'papel-de-cada-um' },
+    {
+      type: 'p',
+      text: 'O Instagram é a vitrine: é lá que o cliente descobre a caneca, vê a foto bonita, lê o depoimento e decide que quer uma. O WhatsApp é o balcão: é lá que o pedido acontece, com nome, arte, prazo e pagamento. Misturar os dois papéis é o erro mais comum — tentar fechar encomenda nos comentários do Instagram, ou tentar vender no WhatsApp sem foto nenhuma. Cada canal faz uma parte, e o caminho entre eles precisa ser curto: o link do WhatsApp tem que estar na bio, no destaque e na legenda, para o cliente chegar ao balcão com um toque.',
+    },
+    {
+      type: 'p',
+      text: 'No Instagram, o conteúdo que vende caneca não é o anúncio da caneca: é a caneca sendo feita, a caneca na mesa do cliente e a caneca com o nome de alguém. Mostre o bastidor da prensa, a embalagem e a entrega, e poste com frequência — o cliente compra de quem ele vê todo dia. E nunca poste a foto de um cliente com nome e data sem autorização dele por escrito: o nome de outra pessoa na sua vitrine é dado pessoal, não material de divulgação.',
+    },
+    { type: 'h2', text: 'Monte o catálogo do WhatsApp Business do jeito certo', id: 'catalogo' },
+    {
+      type: 'p',
+      text: 'O catálogo do WhatsApp Business é a sua loja dentro do aplicativo: o cliente navega, escolhe e manda o pedido como mensagem. Cada item precisa de título único — três itens chamados "Caneca personalizada" não ajudam ninguém — e de uma foto real da peça. O WhatsApp permite até 10 imagens por item no computador, então use a foto da frente, do detalhe, da embalagem e de uma caneca igual sendo usada. A descrição é onde o item para de gerar pergunta:',
+    },
+    {
+      type: 'ul',
+      items: [
+        'Nome pelo que muda de peça para peça: "Caneca de cerâmica com nome e ilustração floral" vende mais que "Caneca personalizada".',
+        'Descrição completa num formato fixo: material, o que pode mudar (nome, cor, frase), prazo de produção depois da arte aprovada, pedido mínimo e valor.',
+        'Foto de mostruário, não foto de cliente: use nomes inventados ou a arte de mostruário. Nome, foto ou data de cliente só entram com autorização por escrito.',
+        'Link do item na conversa: o WhatsApp cria o link de cada item e do catálogo inteiro. Mande o link junto com o próximo passo da encomenda, não solto.',
+        'Carrinho é o começo, não o fim: o cliente monta o carrinho e envia como mensagem, mas o WhatsApp não cobra nem conclui a venda — o pagamento e a confirmação são com você.',
+      ],
+    },
+    {
+      type: 'callout',
+      title: 'O catálogo não vende sozinho',
+      text: 'O catálogo parado não gera pedido. Divulgue o link no status do WhatsApp, na bio do Instagram e para os clientes antigos sempre que entrar arte nova ou abrir agenda de encomenda. Catálogo sem divulgação é prateleira no fundo da loja.',
+    },
+    { type: 'h2', text: 'O pedido por escrito: o que registrar antes de produzir', id: 'pedido-por-escrito' },
+    {
+      type: 'p',
+      text: 'O controle da encomenda personalizada começa antes da prensa ligar: pedido com as informações do cliente por escrito, sinal pago antes da produção e prazo de entrega informado e cumprido. Quando o pedido vive em áudios e mensagens soltas, o nome sai com grafia errada, a arte chega comprimida pelo WhatsApp em baixa resolução e a impressão sai pixelada. Registre tudo num lugar só:',
+    },
+    {
+      type: 'table',
+      caption: 'O que registrar em cada encomenda',
+      head: ['Informação', 'Por que registrar'],
+      rows: [
+        ['Nome exato, copiado da mensagem', 'Evita erro de grafia: o nome vem do cliente, por escrito, e vai para a arte sem digitação sua'],
+        ['Arte aprovada pelo cliente', 'A aprovação por escrito antes de prensar protege os dois lados e evita refazer peça de graça'],
+        ['Quantidade e modelo da caneca', 'Define o custo, o prazo e o material — caneca diferente, preço e tempo diferentes'],
+        ['Prazo de entrega combinado', 'O cliente precisa saber quando recebe, e você precisa de uma data para organizar a produção'],
+        ['Valor total e sinal pago', 'O sinal cobre o custo antes da produção e confirma que o pedido é sério'],
+        ['Endereço ou retirada', 'Evita a caneca pronta esperando um combinado que ninguém lembra'],
+      ],
+    },
+    { type: 'h2', text: 'Sinal antes da produção — e por que ele não é opcional', id: 'sinal' },
+    {
+      type: 'p',
+      text: 'Caneca com nome não tem revenda: se o cliente desistir, a peça fica parada e o prejuízo é seu. O sinal pago antes da produção não é desconfiança — é o que cobre o custo da caneca, do papel e da tinta antes de você gastar. Combine o sinal no primeiro contato, junto com o prazo: "o sinal é tanto, a entrega é tal dia, e a arte vai para aprovação antes de prensar". O cliente que paga o sinal é o cliente que busca a encomenda.',
+    },
+    {
+      type: 'p',
+      text: 'Sobre desistência, vale saber como a lei trata o produto personalizado: o artigo 49 do Código de Defesa do Consumidor dá 7 dias para o consumidor desistir de compras feitas fora do estabelecimento, como internet e WhatsApp. A lei não traz exceção expressa para o produto personalizado — a exceção vem da interpretação: um produto feito com o nome de outra pessoa não pode ser revendido. Por isso o combinado por escrito importa tanto: preço, prazo, condições e aprovação da arte, tudo registrado antes de produzir.',
+    },
+    { type: 'h2', text: 'Atendimento que vira venda: o roteiro da conversa', id: 'roteiro' },
+    {
+      type: 'p',
+      text: 'O cliente que chega no WhatsApp já quer a caneca — o atendimento só precisa não atrapalhar. Um roteiro simples resolve a maioria das conversas: cumprimente e confirme o modelo, pergunte o nome exato e a frase, mande duas ou três opções de arte para ele escolher, confirme o valor, o sinal e o prazo, e só então mande a arte para aprovação. Cada resposta curta e objetiva aproxima o pedido do pagamento; cada pergunta solta adia a decisão.',
+    },
+    {
+      type: 'p',
+      text: 'E responda rápido no horário em que você prometeu atender: encomenda personalizada é compra por impulso afetivo, e o cliente que espera horas compra de quem respondeu primeiro. Se não der para responder na hora, deixe a mensagem automática do WhatsApp Business avisando o horário de atendimento. Silêncio sem aviso é pedido perdido.',
+    },
+    { type: 'h2', text: 'Depois da venda: entrega, foto e cliente que volta', id: 'pos-venda' },
+    {
+      type: 'p',
+      text: 'A venda não termina na entrega: termina na foto que o cliente manda da caneca na mesa dele. Peça essa foto — com jeitinho, no dia da entrega — e, com autorização, poste no Instagram: é a prova mais forte que você tem, porque não foi você quem disse que a caneca é bonita. E anote a data: cliente de caneca personalizada volta em cada data comemorativa, e um "lembra que ano passado você fez uma para a sua mãe?" no mês certo vale mais que qualquer anúncio.',
+    },
+    {
+      type: 'faq',
+      items: [
+        {
+          q: 'Preciso de loja virtual para vender canecas personalizadas?',
+          a: 'Não. O Instagram funciona como vitrine e o WhatsApp Business como balcão: catálogo, pedido, sinal e entrega. A loja virtual ajuda quando o volume cresce, mas para começar — e para encomenda sob medida — Instagram e WhatsApp resolvem.',
+        },
+        {
+          q: 'O cliente pode desistir depois que a caneca personalizada já foi feita?',
+          a: 'O artigo 49 do Código de Defesa do Consumidor dá 7 dias para desistir de compras fora do estabelecimento, mas a lei não traz exceção expressa para o produto personalizado: a exceção vem da interpretação, porque uma caneca com o nome de outra pessoa não pode ser revendida. Por isso combine preço, prazo e aprovação da arte por escrito antes de produzir — e cobre o sinal antes de ligar a prensa.',
+        },
+        {
+          q: 'Como recebo o pagamento da encomenda?',
+          a: 'O WhatsApp não processa pagamento nem conclui a venda: o carrinho do catálogo só envia o pedido como mensagem. Combine o pagamento com o cliente — sinal antes da produção e o restante na entrega ou antes do envio — e registre valor, sinal e prazo por escrito.',
+        },
+      ],
+    },
+    {
+      type: 'cta',
+      text: 'Catálogo pronto, atendimento organizado — agora só falta a arte certa para cada pedido.',
+      label: 'Ver as artes para sublimar',
+      href: '/#preco',
+    },
+  ],
+  related: ['quanto-cobrar-caneca-personalizada-preco', 'datas-comemorativas-para-vender-canecas', 'artes-para-sublimacao-de-canecas-guia'],
+}
+
+export const BLOG_ARTICLES: BlogArticle[] = [ART1, ART2, ART3, ART4, ART5, ART6, ART7, ART8, ART9, ART10, ART11, ART12, ART13, ART14]
 
 export function getArticle(slug: string): BlogArticle | undefined {
   return BLOG_ARTICLES.find((a) => a.slug === slug)
