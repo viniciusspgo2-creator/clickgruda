@@ -23,11 +23,17 @@ export class InvalidDigistore24Webhook extends Error {}
 /**
  * Webhook da Digistore24 (IPN — Instant Payment Notification).
  * Verificação: a Digistore24 envia o POST como form-urlencoded e assina
- * TODOS os parâmetros (exceto o próprio `sha_sign`) com SHA512: ordena os
- * nomes sem diferenciar maiúsculas/minúsculas e concatena
- * `nome=valor` + frase-secreta para cada parâmetro, inclusive o último.
- * A assinatura chega em `sha_sign` (hex maiúsculo). A frase-secreta é a
- * "IPN password" definida na conexão IPN (Settings → Integrations → IPN)
+ * os parâmetros com SHA512. Algoritmo OFICIAL (ds24-appkit, lib/digistore/
+ * ipn.ts — per the official DS24 example sha_sign.php):
+ *   1. Remove `sha_sign` e `SHASIGN`.
+ *   2. Ordena as chaves por ordem de bytes (SORT_STRING, como o ksort do PHP).
+ *   3. PULA valores vazios (undefined/null/"") — NÃO entram na assinatura.
+ *   4. Concatena `CHAVE=VALOR` + frase-secreta para cada parâmetro.
+ *   5. SHA512, hex maiúsculo. Compara sem diferenciar maiúsculas/minúsculas.
+ * A verificação aceita as duas convenções de caixa das chaves (original e
+ * maiúscula), como o verifyIpnSignature oficial — as duas exigem a
+ * frase-secreta, então aceitar as duas não custa segurança. A frase-secreta
+ * é a "IPN password" definida na conexão IPN (Settings → Integrations → IPN)
  * e vai para a env DIGISTORE24_IPN_PASSPHRASE (nunca no código).
  * O teste de conexão ("Test connection") faz um GET na URL e exige HTTP
  * 200 — por isso a rota responde GET com "OK" — e também envia um POST
@@ -42,11 +48,20 @@ function parseForm(raw: string): Map<string, string> {
   return out
 }
 
-export function digistore24Signature(params: Map<string, string>, passphrase: string): string {
-  const names = [...params.keys()].filter((name) => name !== 'sha_sign')
-  names.sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()))
+export function digistore24Signature(params: Map<string, string>, passphrase: string, uppercaseKeys = false): string {
+  const entries = [...params.entries()]
+    .filter(([key]) => {
+      const up = key.toUpperCase()
+      return up !== 'SHA_SIGN' && up !== 'SHASIGN'
+    })
+    .map(([key, value]) => ({ key: uppercaseKeys ? key.toUpperCase() : key, value }))
+    // SORT_STRING: ordem de bytes, como o ksort(SORT_STRING) do PHP.
+    .sort((a, b) => (a.key < b.key ? -1 : a.key > b.key ? 1 : 0))
   let input = ''
-  for (const name of names) input += `${name}=${params.get(name) ?? ''}${passphrase}`
+  for (const { key, value } of entries) {
+    if (value === undefined || value === null || value === '') continue
+    input += `${key}=${value}${passphrase}`
+  }
   return createHash('sha512').update(input, 'utf8').digest('hex').toUpperCase()
 }
 
@@ -60,10 +75,10 @@ export const digistore24Provider: PaymentProvider = {
     const secret = process.env.DIGISTORE24_IPN_PASSPHRASE
     if (!secret || secret.length < 8) throw new InvalidDigistore24Webhook('Credencial de webhook ausente')
     const params = parseForm(raw)
-    const received = params.get('sha_sign')
+    const received = params.get('sha_sign') ?? params.get('SHASIGN')
     if (!received) throw new InvalidDigistore24Webhook('Assinatura ausente')
-    const expected = digistore24Signature(params, secret)
-    if (!equalSafe(received.toUpperCase(), expected)) {
+    const ok = [false, true].some((uppercaseKeys) => equalSafe(received.toUpperCase(), digistore24Signature(params, secret, uppercaseKeys)))
+    if (!ok) {
       console.warn('[digistore24] webhook recusado: assinatura inválida', { fields: [...params.keys()].sort() })
       throw new InvalidDigistore24Webhook('Origem inválida')
     }
