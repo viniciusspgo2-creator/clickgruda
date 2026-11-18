@@ -50,7 +50,7 @@ export function Ds24Thanks() {
         </p>
         <p className="mt-4 rounded-xl bg-white/5 px-4 py-3 text-xs leading-6 text-[#a7a7b3]">
           A cobrança foi processada pela <strong className="text-white">Digistore24</strong> (Digistore24 GmbH).
-          O acesso vitalício é libertado na conta Click &amp; Gruda com o mesmo e-mail usado na compra. Se ainda
+          O acesso por 2 anos é libertado na conta Click &amp; Gruda com o mesmo e-mail usado na compra. Se ainda
           não criou a conta, crie a conta gratuita em{' '}
           <a href={SITE_URL} className="font-semibold text-orange-300 hover:underline">
             www.clickgruda.com.br

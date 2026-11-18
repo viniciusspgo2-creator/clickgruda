@@ -24,13 +24,13 @@ import { SITE_URL } from '@/lib/site'
 export const metadata: Metadata = {
   title: 'Click & Gruda — Artes para Sublimação de Canecas + Studio 3D | €14,90',
   description:
-    'Milhares de artes para sublimação de canecas organizadas por tema, com Studio Mockup 3D, Editor Online e Academia. Acesso vitalício por pagamento único de €14,90, com devolução em 14 dias. Pagamento seguro via Digistore24.',
+    'Milhares de artes para sublimação de canecas organizadas por tema, com Studio Mockup 3D, Editor Online e Academia. Acesso por 2 anos por pagamento único de €14,90, com devolução em 14 dias. Pagamento seguro via Digistore24.',
   robots: { index: false, follow: false },
   alternates: { canonical: `${SITE_URL}/digistore24` },
   openGraph: {
     title: 'Click & Gruda — Artes para Canecas + Studio 3D',
     description:
-      'Acesso vitalício por €14,90. Milhares de artes para sublimação, mockup 3D e editor online. Devolução em 14 dias.',
+      'Acesso por 2 anos por €14,90. Milhares de artes para sublimação, mockup 3D e editor online. Devolução em 14 dias.',
     siteName: 'Click & Gruda',
     locale: 'pt_PT',
     type: 'website',
@@ -40,13 +40,31 @@ export const metadata: Metadata = {
 
 const PRICE_LABEL = '€14,90'
 
+/**
+ * Copy Digistore24: o contrato B2B da Digistore24 (ponto 3) proíbe prometer
+ * acesso sem limite de duração — o máximo permitido é 2 anos. A copy
+ * compartilhada SALES continua com a promessa original na landing principal
+ * (Cakto); aqui ela é adaptada SÓ na renderização desta página, sem tocar
+ * em sales-content.ts. Dois itens do SALES trazem essa promessa: benefits
+ * e valueStack. As strings comparadas abaixo são as originais do SALES e
+ * nunca chegam ao HTML — só o texto já adaptado é renderizado.
+ */
+const DS24_BENEFITS = SALES.benefits.map((b) => ({
+  ...b,
+  text: b.text.replace('no seu acesso vitalício', 'no seu acesso de 2 anos'),
+}))
+const DS24_VALUE_STACK = SALES.valueStack.map((v) => ({
+  ...v,
+  name: v.name === 'Atualizações vitalícias' ? 'Atualizações incluídas por 2 anos' : v.name,
+}))
+
 function CheckoutButton({ className = '' }: { className?: string }) {
   return (
     <a
       href={DS24_CHECKOUT_URL}
       className={`inline-flex items-center justify-center rounded-2xl bg-gradient-to-r from-orange-500 to-orange-600 px-8 py-4 text-base font-black uppercase tracking-wide text-white shadow-2xl shadow-orange-500/30 transition-all hover:scale-[1.02] hover:brightness-105 ${className}`}
     >
-      Garantir acesso vitalício — {PRICE_LABEL}
+      Garantir acesso por 2 anos — {PRICE_LABEL}
       <ArrowRight className="ml-2 h-5 w-5" />
     </a>
   )
@@ -76,11 +94,11 @@ export default function Digistore24SalesPage() {
           {/* Cartão de preço */}
           <div className="mx-auto mt-10 max-w-md rounded-3xl border-2 border-orange-500 bg-orange-50/60 p-6 text-left shadow-xl shadow-orange-500/10">
             <p className="text-xs font-black uppercase tracking-wider text-zinc-500">
-              Acesso vitalício · Pagamento único
+              Acesso por 2 anos · Pagamento único
             </p>
             <p className="mt-2 text-5xl font-black tracking-tight text-zinc-950">
               {PRICE_LABEL}
-              <span className="ml-2 align-middle text-sm font-bold text-zinc-500">uma só vez, para sempre</span>
+              <span className="ml-2 align-middle text-sm font-bold text-zinc-500">uma só vez, por 2 anos</span>
             </p>
             <ul className="mt-4 space-y-2 text-sm font-semibold text-zinc-700">
               {[
@@ -128,7 +146,7 @@ export default function Digistore24SalesPage() {
             O que muda com o acesso completo
           </h2>
           <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {SALES.benefits.map((b) => (
+            {DS24_BENEFITS.map((b) => (
               <div key={b.title} className="rounded-2xl border border-zinc-200 bg-zinc-50 p-5 shadow-sm">
                 <h3 className="font-black text-zinc-900">{b.title}</h3>
                 <p className="mt-2 text-sm leading-relaxed text-zinc-600">{b.text}</p>
@@ -136,9 +154,9 @@ export default function Digistore24SalesPage() {
             ))}
             <div className="flex flex-col justify-center rounded-2xl bg-zinc-950 p-5 text-white shadow-sm">
               <InfinityIcon className="h-6 w-6 text-orange-400" />
-              <h3 className="mt-3 font-black">Vitalício, sem mensalidade</h3>
+              <h3 className="mt-3 font-black">2 anos, sem mensalidade</h3>
               <p className="mt-2 text-sm leading-relaxed text-zinc-400">
-                Paga uma vez e fica com o acesso para sempre — incluindo os lançamentos futuros.
+                Paga uma vez e usa o acesso por 2 anos — incluindo os lançamentos futuros.
               </p>
             </div>
           </div>
@@ -150,7 +168,7 @@ export default function Digistore24SalesPage() {
             O que está incluído
           </h2>
           <div className="mx-auto mt-8 max-w-3xl space-y-3">
-            {SALES.valueStack.map((v) => (
+            {DS24_VALUE_STACK.map((v) => (
               <div key={v.name} className="flex items-start gap-4 rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm">
                 <span className="rounded-full bg-orange-100 px-2.5 py-1 text-[10px] font-black uppercase tracking-wider text-orange-700">
                   {v.tag}
@@ -179,12 +197,12 @@ export default function Digistore24SalesPage() {
               {
                 num: '02',
                 title: 'Conclua a compra',
-                text: 'O pagamento é feito de forma segura no checkout da Digistore24. Assim que for aprovado, o acesso vitalício é libertado automaticamente.',
+                text: 'O pagamento é feito de forma segura no checkout da Digistore24. Assim que for aprovado, o acesso por 2 anos é libertado automaticamente.',
               },
               {
                 num: '03',
-                title: 'Use para sempre',
-                text: 'Entre na plataforma com a sua conta e use a biblioteca, o Studio 3D e o Editor sem prazo e sem mensalidade.',
+                title: 'Use por 2 anos',
+                text: 'Entre na plataforma com a sua conta e use a biblioteca, o Studio 3D e o Editor durante 2 anos, sem mensalidade.',
               },
             ].map((s) => (
               <div key={s.num} className="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm">
@@ -247,11 +265,11 @@ export default function Digistore24SalesPage() {
               },
               {
                 q: 'Como recebo o acesso depois de pagar?',
-                a: 'O acesso vitalício é libertado automaticamente na conta Click & Gruda com o mesmo e-mail usado na compra. Crie a conta gratuita com esse e-mail antes de comprar — ou use a conta que já tem.',
+                a: 'O acesso por 2 anos é libertado automaticamente na conta Click & Gruda com o mesmo e-mail usado na compra. Crie a conta gratuita com esse e-mail antes de comprar — ou use a conta que já tem.',
               },
               {
                 q: 'O acesso tem prazo?',
-                a: 'Não. É vitalício: paga uma vez e usa para sempre, incluindo os novos lançamentos de artes e recursos.',
+                a: 'Sim, o acesso dura 2 anos a partir da compra: paga uma vez e usa durante 2 anos, incluindo os novos lançamentos de artes e recursos.',
               },
               {
                 q: 'Posso pedir a devolução?',
@@ -278,7 +296,7 @@ export default function Digistore24SalesPage() {
               Pronto para vender a sua próxima caneca?
             </h2>
             <p className="mx-auto mt-3 max-w-xl text-white/90">
-              Acesso vitalício por {PRICE_LABEL}, pagamento único, com devolução em 14 dias.
+              Acesso por 2 anos por {PRICE_LABEL}, pagamento único, com devolução em 14 dias.
             </p>
             <CheckoutButton className="mt-6 bg-zinc-950 shadow-none" />
             <p className="mt-4 text-xs font-semibold text-white/80">

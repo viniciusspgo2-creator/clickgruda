@@ -50,7 +50,7 @@ export function Ds24Footer() {
         </div>
         <p className="mt-6 flex items-center justify-center gap-1.5 text-center text-[11px] text-zinc-600">
           <Coffee className="h-3 w-3" />
-          Plataforma de artes digitais para sublimação de canecas · Acesso vitalício por pagamento único
+          Plataforma de artes digitais para sublimação de canecas · Acesso por 2 anos, pagamento único
         </p>
       </div>
     </footer>
