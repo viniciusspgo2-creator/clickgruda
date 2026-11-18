@@ -1619,7 +1619,229 @@ const ART14: BlogArticle = {
   related: ['quanto-cobrar-caneca-personalizada-preco', 'datas-comemorativas-para-vender-canecas', 'artes-para-sublimacao-de-canecas-guia'],
 }
 
-export const BLOG_ARTICLES: BlogArticle[] = [ART1, ART2, ART3, ART4, ART5, ART6, ART7, ART8, ART9, ART10, ART11, ART12, ART13, ART14]
+/* ============================================================
+ * ARTIGO 15 — novidade quente: "GTA 6 lançamento"
+ * ============================================================ */
+const ART15: BlogArticle = {
+  slug: 'gta-6-lancamento-data-preco-plataformas',
+  title: 'GTA 6: lançamento, data, preço e plataformas — tudo o que você precisa saber',
+  seoTitle: 'GTA 6 Lançamento: Data, Preço, Plataformas e Novidades',
+  description:
+    'GTA 6 chega em 19 de novembro de 2026 para PS5 e Xbox Series X|S: data e horário no Brasil, preço em reais, pré-carregamento, edições e o que ainda não existe, como a versão de PC.',
+  keywords: [
+    'gta 6 lançamento',
+    'gta 6 data de lançamento',
+    'gta 6 preço brasil',
+    'gta 6 ps5',
+    'gta 6 xbox',
+  ],
+  category: 'novidades',
+  emoji: '🎮',
+  cover: '/uploads/hero-mug.png',
+  coverAlt: 'Lançamento de GTA 6 em 19 de novembro de 2026 para PS5 e Xbox Series X|S',
+  readTime: '8 min',
+  datePublished: '2026-11-18',
+  dateModified: '2026-11-18',
+  lead:
+    'GTA 6 chega amanhã: 19 de novembro de 2026, à meia-noite no horário de Brasília, para PS5 e Xbox Series X|S. Depois de dois adiamentos e mais de uma década de espera desde GTA 5, o jogo mais aguardado do mundo finalmente sai — e o Brasil joga junto com o resto do planeta, no mesmo minuto. Este guia reúne tudo o que está confirmado: data e horário, plataformas, preço em reais, pré-carregamento e o que ainda não existe, como a versão de PC.',
+  blocks: [
+    { type: 'h2', text: 'Quando lança GTA 6 no Brasil', id: 'quando-lanca' },
+    {
+      type: 'p',
+      text: 'Grand Theft Auto VI lança na quinta-feira, 19 de novembro de 2026, à meia-noite no horário local de cada região — no Brasil, à 0h de Brasília. A Rockstar usa o lançamento local: cada país começa a jogar quando o relógio vira o dia 19 por lá, então a Nova Zelândia joga primeiro e o Brasil entra junto com o resto das Américas. O jogo foi adiado duas vezes antes de chegar aqui: saiu da janela de 2025 para 26 de maio de 2026 e depois para 19 de novembro de 2026. Desta vez a data está mantida e o pré-carregamento já está aberto desde 10 de novembro.',
+    },
+    { type: 'h2', text: 'Em quais plataformas GTA 6 vai sair', id: 'plataformas' },
+    {
+      type: 'p',
+      text: 'No lançamento, GTA 6 sai só para os consoles da geração atual: PlayStation 5 e Xbox Series X|S. No PS5 o jogo carrega o selo PS5 Pro Enhanced, e no Xbox ele também chega ao Xbox Cloud Gaming no dia do lançamento — dá até para jogar por streaming num Xbox One, com os gráficos do Series S, mas o jogo não entra no Game Pass. Não existe versão para PS4 nem para Xbox One, e a Rockstar não anunciou data para PC: o site oficial lista só PS5 e Xbox Series X|S. Um relato do site GamesBeat, com fontes anônimas do setor, diz que a versão de PC chegaria no primeiro trimestre de 2027, mas a Rockstar não comentou e não há confirmação oficial.',
+    },
+    {
+      type: 'table',
+      caption: 'GTA 6 por plataforma no lançamento',
+      head: ['Plataforma', 'Lançamento em 19/11/2026', 'Pré-carregamento'],
+      rows: [
+        ['PlayStation 5', 'Sim', 'Desde 10 de novembro'],
+        ['PlayStation 5 Pro', 'Sim, com selo PS5 Pro Enhanced', 'Desde 10 de novembro'],
+        ['Xbox Series X|S', 'Sim', 'Desde 10 de novembro'],
+        ['Xbox Cloud Gaming', 'Sim, por streaming no dia do lançamento', 'Não se aplica'],
+        ['PlayStation 4', 'Não', '—'],
+        ['Xbox One', 'Não, só por streaming via Cloud', '—'],
+        ['PC', 'Sem data anunciada', '—'],
+      ],
+    },
+    { type: 'h2', text: 'Quanto custa GTA 6 no Brasil', id: 'preco' },
+    {
+      type: 'p',
+      text: 'No Brasil o preço é o mesmo nas duas lojas digitais: R$ 449,90 na edição Standard e R$ 549,90 na Ultimate Edition, tanto na PlayStation Store quanto na Microsoft Store. Nos Estados Unidos os valores são US$ 79,99 e US$ 99,99. A diferença entre as edições é de R$ 100 — o mesmo valor da Melhoria Ultimate vendida à parte no Xbox, então comprar a Standard agora e fazer o upgrade depois sai pelo preço da Ultimate. Quem fez a pré-venda digital leva o Pacote Vintage Vice City e um mês de GTA+. A versão em caixa chega ao varejo na mesma data, mas a caixa traz um código de download em vez de disco.',
+    },
+    {
+      type: 'table',
+      caption: 'Preço de GTA 6 no Brasil',
+      head: ['Edição', 'Preço', 'O que inclui'],
+      rows: [
+        ['Standard Edition', 'R$ 449,90', 'Jogo base; na pré-venda, Pacote Vintage Vice City e um mês de GTA+'],
+        ['Ultimate Edition', 'R$ 549,90', 'Tudo da Standard mais os conteúdos extras da Ultimate'],
+        ['Melhoria Ultimate (upgrade)', 'R$ 100,00', 'Upgrade para quem já tem a Standard, vendido à parte no Xbox'],
+      ],
+    },
+    { type: 'h2', text: 'Pré-carregamento: 212 GB e atualização do dia 1', id: 'pre-carregamento' },
+    {
+      type: 'p',
+      text: 'O pré-carregamento das cópias digitais abriu em 10 de novembro nos dois consoles, e a Rockstar pede até 212 GB de espaço livre, dependendo do aparelho. Quem comprou na pré-venda já pode deixar o jogo baixado para jogar à meia-noite, sem esperar o download na hora do lançamento. No dia 13 de novembro chegou ainda a primeira atualização, a 1.002, com cerca de 1 GB. A dica é conferir o espaço livre antes do dia 19: 212 GB é mais que o dobro do que muita gente tem livre no console, e apagar um jogo na véspera evita passar a madrugada olhando a barra de download.',
+    },
+    { type: 'h2', text: 'O que é GTA 6: Leonida, Lucia e Jason', id: 'o-que-e-gta-6' },
+    {
+      type: 'p',
+      text: 'GTA 6 se passa em Leonida, a versão da Rockstar para a Flórida, com direito a Vice City de volta. Os protagonistas são Lucia Caminos e Jason Duval, uma dupla no estilo Bonnie e Clyde, e é o 17º jogo principal da franquia GTA. A trilha sonora original é da dupla francesa Justice, com álbum disponível em streaming e em CD e vinil a partir de 11 de dezembro. O jogo é classificado para maiores de 17 anos nos Estados Unidos, com violência intensa, linguagem forte e uso de drogas e álcool. No Brasil, os menus e as legendas estão em português, mas o áudio fica só em inglês.',
+    },
+    { type: 'h2', text: 'Twitch Drops e a semana de lançamento', id: 'twitch-drops' },
+    {
+      type: 'p',
+      text: 'A Twitch preparou a campanha GTAVI Launch Celebration para o lançamento: entre 18 e 30 de novembro, quem assiste a transmissões de GTA 6 desbloqueia emblemas, emotes e outras recompensas para o perfil na plataforma, e a Twitch promete distribuir códigos do jogo em ações surpresa diárias. Na prática, isso mantém o jogo no topo das conversas por quase duas semanas depois do lançamento — e é também o motivo de tanta gente estar falando de GTA 6 ao mesmo tempo em todas as redes.',
+    },
+    {
+      type: 'callout',
+      title: 'Sem data para PC — não caia no rumor',
+      text: 'A Rockstar não anunciou versão de GTA 6 para PC, nem data, nem loja. O que circula é um relato não confirmado de lançamento no primeiro trimestre de 2027. Não compre peça de computador nem pague reserva por causa de rumor: quando a Rockstar anunciar, ela vai anunciar.',
+    },
+    {
+      type: 'faq',
+      items: [
+        {
+          q: 'Quando lança GTA 6 no Brasil?',
+          a: 'Em 19 de novembro de 2026, quinta-feira, à 0h no horário de Brasília, para PS5 e Xbox Series X|S. A Rockstar usa lançamento à meia-noite no horário local de cada região.',
+        },
+        {
+          q: 'Quanto custa GTA 6 no Brasil?',
+          a: 'R$ 449,90 na edição Standard e R$ 549,90 na Ultimate Edition, o mesmo preço na PlayStation Store e na Microsoft Store. O upgrade da Standard para a Ultimate custa R$ 100 no Xbox.',
+        },
+        {
+          q: 'GTA 6 vai sair para PC?',
+          a: 'A Rockstar não anunciou. Um relato do GamesBeat, com fontes anônimas, diz que a versão de PC chegaria no primeiro trimestre de 2027, mas não há confirmação oficial.',
+        },
+        {
+          q: 'Dá para jogar GTA 6 no PS4 ou no Xbox One?',
+          a: 'Não. O lançamento é só para PS5 e Xbox Series X|S. No Xbox One só dá para jogar por streaming, pelo Xbox Cloud Gaming, a partir do dia do lançamento.',
+        },
+      ],
+    },
+    {
+      type: 'cta',
+      text: 'O lançamento é amanhã — e a atenção do Brasil inteiro vai estar no jogo por semanas. Quem trabalha com caneca personalizada tem uma janela aberta agora.',
+      label: 'Ver as artes para sublimar',
+      href: '/#preco',
+    },
+  ],
+  related: ['artes-gta-6-para-vender-canecas-lancamento', 'canecas-de-natal-para-vender-ideias', 'tendencias-artes-para-canecas-2026'],
+}
+
+/* ============================================================
+ * ARTIGO 16 — novidade quente: "artes de GTA 6 para vender"
+ * ============================================================ */
+const ART16: BlogArticle = {
+  slug: 'artes-gta-6-para-vender-canecas-lancamento',
+  title: 'Artes de GTA 6 para vender muito no lançamento: ideias de canecas que o público gamer quer',
+  seoTitle: 'Artes de GTA 6 para Vender Canecas no Lançamento: Ideias que Vendem',
+  description:
+    'O lançamento de GTA 6 em 19 de novembro de 2026 é uma janela de vendas para quem sublima canecas: ideias de artes inspiradas no jogo, como divulgar na semana do lançamento e o que não copiar.',
+  keywords: [
+    'artes gta 6',
+    'caneca gta 6',
+    'vender canecas gamer',
+    'artes para canecas lançamento',
+    'caneca personalizada gamer',
+  ],
+  category: 'negocios',
+  emoji: '🌆',
+  cover: '/uploads/hero-mug.png',
+  coverAlt: 'Caneca personalizada com arte inspirada em GTA 6 para vender no lançamento',
+  readTime: '8 min',
+  datePublished: '2026-11-18',
+  dateModified: '2026-11-18',
+  lead:
+    'GTA 6 lança amanhã, 19 de novembro de 2026, e o Brasil inteiro vai falar do jogo por semanas: são milhões de jogadores, transmissões na Twitch com recompensas até o dia 30 e o assunto dominando todas as redes. Para quem sublima canecas, isso é uma janela de vendas com data marcada — e quem entra com a arte certa na semana do lançamento vende enquanto o assunto está quente. Este guia traz as ideias de arte que o público gamer quer, como divulgar e o que não copiar.',
+  blocks: [
+    { type: 'h2', text: 'Por que o lançamento de GTA 6 vende caneca', id: 'por-que-vende' },
+    {
+      type: 'p',
+      text: 'Lançamento de jogo grande é data comemorativa para o público gamer: a estimativa da Sensor Tower aponta 7,71 milhões de reservas digitais de GTA 6 até o início de novembro, e cada reserva é uma pessoa que já gastou R$ 449,90 no jogo — ou seja, um público que paga por aquilo que gosta. Some a campanha de Twitch Drops entre 18 e 30 de novembro, que mantém o jogo em destaque por quase duas semanas, e o resultado é uma vitrine gratuita: todo mundo vai ver GTA 6 no feed, no status e na conversa do grupo. A caneca entra como o produto certo na hora certa: barata perto do jogo, personalizável e pronta para presente.',
+    },
+    { type: 'h2', text: 'As ideias de arte que vendem no lançamento', id: 'ideias' },
+    {
+      type: 'p',
+      text: 'A arte que vende no lançamento não é a cópia da capa do jogo: é a arte que faz o fã se reconhecer. O caminho é o clima de Leonida e Vice City — neon, pôr do sol, palmeira, estrada — com traço próprio, sem copiar a arte oficial. As ideias que mais combinam com a semana do lançamento:',
+    },
+    {
+      type: 'ul',
+      items: [
+        'Pôr do sol neon com palmeiras: o clima de Vice City em gradiente rosa e laranja, com o nome do jogador ou a data do lançamento.',
+        'A dupla fora da lei: um casal de protagonistas em traço próprio, inspirado em Lucia e Jason, sem copiar os personagens oficiais.',
+        'Estrada de Leonida: horizonte, asfalto e letreiro neon com o apelido do jogador — arte limpa, que funciona em caneca branca e preta.',
+        'Frases genéricas de gamer: Player 2, GG, Pausa para o café, Modo história — frases que todo jogador entende, sem marca de ninguém.',
+        'Retrô anos 80: grade, sol listrado e tipografia neon, o visual que o trailer do jogo popularizou.',
+        'Caneca do jogador: nome do jogador, tag da conta e a data 19/11/2026, como lembrança do dia do lançamento.',
+      ],
+    },
+    {
+      type: 'table',
+      caption: 'Ideias de arte de GTA 6 para canecas',
+      head: ['Ideia de arte', 'Por que vende', 'Para quem'],
+      rows: [
+        ['Pôr do sol neon com palmeiras', 'É o clima de Vice City que todo fã reconhece na hora', 'Quem vai jogar no lançamento e quer a lembrança do dia'],
+        ['Dupla fora da lei em traço próprio', 'Conta a história do jogo sem copiar personagem oficial', 'Casais gamers e fãs de Lucia e Jason'],
+        ['Estrada de Leonida com apelido', 'Personalizada com o nome do jogador, não tem igual na prateleira', 'Presente para o jogador, com nome e data'],
+        ['Frases genéricas de gamer', 'Funcionam o ano todo, não só na semana do lançamento', 'Qualquer jogador, inclusive quem não joga GTA'],
+        ['Retrô anos 80 com sol listrado', 'O visual do trailer, em arte que você mesmo desenha', 'Fãs do estilo e colecionadores de caneca temática'],
+      ],
+    },
+    { type: 'h2', text: 'O que não copiar: arte oficial, logo e personagens', id: 'o-que-nao-copiar' },
+    {
+      type: 'p',
+      text: 'Aqui vai o ponto que protege o seu trabalho: a arte oficial, o logo e os personagens de GTA 6 são da Rockstar. Baixar a capa do jogo, o logo ou a imagem dos protagonistas e vender a caneca como se fosse produto licenciado é pedir problema — o anúncio pode ser removido, a conta pode ser denunciada e o prejuízo é maior que a venda. O caminho seguro é a arte inspirada: neon, palmeira, pôr do sol, estrada e tipografia com traço próprio vendem o mesmo clima sem copiar nada de ninguém. A sua arte precisa ser sua: o cliente compra o clima do jogo, não uma cópia da capa.',
+    },
+    {
+      type: 'callout',
+      title: 'Inspirado, não copiado',
+      text: 'Neon, palmeira, pôr do sol e tipografia própria vendem o clima de Leonida sem copiar a arte oficial, o logo ou os personagens. A arte inspirada protege a sua conta e ainda é mais original que a cópia.',
+    },
+    { type: 'h2', text: 'Como divulgar na semana do lançamento', id: 'divulgacao' },
+    {
+      type: 'p',
+      text: 'A janela de atenção vai de 18 a 30 de novembro, enquanto duram os Twitch Drops e o assunto domina as redes — depois disso o jogo continua vendendo, mas a conversa esfria. O plano é simples: poste a caneca sendo prensada em vídeo curto, mostre a arte no mockup 3D para o cliente aprovar antes de produzir, coloque no status do WhatsApp e abra a encomenda com prazo curto, do tipo "encomendas abertas até o dia 19". Ofereça a caneca para quem vai jogar na noite do lançamento e para quem vai presentear um jogador: o presente do gamer é a caneca com o nome dele e a data do lançamento. E não esqueça os streamers: quem transmite GTA 6 na Twitch precisa de caneca na mesa, e a caneca com a tag do canal aparece em toda live.',
+    },
+    { type: 'h2', text: 'Preço e margem: não queime a janela com desconto', id: 'preco-margem' },
+    {
+      type: 'p',
+      text: 'Semana de lançamento é pico de procura: não é hora de desconto, é hora de preço cheio. Calcule o preço pela fórmula — custo da caneca, do papel e da tinta, mais o seu tempo e a margem — e cobre o sinal antes de produzir, porque caneca com nome não tem revenda. Se a agenda lotar, suba o preço da encomenda expressa em vez de recusar pedido: quem quer a caneca para a noite do lançamento paga pela pressa. E anote quem comprou: o jogador que comprou a caneca do lançamento volta em cada data comemorativa e em cada lançamento grande.',
+    },
+    {
+      type: 'faq',
+      items: [
+        {
+          q: 'Posso vender caneca com o logo do GTA 6?',
+          a: 'Não é o caminho seguro: o logo, a arte oficial e os personagens são da Rockstar, e vender a caneca como se fosse produto licenciado pode levar à remoção do anúncio e à denúncia da conta. Use arte inspirada — neon, palmeira, pôr do sol e traço próprio — que vende o clima do jogo sem copiar nada.',
+        },
+        {
+          q: 'Quando devo lançar as artes de GTA 6?',
+          a: 'Agora, na semana do lançamento: o jogo sai em 19 de novembro de 2026 e a campanha de Twitch Drops mantém o assunto quente até 30 de novembro. Depois disso a conversa esfria, e a arte de lançamento perde força.',
+        },
+        {
+          q: 'Preciso de licença para vender arte inspirada em jogo?',
+          a: 'Arte inspirada, com traço próprio e sem logo, personagens ou arte oficial, é o caminho que o mercado usa. O problema é copiar o material da Rockstar e vender como se fosse licenciado. Na dúvida, desenhe o clima — neon, estrada, pôr do sol — e deixe a arte oficial de fora.',
+        },
+      ],
+    },
+    {
+      type: 'cta',
+      text: 'A janela do lançamento é curta: do dia 18 ao dia 30 a atenção está no jogo. Arte pronta, divulgação no ar e encomenda aberta — o resto é prensa.',
+      label: 'Ver as artes para sublimar',
+      href: '/#preco',
+    },
+  ],
+  related: ['gta-6-lancamento-data-preco-plataformas', 'quanto-cobrar-caneca-personalizada-preco', 'vender-canecas-personalizadas-instagram-whatsapp'],
+}
+
+export const BLOG_ARTICLES: BlogArticle[] = [ART1, ART2, ART3, ART4, ART5, ART6, ART7, ART8, ART9, ART10, ART11, ART12, ART13, ART14, ART15, ART16]
 
 export function getArticle(slug: string): BlogArticle | undefined {
   return BLOG_ARTICLES.find((a) => a.slug === slug)
