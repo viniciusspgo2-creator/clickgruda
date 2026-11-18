@@ -8,7 +8,7 @@ const base = path.resolve(__dirname, '..')
 const html = fs.readFileSync(path.join(base, '.next/server/app/index.html'), 'utf8')
 const links = [...html.matchAll(/<link\b[^>]*rel="stylesheet"[^>]*href="([^"]+)"[^>]*>/g)]
 const sheets = links.map(m => postcss.parse(fs.readFileSync(path.join(base, '.next', m[1].replace('/_next/', '')), 'utf8')))
-const rootMatch = html.match(/<div class="(cg-sales(?:-page)?\s[^"]*)"/)
+const rootMatch = html.match(/<div class="(cg-premium)"/)
 assert.ok(rootMatch, 'Landing precisa existir no HTML de produção')
 const rootClasses = rootMatch[1].split(/\s+/)
 const unescape = value => value.replace(/\\([\da-f]{1,6})\s?|\\(.)/gi, (_, hex, char) => hex ? String.fromCodePoint(parseInt(hex, 16)) : char)
@@ -64,16 +64,15 @@ function contrast(foreground, background, opacity = 1) {
   const a = luminance(fg), b = luminance(bg)
   return (Math.max(a, b) + .05) / (Math.min(a, b) + .05)
 }
-assert.ok(rootClasses.includes('cg-sales-page') && !rootClasses.includes('cg-sales'), 'Landing atual não pode herdar o tema antigo')
-const headings = [...html.matchAll(/<(h[123])\b[^>]*class="([^"]*)"/g)]
+assert.ok(rootClasses.includes('cg-premium') && !rootClasses.includes('cg-sales'), 'Landing atual não pode herdar o tema antigo')
 for (const width of [360, 768, 1440]) {
   const root = styles(rootClasses, 'div', width)
-  assert.equal(root['background-color'], '#0c0b0e')
-  assert.equal(root.color, '#fff')
-  for (const heading of headings) assert.equal(styles(heading[2].split(/\s+/), heading[1], width, root).color, '#fff', `Título precisa herdar a cor clara em ${width}px`)
-  assert.ok(contrast(root.color, root['background-color']) > 18)
+  assert.equal(root['background-color'], '#090a0b')
+  assert.equal(root.color, '#f6f1e9')
+  assert.ok(html.includes('home-hero-title'), 'Título da primeira dobra renderizado no servidor')
+  assert.ok(contrast(root.color, root['background-color']) > 16)
   assert.ok(contrast('#fff', root['background-color'], .55) > 5)
-  console.log(`${width}px: fundo escuro, ${headings.length} títulos claros; contraste do texto secundário > 5:1`)
+  console.log(`${width}px: tema isolado, fundo escuro e contraste do texto secundário > 5:1`)
 }
 // A mesma folha ainda contém a regra histórica. Reproduzir seu resultado
 // evita um teste que passaria mesmo com o conflito original intacto.

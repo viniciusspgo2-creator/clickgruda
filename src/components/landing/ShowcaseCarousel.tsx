@@ -1,18 +1,6 @@
 'use client'
-
-import Image from 'next/image'
-
-/**
- * ShowcaseCarousel — vitrine do acervo em carrossel infinito deslizando
- * para a ESQUERDA (2 fileiras em velocidades diferentes).
- *
- * Microinterações: pausa no hover (classe .marquee-paused), zoom + glow
- * laranja no card, sweep de brilho, chip de categoria que revela no hover
- * e máscaras de degradê nas laterais para entrada/saída suaves.
- * Loop perfeito: cada item tem margem própria (mr) e a lista é duplicada —
- * o keyframe marquee-left move -50% exato.
- */
-
+import { useEffect, useRef, useState } from 'react'
+import { Pause, Play, X, Expand } from 'lucide-react'
 type ShowArt = { src: string; alt: string; title: string; cat: string }
 
 const ROW_A: ShowArt[] = [
@@ -41,65 +29,37 @@ const ROW_B: ShowArt[] = [
   { src: '/uploads/showcase/arte-meninas-superpoderosas.webp', alt: 'Arte roxa e rosa de personagens para caneca', title: 'Meninas Poderosas', cat: 'COMEMORATIVAS' },
 ]
 
-function Card({ art }: { art: ShowArt }) {
-  return (
-    <div className="group relative mr-4 w-60 shrink-0 sm:mr-5 sm:w-80">
-      <div className="relative aspect-[21/9.5] w-full overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-900 shadow-lg shadow-black/40 transition-all duration-300 group-hover:z-10 group-hover:scale-[1.045] group-hover:border-orange-400/70 group-hover:shadow-2xl group-hover:shadow-orange-500/25 sm:rounded-3xl">
-        <Image
-          src={art.src}
-          alt={art.alt}
-          width={960}
-          height={434}
-          loading="lazy"
-          sizes="(max-width: 640px) 240px, 320px"
-          className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-110"
-        />
-        {/* sweep de brilho */}
-        <div
-          className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/25 to-transparent transition-transform duration-700 ease-out group-hover:translate-x-full"
-          aria-hidden
-        />
-        {/* legenda que revela no hover */}
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 translate-y-2 bg-gradient-to-t from-zinc-950/95 via-zinc-950/60 to-transparent p-3 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100">
-          <div className="flex items-center justify-between gap-2">
-            <span className="line-clamp-1 text-xs font-black text-white sm:text-sm">{art.title}</span>
-            <span className="shrink-0 rounded-full bg-orange-500 px-2 py-0.5 text-[9px] font-black uppercase tracking-wider text-white">
-              {art.cat}
-            </span>
-          </div>
-        </div>
-      </div>
-    </div>
-  )
-}
-
-function Row({ arts, duration, offset = false }: { arts: ShowArt[]; duration: number; offset?: boolean }) {
-  const doubled = [...arts, ...arts]
-  return (
-    <div
-      className={`flex w-max animate-marquee-left will-change-transform ${offset ? 'pt-4 sm:pt-5' : ''}`}
-      style={{ ['--marquee-duration' as string]: `${duration}s` }}
-      aria-hidden={offset}
-    >
-      {doubled.map((art, i) => (
-        <Card key={`${art.src}-${i}`} art={art} />
-      ))}
-    </div>
-  )
-}
 
 export function ShowcaseCarousel() {
-  return (
-    <div className="relative mt-10" role="region" aria-label="Carrossel com amostras do acervo de artes">
-      {/* máscaras laterais */}
-      <div className="pointer-events-none absolute inset-y-0 left-0 z-20 w-10 bg-gradient-to-r from-zinc-950 to-transparent sm:w-24" aria-hidden />
-      <div className="pointer-events-none absolute inset-y-0 right-0 z-20 w-10 bg-gradient-to-l from-zinc-950 to-transparent sm:w-24" aria-hidden />
-
-      {/* hover em qualquer card pausa as duas fileiras (.marquee-paused) */}
-      <div className="marquee-paused space-y-1 overflow-hidden py-2 sm:py-3">
-        <Row arts={ROW_A} duration={58} />
-        <Row arts={ROW_B} duration={76} offset />
-      </div>
+  const [paused, setPaused] = useState(false)
+  const [filter, setFilter] = useState('TODAS')
+  const [selected, setSelected] = useState<ShowArt | null>(null)
+  const dialog = useRef<HTMLDialogElement>(null)
+  useEffect(() => {
+    if (selected) dialog.current?.showModal()
+    else if (dialog.current?.open) dialog.current.close()
+  }, [selected])
+  const all = [...ROW_A, ...ROW_B]
+  const rows = filter === 'TODAS' ? [ROW_A, ROW_B] : [all.filter(a => a.cat === filter)]
+  return <div className="cgx-carousel" data-paused={paused || Boolean(selected)} data-filtered={filter !== 'TODAS'} role="region" aria-label="Amostras da biblioteca">
+    <div className="cgx-carousel-toolbar cgx-container">
+      <div className="cgx-filter-chips" aria-label="Filtrar artes">{['TODAS','FRASES','RELIGIÃO','FLORK','COMEMORATIVAS','SAZONAL'].map(cat => <button key={cat} type="button" aria-pressed={filter === cat} onClick={() => setFilter(cat)}>{({TODAS:'Todas',FRASES:'Frases',RELIGIÃO:'Fé',FLORK:'Flork',COMEMORATIVAS:'Temas',SAZONAL:'Sazonais'} as Record<string,string>)[cat]}</button>)}</div>
+      <button type="button" className="cgx-pause" aria-pressed={paused} onClick={() => setPaused(!paused)}>{paused ? <Play size={14}/> : <Pause size={14}/>} {paused ? 'Reproduzir' : 'Pausar'}</button>
     </div>
-  )
+    {rows.map((arts, row) => <div className="cgx-marquee-viewport" key={filter + row}><div className={'cgx-marquee-track' + (row ? ' reverse' : '')}>
+      {(filter === 'TODAS' ? [false,true] : [false]).map(duplicate => <div className="cgx-marquee-group" key={String(duplicate)} aria-hidden={duplicate || undefined}>{arts.map(art => <button type="button" className="cgx-art-card" key={art.src} tabIndex={duplicate ? -1 : 0} onClick={() => setSelected(art)} aria-label={'Ampliar: ' + art.title}>
+        {/* Native images keep duplicate carousel slides cheap and avoid layout shifts. */}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={art.src} alt={duplicate ? '' : art.alt} width="960" height="434" loading="lazy" decoding="async"/>
+        <span><b>{art.title}</b><Expand size={16}/></span>
+      </button>)}</div>)}
+    </div></div>)}
+    <dialog ref={dialog} className="cgx-art-dialog" onClose={() => setSelected(null)} onClick={e => {if(e.target === e.currentTarget) setSelected(null)}} aria-labelledby="cgx-art-title">
+      <div className="cgx-dialog-head"><div><small>UMA AMOSTRA DO ACERVO</small><h3 id="cgx-art-title">{selected?.title}</h3></div><button type="button" onClick={() => setSelected(null)} aria-label="Fechar ampliação"><X/></button></div>
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      {selected && <img src={selected.src} alt={selected.alt} width="960" height="434"/>}
+      <p>Explore os temas e encontre sua próxima arte na biblioteca.</p>
+    </dialog>
+  </div>
 }
+
