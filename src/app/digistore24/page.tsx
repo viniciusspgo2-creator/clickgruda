@@ -25,6 +25,9 @@ export const metadata: Metadata = {
   title: 'Click & Gruda — Artes para Sublimação de Canecas + Studio 3D | €14,90',
   description:
     'Milhares de artes para sublimação de canecas organizadas por tema, com Studio Mockup 3D, Editor Online e Academia. Acesso por 2 anos por pagamento único de €14,90, com devolução em 14 dias. Pagamento seguro via Digistore24.',
+  // keywords e twitter.description próprios: os globais do layout trazem
+  // "acesso vitalício artes" e "downloads ilimitados", banidos na análise GmbH.
+  keywords: ['artes para sublimação', 'canecas personalizadas', 'sublimação de canecas', 'mockup 3D', 'artes para canecas'],
   robots: { index: false, follow: false },
   alternates: { canonical: `${SITE_URL}/digistore24` },
   openGraph: {
@@ -35,6 +38,11 @@ export const metadata: Metadata = {
     locale: 'pt_PT',
     type: 'website',
     url: `${SITE_URL}/digistore24`,
+  },
+  twitter: {
+    card: 'summary_large_image',
+    description:
+      'Acesso por 2 anos por €14,90. Milhares de artes para sublimação, mockup 3D e editor online. Devolução em 14 dias.',
   },
 }
 

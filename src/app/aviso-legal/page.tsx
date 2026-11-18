@@ -9,6 +9,9 @@ export const metadata: Metadata = {
   title: 'Aviso legal — Click & Gruda',
   description:
     'Ficha técnica da Click & Gruda: responsável, morada, contactos e informações legais sobre a venda de produtos digitais, incluindo compras processadas pela Digistore24.',
+  // twitter/keywords próprios: os globais do layout trazem "acesso
+  // vitalício artes" e "downloads ilimitados", banidos na análise GmbH.
+  keywords: ['Click & Gruda', 'aviso legal', 'artes para sublimação'],
   alternates: { canonical: '/aviso-legal' },
   openGraph: {
     title: 'Aviso legal — Click & Gruda',
@@ -17,6 +20,10 @@ export const metadata: Metadata = {
     locale: 'pt_PT',
     type: 'website',
     url: `${SITE_URL}/aviso-legal`,
+  },
+  twitter: {
+    card: 'summary_large_image',
+    description: 'Ficha técnica, contactos e informações legais da Click & Gruda.',
   },
 }
 
