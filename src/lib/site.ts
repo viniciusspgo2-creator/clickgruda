@@ -61,13 +61,14 @@ export const WHATSAPP_MESSAGES = {
   pixReceipt: 'Olá! Acabei de fazer o PIX do acesso vitalício (R$ 47,90) da Click & Gruda. Segue o comprovante em anexo.',
 } as const
 
-/** Metadados confirmados pela API pública do Vimeo em 26/10/2026. */
+/** Vídeo de vendas da home — arquivo próprio com narração (nov/2026). */
 export const DEMO_VIDEO = {
   name: 'Conheça a Click & Gruda — demonstração da plataforma',
   description: 'Demonstração da biblioteca de artes para canecas e dos recursos da plataforma Click & Gruda.',
-  embedUrl: 'https://player.vimeo.com/video/1238613293',
-  thumbnailUrl: 'https://i.vimeocdn.com/video/2215822267-7553529da09b7f042bfaf6f6943886d96ab4fa3b67f1a63c51f905025590564a-d_640',
-  uploadDate: '2026-10-22',
-  duration: 'PT1M10S',
-  durationSeconds: 70,
+  embedUrl: `${SITE_URL}/#video`,
+  contentUrl: `${SITE_URL}/uploads/landing-v3/video-vendas.mp4`,
+  thumbnailUrl: `${SITE_URL}/uploads/landing-v3/platform-preview.webp`,
+  uploadDate: '2026-11-17',
+  duration: 'PT1M26S',
+  durationSeconds: 86,
 } as const

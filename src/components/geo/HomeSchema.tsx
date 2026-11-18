@@ -38,7 +38,7 @@ export function HomeSchema({ priceCents }: { priceCents: number }) {
     {
       '@type': 'VideoObject', '@id': `${SITE_URL}/#demonstracao`,
       name: DEMO_VIDEO.name, description: DEMO_VIDEO.description,
-      embedUrl: DEMO_VIDEO.embedUrl, thumbnailUrl: DEMO_VIDEO.thumbnailUrl,
+      embedUrl: DEMO_VIDEO.embedUrl, thumbnailUrl: DEMO_VIDEO.thumbnailUrl, contentUrl: DEMO_VIDEO.contentUrl,
       uploadDate: DEMO_VIDEO.uploadDate, duration: DEMO_VIDEO.duration,
       publisher: { '@id': `${SITE_URL}/#organization` },
     },

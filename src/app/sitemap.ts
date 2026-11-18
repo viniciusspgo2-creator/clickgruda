@@ -27,7 +27,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: 'weekly',
       priority: 1,
       images: [`${SITE_URL}/uploads/hero-mug.png`],
-      videos: [{ title: xmlText(DEMO_VIDEO.name), description: xmlText(DEMO_VIDEO.description), thumbnail_loc: DEMO_VIDEO.thumbnailUrl, player_loc: DEMO_VIDEO.embedUrl, duration: DEMO_VIDEO.durationSeconds, publication_date: DEMO_VIDEO.uploadDate }],
+      videos: [{ title: xmlText(DEMO_VIDEO.name), description: xmlText(DEMO_VIDEO.description), thumbnail_loc: DEMO_VIDEO.thumbnailUrl, player_loc: DEMO_VIDEO.embedUrl, content_loc: DEMO_VIDEO.contentUrl, duration: DEMO_VIDEO.durationSeconds, publication_date: DEMO_VIDEO.uploadDate }],
     },
     {
       url: `${SITE_URL}/blog`,
