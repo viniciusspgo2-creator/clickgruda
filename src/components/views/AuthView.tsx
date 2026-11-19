@@ -253,7 +253,7 @@ export function AuthView() {
                   {error}
                 </motion.p>
               )}
-              {authMode === 'register' && <p className="text-xs leading-5 text-zinc-500">Acesso individual: um dispositivo conectado por vez. Acessos simultâneos adicionais são opcionais e contratados com o suporte por R$ 14,90 cada.</p>}
+              {authMode === 'register' && <p className="text-xs leading-5 text-zinc-500">Acesso individual: um dispositivo por vez. É proibido compartilhar o acesso — nossa IA detecta o mesmo login em mais de um aparelho ao mesmo tempo e encerra uma das sessões. Precisa de acesso adicional? Fale com o suporte.</p>}
 
               <Button
                 type="submit"
