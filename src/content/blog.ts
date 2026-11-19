@@ -1841,7 +1841,607 @@ const ART16: BlogArticle = {
   related: ['gta-6-lancamento-data-preco-plataformas', 'quanto-cobrar-caneca-personalizada-preco', 'vender-canecas-personalizadas-instagram-whatsapp'],
 }
 
-export const BLOG_ARTICLES: BlogArticle[] = [ART1, ART2, ART3, ART4, ART5, ART6, ART7, ART8, ART9, ART10, ART11, ART12, ART13, ART14, ART15, ART16]
+/* ============================================================
+ * ARTIGO 17 — head term: "checklist sublimação"
+ * Fonte: Central do Sublimador — Protocolo Zero Erro
+ * ============================================================ */
+const ART17: BlogArticle = {
+  slug: 'checklist-antes-da-prensa-zero-erro',
+  title: 'Checklist antes da prensa: 8 itens para não errar nenhuma caneca',
+  seoTitle: 'Checklist Antes da Prensa: 8 Itens para Sublimar sem Erro',
+  description:
+    'Um checklist de 8 itens antes de cada prensa evita os erros que mais custam dinheiro na sublimação: arte sem espelhar, papel úmido, tinta no fim e prensa suja.',
+  keywords: [
+    'checklist sublimação',
+    'erros sublimação caneca',
+    'prensa sublimação',
+    '300 dpi sublimação',
+    'espelhar arte sublimação',
+  ],
+  category: 'dicas',
+  emoji: '✅',
+  cover: '/uploads/hero-press.png',
+  coverAlt: 'Prensa térmica sublimando uma caneca personalizada',
+  readTime: '8 min',
+  datePublished: '2026-11-19',
+  dateModified: '2026-11-19',
+  lead:
+    'Sublimador de sucesso não confia na memória: antes de cada prensa, ele confere uma lista curta de itens que separam a caneca perfeita da caneca perdida. São 8 verificações que levam menos de um minuto e evitam os erros que mais custam dinheiro — arte sem espelhar, papel úmido, tinta acabando e prensa suja. Este é o protocolo zero erro, pronto para colar do lado da prensa.',
+  blocks: [
+    { type: 'h2', text: 'Por que um checklist muda o seu resultado', id: 'por-que-checklist' },
+    {
+      type: 'p',
+      text: 'Na correria da produção, o erro raramente vem da falta de habilidade: vem da pressa. Você já sabe que precisa espelhar a arte, mas imprime sem espelhar porque estava atendendo um cliente no WhatsApp. Já sabe que o papel precisa estar seco, mas usa a folha que ficou aberta na bancada. Cada erro desses custa uma caneca, uma folha, tinta e o tempo de refazer — e, pior, pode custar o prazo do cliente. O checklist existe para isso: tirar a qualidade da sua produção da dependência da memória e colocar num processo que funciona até no dia mais corrido.',
+    },
+    { type: 'h2', text: '1. A arte: resolução e espelhamento', id: 'arte-resolucao-espelhamento' },
+    {
+      type: 'p',
+      text: 'Tudo começa no arquivo. A arte precisa ter pelo menos 300 DPI no tamanho final da impressão — abaixo disso, a estampa sai borrada e sem definição, e não há prensa que conserte arquivo ruim. Depois, o passo que mais derruba iniciante: espelhar a imagem antes de imprimir. A transferência inverte a imagem, então o que vai para o papel precisa estar espelhado para sair certo na caneca. Texto sem espelhar sai ao contrário e a caneca vai para o lixo. Confira os dois itens na tela antes de mandar imprimir: resolução e espelhamento, sempre.',
+    },
+    { type: 'h2', text: '2. Os insumos: tinta, papel seco e lado certo', id: 'insumos' },
+    {
+      type: 'p',
+      text: 'Três verificações de insumo antes de imprimir. Primeiro, o nível de tinta: confira se há tinta suficiente no bulk para o trabalho — ficar sem tinta no meio da impressão é perder a folha e a caneca. Segundo, o papel precisa estar seco: papel úmido é um dos maiores causadores de manchas na sublimação, e folha que ficou aberta absorve a umidade do ar. Guarde o papel fechado e, na dúvida, deixe a folha na prensa por alguns segundos antes de imprimir. Terceiro, imprima no lado certo: o lado resinado do papel sublimático, geralmente o branco puro. Imprimir no verso é jogar a folha fora.',
+    },
+    { type: 'h2', text: '3. A prensa: limpa e na temperatura certa', id: 'prensa' },
+    {
+      type: 'p',
+      text: 'A base da prensa precisa estar limpa e sem resíduos: resto de tinta, poeira ou cola de uma prensa anterior mancha a próxima caneca. Passe um pano seco antes de começar o dia e entre um trabalho e outro. Depois, espere a prensa atingir a temperatura total recomendada para o seu material — prensar antes da hora, com a resistência ainda subindo, é uma das causas mais comuns de cor fraca e desbotada. Temperatura e tempo são os dois números que definem a qualidade da transferência: respeite os dois.',
+    },
+    { type: 'h2', text: '4. A fixação: fita térmica contra o fantasma', id: 'fixacao-fita' },
+    {
+      type: 'p',
+      text: 'O último item do protocolo é a fixação: o papel precisa estar bem preso com fita térmica. Se o papel se move durante a prensa, a tinta transfere duas vezes em posições diferentes e aparece o efeito fantasma — aquela sombra duplicada que estraga a arte. Prenda bem nas bordas, sem deixar o papel folgado, e só retire a fita depois que a caneca esfriar um pouco. É o item mais rápido de conferir e um dos que mais salvam canecas.',
+    },
+    {
+      type: 'table',
+      caption: 'Protocolo zero erro: os 8 itens antes de cada prensa',
+      head: ['Item', 'O que verificar', 'O que acontece se errar'],
+      rows: [
+        ['Resolução da imagem', 'A arte tem pelo menos 300 DPI no tamanho final', 'Estampa borrada e sem definição'],
+        ['Espelhamento', 'A imagem foi espelhada antes de imprimir', 'Texto e arte saem ao contrário'],
+        ['Nível de tinta', 'Há tinta suficiente no bulk para o trabalho', 'Impressão falha no meio e folha perdida'],
+        ['Lado do papel', 'Impressão no lado resinado, o branco puro', 'A tinta não transfere direito'],
+        ['Limpeza da prensa', 'Base limpa, sem resíduos de trabalhos anteriores', 'Manchas na próxima caneca'],
+        ['Temperatura', 'A prensa atingiu a temperatura total recomendada', 'Cor fraca e transferência incompleta'],
+        ['Papel seco', 'O papel está seco, guardado fechado', 'Manchas por umidade na estampa'],
+        ['Fita térmica', 'O papel está bem preso, sem folga', 'Efeito fantasma: imagem duplicada'],
+      ],
+    },
+    {
+      type: 'callout',
+      title: 'O erro mais caro é o mais bobo',
+      text: 'Esquecer de espelhar a arte é o erro que mais derruba quem está começando — e o mais fácil de evitar. Ele está no topo do checklist por um motivo: um segundo de conferência na tela salva a caneca, a folha e o prazo.',
+    },
+    { type: 'h2', text: 'Como usar o checklist no dia a dia', id: 'como-usar' },
+    {
+      type: 'p',
+      text: 'Imprima esta lista e cole do lado da prensa, onde você vê antes de ligar a máquina. Nos primeiros dias, confira item por item em voz alta — parece exagero, mas é assim que o protocolo vira hábito. Depois de duas semanas, você vai conferir os 8 itens em menos de um minuto, sem pensar. E quando contratar alguém para ajudar na produção, o checklist vira o treinamento: a pessoa nova segue a lista e produz com o seu padrão desde o primeiro dia, sem depender de você o tempo todo. Qualidade na sublimação não é sorte: é processo repetido toda vez. E tem a versão interativa: na área Conhecimento Técnico, o Protocolo Zero Erro vira checklist clicável, com progresso e status de segurança — abra antes de cada prensa.',
+    },
+    {
+      type: 'faq',
+      items: [
+        {
+          q: 'Preciso conferir o checklist em toda caneca ou só no primeiro trabalho do dia?',
+          a: 'Em toda caneca, mas depois do hábito isso leva menos de um minuto. Os itens que mais variam — nível de tinta, papel seco, fita bem presa — mudam de um trabalho para o outro, então conferir só de manhã não basta.',
+        },
+        {
+          q: '300 DPI é obrigatório para sublimar caneca?',
+          a: 'É o padrão que garante nitidez no tamanho final da estampa, 21 × 9,5 cm. Abaixo disso a imagem perde definição e a prensa não conserta: o que está borrado no arquivo sai borrado na caneca.',
+        },
+        {
+          q: 'O que é o efeito fantasma na sublimação?',
+          a: 'É a imagem duplicada com uma sombra deslocada, que aparece quando o papel se move durante a prensa. A fita térmica bem presa evita o problema: prenda nas bordas e só retire depois que a caneca esfriar um pouco.',
+        },
+      ],
+    },
+    {
+      type: 'cta',
+      text: 'Com o protocolo na parede e a arte certa na mão, a prensa vira rotina — e a rotina vira lucro. Comece pela arte: milhares de artes prontas para sublimar, no tamanho certo e em 300 DPI.',
+      label: 'Ver as artes para sublimar',
+      href: '/#preco',
+    },
+  ],
+  related: ['tempo-temperatura-sublimar-caneca-tabela', 'caneca-sublimada-desbotada-defeitos-como-resolver', 'artes-para-sublimacao-de-canecas-guia'],
+}
+
+/* ============================================================
+ * ARTIGO 18 — head term: "impressora sublimação qual comprar"
+ * Fonte: Central do Sublimador — Comparador de Máquinas IA
+ * ============================================================ */
+const ART18: BlogArticle = {
+  slug: 'como-comparar-impressora-prensa-sublimacao',
+  title: 'Impressora ou prensa: como comparar os modelos antes de comprar',
+  seoTitle: 'Como Comparar Impressora e Prensa de Sublimação Antes de Comprar',
+  description:
+    'Comprar impressora ou prensa de sublimação sem comparar é o erro mais caro de quem começa. Veja o que comparar em cada equipamento, o que evitar e o método do duelo.',
+  keywords: [
+    'impressora sublimação qual comprar',
+    'prensa térmica sublimação',
+    'comparar impressora sublimação',
+    'melhor impressora sublimação iniciante',
+    'equipamentos sublimação',
+  ],
+  category: 'equipamentos',
+  emoji: '🖨️',
+  cover: '/uploads/cg-mascote-premium.png',
+  coverAlt: 'Mascote Click & Gruda com caneca personalizada',
+  readTime: '8 min',
+  datePublished: '2026-11-19',
+  dateModified: '2026-11-19',
+  lead:
+    'A dúvida de quem está começando na sublimação é sempre a mesma: qual impressora comprar, qual prensa escolher — e como saber se o modelo mais barato vai dar conta do trabalho. A resposta não está no preço nem na propaganda: está na comparação, item por item, entre os modelos que cabem no seu bolso. Este guia mostra o que comparar em impressoras e prensas, o que evitar e o método do duelo para decidir sem arrependimento.',
+  blocks: [
+    { type: 'h2', text: 'Por que comparar antes de comprar', id: 'por-que-comparar' },
+    {
+      type: 'p',
+      text: 'Equipamento de sublimação é o maior investimento de quem começa — e o erro mais caro também. Uma impressora que não aceita o tamanho de folha que você precisa, uma prensa sem controle digital de temperatura ou um modelo que gasta o dobro de tinta por impressão: cada um desses erros volta todo mês, no custo e na qualidade. Comparar antes de comprar não é perder tempo: é a diferença entre um equipamento que paga o investimento em meses e um que vira peso morto na bancada. O método é simples: coloque dois modelos lado a lado e compare as especificações que realmente importam para o seu trabalho.',
+    },
+    { type: 'h2', text: 'O que comparar na impressora de sublimação', id: 'comparar-impressora' },
+    {
+      type: 'p',
+      text: 'Na impressora, o primeiro ponto é o formato de impressão: A4 atende canecas e peças pequenas, mas se você pretende fazer camisetas e peças grandes, o A3 muda o jogo — e trocar de impressora depois custa mais que a diferença de preço. Depois, o sistema de tinta: bulk ink (tanque) costuma sair mais barato por impressão do que cartucho, o que pesa no fim do mês para quem produz em volume. Confira também a resolução máxima de impressão, o suporte a perfil de cores ICC — que é o que garante que a cor da tela seja a cor da caneca — e o custo por impressão, que é o número que realmente importa para o seu preço de venda.',
+    },
+    { type: 'h2', text: 'O que comparar na prensa térmica', id: 'comparar-prensa' },
+    {
+      type: 'p',
+      text: 'Na prensa, o que manda é o controle: temperatura e tempo digitais, com ajuste fino, valem mais que qualquer promessa de potência. Prensa sem controle preciso é loteria — e cada caneca com cor fraca é dinheiro perdido. Compare o tamanho da área útil: prensa de caneca cilíndrica é uma coisa, prensa plana para camiseta e azulejo é outra, e há modelos combinados que fazem os dois. Veja também o ajuste de pressão: pressão uniforme em toda a superfície é o que evita transferência falhada nas bordas. E confira a construção: estrutura firme, resistência de qualidade e peças de reposição fáceis de encontrar valem mais que um preço baixo com assistência inexistente.',
+    },
+    { type: 'h2', text: 'O método do duelo: dois modelos, um vencedor', id: 'metodo-duelo' },
+    {
+      type: 'p',
+      text: 'O jeito mais prático de decidir é o duelo: escolha dois modelos que cabem no seu orçamento e compare especificação por especificação, sem deixar a marca decidir por você. Liste formato, sistema de tinta, resolução, controle de temperatura, área útil, pressão, garantia e custo por impressão — e marque o vencedor em cada item. O modelo que ganha mais itens importantes para o SEU trabalho é o certo para você, mesmo que não seja o mais caro nem o mais famoso. E antes de fechar, faça a conta que pouca gente faz: quanto custa cada impressão nesse modelo, e quantas impressões você precisa para o equipamento se pagar. Na área Conhecimento Técnico, o comparador de equipamentos faz esse duelo na tela: escolha dois perfis e veja lado a lado o que cada um entrega para o seu objetivo.',
+    },
+    {
+      type: 'table',
+      caption: 'O que comparar em cada equipamento de sublimação',
+      head: ['Equipamento', 'O que comparar', 'O que evitar'],
+      rows: [
+        ['Impressora', 'Formato A4 ou A3, bulk ink, resolução, perfil ICC, custo por impressão', 'Modelo sem suporte a ICC e sem tanque de tinta, que encarece cada folha'],
+        ['Prensa de caneca', 'Controle digital de temperatura e tempo, pressão uniforme, resistência cilíndrica', 'Prensa sem ajuste fino de temperatura: cor fraca e transferência incompleta'],
+        ['Prensa plana', 'Área útil, controle digital, ajuste de pressão, estrutura firme', 'Área pequena demais para as peças que você quer vender'],
+        ['Prensa combinada', 'Troca rápida de resistência, controle único, garantia e peças de reposição', 'Modelo que faz tudo mal: prefira um bom em uma função do que mediano em três'],
+        ['Kit iniciante', 'Impressora + prensa + tinta + papel no mesmo pacote, com garantia', 'Kit com insumos de qualidade duvidosa, que mancham e desbotam'],
+      ],
+    },
+    {
+      type: 'callout',
+      title: 'Conhecimento antes do investimento',
+      text: 'A regra de ouro de quem vive de sublimação é investir primeiro em conhecimento e depois em equipamento. Quem entende o que precisa comprar quase nunca erra a compra — e quem compra no impulso quase sempre paga duas vezes.',
+    },
+    { type: 'h2', text: 'Os erros mais comuns na hora de comprar', id: 'erros-comuns' },
+    {
+      type: 'p',
+      text: 'O primeiro erro é comprar pelo preço mais baixo sem olhar as especificações: o barato sai caro quando a impressora não aceita o formato que você precisa ou a prensa não mantém a temperatura. O segundo é comprar equipamento grande demais para a demanda: prensa industrial parada na bancada é capital parado. O terceiro é ignorar o custo por impressão — tinta, papel e energia — que é o que define a sua margem mês após mês. E o quarto é comprar sem pensar em assistência: equipamento sem peça de reposição e sem suporte vira sucata na primeira pane. Compare, faça as contas e só então compre.',
+    },
+    {
+      type: 'faq',
+      items: [
+        {
+          q: 'Para começar, vale mais uma impressora A4 ou A3?',
+          a: 'A4 atende canecas e peças pequenas e é o começo mais comum. A3 vale a pena se você já planeja camisetas e peças grandes — trocar de impressora depois custa mais que a diferença de preço inicial.',
+        },
+        {
+          q: 'Bulk ink é melhor que cartucho para sublimação?',
+          a: 'Para quem produz em volume, sim: o custo por impressão do tanque costuma ser bem menor. O que importa na comparação é o custo por folha impressa, não o preço do equipamento sozinho.',
+        },
+        {
+          q: 'Prensa combinada vale a pena para iniciante?',
+          a: 'Pode valer, se o modelo tiver controle digital de temperatura e tempo e troca rápida de resistência. Mas desconfie de modelo que promete fazer tudo: um equipamento bom em uma função vale mais que um mediano em três.',
+        },
+      ],
+    },
+    {
+      type: 'cta',
+      text: 'Equipamento certo na bancada e arte certa na tela: é assim que a caneca sai perfeita. Milhares de artes prontas para sublimar, no tamanho certo e em 300 DPI, esperando por você.',
+      label: 'Ver as artes para sublimar',
+      href: '/#preco',
+    },
+  ],
+  related: ['tempo-temperatura-sublimar-caneca-tabela', 'caneca-sublimada-desbotada-defeitos-como-resolver', 'checklist-antes-da-prensa-zero-erro'],
+}
+
+/* ============================================================
+ * ARTIGO 19 — head term: "negócio sublimação"
+ * Fonte: Feira FuturePrint — 5 dicas para empreendedores
+ * ============================================================ */
+const ART19: BlogArticle = {
+  slug: '5-dicas-negocio-sublimacao-crescer',
+  title: '5 dicas para o seu negócio de sublimação crescer de verdade',
+  seoTitle: '5 Dicas para o Negócio de Sublimação Crescer (Guia 2026)',
+  description:
+    'O mercado de sublimação é concorrido e vender mais do mesmo não basta. Conheça o mercado, invista com estratégia, diferencie o produto e cuide da gestão.',
+  keywords: [
+    'negócio sublimação',
+    'como crescer sublimação',
+    'gestão sublimação',
+    'vender mais sublimação',
+    'empreendedor sublimação',
+  ],
+  category: 'negocios',
+  emoji: '📈',
+  cover: '/uploads/hero-mug.png',
+  coverAlt: 'Canecas personalizadas prontas para venda',
+  readTime: '8 min',
+  datePublished: '2026-11-19',
+  dateModified: '2026-11-19',
+  lead:
+    'O mercado de sublimação está em alta — e justamente por isso está cheio de concorrente vendendo a mesma coisa. Quem cresce nesse mercado não é quem tem a prensa maior: é quem conhece o mercado, domina a técnica e a gestão, investe no lugar certo e oferece algo diferente. São 5 dicas que valem para quem está começando e para quem já vende há anos.',
+  blocks: [
+    { type: 'h2', text: '1. Saiba muito bem como o mercado funciona', id: 'conheca-o-mercado' },
+    {
+      type: 'p',
+      text: 'Parece óbvio, mas muita gente entra na sublimação achando que vender vai ser fácil — e deixa de lado o entendimento do mercado. Antes de comprar qualquer coisa, entenda a cadeia de produção do segmento: quais equipamentos e insumos cada tipo de demanda exige, quanto você consegue investir e quem é o seu cliente. Conhecer o mercado é saber o que o cliente procura, quanto ele paga, onde ele compra e o que os concorrentes oferecem. Quem gerencia o negócio sem conhecer o mercado entrega qualidade por acaso; quem conhece, entrega por método — e é isso que faz o cliente voltar.',
+    },
+    { type: 'h2', text: '2. Aposte em capacidade técnica e gerencial', id: 'capacidade-tecnica-gerencial' },
+    {
+      type: 'p',
+      text: 'Sublimação exige um conjunto de conhecimentos para o empreendedor ser competitivo. Do lado técnico: criar as próprias artes em design gráfico, operar prensas térmicas, dominar informática o suficiente para configurar o perfil de cores da impressora e ter noção de colorimetria, em RGB e em CMYK, para corrigir imagens e fotos antes de estampar. Do lado gerencial: disciplina, noções de gestão de empresas e habilidade de vendas. Quem domina só a técnica fica refém de quem vende; quem domina só a venda fica refém de quem produz. O negócio cresce quando as duas pontas estão na mesma mão.',
+    },
+    { type: 'h2', text: '3. Saiba onde investir', id: 'onde-investir' },
+    {
+      type: 'p',
+      text: 'A ânsia de fazer o negócio prosperar faz muita gente investir nas frentes erradas: equipamento caro antes da hora, insumo barato que estraga a produção, curso que não ensina o que você precisa. A ordem certa é buscar o conhecimento primeiro e depois fazer o investimento — assim o risco de perder dinheiro com equipamento de baixa qualidade ou de baixa produtividade cai muito. Pense de forma estratégica: o investimento precisa fazer sentido para o perfil dos seus clientes e para o crescimento do seu negócio, não para a vitrine da loja de máquinas. Um investimento bem pensado se paga; um investimento por impulso vira parcela.',
+    },
+    { type: 'h2', text: '4. Encare os desafios com criatividade', id: 'criatividade' },
+    {
+      type: 'p',
+      text: 'O mercado é concorrido e muitos empreendedores falham insistindo em oferecer mais do mesmo: a mesma caneca branca, com a mesma arte, pelo mesmo preço. Desafios vão aparecer ao longo da jornada — e a saída é pensar além do óbvio: trazer diferenciais e produtos ou serviços complementares que encantem o cliente. Pode ser uma linha de canecas com arte exclusiva, um kit para presente, uma embalagem que vira parte do presente ou um nicho que ninguém na sua cidade atende. Criatividade aqui não é enfeite: é a diferença entre disputar preço e disputar preferência.',
+    },
+    { type: 'h2', text: '5. Faça uma gestão profissional', id: 'gestao-profissional' },
+    {
+      type: 'p',
+      text: 'Nenhuma empresa sobrevive no longo prazo sem um olhar profissional para a saúde financeira e para o fluxo de caixa. Antes de sair aplicando técnica de venda ou de retenção, vale dar alguns passos para trás e organizar a casa: saber quanto custa cada caneca de verdade, quanto entra e quanto sai por mês, qual produto tem a maior margem e qual só ocupa a bancada. Gestão profissional não é burocracia: é saber, com números, se o negócio está dando lucro ou só dando trabalho. Quem organiza primeiro, vende depois — e vende com margem.',
+    },
+    {
+      type: 'table',
+      caption: 'As 5 dicas na prática',
+      head: ['Dica', 'Na prática', 'Sinal de que está funcionando'],
+      rows: [
+        ['Conheça o mercado', 'Estude a cadeia de produção, os equipamentos e quem é o seu cliente', 'Você sabe o que o cliente quer antes dele pedir'],
+        ['Capacidade técnica e gerencial', 'Design, prensa, perfil de cores, colorimetria, gestão e vendas', 'Você produz e vende sem depender de ninguém'],
+        ['Saiba onde investir', 'Conhecimento primeiro, equipamento depois, sempre com estratégia', 'Cada compra se paga em meses, não em anos'],
+        ['Criatividade', 'Diferenciais, linhas exclusivas, kits e nichos não atendidos', 'O cliente escolhe você, não o preço mais baixo'],
+        ['Gestão profissional', 'Fluxo de caixa, custo real por peça e margem por produto', 'Você sabe exatamente quanto lucra por mês'],
+      ],
+    },
+    {
+      type: 'callout',
+      title: 'O negócio cresce na ordem certa',
+      text: 'Conhecer o mercado, dominar técnica e gestão, investir com estratégia, diferenciar o produto e organizar o caixa: nessa ordem. Pular uma etapa é o que faz o negócio andar em círculo.',
+    },
+    {
+      type: 'faq',
+      items: [
+        {
+          q: 'Preciso saber design gráfico para viver de sublimação?',
+          a: 'Não precisa ser designer profissional, mas precisa da capacidade técnica de criar e ajustar as próprias artes, configurar o perfil de cores da impressora e corrigir imagens em RGB e CMYK. Quem depende de arte pronta de terceiros fica limitado — e quem tem arte própria vende o que ninguém mais vende.',
+        },
+        {
+          q: 'Qual é o maior erro de quem investe em sublimação?',
+          a: 'Investir no equipamento antes do conhecimento. A ordem certa é entender o mercado e a técnica primeiro, e só então comprar o equipamento que faz sentido para o seu cliente e para o seu volume.',
+        },
+        {
+          q: 'Como me diferenciar se todo mundo vende caneca?',
+          a: 'Com criatividade e nicho: arte exclusiva, linha premium, kit para presente, embalagem que encanta e um público específico bem atendido. Quem vende mais do mesmo disputa preço; quem diferencia disputa preferência.',
+        },
+      ],
+    },
+    {
+      type: 'cta',
+      text: 'Crescer no mercado de sublimação começa com o produto certo na mão. Milhares de artes prontas para sublimar — e a ferramenta para mostrar a caneca em 3D para o cliente aprovar antes de produzir.',
+      label: 'Ver as artes para sublimar',
+      href: '/#preco',
+    },
+  ],
+  related: ['como-comparar-impressora-prensa-sublimacao', 'quanto-cobrar-caneca-personalizada-preco', 'vender-canecas-personalizadas-instagram-whatsapp'],
+}
+
+/* ============================================================
+ * ARTIGO 20 — head term: "programa criar arte sublimação"
+ * Fonte: Spocket — Melhor software de design para sublimação
+ * ============================================================ */
+const ART20: BlogArticle = {
+  slug: 'melhores-programas-criar-artes-sublimacao',
+  title: 'Os melhores programas para criar artes de sublimação (do grátis ao profissional)',
+  seoTitle: 'Melhores Programas para Criar Artes de Sublimação em 2026',
+  description:
+    'Photoshop, CorelDRAW, Illustrator, Inkscape, GIMP, Canva e mais: qual programa usar para criar artes de sublimação, o que cada um faz melhor e quanto custa.',
+  keywords: [
+    'programa criar arte sublimação',
+    'photoshop sublimação',
+    'coreldraw sublimação',
+    'programa grátis sublimação',
+    'software design sublimação',
+  ],
+  category: 'artes',
+  emoji: '💻',
+  cover: '/uploads/art-frase-cafe.png',
+  coverAlt: 'Arte de caneca com frase de café pronta para sublimar',
+  readTime: '9 min',
+  datePublished: '2026-11-19',
+  dateModified: '2026-11-19',
+  lead:
+    'A arte que sai da prensa só é tão boa quanto o programa que a criou. Para sublimação, o software precisa fazer mais do que desenhar bonito: precisa trabalhar em 300 DPI, espelhar a imagem, respeitar o perfil de cores da impressora e entregar o arquivo no formato certo. Este guia compara os programas mais usados para sublimação — do grátis ao profissional — para você escolher o certo para o seu nível e o seu bolso.',
+  blocks: [
+    { type: 'h2', text: 'O que o programa precisa fazer para sublimação', id: 'o-que-precisa' },
+    {
+      type: 'p',
+      text: 'Antes de comparar programas, entenda o que a sublimação exige do arquivo. A arte precisa ser criada em 300 DPI no tamanho final — para caneca, 21 × 9,5 cm — porque a prensa não conserta arquivo borrado. O desenho deve ser feito em modo RGB, mas com o perfil de cores ICC da sua impressora e tinta, para a conversão para CMYK sair fiel. A imagem precisa ser espelhada antes de imprimir, e o fundo deve ser transparente quando a arte vai para superfícies que não são brancas, para não aparecer borda branca na estampa. O formato ideal de entrega é PNG ou JPG, com a transparência preservada quando necessário. Um programa que não controla esses pontos vira dor de cabeça na hora da prensa.',
+    },
+    { type: 'h2', text: 'Os profissionais: Photoshop, Illustrator e CorelDRAW', id: 'profissionais' },
+    {
+      type: 'p',
+      text: 'O Adobe Photoshop é o padrão para edição de imagem em raster: correção de cor, retoque, camadas e suporte a PSD, PNG, TIFF e JPEG, integrado à Creative Cloud. É a escolha de quem trabalha com foto e arte detalhada, com assinatura a partir de cerca de US$ 20,99 por mês — e uma curva de aprendizado mais íngreme para quem está começando. O Adobe Illustrator é o padrão para vetor: logotipos, textos e formas escaláveis sem perder qualidade, ideal para sublimação que exige precisão, por cerca de US$ 263,88 ao ano. Já o CorelDRAW é o queridinho de muitos sublimadores brasileiros: vetor com interface amigável, tipografia avançada, rastreamento de bitmap para vetor e a vantagem da compra única, a partir de cerca de US$ 269, sem assinatura mensal.',
+    },
+    { type: 'h2', text: 'O meio do caminho: Affinity e Procreate', id: 'meio-do-caminho' },
+    {
+      type: 'p',
+      text: 'O Affinity Designer é a alternativa mais barata ao Illustrator: vetor e raster no mesmo ambiente, desempenho em tempo real e compra única, sem assinatura — a opção de quem quer ferramenta profissional sem mensalidade. O Procreate é outro mundo: um programa de desenho feito só para iPad, com uma biblioteca enorme de pincéis e telas de altíssima resolução, perfeito para quem desenha à mão e quer arte exclusiva com traço próprio, por uma compra única de cerca de US$ 12,99. A limitação é a plataforma: só funciona no iPad e não é feito para vetor complexo.',
+    },
+    { type: 'h2', text: 'Os gratuitos: Inkscape, GIMP e Canva', id: 'gratuitos' },
+    {
+      type: 'p',
+      text: 'Para começar sem gastar nada, o Inkscape é o vetor gratuito e de código aberto: desenho vetorial completo, suporte a SVG, EPS, PDF e PNG, texto e tipografia, edição de caminhos e rastreamento de bitmap — com a ressalva do suporte limitado a CMYK, que pode complicar a fidelidade de cor. O GIMP é o editor de imagem gratuito equivalente ao Photoshop: retoque, camadas, máscaras e plugins, também sem suporte nativo a CMYK. E o Canva é a porta de entrada mais rápida: online, arrastar e soltar, milhares de modelos, versão gratuita generosa e plano Pro a partir de cerca de US$ 12,95 por mês. O Canva é ótimo para artes simples e rápidas; para trabalho profissional de sublimação, ele fica limitado em recursos avançados e em originalidade — modelo demais, arte igual à de todo mundo.',
+    },
+    {
+      type: 'table',
+      caption: 'Comparativo dos programas para sublimação',
+      head: ['Programa', 'Melhor para', 'Preço', 'Nível'],
+      rows: [
+        ['Adobe Photoshop', 'Foto, retoque e arte detalhada em raster', 'A partir de ~US$ 20,99/mês', 'Profissional'],
+        ['Adobe Illustrator', 'Vetor, logo e texto com precisão', 'A partir de ~US$ 263,88/ano', 'Profissional'],
+        ['CorelDRAW', 'Vetor com interface amigável e compra única', 'A partir de ~US$ 269 (única)', 'Intermediário a profissional'],
+        ['Affinity Designer', 'Vetor e raster sem assinatura', 'Compra única', 'Intermediário a profissional'],
+        ['Inkscape', 'Vetor gratuito e de código aberto', 'Grátis', 'Iniciante a intermediário'],
+        ['GIMP', 'Edição de imagem gratuita tipo Photoshop', 'Grátis', 'Iniciante a intermediário'],
+        ['Canva', 'Artes rápidas com modelos prontos', 'Grátis / Pro ~US$ 12,95/mês', 'Iniciante'],
+        ['Procreate', 'Desenho à mão no iPad', 'Compra única ~US$ 12,99', 'Intermediário'],
+      ],
+    },
+    {
+      type: 'callout',
+      title: 'O programa não faz a arte sozinho',
+      text: 'O melhor software é o que você domina e que entrega o arquivo certo: 300 DPI, espelhado, com perfil ICC e fundo transparente quando precisa. E se você não quer desenhar do zero, a arte pronta e curada resolve — o que importa é o arquivo chegar na prensa do jeito certo.',
+    },
+    { type: 'h2', text: 'Qual escolher para o seu momento', id: 'qual-escolher' },
+    {
+      type: 'p',
+      text: 'Está começando e sem orçamento: Inkscape para vetor e GIMP para imagem, ou Canva para sair rápido — e invista o dinheiro que economizou em insumo bom. Já vende e quer subir o nível: CorelDRAW ou Affinity, que resolvem vetor profissional sem mensalidade pesada. Trabalha com foto e arte detalhada: Photoshop, que é o padrão do mercado. Desenha à mão e quer arte exclusiva: Procreate no iPad. E lembre-se do atalho que muita gente ignora: nem toda arte precisa ser criada por você. Um acervo de artes prontas, no tamanho e na resolução certos, libera o seu tempo para o que realmente vende — prensar, fotografar e atender o cliente.',
+    },
+    {
+      type: 'faq',
+      items: [
+        {
+          q: 'Qual programa gratuito é melhor para sublimação, Inkscape ou GIMP?',
+          a: 'Depende do trabalho: Inkscape para vetor — logos, textos e formas escaláveis — e GIMP para imagem em raster, como foto e retoque. Os dois são gratuitos, e muitos sublimadores usam os dois juntos.',
+        },
+        {
+          q: 'Posso criar arte de sublimação no Canva?',
+          a: 'Pode, para artes simples e rápidas. Mas atenção: o Canva é limitado em recursos avançados e depende muito de modelos, o que pode deixar a sua arte igual à de todo mundo. Para trabalho profissional, prefira um programa de vetor ou de edição de imagem.',
+        },
+        {
+          q: 'A arte precisa mesmo ter 300 DPI?',
+          a: 'Sim, no tamanho final da impressão. Abaixo disso a estampa perde nitidez e a prensa não conserta. E lembre-se do resto do fluxo: espelhar a imagem, usar o perfil ICC da sua impressora e fundo transparente quando a superfície não for branca.',
+        },
+      ],
+    },
+    {
+      type: 'cta',
+      text: 'Seja no Photoshop, no CorelDRAW ou no Inkscape, o que a prensa precisa é de arte no tamanho certo e em 300 DPI. Milhares de artes prontas para sublimar já estão nesse padrão — é só escolher, baixar e prensar.',
+      label: 'Ver as artes para sublimar',
+      href: '/#preco',
+    },
+  ],
+  related: ['artes-para-sublimacao-de-canecas-guia', 'checklist-antes-da-prensa-zero-erro', 'quanto-cobrar-caneca-personalizada-preco'],
+}
+
+/* ============================================================
+ * ARTIGO 21 — head term: "lucro caneca personalizada"
+ * Fonte: Loja MB Máquinas — Canecas Personalizadas (lucro)
+ * ============================================================ */
+const ART21: BlogArticle = {
+  slug: 'lucrar-canecas-personalizadas-estrategia',
+  title: 'Canecas personalizadas: como lucrar mais sem vender mais barato',
+  seoTitle: 'Como Lucrar com Canecas Personalizadas na Sublimação',
+  description:
+    'A caneca continua sendo um dos produtos mais lucrativos da sublimação — mas o lucro está na estratégia: linhas de produto, ticket médio, mercado corporativo e nicho.',
+  keywords: [
+    'lucro caneca personalizada',
+    'ganhar dinheiro sublimação',
+    'vender canecas personalizadas',
+    'margem sublimação',
+    'caneca personalizada lucro',
+  ],
+  category: 'negocios',
+  emoji: '💰',
+  cover: '/uploads/hero-mug.png',
+  coverAlt: 'Canecas personalizadas coloridas prontas para venda',
+  readTime: '8 min',
+  datePublished: '2026-11-19',
+  dateModified: '2026-11-19',
+  lead:
+    'A caneca personalizada continua sendo um dos produtos mais estratégicos da sublimação: produção rápida, pouco insumo, estoque fácil, demanda o ano inteiro e venda para pessoa física e para empresa. Mas o lucro não está em vender mais canecas pelo menor preço — está em usar a caneca com inteligência: subir o ticket médio, criar linhas de maior valor, atender pedidos corporativos e vender para o nicho certo. Este guia mostra como.',
+  blocks: [
+    { type: 'h2', text: 'Por que a caneca é tão estratégica', id: 'por-que-estrategica' },
+    {
+      type: 'p',
+      text: 'Poucos produtos combinam tantas vantagens: a caneca tem produção relativamente rápida, consome pouco insumo, é fácil de estocar, existe em muitos modelos e aceita personalização unitária e em quantidade. A demanda existe o ano todo — presente, lembrança, brinde corporativo, data comemorativa — e a maioria dos sublimadores já tem a estrutura necessária para produzir. O ponto é que a oportunidade não é simplesmente vender mais canecas: é vender melhor, com mais valor por unidade, usando o equipamento que você já tem, sem precisar ampliar a estrutura de imediato.',
+    },
+    { type: 'h2', text: 'Nem toda caneca se vende do mesmo jeito', id: 'tipos-de-caneca' },
+    {
+      type: 'p',
+      text: 'O primeiro passo da estratégia é entender que cada modelo de caneca tem um papel no catálogo. A caneca branca tradicional é a de maior giro: presente, lembrança, foto, frase, profissão, data comemorativa e brinde corporativo. Como todo mundo conhece, a concorrência é maior — e o diferencial fica na arte, na apresentação, no nicho e na experiência de compra. As canecas com interior ou alça colorida já fogem da comparação por preço: elas permitem criar linhas — tradicional, premium e especial para presentes — e subir o ticket médio. A caneca mágica, que revela a arte com a bebida quente, tem apelo visual forte e valor percebido maior, ótima para presentes românticos, aniversários e artes de efeito surpresa. E a caneca de polímero, mais leve e resistente, abre nichos de escola, festa, produto infantil, evento e lembrança — sempre conferindo se o modelo tem tratamento adequado para sublimação.',
+    },
+    { type: 'h2', text: 'O lucro está no valor percebido', id: 'valor-percebido' },
+    {
+      type: 'p',
+      text: 'O cliente não compra uma caneca branca: compra o resultado final. Arte exclusiva, boa composição visual, embalagem diferenciada e apresentação profissional mudam completamente o valor percebido do produto. Perguntar só "quanto custa a caneca?" é uma visão limitada. No cálculo, entram o custo do produto, impressão, papel sublimático, tinta, fita térmica, energia, embalagem, mão de obra, perdas, impostos, taxas, comissão e a margem desejada — e depois vem a variável fundamental: quanto aquele produto vale para o cliente. Um presente de aniversário, um kit personalizado completo e um pedido corporativo de 100 unidades têm lógica comercial e percepção de valor completamente diferentes. Precificar é entender os dois lados.',
+    },
+    { type: 'h2', text: 'Como aumentar a margem sem baixar o preço', id: 'aumentar-margem' },
+    {
+      type: 'p',
+      text: 'Trabalhe com linhas de produto: caneca tradicional com personalização padrão, caneca premium com modelo diferenciado e arte mais elaborada ou embalagem especial, e kit para presente combinando a caneca com outros produtos. Quando há opções, o cliente compara os produtos dentro do seu próprio catálogo em vez de comparar só o preço com o concorrente. Use a caneca para subir o ticket médio: venda junto com camiseta personalizada, almofada, squeeze, chaveiro, azulejo, porta-retrato, caixa personalizada e itens temáticos. Em vez de vender só uma caneca no Dia das Mães, monte o kit do Dia das Mães: o custo adicional pode ser pequeno e o valor percebido do conjunto sobe muito. E explore o mercado corporativo: empresas usam canecas para integração de colaboradores, eventos, feiras, treinamentos, campanhas internas, brindes para clientes e kits — com a vantagem da quantidade, de dezenas a centenas de peças por pedido, contra uma unidade na venda para o consumidor final.',
+    },
+    { type: 'h2', text: 'Datas comemorativas, nicho e produção eficiente', id: 'datas-nicho-producao' },
+    {
+      type: 'p',
+      text: 'Data comemorativa não começa na semana da data: quando a demanda chega, a divulgação já precisa estar no ar. Dia das Mães, Dia dos Pais, Dia dos Namorados, Natal, Páscoa, Dia dos Professores, formaturas, aniversários e confraternizações empresariais pedem arte criada, produto fotografado e campanha montada com antecedência. O nicho também vale mais do que vender para todo mundo: coleções específicas para professores, profissionais de saúde, mecânicos, empreendedores, casais, mães, pais, pets, humor e produtos regionais — quanto mais específica a comunicação, maior a identificação do cliente com o produto. E a margem também nasce na produção: padronize o tamanho das artes, mantenha os perfis de impressão configurados, organize os pedidos por modelo, produza em lote quando possível, controle temperatura e tempo, evite retrabalho e registre os custos reais. Menos retrabalho é mais lucro com a mesma estrutura.',
+    },
+    {
+      type: 'table',
+      caption: 'As alavancas de lucro da caneca personalizada',
+      head: ['Alavanca', 'O que fazer', 'Por que funciona'],
+      rows: [
+        ['Linhas de produto', 'Tradicional, premium e kit para presente no mesmo catálogo', 'O cliente compara dentro do seu catálogo, não com o concorrente'],
+        ['Ticket médio', 'Caneca + camiseta, almofada, chaveiro ou caixa personalizada', 'O custo adicional é pequeno e o valor percebido do conjunto sobe muito'],
+        ['Mercado corporativo', 'Integração, eventos, feiras e brindes para empresas', 'Pedidos de dezenas a centenas de peças, com recorrência'],
+        ['Datas comemorativas', 'Campanha pronta antes da demanda chegar', 'Você vende quando todo mundo está comprando'],
+        ['Nicho', 'Coleções para profissões, pets, casais e temas regionais', 'Comunicação específica gera identificação e menos disputa por preço'],
+        ['Produção eficiente', 'Arte padronizada, lote, perfil configurado, sem retrabalho', 'A margem cresce sem aumentar o preço de venda'],
+      ],
+    },
+    {
+      type: 'callout',
+      title: 'A pergunta certa sobre a prensa',
+      text: 'A pergunta não é quantas canecas a máquina consegue fazer, e sim quanto faturamento você consegue gerar usando melhor essa máquina. A mesma prensa serve venda unitária, kit, data comemorativa, empresa, evento e pedido em quantidade — a rentabilidade depende muito mais da estratégia comercial do que da capacidade técnica do equipamento.',
+    },
+    { type: 'h2', text: 'Caneca não precisa ser produto barato', id: 'nao-precisa-ser-barato' },
+    {
+      type: 'p',
+      text: 'Competir só por preço reduz a margem e torna o negócio cada vez mais difícil. A estratégia melhor é arte + produto + apresentação + nicho + experiência: fotografia profissional, embalagem, identidade visual e personalização bem apresentada justificam valores maiores. E não esqueça de quem já comprou de você: quem comprou uma camiseta personalizada pode comprar uma caneca; a empresa que pediu camisetas pode pedir brindes; o cliente que comprou a caneca de aniversário volta no Dia das Mães. Catálogo no WhatsApp, campanha para ex-clientes, lançamento de canecas novas, kits para datas especiais e combos: muitas vezes é mais fácil aumentar o faturamento vendendo de novo para quem já conhece o trabalho do que buscando só cliente novo.',
+    },
+    {
+      type: 'faq',
+      items: [
+        {
+          q: 'Caneca personalizada ainda vale a pena para quem sublima?',
+          a: 'Sim — não só pela facilidade de produção, mas porque permite trabalhar com mercados, preços, nichos e volumes diferentes usando a estrutura que você já tem. A caneca pode ser produto de entrada, presente premium, complemento de kit, brinde corporativo, produto sazonal e item de venda em quantidade.',
+        },
+        {
+          q: 'Como precificar a caneca sem errar?',
+          a: 'Some todos os custos — produto, impressão, papel, tinta, fita, energia, embalagem, mão de obra, perdas, impostos, taxas e comissão — e some a margem desejada. Depois considere o valor percebido: um presente, um kit completo e um pedido corporativo de 100 unidades têm lógica de preço diferente.',
+        },
+        {
+          q: 'Vale a pena vender caneca mágica e de polímero?',
+          a: 'Vale, como linhas diferenciadas: a mágica tem apelo visual e valor percebido maior para presentes e datas, e a de polímero abre nichos de escola, festa e eventos pela leveza e resistência. No polímero, confira sempre se o modelo tem tratamento adequado para sublimação.',
+        },
+      ],
+    },
+    {
+      type: 'cta',
+      text: 'A estratégia está pronta — agora falta a arte. Milhares de artes prontas para sublimar, organizadas por tema e data comemorativa, para você montar o catálogo, o kit e a campanha.',
+      label: 'Ver as artes para sublimar',
+      href: '/#preco',
+    },
+  ],
+  related: ['quanto-cobrar-caneca-personalizada-preco', '5-dicas-negocio-sublimacao-crescer', 'vender-canecas-personalizadas-instagram-whatsapp'],
+}
+
+/* ============================================================
+ * ARTIGO 22 — head term: "montar estamparia canecas"
+ * Fonte: SubliSimples — Caneca personalizada online (guia)
+ * ============================================================ */
+const ART22: BlogArticle = {
+  slug: 'montar-estamparia-canecas-do-zero',
+  title: 'Como montar uma estamparia de canecas do zero (guia prático)',
+  seoTitle: 'Como Montar uma Estamparia de Canecas do Zero: Guia Prático',
+  description:
+    'Montar uma estamparia de canecas do zero é possível com pouco investimento: estoque sob demanda, nicho certo, vitrine online e datas comemorativas bem planejadas.',
+  keywords: [
+    'montar estamparia',
+    'começar sublimação canecas',
+    'negócio canecas personalizadas',
+    'estamparia do zero',
+    'como começar sublimação',
+  ],
+  category: 'guias',
+  emoji: '🏭',
+  cover: '/uploads/cg-hero-mascote-cadeira-2026.webp',
+  coverAlt: 'Mascote Click & Gruda sentado na cadeira com caneca',
+  readTime: '8 min',
+  datePublished: '2026-11-19',
+  dateModified: '2026-11-19',
+  lead:
+    'Montar uma estamparia de canecas do zero nunca foi tão acessível: a barreira de entrada é baixa, as ferramentas modernas automatizam da criação da arte à logística, e o modelo de sublimação permite começar pequeno e crescer com as vendas. Este guia prático mostra o passo a passo — do modelo de negócio enxuto ao primeiro pedido — para você começar hoje, sem estoque parado e sem investimento pesado.',
+  blocks: [
+    { type: 'h2', text: 'O modelo enxuto: estoque sob demanda', id: 'modelo-enxuto' },
+    {
+      type: 'p',
+      text: 'A maior vantagem de trabalhar com sublimação é o estoque praticamente sob demanda: você só estampa o produto quando a venda está confirmada. Isso elimina o risco de capital parado em mercadoria sem saída e torna o modelo perfeito para quem começa sem espaço físico para armazenamento. O negócio é enxuto e ágil por natureza — o dinheiro entra antes do custo sair. A regra é simples: venda primeiro, produza depois, e cresça o estoque só com o que já provou que vende.',
+    },
+    { type: 'h2', text: 'Nicho antes de tudo', id: 'nicho' },
+    {
+      type: 'p',
+      text: 'Tentar vender de tudo para todos geralmente resulta em não vender nada para ninguém. O nicho é o melhor amigo de quem está começando: foque em públicos específicos — geeks, amantes de pets, mães de primeira viagem, profissionais de áreas específicas — e domine a linguagem do seu cliente ideal. Quem domina um nicho cria produtos que geram desejo imediato, porque fala exatamente o que aquele público quer ouvir. Comece com um nicho, conquiste ele, e só depois amplie para o próximo.',
+    },
+    { type: 'h2', text: 'Sua vitrine online e a foto que vende', id: 'vitrine-foto' },
+    {
+      type: 'p',
+      text: 'Ter domínio próprio transmite profissionalismo: quando o cliente vê um endereço web seguro e personalizado, a confiança para comprar aumenta. E a qualidade visual dos produtos é o seu principal vendedor silencioso — no ambiente digital, o cliente não toca nem sente o material, então as imagens e os mockups da sua vitrine precisam ser impecáveis. Se não tem equipamento profissional, use a luz natural e um fundo infinito simples de cartolina; e use mockups para inserir suas artes em fotos de estúdio hiper-realistas, economizando tempo e dinheiro com produção fotográfica. Arte profissional e mockup de qualidade são investimento direto na taxa de conversão.',
+    },
+    { type: 'h2', text: 'Datas comemorativas: planeje com meses de antecedência', id: 'datas' },
+    {
+      type: 'p',
+      text: 'O mercado de personalizados tem demanda elástica com picos em datas comemorativas: Dia das Mães, Dia dos Namorados, Natal e Dia dos Pais são oportunidades de ouro. A fórmula é planejar campanhas com meses de antecedência e preparar estoque estratégico e artes temáticas — quem chega na semana da data já perdeu a venda. Monte o calendário do ano inteiro, crie as artes de cada data com antecedência e deixe a campanha pronta para ligar na hora certa. Quem planeja vende no pico; quem improvisa vende o que sobrou.',
+    },
+    { type: 'h2', text: 'Pós-venda, prova social e métricas', id: 'pos-venda-metricas' },
+    {
+      type: 'p',
+      text: 'O pós-venda é onde a retenção acontece: um recadinho escrito à mão na caixa, um pequeno brinde surpresa ou um cupom de desconto para a próxima compra transforma um comprador pontual em fã da marca — e esse encantamento gera marketing boca a boca, com a maior taxa de conversão possível e custo zero de aquisição. O feedback do cliente é consultoria gratuita: facilite os canais de avaliação, crie formulários de satisfação e exiba os depoimentos, porque prova social é um gatilho poderoso. E acompanhe as métricas: de onde vêm os acessos, qual a taxa de conversão, qual produto tem a maior margem e quais os horários de pico. Com dados em mãos, cada decisão — do design ao investimento em tráfego — fica cirurgicamente precisa. Achismo não tem espaço em negócio digital maduro.',
+    },
+    { type: 'h2', text: 'IA, atualização constante e cuidado com direitos autorais', id: 'ia-direitos' },
+    {
+      type: 'p',
+      text: 'A inteligência artificial revolucionou a criação gráfica: o que antes exigia horas em softwares complexos agora pode ser gerado em minutos. Essas ferramentas não substituem a criatividade humana, mas aceleram o fluxo de trabalho e permitem escalar a produção mantendo o padrão estético. Estar em constante atualização é inegociável: tendências de design mudam, novas tecnologias surgem e os algoritmos das redes sociais são atualizados com frequência. E um cuidado que protege o seu negócio: nada de pirataria. Vender produtos estampados com personagens famosos sem licenciamento pode render processos pesados — invista em artes originais, tipografias criativas e frases de efeito. A exclusividade agrega valor e blinda o negócio a longo prazo.',
+    },
+    {
+      type: 'table',
+      caption: 'Passo a passo para montar a estamparia do zero',
+      head: ['Etapa', 'O que fazer', 'Erro comum'],
+      rows: [
+        ['Modelo de negócio', 'Estoque sob demanda: venda primeiro, produza depois', 'Comprar estoque grande antes da primeira venda'],
+        ['Nicho', 'Escolher um público específico e dominar a linguagem dele', 'Tentar vender de tudo para todos'],
+        ['Vitrine', 'Domínio próprio, mockups de qualidade e fotos com luz natural', 'Vitrine com foto ruim e arte torta'],
+        ['Datas comemorativas', 'Calendário do ano com campanhas prontas com antecedência', 'Começar a divulgar na semana da data'],
+        ['Pós-venda', 'Bilhete, brinde, cupom e pedido de avaliação em cada entrega', 'Sumir depois da venda e perder o cliente'],
+        ['Métricas', 'Acompanhar conversão, margem por produto e origem dos acessos', 'Decidir no achismo, sem olhar os números'],
+        ['Proteção legal', 'Artes originais, sem personagem licenciado', 'Vender arte de personagem famoso sem licença'],
+      ],
+    },
+    {
+      type: 'callout',
+      title: 'Comece pequeno, comece hoje',
+      text: 'A barreira de entrada nunca foi tão baixa: as ferramentas certas automatizam da criação da arte à logística. O segredo é escolher as plataformas certas, começar com um nicho e crescer com as vendas — não com dívida.',
+    },
+    {
+      type: 'faq',
+      items: [
+        {
+          q: 'Preciso de muito dinheiro para montar uma estamparia?',
+          a: 'Não: a barreira de entrada é baixa e o modelo de sublimação é enxuto, com estoque sob demanda. Você só estampa após a venda confirmada, então o capital não fica parado em mercadoria. Comece com o essencial e cresça com as vendas.',
+        },
+        {
+          q: 'Qual é o primeiro passo para começar?',
+          a: 'Escolher o nicho e montar a vitrine. Com o público definido e a vitrine online com mockups de qualidade, você já pode vender — a produção vem depois da primeira venda confirmada.',
+        },
+        {
+          q: 'Posso vender caneca com personagem famoso?',
+          a: 'Não é o caminho seguro: personagens famosos têm licenciamento, e vender sem licença pode render processos. Invista em artes originais, tipografias criativas e frases de efeito — a exclusividade agrega valor e protege o negócio.',
+        },
+      ],
+    },
+    {
+      type: 'cta',
+      text: 'A estamparia começa com a arte certa na mão. Milhares de artes prontas para sublimar, organizadas por tema e data comemorativa — para você montar o catálogo e vender o primeiro pedido hoje.',
+      label: 'Ver as artes para sublimar',
+      href: '/#preco',
+    },
+  ],
+  related: ['5-dicas-negocio-sublimacao-crescer', 'lucrar-canecas-personalizadas-estrategia', 'vender-canecas-personalizadas-instagram-whatsapp'],
+}
+
+export const BLOG_ARTICLES: BlogArticle[] = [ART1, ART2, ART3, ART4, ART5, ART6, ART7, ART8, ART9, ART10, ART11, ART12, ART13, ART14, ART15, ART16, ART17, ART18, ART19, ART20, ART21, ART22]
 
 export function getArticle(slug: string): BlogArticle | undefined {
   return BLOG_ARTICLES.find((a) => a.slug === slug)

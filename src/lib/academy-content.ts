@@ -70,6 +70,92 @@ export const ACADEMY_DIAGNOSES = [
  {id:'descola',symptom:'Arte perde intensidade após lavagens',causes:['Revestimento da peça inadequado ou de baixa resistência.','Ciclo de transferência incorreto ou cuidados de limpeza incompatíveis.'],actions:['Confirme o tratamento indicado para a caneca.','Separe amostra para teste de lavagem controlado.','Não anuncie resistência ao uso que não foi testada.'],lesson:'inspecao',severity:'media'},
 ]
 
+export const ACADEMY_ZERO_ERRO = [
+ {title:'Resolução da imagem',check:'A arte possui pelo menos 300 DPI no tamanho final?',risk:'Estampa borrada e sem definição — a prensa não conserta arquivo ruim.'},
+ {title:'Espelhamento',check:'A imagem foi espelhada antes de imprimir?',risk:'Texto e arte saem ao contrário e a caneca vai para o lixo.'},
+ {title:'Nível de tinta',check:'Verificou se há tinta suficiente no bulk?',risk:'A impressão falha no meio do trabalho e a folha é perdida.'},
+ {title:'Lado do papel',check:'Impressão feita no lado resinado (geralmente branco puro)?',risk:'A tinta não transfere direito e a folha é desperdiçada.'},
+ {title:'Limpeza da prensa',check:'A base da prensa está limpa e sem resíduos?',risk:'Resto de tinta ou poeira mancha a próxima caneca.'},
+ {title:'Temperatura',check:'A prensa atingiu a temperatura total recomendada?',risk:'Cor fraca e transferência incompleta por prensar antes da hora.'},
+ {title:'Papel seco',check:'O papel está seco? (Fator crítico para manchas)',risk:'Papel úmido é uma das maiores causas de manchas na estampa.'},
+ {title:'Fita térmica',check:'O papel está bem preso para evitar o efeito fantasma?',risk:'O papel se move na prensa e a imagem sai duplicada com sombra.'},
+]
+
+/** Perfis de equipamento para comparação — sem marcas ou fabricantes, por
+ * regra do conteúdo da Academia. Compare perfis, não propaganda: os valores
+ * são faixas típicas do mercado brasileiro; confirme na ficha do fabricante. */
+export type AcademyEquipment = {
+ id:string; name:string; kind:'impressora'|'prensa'; tagline:string;
+ specs:{label:string; value:string; rank:number}[];
+ idealFor:string; watchOut:string;
+}
+export const ACADEMY_EQUIPMENT:AcademyEquipment[] = [
+ {id:'imp-a4-tanque',name:'Impressora tanque A4 (adaptada)',kind:'impressora',tagline:'A porta de entrada mais comum: tanque de tinta adaptado para sublimação.',
+  specs:[
+   {label:'Formato',value:'A4',rank:1},
+   {label:'Sistema de tinta',value:'Tanque (bulk ink)',rank:2},
+   {label:'Resolução',value:'Alta (foto)',rank:2},
+   {label:'Custo por impressão',value:'Baixo',rank:2},
+   {label:'Uso dedicado',value:'Adaptada para sublimação',rank:1},
+  ],idealFor:'Canecas, peças pequenas e quem está começando com pouco investimento.',watchOut:'Exige tinta sublimática compatível e perfil de cores configurado; não é dedicada de fábrica.'},
+ {id:'imp-a4-dedicada',name:'Impressora A4 dedicada à sublimação',kind:'impressora',tagline:'Feita para sublimação: tinta, perfil e suporte pensados para o processo.',
+  specs:[
+   {label:'Formato',value:'A4',rank:1},
+   {label:'Sistema de tinta',value:'Tanque dedicado',rank:2},
+   {label:'Resolução',value:'Alta (foto)',rank:2},
+   {label:'Custo por impressão',value:'Baixo a médio',rank:1},
+   {label:'Uso dedicado',value:'Dedicada de fábrica',rank:2},
+  ],idealFor:'Quem quer menos adaptação e mais previsibilidade de cor desde o primeiro dia.',watchOut:'Custa mais que a adaptada e continua limitada ao formato A4.'},
+ {id:'imp-a3-tanque',name:'Impressora tanque A3 (adaptada)',kind:'impressora',tagline:'O passo seguinte: folha maior para camisetas e peças grandes.',
+  specs:[
+   {label:'Formato',value:'A3',rank:2},
+   {label:'Sistema de tinta',value:'Tanque (bulk ink)',rank:2},
+   {label:'Resolução',value:'Alta (foto)',rank:2},
+   {label:'Custo por impressão',value:'Baixo',rank:2},
+   {label:'Uso dedicado',value:'Adaptada para sublimação',rank:1},
+  ],idealFor:'Camisetas, peças grandes e quem já vende volume em A4.',watchOut:'Ocupa mais espaço e custa mais; só vale se você realmente usa o A3.'},
+ {id:'imp-a3-dedicada',name:'Impressora A3 dedicada à sublimação',kind:'impressora',tagline:'Formato grande com processo dedicado: o topo para produção em volume.',
+  specs:[
+   {label:'Formato',value:'A3',rank:2},
+   {label:'Sistema de tinta',value:'Cartucho ou tanque dedicado',rank:1},
+   {label:'Resolução',value:'Alta (foto)',rank:2},
+   {label:'Custo por impressão',value:'Médio',rank:1},
+   {label:'Uso dedicado',value:'Dedicada de fábrica',rank:2},
+  ],idealFor:'Produção em volume, camisetas e peças grandes com cor previsível.',watchOut:'Maior investimento inicial; o custo por impressão pode ser maior que o do tanque adaptado.'},
+ {id:'prensa-cilindrica',name:'Prensa cilíndrica para caneca',kind:'prensa',tagline:'A prensa da caneca: manta cilíndrica para 325 ml.',
+  specs:[
+   {label:'Área útil',value:'Caneca cilíndrica (11 oz)',rank:2},
+   {label:'Controle',value:'Digital: temperatura e tempo',rank:2},
+   {label:'Pressão',value:'Ajuste por manta',rank:1},
+   {label:'Versatilidade',value:'Só peças cilíndricas',rank:1},
+   {label:'Custo do equipamento',value:'Baixo a médio',rank:2},
+  ],idealFor:'Quem vive de caneca: o equipamento certo para o produto certo.',watchOut:'Não serve para camiseta ou peça plana — é uma prensa de uma função só.'},
+ {id:'prensa-plana-38',name:'Prensa plana 38 × 38 cm',kind:'prensa',tagline:'A plana padrão: camiseta, azulejo, MDF e peças planas.',
+  specs:[
+   {label:'Área útil',value:'38 × 38 cm',rank:1},
+   {label:'Controle',value:'Digital: temperatura e tempo',rank:2},
+   {label:'Pressão',value:'Ajuste manual por alavanca',rank:1},
+   {label:'Versatilidade',value:'Peças planas variadas',rank:2},
+   {label:'Custo do equipamento',value:'Médio',rank:1},
+  ],idealFor:'Camisetas, azulejos, placas e brindes planos em geral.',watchOut:'Área limitada para peças grandes; não prensa caneca.'},
+ {id:'prensa-plana-60',name:'Prensa plana 40 × 60 cm',kind:'prensa',tagline:'Área grande para peças maiores e produção em série.',
+  specs:[
+   {label:'Área útil',value:'40 × 60 cm',rank:2},
+   {label:'Controle',value:'Digital: temperatura e tempo',rank:2},
+   {label:'Pressão',value:'Ajuste manual por alavanca',rank:1},
+   {label:'Versatilidade',value:'Peças planas grandes',rank:2},
+   {label:'Custo do equipamento',value:'Médio a alto',rank:1},
+  ],idealFor:'Peças grandes, produção em série e quem já vende volume em plana.',watchOut:'Ocupa mais espaço e custa mais; só vale com demanda para a área maior.'},
+ {id:'prensa-combo',name:'Prensa combinada (multifuncional)',kind:'prensa',tagline:'Um corpo, várias resistências: caneca, prato, boné e garrafa.',
+  specs:[
+   {label:'Área útil',value:'Varia por resistência',rank:1},
+   {label:'Controle',value:'Digital: temperatura e tempo',rank:2},
+   {label:'Pressão',value:'Ajuste por resistência',rank:1},
+   {label:'Versatilidade',value:'Cilíndrica + plana + acessórios',rank:2},
+   {label:'Custo do equipamento',value:'Médio',rank:1},
+  ],idealFor:'Quem quer testar vários produtos sem comprar uma prensa para cada um.',watchOut:'A troca de resistência toma tempo e cada função rende menos que uma prensa dedicada.'},
+]
+
 export const ACADEMY_CHECKLIST = [
  'Caneca do lote correto, sem trincas e com revestimento compatível',
  'Área útil e gabarito da peça conferidos',

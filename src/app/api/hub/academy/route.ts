@@ -1,5 +1,5 @@
 import { getSessionUser } from '@/lib/auth'
-import { ACADEMY_TRACKS, ACADEMY_LESSONS, ACADEMY_DIAGNOSES, ACADEMY_CHECKLIST, ACADEMY_CALIBRATION, ACADEMY_MILESTONES } from '@/lib/academy-content'
+import { ACADEMY_TRACKS, ACADEMY_LESSONS, ACADEMY_DIAGNOSES, ACADEMY_CHECKLIST, ACADEMY_ZERO_ERRO, ACADEMY_EQUIPMENT, ACADEMY_CALIBRATION, ACADEMY_MILESTONES } from '@/lib/academy-content'
 
 export const dynamic = 'force-dynamic'
 
@@ -15,6 +15,8 @@ export async function GET() {
   lessons: canAccess ? ACADEMY_LESSONS : ACADEMY_LESSONS.map(({id,track,title,minutes,abstract}) => ({id,track,title,minutes,abstract})),
   diagnoses: canAccess ? ACADEMY_DIAGNOSES : ACADEMY_DIAGNOSES.map(({id,symptom,severity}) => ({id,symptom,severity})),
   checklist: canAccess ? ACADEMY_CHECKLIST : [],
+  zeroErro: canAccess ? ACADEMY_ZERO_ERRO : [],
+  equipment: ACADEMY_EQUIPMENT,
   calibration: canAccess ? ACADEMY_CALIBRATION : [],
   milestones: canAccess ? ACADEMY_MILESTONES : [],
  }, { headers: { 'Cache-Control':'private, no-store', 'X-Content-Type-Options':'nosniff' } })
