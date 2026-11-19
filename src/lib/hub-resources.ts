@@ -3,10 +3,11 @@ export type BonusItem = {id:string;name:string;description:string;url:string|nul
 export type BonusGroup = {id:string;title:string;description:string;icon:string;items:BonusItem[];notice?:string}
 const drive=(folder:string)=>`https://drive.google.com/drive/folders/${folder}`
 const DRIVE_ICON='/bonus-icons/drive.svg'
-function numbered(ids:string[],label:string,theme?:string,icon?:string):BonusItem[]{return ids.map((id,i)=>({id:`${label.toLowerCase().replace(/\W/g,'-')}-${i+1}`,name:`${label} ${String(i+1).padStart(2,'0')}`,description:'Abrir pasta no Google Drive',url:drive(id),theme,icon}))}
 export const BONUS_GROUPS:BonusGroup[]=[
  {id:'cursos',title:'Pack de Cursos',description:'Materiais de estudo em pastas do Google Drive.',icon:'graduation-cap',items:[
-   ...numbered(['1AYsHXmYnInMkDchdF8GowUnEBY5pbB4N','1GKaxxcl-DP6Wfih2tegbJ_YguO8RGplj','1KEGjg9wL5p7g5BL0RM-4ryZ6z0-e-IqH'],'Pack Cursos',undefined,DRIVE_ICON),
+   {id:'pack-cursos-1',name:'Cursos Connect Premium — Pastas 1 e 2',description:'Cursos Connect Premium: pastas 1 e 2.',url:drive('1AYsHXmYnInMkDchdF8GowUnEBY5pbB4N'),icon:DRIVE_ICON},
+   {id:'pack-cursos-2',name:'Cursos Connect Premium — Pastas 3 e 4',description:'Cursos Connect Premium: pastas 3 e 4.',url:drive('1GKaxxcl-DP6Wfih2tegbJ_YguO8RGplj'),icon:DRIVE_ICON},
+   {id:'pack-cursos-3',name:'Drive Plus Digital Black — Mega Coleção',description:'Mega coleção Drive Plus: negócios, TI, marketing, idiomas, fotografia e mais.',url:drive('1KEGjg9wL5p7g5BL0RM-4ryZ6z0-e-IqH'),icon:DRIVE_ICON},
    {id:'curso-tgr',name:'Treinamento TGR — Marketing Digital',description:'Treinamento completo de marketing digital em 30 módulos.',url:drive('1sQBSQ0tiPImopMb38Rs6gexVetEhYzcn'),icon:DRIVE_ICON},
    {id:'curso-novos-aqui',name:'Cursos Novos Aqui',description:'Administração, eletrônica e cursos profissionalizantes 2024.',url:drive('1k6AzGYDetwiHU_WBvDgF10HRYRFtMRYQ'),icon:DRIVE_ICON},
    {id:'curso-drive-plus-diversos',name:'Drive Plus — Diversos',description:'Coleção variada de cursos: vendas, leitura, direção, marketing e mais.',url:drive('1vRFjw_rcdllg0p9gC4R468hRs43McPW2'),icon:DRIVE_ICON},
@@ -20,9 +21,16 @@ export const BONUS_GROUPS:BonusGroup[]=[
    {id:'prompts-chatgpt-500',name:'500 Prompts ChatGPT',description:'Coleção com 500 prompts prontos para o ChatGPT.',url:'https://puzzle-jute-202.notion.site/500-Best-ChatGPT-Prompts-f5b4ad65deec4b6385316fdb8740af74',icon:'/bonus-icons/chat-3d.png'},
    {id:'pack-copys-prompts',name:'Pack Copys, Prompts e Fornecedores',description:'Copys, prompts, planilhas e lista de fornecedores.',url:drive('14nir2zdAWQVXtW1x-yBXG_mz2-9ubNNP'),icon:DRIVE_ICON},
  ]},
- {id:'plr',title:'Pack PLRs',description:'Coleção de materiais e recursos diversos.',icon:'folder-open',items:numbered(['1pWej_QADKPGUz5eKkHL6OowfzMp2RXKM','16cRT8fodZmTw6sDiPMShnQgae8q_XZma','15OWz_nF3SMoXRarsL0WVUIFq6h6YPFJV','1D5tYbiXzx8bMSeebH2xZA4TjAEzcEzZ8'],'Pack PLR',undefined,DRIVE_ICON)},
- {id:'planilhas',title:'Planilhas Excel',description:'Modelos úteis para organizar seu negócio.',icon:'table-2',items:numbered(['1AG70-OFfJuhNG19svmWIjWww4uLdGMlN'],'Planilha',undefined,DRIVE_ICON)},
- {id:'livros',title:'Livros & PDFs',description:'Leituras e bibliotecas digitais.',icon:'book-open',items:[{id:'livro-1',name:'Biblioteca de Livros 01',description:'Coleção digital no Google Drive',url:'https://drive.google.com/drive/u/0/folders/1UxJwwUiUlBUE_K0QTJQnSxWKekzL3y1o',icon:DRIVE_ICON},{id:'livro-2',name:'Biblioteca de Livros 02',description:'Coleção digital no Google Drive',url:drive('1go1kGH8H56m_KL332MUz8e7tTfDarLWg'),icon:DRIVE_ICON}]},
+ {id:'plr',title:'Pack PLRs',description:'Coleção de materiais e recursos diversos.',icon:'folder-open',items:[
+   {id:'pack-plr-1',name:'10 mil Ebooks PLR',description:'Coleção com 10 mil ebooks PLR.',url:drive('1pWej_QADKPGUz5eKkHL6OowfzMp2RXKM'),icon:DRIVE_ICON},
+   {id:'pack-plr-2',name:'Pacote PLR em Vídeo (Licenciados)',description:'Cursos PLR em vídeo, licenciados.',url:drive('16cRT8fodZmTw6sDiPMShnQgae8q_XZma'),icon:DRIVE_ICON},
+   {id:'pack-plr-3',name:'750 Ebooks PLR',description:'750 ebooks PLR em português e inglês, com iscas.',url:drive('15OWz_nF3SMoXRarsL0WVUIFq6h6YPFJV'),icon:DRIVE_ICON},
+   {id:'pack-plr-4',name:'PLRs por Tema — Ebooks Organizados',description:'Ebooks PLR organizados por tema: marketing, saúde, negócios e mais.',url:drive('1D5tYbiXzx8bMSeebH2xZA4TjAEzcEzZ8'),icon:DRIVE_ICON},
+ ]},
+ {id:'planilhas',title:'Planilhas Excel',description:'Modelos úteis para organizar seu negócio.',icon:'table-2',items:[
+   {id:'planilha-1',name:'74 Planilhas Excel — Pacotes e Modelos',description:'74 planilhas Excel: pacotes, engenharia, controle pessoal e modelos de cartas.',url:drive('1AG70-OFfJuhNG19svmWIjWww4uLdGMlN'),icon:DRIVE_ICON},
+ ]},
+ {id:'livros',title:'Livros & PDFs',description:'Leituras e bibliotecas digitais.',icon:'book-open',items:[{id:'livro-1',name:'O Pior Ano da Sua Vida — Curso e Livro',description:'Curso e livro digital com módulos e bônus.',url:'https://drive.google.com/drive/u/0/folders/1UxJwwUiUlBUE_K0QTJQnSxWKekzL3y1o',icon:DRIVE_ICON},{id:'livro-2',name:'Livros sobre Dinheiro e Negócios',description:'Coleção de livros sobre dinheiro, vendas e negócios.',url:drive('1go1kGH8H56m_KL332MUz8e7tTfDarLWg'),icon:DRIVE_ICON}]},
  {id:'virais',title:'Conteúdo que Viraliza',description:'Vídeos, memes, referências e tendências para conteúdo digital.',icon:'clapperboard',items:[
    {id:'virais-1',name:'Conteúdo que Viraliza',description:'Biblioteca externa de vídeos e referências',url:'https://multigads-cortesvirais.netlify.app/',icon:'/bonus-icons/video-3d.png'},
    {id:'virais-2',name:'50 Mil Cortes Virais',description:'Acervo com 50 mil cortes virais para redes sociais.',url:'https://conectaresultados.notion.site/50-MIL-CORTES-VIRAIS-1739797d125980cfb3bec9c6d904a4e7',icon:'/bonus-icons/video-3d.png'},
@@ -40,7 +48,8 @@ export const BONUS_GROUPS:BonusGroup[]=[
    // --- Fundos ---
    {id:'fundos',name:'Fundos',description:'Coleção de fundos para suas artes.',url:drive('1Pwkzeqvf0L0p-9a0I1WKtP1v2921_JM2'),theme:'Fundos'},
    {id:'fundos-ilustracao',name:'Fundos com ilustração montada',description:'Fundos prontos com ilustração montada.',url:drive('1Eulyg8Ip56bxyuWS99yrUxN2wHWEO9BI'),theme:'Fundos'},
-   ...numbered(['1I4xU8wRnwL2v_Vi4WP-g1gMbCIDGcJ4W','1hbbTFJ6At1JITj7qCigiuBr4ZcXJwUiP'],'Fundos','Fundos'),
+   {id:'fundos-1',name:'Fundos Gerais (20 fundos)',description:'Coleção de 20 fundos gerais para suas artes.',url:drive('1I4xU8wRnwL2v_Vi4WP-g1gMbCIDGcJ4W'),theme:'Fundos',icon:DRIVE_ICON},
+   {id:'fundos-2',name:'Fundos Namorados — 44 fundos de amor',description:'44 fundos românticos para o Dia dos Namorados.',url:drive('1hbbTFJ6At1JITj7qCigiuBr4ZcXJwUiP'),theme:'Fundos',icon:DRIVE_ICON},
    {id:'fundos-texturas',name:'Fundos e texturas',description:'Fundos e texturas para compor artes.',url:drive('1DekeP4zpTmQ2kSDaKtMrUjb-xoKYK5ol'),theme:'Fundos'},
    // --- Personagens ---
    {id:'personagens-png',name:'Personagens PNG',description:'Personagens em PNG para compor artes.',url:drive('17lu97sO22iu0JlH-XsGGca7EejQrSp3p'),theme:'Personagens'},
@@ -48,7 +57,8 @@ export const BONUS_GROUPS:BonusGroup[]=[
    {id:'personagens-drive',name:'Personagens',description:'Pasta de personagens para compor artes.',url:drive('1rCvBmIRjHMgztcR_GnxGoPSa2SY2r6_V'),theme:'Personagens'},
    {id:'avatares-personagens',name:'Avatares e personagens',description:'Avatares, personagens e elementos.',url:drive('1AmSs9DCntjkVPmF3L8Yc1maMoYNuh2eT'),theme:'Personagens'},
    {id:'moana-baby',name:'Moana Baby — elementos',description:'Elementos do tema Moana Baby.',url:drive('1_swsUq9vr2yzkEb1h1VaXaNPt50RbVDF'),theme:'Personagens'},
-   ...numbered(['1Clr1Q1HsjgiYhBtmdWJuDzGs3t5NVyFb','11KWNPDrkM_XNEZvx5d6pJ3qJhjSzk8bQ'],'Mundo Bita','Personagens'),
+   {id:'mundo-bita-1',name:'Mundo Bita — Kit 04 (Menino)',description:'Kit Mundo Bita menino: elementos, fonte e arquivos Studio.',url:drive('1Clr1Q1HsjgiYhBtmdWJuDzGs3t5NVyFb'),theme:'Personagens',icon:DRIVE_ICON},
+   {id:'mundo-bita-2',name:'Mundo Bita Rosa — Kit 24 (Festa)',description:'Kit Mundo Bita rosa para festa: elementos, fotos e arquivos Studio.',url:drive('11KWNPDrkM_XNEZvx5d6pJ3qJhjSzk8bQ'),theme:'Personagens',icon:DRIVE_ICON},
    // --- Frases ---
    {id:'frases',name:'Frases para canecas',description:'Frases prontas para estampar.',url:drive('1ufPqoSwqaO0zosxf58ZDexHgfA-PcG2P'),theme:'Frases'},
    {id:'frases-pacote',name:'Pacote de frases',description:'Pacote com várias frases em PNG.',url:drive('1xr2aPs4UJa5OHEC_nLPtDemVHwHetMOl'),theme:'Frases'},
@@ -59,11 +69,17 @@ export const BONUS_GROUPS:BonusGroup[]=[
    {id:'frases-romanticas-2',name:'Frases românticas — namorados 2',description:'Mais frases românticas para canecas.',url:drive('1vTWVQEM3BYYfkwKGAQj2BEFDri01YPVJ'),theme:'Romântico'},
    // --- Flork ---
    {id:'flork-elementos',name:'Elementos Flork',description:'Elementos e bonequinhos Flork para suas artes.',url:drive('1ux8BEl9xp8L8vNeGMm1UDn-puA0gfqwT'),theme:'Flork'},
-   ...numbered(['1TZ7_jMBsB5BfvkYJz0R1sVsd5gp7QwLl','1KdQLmADZXath_z__4dXt9DwntQdi94sM','1jvc6Cre9Lqspqj6BKkuOgdt7sVkxiVww'],'Flork Frases','Flork'),
+   {id:'flork-frases-1',name:'Flork Frases Coloridas — Signos e Canecas',description:'Frases Flork coloridas com signos e canecas.',url:drive('1TZ7_jMBsB5BfvkYJz0R1sVsd5gp7QwLl'),theme:'Flork',icon:DRIVE_ICON},
+   {id:'flork-frases-2',name:'Flork Frases Preto — Signos e Canecas',description:'Frases Flork em preto com signos e canecas.',url:drive('1KdQLmADZXath_z__4dXt9DwntQdi94sM'),theme:'Flork',icon:DRIVE_ICON},
+   {id:'flork-frases-3',name:'Flork — Artes Prontas para Caneca',description:'Artes Flork prontas para estampar em canecas.',url:drive('1jvc6Cre9Lqspqj6BKkuOgdt7sVkxiVww'),theme:'Flork',icon:DRIVE_ICON},
    // --- Alfabetos ---
    {id:'alfabeto-pandoca',name:'Alfabeto Pandoca',description:'Alfabeto temático Pandoca.',url:drive('1sxp-yeLa8TkJRB9LNuq4QiHIWPbCN1fR'),theme:'Alfabetos'},
    {id:'alfabeto-geral',name:'Alfabeto geral',description:'Alfabeto para montar nomes e frases.',url:drive('1tTxC3vaMrKrml8siQvHKCtTDEuJHzTQ5'),theme:'Alfabetos'},
-   ...numbered(['1OmZ7Nmy3Y7RrjMZhmf2rvISLrFtXGtiW','1Zpi2oRYrN0TBTuMgXRXI-K7Tw25D70Dv','1561Gg9YDywIMvKmJARLfZEulcZpH2Fee','1KQtJGIm3-VSdG3XW70M9cpuH80svC5nJ','1qapejhIxPH4MqO2mnQp3fVAvRh3x-Sd8'],'Alfabeto','Alfabetos'),
+   {id:'alfabeto-1',name:'Alfabeto — Vários Estilos',description:'Alfabetos em vários estilos: dourado, floral, infantil, natalino e mais.',url:drive('1OmZ7Nmy3Y7RrjMZhmf2rvISLrFtXGtiW'),theme:'Alfabetos',icon:DRIVE_ICON},
+   {id:'alfabeto-2',name:'Letras Coloridas',description:'Letras coloridas em PNG para montar nomes.',url:drive('1Zpi2oRYrN0TBTuMgXRXI-K7Tw25D70Dv'),theme:'Alfabetos',icon:DRIVE_ICON},
+   {id:'alfabeto-3',name:'Alfabeto — Letras em Imagem',description:'Alfabeto em imagens e PDF para montar nomes.',url:drive('1561Gg9YDywIMvKmJARLfZEulcZpH2Fee'),theme:'Alfabetos',icon:DRIVE_ICON},
+   {id:'alfabeto-4',name:'Letras A–Z em PNG',description:'Letras de A a Z em PNG de alta qualidade.',url:drive('1KQtJGIm3-VSdG3XW70M9cpuH80svC5nJ'),theme:'Alfabetos',icon:DRIVE_ICON},
+   {id:'alfabeto-5',name:'Alfabeto Glamour',description:'Alfabeto glamour de A a Z, com mockup.',url:drive('1qapejhIxPH4MqO2mnQp3fVAvRh3x-Sd8'),theme:'Alfabetos',icon:DRIVE_ICON},
    {id:'alfabeto-mickey',name:'Alfabeto Mickey e Minnie',description:'Alfabeto temático Mickey e Minnie.',url:drive('14LpJHI4FAfBXiFdTJseIVJbVhxhWR9x1'),theme:'Alfabetos'},
    // --- Natal ---
    {id:'natal-elementos',name:'Elementos de Natal',description:'24 coleções de Natal com quase 1.000 arquivos: Grinch, Disney, Bluey, Papai Noel, frases e mais.',url:drive('1eRddMBmDz8Vk8LuvrN3BKnuO7PPegkoU'),theme:'Natal'},
