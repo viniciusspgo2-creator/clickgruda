@@ -1,14 +1,41 @@
 /** Links de recursos: importado apenas pela API server-side, nunca pelo bundle do cliente. */
-export type BonusItem = {id:string;name:string;description:string;url:string|null;theme?:string}
+export type BonusItem = {id:string;name:string;description:string;url:string|null;theme?:string;icon?:string}
 export type BonusGroup = {id:string;title:string;description:string;icon:string;items:BonusItem[];notice?:string}
 const drive=(folder:string)=>`https://drive.google.com/drive/folders/${folder}`
-function numbered(ids:string[],label:string,theme?:string):BonusItem[]{return ids.map((id,i)=>({id:`${label.toLowerCase().replace(/\W/g,'-')}-${i+1}`,name:`${label} ${String(i+1).padStart(2,'0')}`,description:'Abrir pasta no Google Drive',url:drive(id),theme}))}
+const DRIVE_ICON='/bonus-icons/drive.svg'
+function numbered(ids:string[],label:string,theme?:string,icon?:string):BonusItem[]{return ids.map((id,i)=>({id:`${label.toLowerCase().replace(/\W/g,'-')}-${i+1}`,name:`${label} ${String(i+1).padStart(2,'0')}`,description:'Abrir pasta no Google Drive',url:drive(id),theme,icon}))}
 export const BONUS_GROUPS:BonusGroup[]=[
- {id:'cursos',title:'Pack de Cursos',description:'Materiais de estudo em pastas do Google Drive.',icon:'graduation-cap',items:numbered(['1AYsHXmYnInMkDchdF8GowUnEBY5pbB4N','1GKaxxcl-DP6Wfih2tegbJ_YguO8RGplj','1KEGjg9wL5p7g5BL0RM-4ryZ6z0-e-IqH'],'Pack Cursos')},
- {id:'plr',title:'Pack PLRs',description:'Coleção de materiais e recursos diversos.',icon:'folder-open',items:numbered(['1pWej_QADKPGUz5eKkHL6OowfzMp2RXKM','16cRT8fodZmTw6sDiPMShnQgae8q_XZma','15OWz_nF3SMoXRarsL0WVUIFq6h6YPFJV','1D5tYbiXzx8bMSeebH2xZA4TjAEzcEzZ8'],'Pack PLR')},
- {id:'planilhas',title:'Planilhas Excel',description:'Modelos úteis para organizar seu negócio.',icon:'table-2',items:numbered(['1AG70-OFfJuhNG19svmWIjWww4uLdGMlN'],'Planilha')},
- {id:'livros',title:'Livros & PDFs',description:'Leituras e bibliotecas digitais.',icon:'book-open',items:[{id:'livro-1',name:'Biblioteca de Livros 01',description:'Coleção digital no Google Drive',url:'https://drive.google.com/drive/u/0/folders/1UxJwwUiUlBUE_K0QTJQnSxWKekzL3y1o'},{id:'livro-2',name:'Biblioteca de Livros 02',description:'Coleção digital no Google Drive',url:drive('1go1kGH8H56m_KL332MUz8e7tTfDarLWg')}]},
- {id:'virais',title:'Conteúdo que Viraliza',description:'Vídeos, memes, referências e tendências para conteúdo digital.',icon:'clapperboard',items:[{id:'virais-1',name:'Conteúdo que Viraliza',description:'Biblioteca externa de vídeos e referências',url:'https://multigads-cortesvirais.netlify.app/'}]},
+ {id:'cursos',title:'Pack de Cursos',description:'Materiais de estudo em pastas do Google Drive.',icon:'graduation-cap',items:[
+   ...numbered(['1AYsHXmYnInMkDchdF8GowUnEBY5pbB4N','1GKaxxcl-DP6Wfih2tegbJ_YguO8RGplj','1KEGjg9wL5p7g5BL0RM-4ryZ6z0-e-IqH'],'Pack Cursos',undefined,DRIVE_ICON),
+   {id:'curso-tgr',name:'Treinamento TGR — Marketing Digital',description:'Treinamento completo de marketing digital em 30 módulos.',url:drive('1sQBSQ0tiPImopMb38Rs6gexVetEhYzcn'),icon:DRIVE_ICON},
+   {id:'curso-novos-aqui',name:'Cursos Novos Aqui',description:'Administração, eletrônica e cursos profissionalizantes 2024.',url:drive('1k6AzGYDetwiHU_WBvDgF10HRYRFtMRYQ'),icon:DRIVE_ICON},
+   {id:'curso-drive-plus-diversos',name:'Drive Plus — Diversos',description:'Coleção variada de cursos: vendas, leitura, direção, marketing e mais.',url:drive('1vRFjw_rcdllg0p9gC4R468hRs43McPW2'),icon:DRIVE_ICON},
+   {id:'curso-drive-plus-pessoal',name:'Drive Plus — Desenvolvimento Pessoal',description:'Oratória, persuasão, produtividade, carisma e mindset.',url:drive('1KARIkqEHxd-yzKLl2ywo7ALMaiYnSKCQ'),icon:DRIVE_ICON},
+   {id:'curso-drive-plus-financeiro',name:'Drive Plus — Mercado Financeiro',description:'Bolsa, cripto, trader, CPA-10/20 e finanças pessoais.',url:drive('1GdaKQXsrNvYO_IuLAY0Cx03nlSlJwRcX'),icon:DRIVE_ICON},
+   {id:'curso-500gb',name:'500 GB de Cursos',description:'Acervo com centenas de cursos: edição, marketing, programação, idiomas e mais.',url:drive('1BLu8z5NQLThtTiXL0YlmMBu-hqhQOX0m'),icon:DRIVE_ICON},
+   {id:'curso-onedrive',name:'Cursos (OneDrive)',description:'Pasta de cursos no OneDrive.',url:'https://brpucrs-my.sharepoint.com/personal/cristiano_dias_edu_pucrs_br/_layouts/15/onedrive.aspx?id=%2Fpersonal%2Fcristiano%5Fdias%5Fedu%5Fpucrs%5Fbr%2FDocuments%2FCursos&ga=1',icon:'/bonus-icons/book-3d.png'},
+ ]},
+ {id:'ia-prompts',title:'IA & Prompts',description:'Cursos e prompts de inteligência artificial para criar mais rápido.',icon:'bot',items:[
+   {id:'curso-ia-zero',name:'Curso de IA do Zero ao Profissional',description:'Curso completo de inteligência artificial, do zero ao profissional.',url:'https://ia-do-zero-ao-profissional.lovable.app/',icon:'/bonus-icons/ai-3d.png'},
+   {id:'prompts-chatgpt-500',name:'500 Prompts ChatGPT',description:'Coleção com 500 prompts prontos para o ChatGPT.',url:'https://puzzle-jute-202.notion.site/500-Best-ChatGPT-Prompts-f5b4ad65deec4b6385316fdb8740af74',icon:'/bonus-icons/chat-3d.png'},
+   {id:'pack-copys-prompts',name:'Pack Copys, Prompts e Fornecedores',description:'Copys, prompts, planilhas e lista de fornecedores.',url:drive('14nir2zdAWQVXtW1x-yBXG_mz2-9ubNNP'),icon:DRIVE_ICON},
+ ]},
+ {id:'plr',title:'Pack PLRs',description:'Coleção de materiais e recursos diversos.',icon:'folder-open',items:numbered(['1pWej_QADKPGUz5eKkHL6OowfzMp2RXKM','16cRT8fodZmTw6sDiPMShnQgae8q_XZma','15OWz_nF3SMoXRarsL0WVUIFq6h6YPFJV','1D5tYbiXzx8bMSeebH2xZA4TjAEzcEzZ8'],'Pack PLR',undefined,DRIVE_ICON)},
+ {id:'planilhas',title:'Planilhas Excel',description:'Modelos úteis para organizar seu negócio.',icon:'table-2',items:numbered(['1AG70-OFfJuhNG19svmWIjWww4uLdGMlN'],'Planilha',undefined,DRIVE_ICON)},
+ {id:'livros',title:'Livros & PDFs',description:'Leituras e bibliotecas digitais.',icon:'book-open',items:[{id:'livro-1',name:'Biblioteca de Livros 01',description:'Coleção digital no Google Drive',url:'https://drive.google.com/drive/u/0/folders/1UxJwwUiUlBUE_K0QTJQnSxWKekzL3y1o',icon:DRIVE_ICON},{id:'livro-2',name:'Biblioteca de Livros 02',description:'Coleção digital no Google Drive',url:drive('1go1kGH8H56m_KL332MUz8e7tTfDarLWg'),icon:DRIVE_ICON}]},
+ {id:'virais',title:'Conteúdo que Viraliza',description:'Vídeos, memes, referências e tendências para conteúdo digital.',icon:'clapperboard',items:[
+   {id:'virais-1',name:'Conteúdo que Viraliza',description:'Biblioteca externa de vídeos e referências',url:'https://multigads-cortesvirais.netlify.app/',icon:'/bonus-icons/video-3d.png'},
+   {id:'virais-2',name:'50 Mil Cortes Virais',description:'Acervo com 50 mil cortes virais para redes sociais.',url:'https://conectaresultados.notion.site/50-MIL-CORTES-VIRAIS-1739797d125980cfb3bec9c6d904a4e7',icon:'/bonus-icons/video-3d.png'},
+ ]},
+ {id:'sons-whatsapp',title:'Sons para WhatsApp',description:'Sons e efeitos para dar vida às suas conversas no WhatsApp.',icon:'music',items:[
+   {id:'sons-whatsapp-1',name:'Biblioteca de Sons para WhatsApp',description:'Sons e efeitos para usar no WhatsApp.',url:'https://www.myinstants.com/pt/index/br/',icon:'/bonus-icons/sound-3d.png'},
+ ]},
+ {id:'receitas',title:'Receitas Batidas na Garrafa',description:'Receitas de batidas na garrafa para vender ou presentear.',icon:'chef-hat',items:[
+   {id:'receitas-1',name:'Receitas Batidas na Garrafa',description:'Pasta com receitas de batidas na garrafa.',url:drive('17Hg37YO8-eCrzZ7NfeJzkRcSKBa002Ii'),icon:DRIVE_ICON},
+ ]},
+ {id:'canais-ao-vivo',title:'Canais Ao Vivo',description:'Canais de TV ao vivo do mundo inteiro em um só lugar.',icon:'tv',items:[
+   {id:'canais-ao-vivo-1',name:'Canais Ao Vivo do Mundo Inteiro',description:'Assista canais de TV ao vivo do mundo inteiro.',url:'https://famelack.com/',icon:'/bonus-icons/tv-3d.png'},
+ ]},
  {id:'editor-drives',title:'Recursos do Studio Editor',description:'Fundos, PNGs, personagens, frases e materiais criativos em pastas organizadas por tema.',icon:'palette',items:[
    // --- Fundos ---
    {id:'fundos',name:'Fundos',description:'Coleção de fundos para suas artes.',url:drive('1Pwkzeqvf0L0p-9a0I1WKtP1v2921_JM2'),theme:'Fundos'},
@@ -53,10 +80,15 @@ export const BONUS_GROUPS:BonusGroup[]=[
    // --- Volta às aulas ---
    {id:'volta-aulas',name:'Volta às aulas + agenda',description:'Materiais de volta às aulas e agenda.',url:drive('1xfxgRjH__wh2zvRPuUjOS0oarN6XIGTE'),theme:'Volta às aulas'},
    {id:'kit-professores',name:'Kit professores',description:'Kit com materiais para professores.',url:drive('1vS8KA3JI2hs1rfH1dwBI1c-D4N3q7C59'),theme:'Volta às aulas'},
+   // --- Pack do Editor ---
+   {id:'pack-editor',name:'Pack do Editor para Designers e Editores de Vídeo',description:'Pack para designers e editores de vídeo.',url:'https://drive.google.com/file/d/14WusAgczt7PT6jiv6D6qTozOZT8VKjUy/view',theme:'Pack do Editor',icon:DRIVE_ICON},
  ]},
  {id:'artes-200mil',title:'+ de 200 mil artes para canecas',description:'Acervos externos com mais de 200 mil artes para canecas.',icon:'library',notice:'Atenção: não garantimos qualidade, integridade etc. São layouts avulsos coletados de packs na internet — você terá que garimpar e pegar o que for útil para você. Recomendamos acompanhar a Biblioteca de Artes, onde subimos apenas artes selecionadas.',items:[
-   {id:'artes-200mil-1',name:'Drive 1 — Full',description:'Acervo completo com mais de 200 mil artes.',url:drive('1K3m9XhBrrWHIHsu4QSoHCpaF22-qFi5a')},
-   {id:'artes-200mil-2',name:'Drive 2',description:'Segundo acervo com mais de 200 mil artes.',url:drive('1WY52n7slsHRhwwc_kYIEgsGG8gqZv3BX')},
+   {id:'artes-200mil-1',name:'Drive 1 — Full',description:'Acervo completo com mais de 200 mil artes.',url:drive('1K3m9XhBrrWHIHsu4QSoHCpaF22-qFi5a'),icon:DRIVE_ICON},
+   {id:'artes-200mil-2',name:'Drive 2',description:'Segundo acervo com mais de 200 mil artes.',url:drive('1WY52n7slsHRhwwc_kYIEgsGG8gqZv3BX'),icon:DRIVE_ICON},
+   {id:'pack-sublimacao',name:'Pack de Sublimação — 100 mil arquivos',description:'Acervo externo com mais de 100 mil arquivos de sublimação.',url:'https://sublimacaocamiseta-multigads.netlify.app/',icon:'/bonus-icons/coffee-3d.png'},
+   {id:'artes-canecas-transporte',name:'Artes para Canecas — Transporte e Automobilismo',description:'Artes de carros, motos, F1 e mecânica para canecas.',url:drive('1f2fBN8m34No9rrInpfMxsgQRSvxrN-9i'),icon:DRIVE_ICON},
+   {id:'artes-canecas-games',name:'Artes para Canecas — Games',description:'Artes de games para canecas: GTA, God of War, Fortnite, Minecraft e mais.',url:drive('1nWjESRy3i6jADCSuQBUmJ39Rwj6-V5w5'),icon:DRIVE_ICON},
  ]},
  {id:'bonus-studio',title:'Ferramentas da Plataforma',description:'Utilitários preservados do Studio original. Necessário também estar conectado ao Studio.',icon:'wrench',items:[
    {id:'tool-qr',name:'Gerador de QR Code',description:'QR Codes personalizados',url:(process.env.NEXT_PUBLIC_STUDIO_URL || 'https://studio.clickgruda.com.br').replace(/\/$/,'')+'/bonus/qr'},
@@ -78,6 +110,7 @@ export const BONUS_GROUPS:BonusGroup[]=[
    {id:'freepik',name:'Freepik',description:'Recursos visuais',url:'https://www.freepik.com'},
    {id:'vecteezy',name:'Vecteezy',description:'Vetores e imagens',url:'https://www.vecteezy.com'},
    {id:'pngtree',name:'Pngtree',description:'Elementos PNG',url:'https://pngtree.com'},
+   {id:'123apps',name:'123apps',description:'Ferramentas online gratuitas: converter, cortar e editar arquivos',url:'https://123apps.com/pt/'},
  ]},
 ]
 export function validResourceUrl(url:string|null):string|null {

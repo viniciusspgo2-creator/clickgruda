@@ -2,10 +2,10 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react'
 import {
- ArrowRight, ArrowUpRight, BookOpen, Box, CheckCircle2, ChevronDown, ChevronLeft, ChevronRight,
+ ArrowRight, ArrowUpRight, BookOpen, Bot, Box, CheckCircle2, ChefHat, ChevronDown, ChevronLeft, ChevronRight,
  Clock3, Compass, Copy, ExternalLink, FileSpreadsheet, FolderOpen, Gift, Gamepad2, GraduationCap,
- Images, LayoutDashboard, Library, Link2, LockKeyhole, LogOut, Menu, MessageCircle, MonitorPlay,
- Palette, PenTool, PlayCircle, Search, ShieldCheck, Sparkles, Store, TriangleAlert, WandSparkles, X,
+ Images, LayoutDashboard, Library, Link2, LockKeyhole, LogOut, Menu, MessageCircle, MonitorPlay, Music,
+ Palette, PenTool, PlayCircle, Search, ShieldCheck, Sparkles, Store, TriangleAlert, Tv, WandSparkles, X,
  type LucideIcon,
 } from 'lucide-react'
 import { toast } from 'sonner'
@@ -18,7 +18,7 @@ const STUDIO_BASE=(process.env.NEXT_PUBLIC_STUDIO_URL||'http://localhost:3001').
 const UNIFIED_SSO=process.env.NEXT_PUBLIC_UNIFIED_SSO_ENABLED==='1'
 type HubPage='inicio'|'editor'|'bonus'|'conhecimento'|'catalogo'|'jogos'
 type StudioChoice='3d'|'2d'|'editor'
-type ResourceItem={id:string;name:string;description:string;url:string|null;available:boolean;theme?:string}
+type ResourceItem={id:string;name:string;description:string;url:string|null;available:boolean;theme?:string;icon?:string}
 type ResourceGroup={id:string;title:string;description:string;icon:string;items:ResourceItem[];notice?:string}
 type Module={id:string;name:string;description:string;image:string;icon:LucideIcon;eyebrow:string;tag:string;span:string}
 
@@ -45,17 +45,18 @@ const studioRoutes:Record<StudioChoice,string>={'3d':'/mockup-caneca-3d/studio',
 const bonusIllustrations:Record<string,string>={
  cursos:'/hub2/bonus-courses.webp',plr:'/hub2/bonus-plr.webp',planilhas:'/hub2/bonus-sheets.webp',
  livros:'/hub2/bonus-courses.webp',virais:'/hub2/bonus-plr.webp','bonus-studio':'/hub2/bonus-links.webp',
+ 'ia-prompts':'/hub2/bonus-courses.webp','sons-whatsapp':'/hub2/bonus-links.webp',receitas:'/hub2/bonus-links.webp','canais-ao-vivo':'/hub2/bonus-plr.webp',
 }
-const bonusIcons:Record<string,LucideIcon>={cursos:GraduationCap,plr:FolderOpen,planilhas:FileSpreadsheet,livros:BookOpen,virais:PlayCircle,'bonus-studio':WandSparkles,'artes-200mil':Library}
+const bonusIcons:Record<string,LucideIcon>={cursos:GraduationCap,plr:FolderOpen,planilhas:FileSpreadsheet,livros:BookOpen,virais:PlayCircle,'bonus-studio':WandSparkles,'artes-200mil':Library,'ia-prompts':Bot,'sons-whatsapp':Music,receitas:ChefHat,'canais-ao-vivo':Tv}
 const resourceDomains:Record<string,string>={
  pixelcut:'pixelcut.ai',photoroom:'photoroom.com',removebg:'remove.bg',picsart:'picsart.com',
  pinterest:'pinterest.com',cosmos:'cosmos.so',dribbble:'dribbble.com',behance:'behance.net',
- freepik:'freepik.com',vecteezy:'vecteezy.com',pngtree:'pngtree.com',
+ freepik:'freepik.com',vecteezy:'vecteezy.com',pngtree:'pngtree.com','123apps':'123apps.com',
 }
 const resourceLabels:Record<string,string>={
  pixelcut:'Remoção de fundo',photoroom:'Remoção de fundo',removebg:'Remoção de fundo',picsart:'Melhoria de imagem',
  pinterest:'Ideias criativas',cosmos:'Inspiração visual',dribbble:'Portfólios',behance:'Projetos criativos',
- freepik:'Imagens e vetores',vecteezy:'Vetores e imagens',pngtree:'Arquivos PNG',
+ freepik:'Imagens e vetores',vecteezy:'Vetores e imagens',pngtree:'Arquivos PNG','123apps':'Ferramentas online gratuitas',
 }
 const groupsOfTools=[
  {title:'Remover fundos',description:'Recorte seus elementos com mais precisão.',ids:['pixelcut','photoroom','removebg']},
@@ -108,7 +109,7 @@ function BonusPage({groups,ready,allowed,query,setQuery}:{groups:ResourceGroup[]
   <section className="flex flex-col gap-5 rounded-[24px] border border-white/10 bg-[#151820] p-5 sm:p-6 xl:flex-row xl:items-end xl:justify-between"><SectionTitle eyebrow="NAVEGUE POR ASSUNTO" title="Encontre o que você precisa." description="Cada coleção tem sua própria seção. Explore sem precisar procurar materiais espalhados pelo sistema."/><label className="flex min-h-12 w-full items-center gap-3 rounded-xl border border-white/15 bg-[#0b0e15] px-4 text-zinc-400 xl:max-w-sm"><Search size={19}/><input value={query} onChange={e=>setQuery(e.target.value)} placeholder="Buscar nos materiais bônus" className="w-full bg-transparent text-sm text-white outline-none placeholder:text-zinc-500" aria-label="Buscar materiais bônus"/></label></section>
   {!ready?<p role="status" className="text-sm text-zinc-400">Carregando coleções…</p>:filtered.length===0?<div className="rounded-2xl border border-white/10 p-7 text-sm text-zinc-400">Nenhum material encontrado nessa busca.</div>:<div className="grid gap-5 xl:grid-cols-2">{filtered.map(group=>{const Icon=bonusIcons[group.id]||Gift;const items=group.title.toLowerCase().includes(query.toLowerCase())?group.items:group.items;return <section key={group.id} className="group overflow-hidden rounded-[24px] border border-white/10 bg-[#171a22] shadow-[0_18px_50px_rgba(0,0,0,.17)] transition hover:border-orange-500/30">
     <div className="relative flex min-h-[205px] items-end overflow-hidden border-b border-white/10 bg-[#151319] p-6"><img src={bonusIllustrations[group.id]||'/hub2/bonus-links.webp'} alt="" loading="lazy" className="absolute inset-0 h-full w-full object-cover opacity-90 transition-transform duration-700 group-hover:scale-105"/><div className="absolute inset-0 bg-gradient-to-r from-[#111016]/90 via-[#111016]/60 to-transparent"/><div className="relative z-10 max-w-[67%]"><span className="mb-3 inline-flex items-center gap-2 rounded-full border border-orange-400/25 bg-black/35 px-3 py-1.5 text-[10px] font-extrabold tracking-widest text-orange-300"><Icon size={14}/> COLEÇÃO BÔNUS</span><h2 className="text-[24px] font-black leading-tight tracking-tight sm:text-[28px]">{group.title}</h2><p className="mt-2 text-xs leading-relaxed text-zinc-300">{group.description}</p></div></div>
-    <div className="space-y-2 p-4 sm:p-5">{items.map(item=><div key={item.id} className="flex min-h-[67px] items-center gap-3 rounded-xl border border-white/[.07] bg-white/[.025] px-3 py-2.5"><span className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-orange-500/10 text-orange-300"><Icon size={18}/></span><div className="min-w-0 flex-1"><strong className="block truncate text-xs font-extrabold sm:text-sm">{item.name}</strong><span className="block truncate text-[11px] text-zinc-400">{item.available?'Disponível na coleção':'Aguardando cadastro do link'}</span></div>{allowed&&item.url?<a href={item.url} target="_blank" rel="noopener noreferrer" aria-label={`Abrir ${item.name}`} className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-orange-500 text-black transition hover:bg-orange-400"><ExternalLink size={16}/></a>:<span title="Disponível apenas para assinantes ou após cadastro do link" className="grid h-9 w-9 shrink-0 place-items-center rounded-xl border border-white/10 text-zinc-500"><LockKeyhole size={16}/></span>}</div>)}</div>
+    <div className="space-y-2 p-4 sm:p-5">{items.map(item=><div key={item.id} className="flex min-h-[67px] items-center gap-3 rounded-xl border border-white/[.07] bg-white/[.025] px-3 py-2.5">{item.icon?<span className="grid h-9 w-9 shrink-0 place-items-center overflow-hidden rounded-lg border border-white/10 bg-white p-1"><img src={item.icon} alt="" loading="lazy" className="h-full w-full object-contain"/></span>:<span className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-orange-500/10 text-orange-300"><Icon size={18}/></span>}<div className="min-w-0 flex-1"><strong className="block truncate text-xs font-extrabold sm:text-sm">{item.name}</strong><span className="block truncate text-[11px] text-zinc-400">{item.available?'Disponível na coleção':'Aguardando cadastro do link'}</span></div>{allowed&&item.url?<a href={item.url} target="_blank" rel="noopener noreferrer" aria-label={`Abrir ${item.name}`} className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-orange-500 text-black transition hover:bg-orange-400"><ExternalLink size={16}/></a>:<span title="Disponível apenas para assinantes ou após cadastro do link" className="grid h-9 w-9 shrink-0 place-items-center rounded-xl border border-white/10 text-zinc-500"><LockKeyhole size={16}/></span>}</div>)}</div>
     {group.notice&&<div className="mx-4 mb-5 flex gap-3 rounded-xl border border-amber-500/40 bg-amber-500/10 p-4 sm:mx-5"><TriangleAlert size={18} className="mt-0.5 shrink-0 text-amber-300"/><p className="text-xs leading-relaxed text-amber-100">{group.notice}</p></div>}
    </section>})}</div>}
  </div>
