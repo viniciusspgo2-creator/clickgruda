@@ -57,6 +57,7 @@ export const BONUS_GROUPS:BonusGroup[]=[
  ]},
  {id:'canais-ao-vivo',title:'Canais Ao Vivo',description:'Canais de TV ao vivo do mundo inteiro em um só lugar.',icon:'tv',items:[
    {id:'canais-ao-vivo-1',name:'Canais Ao Vivo do Mundo Inteiro',description:'Assista canais de TV ao vivo do mundo inteiro.',url:'https://famelack.com/',icon:'/bonus-icons/tv-3d.png'},
+   {id:'canais-ao-vivo-2',name:'VeloPlay — IPTV e Futebol ao Vivo',description:'App gratuito de IPTV para Android: mais de 480 canais ao vivo, filmes, séries e futebol em HD, sem cadastro.',url:'https://www.veloplay.rest/',icon:'/bonus-icons/tv-3d.png'},
  ]},
  {id:'editor-drives',title:'Recursos do Studio Editor',description:'Fundos, PNGs, personagens, frases e materiais criativos em pastas organizadas por tema.',icon:'palette',items:[
    // --- Fundos ---
