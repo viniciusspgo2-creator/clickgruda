@@ -47,7 +47,7 @@ const bonusIllustrations:Record<string,string>={
  livros:'/hub2/bonus-courses.webp',virais:'/hub2/bonus-plr.webp','bonus-studio':'/hub2/bonus-links.webp',
  'ia-prompts':'/hub2/bonus-courses.webp','drive-de-pobre':'/hub2/bonus-courses.webp','copy-scripts':'/hub2/bonus-links.webp','sons-whatsapp':'/hub2/bonus-links.webp',receitas:'/hub2/bonus-links.webp','canais-ao-vivo':'/hub2/bonus-plr.webp',
 }
-const bonusIcons:Record<string,LucideIcon>={'drive-de-pobre':Layers,cursos:GraduationCap,plr:FolderOpen,planilhas:FileSpreadsheet,livros:BookOpen,virais:PlayCircle,'bonus-studio':WandSparkles,'artes-200mil':Library,'ia-prompts':Bot,'copy-scripts':MessageCircle,'sons-whatsapp':Music,receitas:ChefHat,'canais-ao-vivo':Tv}
+const bonusIcons:Record<string,LucideIcon>={'drive-de-pobre':Layers,cursos:GraduationCap,plr:FolderOpen,planilhas:FileSpreadsheet,livros:BookOpen,virais:PlayCircle,'bonus-studio':WandSparkles,'artes-200mil':Library,'ia-prompts':Bot,'copy-scripts':MessageCircle,'sons-whatsapp':Music,receitas:ChefHat,'canais-ao-vivo':Tv,'perfis-cores-genesis':Palette}
 const resourceDomains:Record<string,string>={
  pixelcut:'pixelcut.ai',photoroom:'photoroom.com',removebg:'remove.bg',picsart:'picsart.com',
  pinterest:'pinterest.com',cosmos:'cosmos.so',dribbble:'dribbble.com',behance:'behance.net',
