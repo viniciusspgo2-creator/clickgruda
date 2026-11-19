@@ -32,6 +32,7 @@ export const BONUS_GROUPS:BonusGroup[]=[
  ]},
  {id:'planilhas',title:'Planilhas Excel',description:'Modelos úteis para organizar seu negócio.',icon:'table-2',items:[
    {id:'planilha-1',name:'74 Planilhas Excel — Pacotes e Modelos',description:'74 planilhas Excel: pacotes, engenharia, controle pessoal e modelos de cartas.',url:drive('1AG70-OFfJuhNG19svmWIjWww4uLdGMlN'),icon:DRIVE_ICON},
+   {id:'planilha-2',name:'+13 mil Planilhas Excel — Coleção por Temas',description:'Mais de 13 mil planilhas Excel organizadas por tema: financeiro, estoque, RH, vendas e mais.',url:drive('1bxQfNYszLoQ87AzWXbupyAY1K7-kLXtX'),icon:DRIVE_ICON},
  ]},
  {id:'livros',title:'Livros & PDFs',description:'Leituras e bibliotecas digitais.',icon:'book-open',items:[{id:'livro-1',name:'O Pior Ano da Sua Vida — Curso e Livro',description:'Curso e livro digital com módulos e bônus.',url:'https://drive.google.com/drive/u/0/folders/1UxJwwUiUlBUE_K0QTJQnSxWKekzL3y1o',icon:DRIVE_ICON},{id:'livro-2',name:'Livros sobre Dinheiro e Negócios',description:'Coleção de livros sobre dinheiro, vendas e negócios.',url:drive('1go1kGH8H56m_KL332MUz8e7tTfDarLWg'),icon:DRIVE_ICON},{id:'livro-3',name:'Biblioteca Alexandrina — Livros de A a Z',description:'Biblioteca com livros organizados de A a Z.',url:drive('1EEi7bB3L2TIshhTOI-HJzQ4mgQ8F2k5i'),icon:DRIVE_ICON}]},
  {id:'virais',title:'Conteúdo que Viraliza',description:'Vídeos, memes, referências e tendências para conteúdo digital.',icon:'clapperboard',items:[
