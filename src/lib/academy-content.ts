@@ -197,3 +197,39 @@ export const ACADEMY_MILESTONES=[
  {id:'primeira-caneca',title:'Caneca de teste validada',requires:['preparo','tempo-temperatura','calibragem','resfriamento']},
  {id:'primeiro-lote',title:'Produção padronizada',requires:['lote','inspecao','manutencao','custo','preco','pedido']},
 ]
+
+export type AcademySupplier = {
+ id:string
+ name:string
+ segment:'Sublimação e Transfer'|'Malharia'|'Sublimação e Serigrafia'
+ site?:string
+ instagram?:string
+ address:string
+ whatsapp?:string
+ whatsappDigits?:string
+ phones?:string
+}
+
+/** Guia de fornecedores: contatos conforme a lista pública das próprias lojas.
+ * O nome da lista de origem não é exibido. */
+export const ACADEMY_SUPPLIERS:AcademySupplier[] = [
+ {id:'unica-brasil-transfer',name:'Unica Brasil Transfer',segment:'Sublimação e Transfer',site:'https://www.unicabrasiltransfer.com.br/',instagram:'sublimacaounica',address:'R. Bresser, 330 – Brás, São Paulo – SP – 03017-000',whatsapp:'(11) 91075-4963',whatsappDigits:'5511910754963'},
+ {id:'inkmixx',name:'Inkmixx',segment:'Sublimação e Transfer',site:'https://www.inkmixx.com.br/',instagram:'inkmixx',address:'R. Itamaracá, 444 – Água Rasa, São Paulo – SP – 03179-010',whatsapp:'(19) 99978-7467',whatsappDigits:'5519999787467'},
+ {id:'luga',name:'Luga Brindes Promocionais',segment:'Sublimação e Transfer',site:'https://www.luga.com.br/',instagram:'lugaagendas',address:'Rua Silveira Martins, 57/61 – Sé, São Paulo – SP – 01019-000',whatsapp:'(11) 95761-7867',whatsappDigits:'5511957617867'},
+ {id:'barato-maquinas',name:'Barato Máquinas',segment:'Sublimação e Transfer',site:'https://www.baratomáquinas.com.br/',instagram:'baratomáquinas',address:'R. Santa Clara, 25 – Brás, São Paulo – SP – 03025-030',whatsapp:'(11) 94142-4109',whatsappDigits:'5511941424109'},
+ {id:'forturia',name:'Forturia Print Solutions',segment:'Sublimação e Transfer',site:'https://seguro.forturia.com.br/',instagram:'forturia_recife',address:'Av. Eng. Abdias de Carvalho, 362 – Madalena, Recife – PE – 50750-257',whatsapp:'(81) 3226-5555',whatsappDigits:'558132265555'},
+ {id:'socd',name:'SOCD',segment:'Sublimação e Transfer',site:'https://www.socd.com.br/',instagram:'socdsuprimentos',address:'Rua Bresser, 736 – Brás, São Paulo – SP',whatsapp:'(11) 94031-5877',whatsappDigits:'5511940315877'},
+ {id:'lf-sublimacao',name:'LF Sublimação',segment:'Sublimação e Transfer',site:'https://www.lfsublimacao.com.br/',instagram:'lfsublimacao_distribuidora',address:'Rua da Lapa, 1705 – Bairro Ciro Nardi, Cascavel – PR – 85819-740',whatsapp:'(45) 99807-3195',whatsappDigits:'5545998073195'},
+ {id:'brasko',name:'Brasko Brasil',segment:'Sublimação e Transfer',site:'https://www.brasko.com.br/',instagram:'braskobrasil',address:'Rua Vicente Pelicano, 441 – Jd. Dona Francisca, São Carlos – SP – 13570-591',whatsapp:'(16) 3415-6192',whatsappDigits:'551634156192'},
+ {id:'ponto-do-acrilico',name:'Ponto do Acrílico e Sublimação',segment:'Sublimação e Transfer',site:'https://www.pontodoacrilico.com.br/',instagram:'pontodoacrilico.oficial',address:'R. Santa Clara, 59 – Brás, São Paulo – SP – 03025-030',whatsapp:'(11) 98369-7554',whatsappDigits:'5511983697554'},
+ {id:'dom-joao',name:'Dom João Malharia',segment:'Malharia',site:'https://www.domjoaocamisetas.com/',instagram:'domjoao68',address:'Rua Bresser, 721, São Paulo – SP – 03017-000',whatsapp:'(11) 94924-4553',whatsappDigits:'5511949244553',phones:'Outros telefones do cartão: (11) 2692-0413 e 953554-5285 (como impresso)'},
+ {id:'ponto-da-sublimacao',name:'Ponto da Sublimação',segment:'Sublimação e Transfer',site:'https://www.pontodasublimacao.com.br/',instagram:'pontodasublimacao.oficial',address:'Rua Bresser, 889 – Brás, São Paulo – SP – 03017-000',whatsapp:'(11) 94116-3241',whatsappDigits:'5511941163241'},
+ {id:'imperio-da-sublimacao',name:'Império da Sublimação',segment:'Sublimação e Transfer',site:'https://www.imperiodasublimacao.com.br/',instagram:'imperio_da_sublimacaoof',address:'Rua Promotor Gabriel Nettuzzi Perez, 375 – Santo Amaro, São Paulo – SP – 04743-020',whatsapp:'(11) 96517-9031',whatsappDigits:'5511965179031'},
+ {id:'gh-printer',name:'G H Printer',segment:'Sublimação e Transfer',site:'https://www.ghprinter.com.br/',instagram:'ghprinterrj',address:'Rua do Rosário, 167 – Centro, Rio de Janeiro – RJ – 20041-005',whatsapp:'(21) 99818-5574',whatsappDigits:'5521998185574'},
+ {id:'v-maia-papeis',name:'V Maia Papéis',segment:'Sublimação e Transfer',site:'https://vmaiapapeis.com.br/',instagram:'vmaiapapeis_sublimacao',address:'Rua Afonso Pena, nº 89 – Centro, São Luís – MA – 65015-250',whatsapp:'(98) 99155-5153',whatsappDigits:'5598991555153'},
+ {id:'haitai-nordeste',name:'Haitai Nordeste',segment:'Sublimação e Transfer',site:'https://www.unicabrasiltransfer.com.br/',instagram:'lojahaitainordeste',address:'Av. Eduardo Girão, 408 – Jardim América, Fortaleza – CE – 60020-351',whatsapp:'(85) 99802-6941',whatsappDigits:'5585998026941'},
+ {id:'comunidade-web',name:'Comunidade Web',segment:'Sublimação e Transfer',site:'https://www.loja.comunidadeweb.com.br/',instagram:'comunidadeweb',address:'Rua Luis Goncalves de Camargo, 565 – Sorocaba – SP – 18103-020',whatsapp:'(12) 98237-1510',whatsappDigits:'5512982371510'},
+ {id:'diferencial-print',name:'Diferencial Print',segment:'Sublimação e Transfer',site:'https://www.diferencialprint.com.br/',instagram:'diferencialprint',address:'Rua Brésser, 387 – Brás, São Paulo – SP',whatsapp:'(11) 4062-0186',whatsappDigits:'551140620186'},
+ {id:'sublimaticos-mania',name:'Sublimáticos Mania',segment:'Sublimação e Transfer',instagram:'sublimaticosmaniasp',address:'R. Bresser, 398 – Brás, São Paulo – SP – 03017-000',whatsapp:'(11) 97834-71409',whatsappDigits:'55119783471409'},
+ {id:'jardel-atacadao',name:'Jardel Atacadão',segment:'Sublimação e Serigrafia',site:'https://www.jardelatacadao.com.br/',instagram:'jardel.atacadao',address:'R. Laureano Rosa, 180 – Alcantara, São Gonçalo – RJ – 24710-350',whatsapp:'(21) 99432-8909',whatsappDigits:'5521994328909'},
+]
