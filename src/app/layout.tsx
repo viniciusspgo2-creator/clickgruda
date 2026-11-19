@@ -62,6 +62,16 @@ export async function generateMetadata(): Promise<Metadata> {
       "max-image-preview": "large",
     },
   },
+  icons: {
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/favicon.svg", type: "image/svg+xml" },
+      { url: "/icon-192.png", sizes: "192x192", type: "image/png" },
+      { url: "/icon-512.png", sizes: "512x512", type: "image/png" },
+    ],
+    shortcut: "/favicon.ico",
+    apple: [{ url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" }],
+  },
   openGraph: {
     title: "Click&Gruda — Biblioteca de Artes para Sublimação de Canecas",
     description:
@@ -73,9 +83,9 @@ export async function generateMetadata(): Promise<Metadata> {
     images: [
       {
         url: SOCIAL_IMAGE,
-        width: 1122,
-        height: 1402,
-        alt: "Canecas sublimadas com artes digitais da Click & Gruda",
+        width: 1200,
+        height: 630,
+        alt: "Click & Gruda — milhares de artes para canecas, mockup 3D e acesso vitalício por R$ 47,90",
       },
     ],
   },

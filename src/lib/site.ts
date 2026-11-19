@@ -13,7 +13,7 @@ import { LIFETIME_PRICE_CENTS } from '@/lib/payments/config'
 export const SITE_URL = 'https://www.clickgruda.com.br'
 export const STUDIO_URL = 'https://studio.clickgruda.com.br/'
 export const CONTENT_UPDATED_ISO = '2026-11-12'
-export const SOCIAL_IMAGE = '/uploads/rebrand/mascote-principal.webp'
+export const SOCIAL_IMAGE = '/og-image.jpg'
 
 export const SITE = {
   name: 'Click & Gruda',
