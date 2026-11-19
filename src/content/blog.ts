@@ -2441,7 +2441,236 @@ const ART22: BlogArticle = {
   related: ['5-dicas-negocio-sublimacao-crescer', 'lucrar-canecas-personalizadas-estrategia', 'vender-canecas-personalizadas-instagram-whatsapp'],
 }
 
-export const BLOG_ARTICLES: BlogArticle[] = [ART1, ART2, ART3, ART4, ART5, ART6, ART7, ART8, ART9, ART10, ART11, ART12, ART13, ART14, ART15, ART16, ART17, ART18, ART19, ART20, ART21, ART22]
+/* ============================================================
+ * ARTIGO 23 — head term: "DTF vs sublimação"
+ * ============================================================ */
+const ART23: BlogArticle = {
+  slug: 'dtf-vs-sublimacao-qual-usar',
+  title: 'DTF vs sublimação: qual técnica usar em cada produto',
+  seoTitle: 'DTF vs Sublimação: Qual Técnica Usar em Cada Produto (2026)',
+  description:
+    'DTF ou sublimação? Entenda como cada técnica funciona, em quais materiais cada uma ganha e como decidir sem gastar dinheiro à toa.',
+  keywords: [
+    'DTF vs sublimação',
+    'o que é DTF',
+    'sublimação ou DTF',
+    'DTF camiseta algodão',
+    'técnica de estamparia',
+  ],
+  category: 'tendencias',
+  emoji: '⚖️',
+  cover: '/uploads/hero-press.png',
+  coverAlt: 'Prensa térmica usada na sublimação e no DTF',
+  readTime: '8 min',
+  datePublished: '2026-11-19',
+  dateModified: '2026-11-19',
+  lead:
+    'DTF e sublimação são as duas técnicas que mais aparecem quando o assunto é estamparia — e a dúvida entre elas é uma das mais comuns de quem está começando ou quer ampliar o catálogo. As duas entregam estampas coloridas e duráveis, mas funcionam de jeitos opostos e servem para produtos diferentes. Este guia explica o que é cada uma, onde cada técnica ganha e como decidir sem gastar dinheiro à toa.',
+  blocks: [
+    { type: 'h2', text: 'O que é sublimação, em uma frase', id: 'o-que-e-sublimacao' },
+    {
+      type: 'p',
+      text: 'A sublimação é o processo em que a tinta impressa em papel sublimático vira gás sob calor e pressão e se funde ao material — ao poliéster do tecido ou ao revestimento de polímero da caneca. A cor não fica por cima da peça: ela vira parte dela. Por isso a estampa sublimada não tem relevo, não descasca e não desbota com as lavagens quando o processo é feito do jeito certo. É a técnica de referência para canecas de cerâmica com revestimento, camisetas de poliéster, squeezes, almofadas e qualquer peça clara em que o desenho seja o centro da atenção. O limite é físico: a tinta sublimática só se fixa em poliéster ou em superfícies com revestimento de polímero. Em algodão puro, em metal sem revestimento ou em cerâmica comum, o gás não tem onde se fixar — e a cor some na primeira lavagem.',
+    },
+    { type: 'h2', text: 'O que é DTF, em uma frase', id: 'o-que-e-dtf' },
+    {
+      type: 'p',
+      text: 'DTF é a sigla de Direct to Film, ou direto para o filme. A arte é impressa em um filme especial com tintas próprias, recebe uma camada de pó adesivo, passa por uma cura com calor e só então é prensada sobre a peça. Diferente da sublimação, o DTF deposita uma camada fina de tinta sobre o tecido — por isso ele funciona em algodão, em poliéster, em misturas e em tecidos escuros, sem tratamento prévio. É uma das técnicas com maior crescimento de adoção no mercado de brindes entre 2024 e 2026, justamente pela versatilidade: não tem mínimo por cor, aceita desenhos complexos e viabiliza séries pequenas, o que combina com o modelo de produção sob demanda. O mercado global de impressão digital têxtil está avaliado em US$ 3,1 bilhões em 2026 e cresce cerca de 12,1% ao ano até 2030, segundo o Grand View Research — e boa parte desse movimento vem de técnicas como o DTF.',
+    },
+    { type: 'h2', text: 'A diferença que decide tudo: o material', id: 'diferenca-material' },
+    {
+      type: 'p',
+      text: 'Se você só puder lembrar de uma coisa deste artigo, lembre desta: a escolha entre DTF e sublimação começa pelo material da peça, não pela impressora. A caneca de cerâmica com revestimento, o squeeze de alumínio revestido e a camiseta de poliéster são território da sublimação — ali ela entrega cor fotográfica, toque zero e custo baixo por peça. Já a camiseta de algodão, a peça escura e o tecido misto pedem DTF, porque a sublimação simplesmente não se fixa neles. Tentar sublimar algodão é o erro clássico de quem está começando: a estampa até aparece na hora, mas some nas primeiras lavagens. Na dúvida, faça o teste do tecido: se a peça é 100% poliéster ou tem revestimento próprio para sublimação, vá de sublimação; se é algodão, cor escura ou mistura sem maioria de poliéster, vá de DTF. Essa única pergunta resolve a maioria das decisões do dia a dia.',
+    },
+    {
+      type: 'table',
+      caption: 'DTF vs sublimação lado a lado',
+      head: ['Critério', 'Sublimação', 'DTF'],
+      rows: [
+        ['Materiais', 'Poliéster e peças com revestimento de polímero', 'Algodão, poliéster, misturas, escuros e claros'],
+        ['Cor da peça', 'Só peças brancas ou muito claras', 'Qualquer cor, inclusive preta'],
+        ['Toque da estampa', 'Zero: a cor vira parte do material', 'Camada fina sobre o tecido'],
+        ['Fotos e degradês', 'Excelente, cores fotográficas', 'Muito bom, com leve textura'],
+        ['Custo por peça', 'Baixo em séries e em canecas', 'Um pouco maior pelo filme e pelo pó'],
+        ['Equipamento básico', 'Impressora sublimática + prensa térmica', 'Impressora DTF + prensa térmica'],
+        ['Durabilidade', 'Não descasca nem desbota com o processo certo', 'Boa, desde que a cura e a prensagem estejam certas'],
+      ],
+    },
+    { type: 'h2', text: 'Quando a sublimação ganha', id: 'quando-sublimacao' },
+    {
+      type: 'p',
+      text: 'A sublimação ganha sempre que o produto já nasceu para ela. Canecas, squeezes, azulejos, mousepads, camisetas de poliéster e brindes de cerâmica revestida são o território natural da técnica — e ali ela é imbatível em custo e acabamento. A estampa não tem toque, não racha e não descasca, o que é um argumento de venda forte para o cliente final. Para quem já tem impressora sublimática e prensa, cada peça nova custa pouco: papel, tinta e energia. E há um detalhe prático: a sublimação não precisa de filme nem de pó adesivo, então o fluxo de produção é mais simples e com menos insumos para gerenciar. Se o seu catálogo é de canecas e brindes rígidos, a sublimação continua sendo a melhor primeira técnica — e provavelmente a única de que você vai precisar por um bom tempo.',
+    },
+    { type: 'h2', text: 'Quando o DTF ganha', id: 'quando-dtf' },
+    {
+      type: 'p',
+      text: 'O DTF ganha quando o cliente quer camiseta de algodão — que é o tecido mais pedido no Brasil — ou quando a peça é escura. Ele também ganha quando o pedido mistura muitos desenhos diferentes em poucas unidades: como não há mínimo por cor nem custo de tela, cada camiseta pode ter uma arte diferente sem pesar no preço. Para quem vende em feiras, eventos e encomendas de turmas e empresas, essa flexibilidade vale ouro. Outro ponto a favor é a consistência: o mesmo arquivo funciona em camiseta preta, branca ou colorida, sem adaptar a arte para cada cor de fundo. O preço por peça tende a ser um pouco maior que o da sublimação, por causa do filme e do pó adesivo, mas a margem continua boa quando o produto certo é vendido no canal certo — principalmente em camisetas, onde o DTF abre um mercado que a sublimação não alcança.',
+    },
+    { type: 'h2', text: 'Tempo, temperatura e o erro de misturar as tabelas', id: 'tempo-temperatura' },
+    {
+      type: 'p',
+      text: 'As duas técnicas usam prensa térmica, mas com parâmetros diferentes — e misturar as tabelas é um erro comum. Como referência publicada, o DTF em camiseta de algodão trabalha por volta de 160 °C por 15 segundos com pressão média, e em poliéster por volta de 140 °C por 60 segundos; já a caneca sublimada trabalha na faixa de 180 °C a 200 °C por cerca de 180 segundos, com pressão média. Esses valores são pontos de partida publicados por fabricantes e guias do mercado — nunca uma receita universal. A ficha técnica do seu filme, da sua tinta e da sua caneca manda mais do que qualquer tabela genérica, e a prensa descalibrada mente no display. A regra que vale para as duas técnicas é a mesma: faça um teste em uma peça, anote o que funcionou e só então produza o lote. Mudar tempo, temperatura e pressão ao mesmo tempo é a receita para não saber o que deu errado.',
+    },
+    { type: 'h2', text: 'Dá para ter as duas técnicas?', id: 'ter-as-duas' },
+    {
+      type: 'p',
+      text: 'Sim — e é o caminho de muita estamparia que cresceu. A prensa térmica é a mesma, então o investimento extra do DTF fica na impressora, no filme, no pó e na cura. O modelo que mais funciona é começar pela sublimação, dominar canecas e brindes, e só então somar o DTF para abrir o mercado de camisetas de algodão e peças escuras. Assim cada técnica paga o próprio investimento com o público que só ela atende. E há um ganho silencioso: com as duas no portfólio, você para de dizer não. O cliente que chega pedindo camiseta de algodão com foto e o que chega pedindo caneca com nome saem os dois com o pedido feito — e é essa resposta que transforma uma estamparia pequena em referência no bairro.',
+    },
+    {
+      type: 'callout',
+      title: 'A regra de ouro',
+      text: 'Pergunte primeiro qual é o material e a cor da peça. Poliéster claro ou revestido: sublimação. Algodão, escuro ou misto: DTF. Acertar essa pergunta é acertar a técnica — e evitar a estampa que some na primeira lavagem.',
+    },
+    {
+      type: 'faq',
+      items: [
+        {
+          q: 'DTF funciona em caneca?',
+          a: 'Não é a técnica indicada: a caneca é território da sublimação, porque o revestimento de polímero recebe a tinta sublimática e a cor vira parte da peça. O DTF foi feito para têxteis e deposita uma camada sobre o tecido — em cerâmica ele não tem a mesma aderência nem o mesmo acabamento.',
+        },
+        {
+          q: 'Qual técnica dura mais na camiseta?',
+          a: 'As duas duram bem quando o processo é feito do jeito certo. A sublimação não descasca porque a cor vira parte do poliéster; o DTF dura bem quando a cura do pó e a prensagem seguem a ficha do filme. O que mais estraga as duas é lavar com água muito quente e secar em temperatura alta.',
+        },
+        {
+          q: 'Preciso de outra prensa para o DTF?',
+          a: 'Não: a prensa térmica plana é a mesma usada na sublimação de camisetas. O que muda é a impressora, o filme, o pó adesivo e a etapa de cura — a prensa continua sendo o equipamento comum às duas técnicas.',
+        },
+      ],
+    },
+    {
+      type: 'cta',
+      text: 'Tanto na sublimação quanto no DTF, tudo começa com a arte certa: milhares de artes prontas para sublimar — e para adaptar a novos produtos — organizadas por tema e data comemorativa.',
+      label: 'Ver as artes para sublimar',
+      href: '/#preco',
+    },
+  ],
+  related: ['tempo-temperatura-sublimar-caneca-tabela', 'como-sublimar-canecas-passo-a-passo', 'tendencias-artes-para-canecas-2026'],
+}
+
+/* ============================================================
+ * ARTIGO 24 — head term: "como embalar caneca para envio"
+ * ============================================================ */
+const ART24: BlogArticle = {
+  slug: 'como-embalar-caneca-personalizada-envio',
+  title: 'Como embalar caneca personalizada para envio (sem quebrar no caminho)',
+  seoTitle: 'Como Embalar Caneca Personalizada para Envio sem Quebrar',
+  description:
+    'Aprenda a embalar caneca personalizada para envio: material certo, passo a passo, teste da sacudida e como se preparar para o pico de Natal.',
+  keywords: [
+    'como embalar caneca para envio',
+    'embalagem caneca personalizada',
+    'enviar caneca correio sem quebrar',
+    'caixa para caneca sublimada',
+    'embalar caneca Natal',
+  ],
+  category: 'dicas',
+  emoji: '📦',
+  cover: '/uploads/art-sazonal-natal.png',
+  coverAlt: 'Caneca de Natal pronta para presentear e enviar',
+  readTime: '8 min',
+  datePublished: '2026-11-19',
+  dateModified: '2026-11-19',
+  lead:
+    'A caneca ficou perfeita na prensa — e quebrou no caminho até o cliente. Quem vende caneca personalizada pela internet conhece esse prejuízo: peça refeita, frete pago duas vezes e cliente esperando. A boa notícia é que quebrar no transporte quase nunca é azar: é embalagem errada. Este guia mostra o material certo, o passo a passo e os testes que protegem a caneca do balcão até a casa do cliente.',
+  blocks: [
+    { type: 'h2', text: 'Por que a caneca quebra no transporte', id: 'por-que-quebra' },
+    {
+      type: 'p',
+      text: 'A caneca é cerâmica: resistente no uso diário, mas frágil contra impacto e vibração. No transporte, a caixa passa por esteiras, empilhamento e freadas — e cada solavanco vira um golpe na peça. O erro mais comum é embalar a caneca solta dentro de uma caixa grande, com o vazio preenchido de qualquer jeito: sem trava, a peça bate nas paredes a cada movimento e a alça, que é o ponto mais frágil, recebe o impacto primeiro. Outro erro é confiar só no plástico-bolha fino ou em uma única volta: a proteção precisa envolver a peça inteira, inclusive a alça, e a caixa precisa ser do tamanho certo, sem folga e sem aperto. Entender isso muda a lógica: você não está embrulhando um presente, está construindo uma armadura para uma peça de cerâmica atravessar o Brasil.',
+    },
+    { type: 'h2', text: 'O material certo para embalar caneca', id: 'materiais' },
+    {
+      type: 'p',
+      text: 'O kit de embalagem da caneca cabe em poucos itens — e nenhum deles é caro: caixa de papelão ondulado do tamanho certo, plástico-bolha, papel kraft ou papelão ondulado para travar a peça, fita adesiva larga e etiqueta de frágil. A caixa precisa ser de papelão ondulado de parede simples ou dupla, nunca aquela caixa fina de sapato reaproveitada: é a parede da caixa que absorve o primeiro impacto. O plástico-bolha protege contra arranhões e pequenos choques, mas não trava a peça sozinho — por isso o preenchimento interno com papel amassado ou retalhos de papelão é tão importante quanto a volta de bolha. E compre os materiais em quantidade: comprar caixa e bolha no varejo, unidade por unidade, corrói a margem de cada venda.',
+    },
+    {
+      type: 'ul',
+      items: [
+        'Caixa de papelão ondulado do tamanho da caneca, com folga de 3 a 5 cm em cada lado para o amortecimento',
+        'Plástico-bolha para envolver a peça inteira, inclusive a alça',
+        'Papel kraft amassado ou retalhos de papelão para preencher os vazios e travar a caneca',
+        'Fita adesiva larga para fechar a caixa em H, nas três direções',
+        'Etiqueta "Frágil" e setas de "Este lado para cima" na parte externa',
+        'Saquinho plástico ou saco zip para proteger a caneca da umidade em dias de chuva',
+      ],
+    },
+    { type: 'h2', text: 'O passo a passo da embalagem', id: 'passo-a-passo' },
+    {
+      type: 'p',
+      text: 'Com o material na mesa, a embalagem leva poucos minutos e segue sempre a mesma ordem: envolver, travar, fechar e sinalizar. Primeiro, embrulhe a caneca no plástico-bolha com pelo menos duas voltas, cobrindo a alça — a alça vazia é o ponto que mais quebra, então preencha o vão dela com papel amassado antes de fechar a volta. Depois, forre o fundo da caixa com uma camada de papel amassado, coloque a caneca no centro e preencha todos os lados até ela não se mover quando você inclina a caixa. Feche com fita larga em H: uma volta no sentido do comprimento, outra na largura e uma terceira no meio. Por fim, cole a etiqueta de frágil e escreva o endereço com letra legível. O teste final é o da sacudida: balance a caixa fechada — se a caneca se move ou bate, abra e complete o preenchimento.',
+    },
+    {
+      type: 'ol',
+      items: [
+        'Envolva a caneca em duas voltas de plástico-bolha, cobrindo a alça e preenchendo o vão dela com papel',
+        'Forre o fundo da caixa com papel amassado e centralize a caneca',
+        'Preencha todos os lados até a peça não se mover ao inclinar a caixa',
+        'Feche com fita larga em H, nas três direções, sem deixar abertura',
+        'Cole a etiqueta de frágil e confira o endereço antes de despachar',
+      ],
+    },
+    { type: 'h2', text: 'Caixa certa, caixa errada', id: 'caixa-certa' },
+    {
+      type: 'p',
+      text: 'A caixa certa é a que abraça a caneca com uma camada de amortecimento em volta: folga de 3 a 5 cm em cada lado. Caixa grande demais vira pista de dança — a peça desliza e bate; caixa apertada demais transmite o impacto direto para a cerâmica, sem nada para absorver. Ter dois ou três tamanhos de caixa no estoque resolve a maioria dos pedidos: uma para a caneca avulsa, uma para o kit com duas e uma para o kit presente com caixa de presente dentro. E um cuidado que protege o bolso: caixa maior pesa mais na cubagem do frete, então padronizar o tamanho certo reduz o custo de envio pedido após pedido. Se o pedido é um kit, embale cada caneca separadamente antes de juntar tudo na mesma caixa — caneca batendo em caneca quebra as duas.',
+    },
+    { type: 'h2', text: 'Etiqueta, seguro e o que fazer se quebrar', id: 'etiqueta-seguro' },
+    {
+      type: 'p',
+      text: 'A etiqueta de frágil ajuda, mas não faz milagre: transportadora movimenta milhares de pacotes por dia, e a sua proteção real é a embalagem interna. Ainda assim, sinalize — e fotografe a caixa fechada antes de despachar: a foto é a sua prova de que o produto saiu íntegro. Considere o serviço de seguro ou valor declarado oferecido pela transportadora, principalmente em pedidos de valor maior ou kits: o custo é pequeno perto do prejuízo de refazer e reenviar. E tenha um protocolo pronto para quando a quebra acontecer: peça a foto da caixa e da peça ao cliente, refaça ou reembolse sem discutir e registre o que falhou — alça, fundo ou lateral. Cada quebra é um dado: se as quebras se repetem no mesmo ponto, a embalagem precisa mudar naquele ponto.',
+    },
+    { type: 'h2', text: 'Enviar no Natal: antecedência é tudo', id: 'natal-prazos' },
+    {
+      type: 'p',
+      text: 'O fim de ano é o pico de vendas de caneca personalizada — e também o pico de atrasos. A procura começa a subir em outubro, dobra em novembro e chega ao pico na primeira quinzena de dezembro, então quem deixa o envio para a última semana disputa prazo com o país inteiro. Monte um calendário de corte: defina a data limite para encomendas com nome, avise no Instagram e no WhatsApp e produza em lotes fixos, um ou dois dias por semana, em vez de pedido por pedido. Despache com antecedência e informe o prazo da transportadora no ato da venda, com margem — prometer a entrega para o dia 24 e atrasar estraga o Natal do cliente e a reputação da loja. E deixe o material de embalagem comprado antes do pico: caixa e bolha em falta no meio de dezembro travam a produção inteira.',
+    },
+    {
+      type: 'table',
+      caption: 'Resumo: o que usar e para quê',
+      head: ['Material', 'Função', 'Quando usar'],
+      rows: [
+        ['Caixa de papelão ondulado', 'Estrutura e primeiro impacto', 'Em todo envio, no tamanho certo'],
+        ['Plástico-bolha (2 voltas)', 'Protege a superfície e a alça', 'Em toda caneca, sem exceção'],
+        ['Papel kraft amassado', 'Trava a peça e absorve o choque', 'Para preencher todos os vazios da caixa'],
+        ['Fita larga em H', 'Fecha a caixa sem abertura', 'Em todo fechamento, nas três direções'],
+        ['Etiqueta Frágil', 'Sinaliza o manuseio cuidadoso', 'Na parte externa, bem visível'],
+        ['Saco plástico / zip', 'Protege da umidade e da chuva', 'Em dias chuvosos e envios longos'],
+      ],
+    },
+    {
+      type: 'callout',
+      title: 'O teste da sacudida não negocia',
+      text: 'Antes de despachar, balance a caixa fechada: se a caneca se move ou bate em alguma parede, a embalagem ainda não está pronta. Cinco minutos de teste economizam uma peça refeita, um frete pago duas vezes e um cliente esperando.',
+    },
+    {
+      type: 'faq',
+      items: [
+        {
+          q: 'Posso enviar caneca em envelope?',
+          a: 'Não: envelope não tem estrutura para proteger cerâmica. A caneca precisa de caixa de papelão ondulado com amortecimento interno — o envelope transmite o impacto direto para a peça e a alça quebra com facilidade.',
+        },
+        {
+          q: 'Quantas voltas de plástico-bolha são suficientes?',
+          a: 'Pelo menos duas voltas cobrindo a peça inteira, com a alça protegida e o vão dela preenchido com papel. Uma volta só protege contra arranhão; é o conjunto bolha mais preenchimento que absorve o choque do transporte.',
+        },
+        {
+          q: 'Vale a pena pagar o seguro da transportadora?',
+          a: 'Em pedidos de valor maior ou kits, sim: o custo do seguro ou do valor declarado é pequeno perto do prejuízo de refazer a peça e pagar o frete de novo. E fotografe a caixa fechada antes de despachar — é a sua prova de que o produto saiu íntegro.',
+        },
+      ],
+    },
+    {
+      type: 'cta',
+      text: 'A embalagem protege a caneca — a arte é o que faz o cliente comprar. Milhares de artes prontas para sublimar, organizadas por tema e data comemorativa, para o seu catálogo de Natal e do ano inteiro.',
+      label: 'Ver as artes para sublimar',
+      href: '/#preco',
+    },
+  ],
+  related: ['canecas-de-natal-para-vender-ideias', 'vender-canecas-personalizadas-instagram-whatsapp', 'quanto-cobrar-caneca-personalizada-preco'],
+}
+
+export const BLOG_ARTICLES: BlogArticle[] = [ART1, ART2, ART3, ART4, ART5, ART6, ART7, ART8, ART9, ART10, ART11, ART12, ART13, ART14, ART15, ART16, ART17, ART18, ART19, ART20, ART21, ART22, ART23, ART24]
 
 export function getArticle(slug: string): BlogArticle | undefined {
   return BLOG_ARTICLES.find((a) => a.slug === slug)
