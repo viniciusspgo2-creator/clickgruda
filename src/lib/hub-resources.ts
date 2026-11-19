@@ -4,6 +4,9 @@ export type BonusGroup = {id:string;title:string;description:string;icon:string;
 const drive=(folder:string)=>`https://drive.google.com/drive/folders/${folder}`
 const DRIVE_ICON='/bonus-icons/drive.svg'
 export const BONUS_GROUPS:BonusGroup[]=[
+ {id:'drive-de-pobre',title:'Drive de Pobre — Acervo Aberto',description:'Mais de 1 milhão de arquivos e 55 TB: cursos em vídeo, PDFs e preparatórios — ENEM, concursos, militares, idiomas, medicina e tecnologia. Download grátis, sem cadastro.',icon:'layers',items:[
+   {id:'drive-de-pobre-site',name:'Drive de Pobre — Todos os Cursos',description:'Busque por curso, professor ou assunto: videoaulas, PDFs, preparatórios e banco de questões.',url:'https://drivedepobre.com/',icon:'/bonus-icons/book-3d.png'},
+ ]},
  {id:'cursos',title:'Pack de Cursos',description:'Materiais de estudo em pastas do Google Drive.',icon:'graduation-cap',items:[
    {id:'pack-cursos-1',name:'Cursos Connect Premium — Pastas 1 e 2',description:'Cursos Connect Premium: pastas 1 e 2.',url:drive('1AYsHXmYnInMkDchdF8GowUnEBY5pbB4N'),icon:DRIVE_ICON},
    {id:'pack-cursos-2',name:'Cursos Connect Premium — Pastas 3 e 4',description:'Cursos Connect Premium: pastas 3 e 4.',url:drive('1GKaxxcl-DP6Wfih2tegbJ_YguO8RGplj'),icon:DRIVE_ICON},

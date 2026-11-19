@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import {
  ArrowRight, ArrowUpRight, BookOpen, Bot, Box, CheckCircle2, ChefHat, ChevronDown, ChevronLeft, ChevronRight,
  Clock3, Compass, Copy, ExternalLink, FileSpreadsheet, FolderOpen, Gift, Gamepad2, GraduationCap,
- Images, LayoutDashboard, Library, Link2, LockKeyhole, LogOut, Menu, MessageCircle, MonitorPlay, Music,
+ Images, Layers, LayoutDashboard, Library, Link2, LockKeyhole, LogOut, Menu, MessageCircle, MonitorPlay, Music,
  Palette, PenTool, PlayCircle, Search, ShieldCheck, Sparkles, Store, TriangleAlert, Tv, WandSparkles, X,
  type LucideIcon,
 } from 'lucide-react'
@@ -45,9 +45,9 @@ const studioRoutes:Record<StudioChoice,string>={'3d':'/mockup-caneca-3d/studio',
 const bonusIllustrations:Record<string,string>={
  cursos:'/hub2/bonus-courses.webp',plr:'/hub2/bonus-plr.webp',planilhas:'/hub2/bonus-sheets.webp',
  livros:'/hub2/bonus-courses.webp',virais:'/hub2/bonus-plr.webp','bonus-studio':'/hub2/bonus-links.webp',
- 'ia-prompts':'/hub2/bonus-courses.webp','copy-scripts':'/hub2/bonus-links.webp','sons-whatsapp':'/hub2/bonus-links.webp',receitas:'/hub2/bonus-links.webp','canais-ao-vivo':'/hub2/bonus-plr.webp',
+ 'ia-prompts':'/hub2/bonus-courses.webp','drive-de-pobre':'/hub2/bonus-courses.webp','copy-scripts':'/hub2/bonus-links.webp','sons-whatsapp':'/hub2/bonus-links.webp',receitas:'/hub2/bonus-links.webp','canais-ao-vivo':'/hub2/bonus-plr.webp',
 }
-const bonusIcons:Record<string,LucideIcon>={cursos:GraduationCap,plr:FolderOpen,planilhas:FileSpreadsheet,livros:BookOpen,virais:PlayCircle,'bonus-studio':WandSparkles,'artes-200mil':Library,'ia-prompts':Bot,'copy-scripts':MessageCircle,'sons-whatsapp':Music,receitas:ChefHat,'canais-ao-vivo':Tv}
+const bonusIcons:Record<string,LucideIcon>={'drive-de-pobre':Layers,cursos:GraduationCap,plr:FolderOpen,planilhas:FileSpreadsheet,livros:BookOpen,virais:PlayCircle,'bonus-studio':WandSparkles,'artes-200mil':Library,'ia-prompts':Bot,'copy-scripts':MessageCircle,'sons-whatsapp':Music,receitas:ChefHat,'canais-ao-vivo':Tv}
 const resourceDomains:Record<string,string>={
  pixelcut:'pixelcut.ai',photoroom:'photoroom.com',removebg:'remove.bg',picsart:'picsart.com',
  pinterest:'pinterest.com',cosmos:'cosmos.so',dribbble:'dribbble.com',behance:'behance.net',
