@@ -101,6 +101,7 @@ export const BONUS_GROUPS:BonusGroup[]=[
    {id:'kit-professores',name:'Kit professores',description:'Kit com materiais para professores.',url:drive('1vS8KA3JI2hs1rfH1dwBI1c-D4N3q7C59'),theme:'Volta às aulas'},
    // --- Pack do Editor ---
    {id:'pack-editor',name:'Pack do Editor para Designers e Editores de Vídeo',description:'Pack para designers e editores de vídeo.',url:'https://drive.google.com/file/d/14WusAgczt7PT6jiv6D6qTozOZT8VKjUy/view',theme:'Pack do Editor',icon:DRIVE_ICON},
+   {id:'pack-pngs-hd',name:'Pack Imagens HD — 34 mil PNGs',description:'Pack com 34 mil arquivos PNG em alta definição, mais imagens de comida e hambúrguer.',url:drive('1zvUK7oBzboR273Sqx9uj8KdE8og5z1Bx'),theme:'Diversos',icon:DRIVE_ICON},
  ]},
  {id:'artes-200mil',title:'+ de 200 mil artes para canecas',description:'Acervos externos com mais de 200 mil artes para canecas.',icon:'library',notice:'Atenção: não garantimos qualidade, integridade etc. São layouts avulsos coletados de packs na internet — você terá que garimpar e pegar o que for útil para você. Recomendamos acompanhar a Biblioteca de Artes, onde subimos apenas artes selecionadas.',items:[
    {id:'artes-200mil-1',name:'Drive 1 — Full',description:'Acervo completo com mais de 200 mil artes.',url:drive('1K3m9XhBrrWHIHsu4QSoHCpaF22-qFi5a'),icon:DRIVE_ICON},
