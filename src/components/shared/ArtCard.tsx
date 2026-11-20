@@ -20,10 +20,14 @@ type ArtCardProps = {
   onPreview?: (art: ArtItem) => void
   onOpenMockup?: (art: ArtItem) => void
   onDelete?: (art: ArtItem) => void
+  /** id DOM da âncora "continuar de onde parou" (cg-art-<id>). */
+  anchorId?: string
+  /** Destaca o card ao retomar a navegação. */
+  highlighted?: boolean
 }
 
 /** Download e favoritos ficam acessíveis sem hover. Overlay: somente Studio e prévia ampliada. */
-export function ArtCard({ art, locked = false, demo = false, downloadState = 'idle', onDownload, onToggleFavorite, onPreview, onOpenMockup, onDelete }: ArtCardProps) {
+export function ArtCard({ art, locked = false, demo = false, downloadState = 'idle', onDownload, onToggleFavorite, onPreview, onOpenMockup, onDelete, anchorId, highlighted = false }: ArtCardProps) {
   const title = formatArtTitle(art.title)
   const isBocao = art.title.startsWith('Bocão da arte ')
   const canDownload = !demo && !locked && downloadState !== 'loading'
@@ -35,8 +39,8 @@ export function ArtCard({ art, locked = false, demo = false, downloadState = 'id
   }
 
   return (
-    <motion.article initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.2, ease: 'easeOut' }} className="cg-member-artcard group relative min-w-0">
-      <div className="cg-art-card-surface relative flex h-full min-w-0 flex-col overflow-hidden rounded-2xl border border-white/10 bg-[#172338] transition-[transform,border-color,box-shadow] duration-200 ease-out">
+    <motion.article id={anchorId} data-art-id={art.id} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.2, ease: 'easeOut' }} className="cg-member-artcard group relative min-w-0 scroll-mt-36">
+      <div className={cn('cg-art-card-surface relative flex h-full min-w-0 flex-col overflow-hidden rounded-2xl border bg-[#172338] transition-[transform,border-color,box-shadow] duration-200 ease-out', highlighted ? 'border-orange-400 shadow-[0_0_0_3px_rgba(249,115,22,.45)]' : 'border-white/10')}>
         <div onContextMenu={event => event.preventDefault()} onDragStart={event => event.preventDefault()} className="cg-art-visual relative aspect-[21/9.5] w-full shrink-0 overflow-hidden bg-[#eef0f3]">
           <img src={art.imageUrl} alt={title} loading="lazy" draggable={false} decoding="async" onContextMenu={event => event.preventDefault()} onDragStart={event => event.preventDefault()} className={cn('absolute inset-0 h-full w-full object-contain', locked && 'scale-105 blur-[7px] brightness-[.72]', demo && 'blur-[1px] brightness-[.98]')} />
           {!locked && onPreview && <button type="button" onClick={() => onPreview(art)} aria-label={`Ampliar arte ${title}`} className="absolute inset-0 z-[1] block h-full w-full cursor-zoom-in focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-4px] focus-visible:outline-orange-500" />}

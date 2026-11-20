@@ -31,6 +31,7 @@ import {
   Lock,
   Flame,
   Heart,
+  History,
   LayoutGrid,
   Images,
   Loader2,
@@ -78,6 +79,8 @@ import { useStore, type PortalTab } from '@/lib/store'
 import type { ArtItem, CatalogData } from '@/lib/types'
 import { cn } from '@/lib/utils'
 import { track } from '@/lib/analytics'
+import { RESUME_MIN_INDEX, libraryFilterKey, type LibraryPosition } from '@/lib/library-position'
+import { formatArtCode } from '@/lib/art-code'
 
 type DownloadStates = Record<string, 'idle' | 'loading' | 'done'>
 type ArtsPage = { arts: ArtItem[]; total: number; page: number; pageSize: number; hasMore: boolean }
@@ -236,6 +239,22 @@ export function PortalView() {
   const [mockupDialogOpen, setMockupDialogOpen] = useState(false)
   const [mockupArt, setMockupArt] = useState<ArtItem | null>(null)
   const openMockup = (art?: ArtItem) => { setMockupArt(art ?? null); setMockupDialogOpen(true) }
+
+  // ---------- Continuar de onde parou ----------
+  // Âncora = última arte vista no meio da tela + contexto (aba, busca,
+  // categoria, ordem). Salva na conta, com debounce, e descarregada ao
+  // sair da página — nunca a posição em pixels, que muda quando entra arte nova.
+  type SavedPosition = LibraryPosition & { artExists?: boolean }
+  const gridRef = useRef<HTMLDivElement>(null)
+  const [resumeCandidate, setResumeCandidate] = useState<SavedPosition | null>(null)
+  const [resumeDismissed, setResumeDismissed] = useState(false)
+  const [isResuming, setIsResuming] = useState(false)
+  const [highlightId, setHighlightId] = useState<string | null>(null)
+  const lastSeenRef = useRef<{ artId: string; artTitle: string; artCode: number | null; index: number } | null>(null)
+  const lastSavedRef = useRef<string>('')
+  const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const resumingRef = useRef(false)
+  const resumeAttemptedRef = useRef(false)
 
 
   // O campo acompanha mudanças externas (logo, limpar filtros, troca de página).
@@ -527,6 +546,169 @@ export function PortalView() {
   }
 
   const { hasNextPage, isFetchingNextPage, fetchNextPage } = artsQ
+
+  // ---------- Continuar de onde parou: salvar / buscar / retomar ----------
+  const filterRef = useRef({ tab, q, categoryIds, tagIds, sort, seasonalEventId })
+  filterRef.current = { tab, q, categoryIds, tagIds, sort, seasonalEventId }
+  const totalRef = useRef(total)
+  totalRef.current = total
+  const artsRef = useRef(arts)
+  artsRef.current = arts
+  const savePositionNow = () => {
+    const seen = lastSeenRef.current
+    if (!seen || seen.index < RESUME_MIN_INDEX || resumingRef.current) return
+    if (!user || user.isDemo || user.isPublicDemo) return
+    const f = filterRef.current
+    const key = `${seen.artId}:${seen.index}:${libraryFilterKey(f)}`
+    if (key === lastSavedRef.current) return
+    lastSavedRef.current = key
+    fetch('/api/library-position', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ artId: seen.artId, index: seen.index, total: totalRef.current, ...f }),
+      keepalive: true,
+    }).catch(() => {})
+  }
+  const savePositionNowRef = useRef(savePositionNow)
+  savePositionNowRef.current = savePositionNow
+  const scheduleSave = () => {
+    if (saveTimerRef.current) clearTimeout(saveTimerRef.current)
+    saveTimerRef.current = setTimeout(() => savePositionNowRef.current(), 3000)
+  }
+
+  // Busca a posição salva uma vez, ao entrar no portal.
+  useEffect(() => {
+    if (!user || user.isDemo || user.isPublicDemo || resumeAttemptedRef.current) return
+    resumeAttemptedRef.current = true
+    fetch('/api/library-position')
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        const position = data?.position as SavedPosition | null
+        if (!position || position.index < RESUME_MIN_INDEX) return
+        try {
+          if (window.sessionStorage.getItem(`cg-resume-dismissed:${position.savedAt}`)) return
+        } catch { /* ignore */ }
+        setResumeCandidate(position)
+      })
+      .catch(() => {})
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.id])
+
+  // Última arte no meio da tela = onde a pessoa parou. Observa os cards
+  // já renderizados; ao carregar mais páginas, re-observa os novos.
+  useEffect(() => {
+    const grid = gridRef.current
+    if (!grid || !arts.length) return
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (!entry.isIntersecting) continue
+          const artId = (entry.target as HTMLElement).dataset.artId
+          if (!artId) continue
+          const list = artsRef.current
+          let index = list.findIndex((a) => a.id === artId)
+          let found = index >= 0 ? list[index] : undefined
+          if (index < 0) {
+            index = list.findIndex((a) => a.pairedArt?.id === artId)
+            found = index >= 0 ? list[index]?.pairedArt ?? undefined : undefined
+          }
+          if (!found || index < 0) continue
+          lastSeenRef.current = { artId, artTitle: found.title, artCode: found.code ?? null, index }
+          scheduleSave()
+        }
+      },
+      { rootMargin: '-45% 0px -45% 0px' },
+    )
+    grid.querySelectorAll('[data-art-id]').forEach((el) => io.observe(el))
+    return () => io.disconnect()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [arts])
+
+  // Descarrega a posição ao sair/fechar — sem isso, fechar o PC perdia tudo.
+  useEffect(() => {
+    const flush = () => {
+      if (saveTimerRef.current) clearTimeout(saveTimerRef.current)
+      savePositionNowRef.current()
+    }
+    const onVisibility = () => { if (document.hidden) flush() }
+    window.addEventListener('pagehide', flush)
+    document.addEventListener('visibilitychange', onVisibility)
+    return () => {
+      window.removeEventListener('pagehide', flush)
+      document.removeEventListener('visibilitychange', onVisibility)
+      if (saveTimerRef.current) clearTimeout(saveTimerRef.current)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  // Retomar: carrega páginas até a arte-âncora aparecer e rola até ela.
+  // Se a âncora sumiu (excluída / saiu do filtro), cai no índice salvo.
+  useEffect(() => {
+    if (!isResuming || !resumeCandidate) return
+    if (artsQ.isLoading || (arts.length === 0 && artsQ.isFetching)) return
+    const anchorIndex = arts.findIndex((a) => a.id === resumeCandidate.artId || a.pairedArt?.id === resumeCandidate.artId)
+    if (anchorIndex >= 0) {
+      const el = document.getElementById(`cg-art-${resumeCandidate.artId}`)
+      el?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      setHighlightId(resumeCandidate.artId)
+      window.setTimeout(() => setHighlightId(null), 4000)
+      setIsResuming(false)
+      resumingRef.current = false
+      setResumeCandidate(null)
+      return
+    }
+    const targetPages = Math.ceil((resumeCandidate.index + 1) / 48)
+    const pagesLoaded = artsQ.data?.pages.length ?? 0
+    if (hasNextPage && pagesLoaded < targetPages && !isFetchingNextPage) {
+      fetchNextPage()
+      return
+    }
+    if (isFetchingNextPage) return
+    const fallbackIndex = Math.min(resumeCandidate.index, arts.length - 1)
+    if (fallbackIndex >= 0) {
+      const fallbackArt = arts[fallbackIndex]
+      document.getElementById(`cg-art-${fallbackArt.id}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      setHighlightId(fallbackArt.id)
+      window.setTimeout(() => setHighlightId(null), 4000)
+      if (!resumeCandidate.artExists) toast.info('Aquela arte não está mais nessa posição, te levei para o ponto mais próximo.')
+    }
+    setIsResuming(false)
+    resumingRef.current = false
+    setResumeCandidate(null)
+  }, [isResuming, resumeCandidate, arts, artsQ.data, artsQ.isFetching, artsQ.isLoading, hasNextPage, isFetchingNextPage, fetchNextPage])
+
+  const continueResume = () => {
+    const position = resumeCandidate
+    if (!position) return
+    setResumeDismissed(true)
+    setIsResuming(true)
+    resumingRef.current = true
+    setHighlightId(null)
+    if (libraryFilterKey(position) !== libraryFilterKey(filterRef.current)) {
+      setFilter({ tab: position.tab as PortalTab, q: position.q, categoryIds: position.categoryIds, tagIds: position.tagIds, sort: position.sort as typeof sort, seasonalEventId: position.seasonalEventId })
+      setSearchInput(position.q)
+    }
+  }
+  const startFromBeginning = async () => {
+    const savedAt = resumeCandidate?.savedAt
+    setResumeDismissed(true)
+    setResumeCandidate(null)
+    setIsResuming(false)
+    resumingRef.current = false
+    lastSeenRef.current = null
+    lastSavedRef.current = ''
+    try {
+      if (savedAt) window.sessionStorage.setItem(`cg-resume-dismissed:${savedAt}`, '1')
+    } catch { /* ignore */ }
+    fetch('/api/library-position', { method: 'DELETE' }).catch(() => {})
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+  const dismissResume = () => {
+    try {
+      if (resumeCandidate?.savedAt) window.sessionStorage.setItem(`cg-resume-dismissed:${resumeCandidate.savedAt}`, '1')
+    } catch { /* ignore */ }
+    setResumeDismissed(true)
+  }
 
   // Acesso só-Studio navega na Biblioteca em prévia protegida.
   if (!user || (!user.hasAccess && !user.isStudioOnly)) return null
@@ -1035,6 +1217,39 @@ export function PortalView() {
           </div>
         )}
 
+        {/* Continuar de onde parou — só aparece na entrada, se parou depois da 1ª página. */}
+        {resumeCandidate && !resumeDismissed && !isResuming && (
+          <div className="mb-5 flex flex-col gap-3 rounded-2xl border border-orange-400/40 bg-[#1a2436] p-4 shadow-lg shadow-black/20 sm:flex-row sm:items-center sm:justify-between" role="region" aria-label="Continuar de onde parou">
+            <div className="flex min-w-0 items-start gap-3">
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-orange-500/15 text-orange-400"><History className="h-5 w-5" /></span>
+              <div className="min-w-0">
+                <p className="text-sm font-black text-white">Você parou na arte {(resumeCandidate.index + 1).toLocaleString('pt-BR')} de {resumeCandidate.total.toLocaleString('pt-BR')}</p>
+                <p className="mt-0.5 truncate text-xs leading-5 text-slate-300">
+                  {resumeCandidate.artTitle ? `“${formatArtTitle(resumeCandidate.artTitle)}”` : ''}{resumeCandidate.artCode ? ` · ${formatArtCode(resumeCandidate.artCode)}` : ''}
+                  {resumeCandidate.q ? ` · busca “${resumeCandidate.q}”` : ''}
+                  {resumeCandidate.categoryIds.length ? ` · ${catalogQ.data?.categories.find((c) => c.id === resumeCandidate.categoryIds[0])?.name ?? 'categoria'}` : ''}
+                  {resumeCandidate.tab !== 'todas' ? ` · ${TABS.find((t) => t.id === resumeCandidate.tab)?.label ?? resumeCandidate.tab}` : ''}
+                  {' · '}salva em {new Date(resumeCandidate.savedAt).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })}
+                </p>
+              </div>
+            </div>
+            <div className="flex shrink-0 items-center gap-2">
+              <button type="button" onClick={continueResume} className="inline-flex h-10 items-center gap-1.5 rounded-xl bg-orange-500 px-4 text-sm font-black text-white shadow-md shadow-orange-500/25 hover:bg-orange-400">
+                <History className="h-4 w-4" /> Continuar de onde parou
+              </button>
+              <button type="button" onClick={startFromBeginning} className="inline-flex h-10 items-center gap-1.5 rounded-xl border border-white/15 bg-white/5 px-4 text-sm font-bold text-slate-100 hover:bg-white/10">
+                <RotateCcw className="h-4 w-4" /> Começar do início
+              </button>
+              <button type="button" onClick={dismissResume} aria-label="Fechar aviso" className="inline-flex h-10 w-10 items-center justify-center rounded-xl text-slate-400 hover:bg-white/10 hover:text-white"><X className="h-4 w-4" /></button>
+            </div>
+          </div>
+        )}
+        {isResuming && (
+          <div className="mb-5 flex items-center gap-2 rounded-2xl border border-white/10 bg-[#172338] px-4 py-3 text-sm font-semibold text-slate-200" role="status">
+            <Loader2 className="h-4 w-4 animate-spin text-orange-500" /> Voltando para onde você parou…
+          </div>
+        )}
+
         <div ref={resultsRef} className="cg-library-heading mb-5 flex scroll-mt-36 items-baseline justify-between">
           <h1 className="cg-library-title text-lg font-black tracking-tight text-zinc-900 sm:text-xl"><Layers3 className="cg-library-title-icon h-5 w-5 shrink-0" aria-hidden="true" />
             {tab === 'todas' && 'Todo o acervo'}
@@ -1098,21 +1313,21 @@ export function PortalView() {
             </Button>
           </div>
         ) : (
-          <div className="cg-member-grid grid grid-cols-2 gap-2.5 sm:gap-4 lg:grid-cols-3">
+          <div ref={gridRef} className="cg-member-grid grid grid-cols-2 gap-2.5 sm:gap-4 lg:grid-cols-3">
             <AnimatePresence initial={false}>
               {arts.map((art) => tab === 'bocoes' ? (
-                <article key={art.id} className="cg-bocao-pair col-span-2 rounded-[22px] border border-orange-400/25 bg-[#131c2c] p-3 shadow-lg shadow-black/20 lg:col-span-3 sm:p-5">
+                <article key={art.id} data-art-id={art.id} className="cg-bocao-pair col-span-2 scroll-mt-36 rounded-[22px] border border-orange-400/25 bg-[#131c2c] p-3 shadow-lg shadow-black/20 lg:col-span-3 sm:p-5">
                   <div className="mb-4 flex flex-wrap items-center justify-between gap-2 border-b border-white/10 pb-3">
                     <span className="inline-flex items-center gap-2 text-sm font-black tracking-wide text-[#ff9c50]"><Images className="h-5 w-5"/> ARTE / BOCÃO</span>
                     <span className="text-xs text-slate-300">Duas peças para a mesma caneca · downloads individuais</span>
                   </div>
                   <div className="grid grid-cols-2 gap-3 sm:gap-5">
-                    {art.pairedArt ? <div><p className="mb-2 text-xs font-black uppercase tracking-wide text-white/75"><span className="text-orange-400">01</span> · Arte principal</p><ArtCard art={art.pairedArt} demo={protectedPreview} downloadState={downloadStates[art.pairedArt.id] || 'idle'} onDownload={handleDownload} onToggleFavorite={toggleFavorite} onPreview={(chosen) => setPreviewId(chosen.id)} onOpenMockup={openMockup} onDelete={canDeleteFromPortal ? setDeleteTarget : undefined} /></div> : <div className="flex min-h-40 flex-col justify-center rounded-xl border border-dashed border-white/15 bg-white/[.035] p-4 text-center"><p className="font-bold text-white/80">01 · Arte principal</p><p className="mt-2 text-xs leading-6 text-white/50">Arte vinculada não encontrada neste acervo.</p></div>}
-                    <div className="cg-bocao-cell"><p className="mb-2 text-xs font-black uppercase tracking-wide text-white/75"><span className="text-orange-400">02</span> · Bocão complementar</p><ArtCard art={art} demo={protectedPreview} downloadState={downloadStates[art.id] || 'idle'} onDownload={handleDownload} onToggleFavorite={toggleFavorite} onPreview={(chosen) => setPreviewId(chosen.id)} onOpenMockup={openMockup} onDelete={canDeleteFromPortal ? setDeleteTarget : undefined} /></div>
+                    {art.pairedArt ? <div><p className="mb-2 text-xs font-black uppercase tracking-wide text-white/75"><span className="text-orange-400">01</span> · Arte principal</p><ArtCard art={art.pairedArt} anchorId={`cg-art-${art.pairedArt.id}`} highlighted={highlightId === art.pairedArt.id} demo={protectedPreview} downloadState={downloadStates[art.pairedArt.id] || 'idle'} onDownload={handleDownload} onToggleFavorite={toggleFavorite} onPreview={(chosen) => setPreviewId(chosen.id)} onOpenMockup={openMockup} onDelete={canDeleteFromPortal ? setDeleteTarget : undefined} /></div> : <div className="flex min-h-40 flex-col justify-center rounded-xl border border-dashed border-white/15 bg-white/[.035] p-4 text-center"><p className="font-bold text-white/80">01 · Arte principal</p><p className="mt-2 text-xs leading-6 text-white/50">Arte vinculada não encontrada neste acervo.</p></div>}
+                    <div className="cg-bocao-cell"><p className="mb-2 text-xs font-black uppercase tracking-wide text-white/75"><span className="text-orange-400">02</span> · Bocão complementar</p><ArtCard art={art} anchorId={`cg-art-${art.id}`} highlighted={highlightId === art.id} demo={protectedPreview} downloadState={downloadStates[art.id] || 'idle'} onDownload={handleDownload} onToggleFavorite={toggleFavorite} onPreview={(chosen) => setPreviewId(chosen.id)} onOpenMockup={openMockup} onDelete={canDeleteFromPortal ? setDeleteTarget : undefined} /></div>
                   </div>
                 </article>
               ) : (
-                <ArtCard key={art.id} art={art} demo={protectedPreview} downloadState={downloadStates[art.id] || 'idle'} onDownload={handleDownload} onToggleFavorite={toggleFavorite} onPreview={(chosen) => setPreviewId(chosen.id)} onOpenMockup={openMockup} onDelete={canDeleteFromPortal ? setDeleteTarget : undefined} />
+                <ArtCard key={art.id} art={art} anchorId={`cg-art-${art.id}`} highlighted={highlightId === art.id} demo={protectedPreview} downloadState={downloadStates[art.id] || 'idle'} onDownload={handleDownload} onToggleFavorite={toggleFavorite} onPreview={(chosen) => setPreviewId(chosen.id)} onOpenMockup={openMockup} onDelete={canDeleteFromPortal ? setDeleteTarget : undefined} />
               ))}
             </AnimatePresence>
           </div>
