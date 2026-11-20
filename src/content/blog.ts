@@ -27,6 +27,7 @@ export type BlogBlock =
   | { type: 'quote'; text: string }
   | { type: 'faq'; items: { q: string; a: string }[] }
   | { type: 'cta'; text: string; label: string; href: string }
+  | { type: 'art'; name: string; preview: string; file: string; meta: string }
 
 export type BlogArticle = {
   slug: string
@@ -2670,7 +2671,296 @@ const ART24: BlogArticle = {
   related: ['canecas-de-natal-para-vender-ideias', 'vender-canecas-personalizadas-instagram-whatsapp', 'quanto-cobrar-caneca-personalizada-preco'],
 }
 
-export const BLOG_ARTICLES: BlogArticle[] = [ART1, ART2, ART3, ART4, ART5, ART6, ART7, ART8, ART9, ART10, ART11, ART12, ART13, ART14, ART15, ART16, ART17, ART18, ART19, ART20, ART21, ART22, ART23, ART24]
+/* ============================================================
+ * ARTIGO 25 — artes: "artes grátis para canecas" (com download)
+ * ============================================================ */
+const ART25: BlogArticle = {
+  slug: 'artes-gratis-para-canecas-sublimacao-download',
+  title: 'Artes grátis para canecas: 6 artes prontas para sublimar (download direto)',
+  seoTitle: 'Artes Grátis para Canecas: 6 Artes para Sublimação com Download',
+  description:
+    'Baixe 6 artes grátis para canecas: HUNTRIX, Stray Kids, SKZOO, LGBT e Linkin Park, prontas para sublimação em 21 × 9,5 cm. Veja a prévia e baixe direto, sem cadastro.',
+  keywords: [
+    'artes grátis para canecas',
+    'artes para sublimação grátis',
+    'download artes canecas',
+    'arte huntrix caneca',
+    'arte stray kids caneca',
+    'sublimação caneca download',
+  ],
+  category: 'artes',
+  emoji: '🎨',
+  cover: '/uploads/artes-gratis-canecas.jpg',
+  coverAlt: 'Arte HUNTRIX pronta para sublimação de caneca',
+  readTime: '9 min',
+  datePublished: '2026-11-20',
+  dateModified: '2026-11-20',
+  lead:
+    'Arte boa para sublimar caneca não precisa custar nada: neste artigo você baixa 6 artes grátis, prontas para imprimir e prensar — HUNTRIX, Stray Kids, SKZOO, LGBT e Linkin Park. Cada arte já está no tamanho certo da caneca, 21 × 9,5 cm, e o download é direto pelo botão, sem cadastro e sem pagar nada. Veja a prévia de cada uma, escolha as suas e comece a produzir hoje.',
+  blocks: [
+    { type: 'h2', text: 'As 6 artes grátis deste artigo', id: 'as-6-artes' },
+    {
+      type: 'p',
+      text: 'Todas as artes abaixo já estão no formato de caneca, prontas para o papel sublimático: é só baixar, imprimir espelhada e prensar. A prévia mostra a arte como ela vai ficar na caneca, e o botão baixa o arquivo em alta resolução. São temas que o público procura — K-pop, rock e orgulho — e que vendem o ano inteiro, não só em data comemorativa. Escolha as suas e monte o catálogo.',
+    },
+    {
+      type: 'art',
+      name: 'HUNTRIX — K-pop Demon Hunters',
+      preview: 'https://pub-fbf2d6b2212548dba196bb70d9dcae28.r2.dev/blog/artes-gratis-canecas/previa/huntrix-kpop-demon-hunters.jpg',
+      file: 'https://pub-fbf2d6b2212548dba196bb70d9dcae28.r2.dev/blog/artes-gratis-canecas/huntrix-kpop-demon-hunters.jpg',
+      meta: 'JPG · 21 × 9,5 cm · pronto para sublimar',
+    },
+    {
+      type: 'art',
+      name: 'Stray Kids — logo com os 8 membros',
+      preview: 'https://pub-fbf2d6b2212548dba196bb70d9dcae28.r2.dev/blog/artes-gratis-canecas/previa/stray-kids-logo.jpg',
+      file: 'https://pub-fbf2d6b2212548dba196bb70d9dcae28.r2.dev/blog/artes-gratis-canecas/stray-kids-logo.jpg',
+      meta: 'JPG · 21 × 9,5 cm · pronto para sublimar',
+    },
+    {
+      type: 'art',
+      name: 'Stray Kids SKZOO — os 8 mascotes',
+      preview: 'https://pub-fbf2d6b2212548dba196bb70d9dcae28.r2.dev/blog/artes-gratis-canecas/previa/stray-kids-skzoo.jpg',
+      file: 'https://pub-fbf2d6b2212548dba196bb70d9dcae28.r2.dev/blog/artes-gratis-canecas/stray-kids-skzoo.jpg',
+      meta: 'JPG · 21 × 9,5 cm · pronto para sublimar',
+    },
+    {
+      type: 'art',
+      name: 'HUNTRIX chibi — as três caçadoras em versão fofa',
+      preview: 'https://pub-fbf2d6b2212548dba196bb70d9dcae28.r2.dev/blog/artes-gratis-canecas/previa/huntrix-chibi.jpg',
+      file: 'https://pub-fbf2d6b2212548dba196bb70d9dcae28.r2.dev/blog/artes-gratis-canecas/huntrix-chibi.jpg',
+      meta: 'JPG · 21 × 9,5 cm · pronto para sublimar',
+    },
+    {
+      type: 'art',
+      name: 'LGBT — punho com pulseiras do arco-íris',
+      preview: 'https://pub-fbf2d6b2212548dba196bb70d9dcae28.r2.dev/blog/artes-gratis-canecas/previa/lgbt.jpg',
+      file: 'https://pub-fbf2d6b2212548dba196bb70d9dcae28.r2.dev/blog/artes-gratis-canecas/lgbt.jpg',
+      meta: 'JPG · 21 × 9,5 cm · pronto para sublimar',
+    },
+    {
+      type: 'art',
+      name: 'Linkin Park — Chester Bennington ao vivo',
+      preview: 'https://pub-fbf2d6b2212548dba196bb70d9dcae28.r2.dev/blog/artes-gratis-canecas/previa/linkin-park.jpg',
+      file: 'https://pub-fbf2d6b2212548dba196bb70d9dcae28.r2.dev/blog/artes-gratis-canecas/linkin-park.jpg',
+      meta: 'JPG · 21 × 9,5 cm · pronto para sublimar',
+    },
+    { type: 'h2', text: 'Como usar a arte na sua caneca', id: 'como-usar' },
+    {
+      type: 'p',
+      text: 'A arte já vem no tamanho da caneca, 21 × 9,5 cm, que cobre a circunferência da caneca de 325 ml. O trabalho é o processo normal da sublimação: imprimir a arte espelhada no papel sublimático, envolver a caneca com o papel, fixar com fita térmica e prensar. A referência para a caneca de porcelana é 180 °C por 180 segundos, com pressão média — os valores por material estão na tabela de tempo e temperatura do blog. Depois da prensa, espere a caneca esfriar antes de retirar o papel: a cor termina de fixar enquanto a peça esfria, e puxar o papel quente pode borrar a emenda.',
+    },
+    {
+      type: 'ol',
+      items: [
+        'Baixe a arte pelo botão e confira a prévia: é assim que ela vai ficar na caneca.',
+        'Imprima espelhada no papel sublimático, em tamanho real (21 × 9,5 cm), sem reduzir nem ampliar.',
+        'Envolva a caneca com o papel, com a arte virada para a peça, e fixe bem com fita térmica nas bordas.',
+        'Prense a 180 °C por 180 segundos, com pressão média, sem abrir no meio do ciclo.',
+        'Retire da prensa, espere esfriar e só então retire o papel e a fita térmica.',
+      ],
+    },
+    { type: 'h2', text: 'O que você precisa para sublimar', id: 'o-que-precisa' },
+    {
+      type: 'p',
+      text: 'A lista de material para sublimar caneca cabe em poucos itens — e nenhum deles é caro. Se você já sublima, já tem tudo: a arte deste artigo entra no fluxo que você já usa, sem comprar nada novo.',
+    },
+    {
+      type: 'ul',
+      items: [
+        'Caneca branca com revestimento para sublimação (a de 325 ml é a padrão).',
+        'Papel sublimático e tinta sublimática na impressora.',
+        'Prensa térmica de canecas, com o cilindro limpo.',
+        'Fita térmica para fixar o papel sem deixar marca.',
+        'Uma caneca de sacrifício para o teste, antes de prensar o lote.',
+      ],
+    },
+    { type: 'h2', text: 'As artes em resumo', id: 'resumo' },
+    {
+      type: 'table',
+      caption: 'As 6 artes grátis do artigo',
+      head: ['Arte', 'Tema', 'Combina com'],
+      rows: [
+        ['HUNTRIX — K-pop Demon Hunters', 'K-pop e animação', 'Fãs do filme, presente para adolescentes'],
+        ['Stray Kids — logo com os 8 membros', 'K-pop', 'STAYs, coleção de grupo, presente de fã'],
+        ['Stray Kids SKZOO — os 8 mascotes', 'K-pop fofo', 'Presente, coleção, público jovem'],
+        ['HUNTRIX chibi', 'K-pop fofo', 'Presente infantil, versão leve do tema'],
+        ['LGBT — punho com pulseiras', 'Orgulho', 'Mês do Orgulho, presente afetivo, dia a dia'],
+        ['Linkin Park — Chester ao vivo', 'Rock', 'Fãs de rock, presente para quem cresceu com a banda'],
+      ],
+    },
+    { type: 'h2', text: 'Antes de prensar o lote: faça o teste', id: 'teste' },
+    {
+      type: 'p',
+      text: 'Arte grátis não é arte descuidada: antes de prensar o lote, faça uma caneca de teste com a arte do pedido. O teste mostra se a cor ficou viva, se a emenda fechou e se as bordas transferiram por completo — e custa uma caneca, não o pedido inteiro. Se a cor sair apagada, aumente o tempo em 10 segundos antes de mexer na temperatura. E confira a impressão antes de prensar: a arte precisa sair espelhada no papel, senão o texto e a imagem saem ao contrário na caneca.',
+    },
+    {
+      type: 'callout',
+      title: 'O teste antes do lote',
+      text: 'Uma caneca de teste com a arte do pedido mostra se a cor ficou viva, se a emenda fechou e se as bordas transferiram — antes de você comprometer o lote inteiro. É nela que o erro aparece, não no pedido do cliente.',
+    },
+    {
+      type: 'faq',
+      items: [
+        {
+          q: 'Preciso de cadastro para baixar as artes?',
+          a: 'Não: o download é direto pelo botão de cada arte, sem cadastro e sem pagamento. As 6 artes deste artigo são gratuitas.',
+        },
+        {
+          q: 'Em que tamanho eu imprimo a arte?',
+          a: 'As artes já estão no tamanho da caneca, 21 × 9,5 cm. Imprima em tamanho real, sem reduzir nem ampliar, no papel sublimático e espelhada — a imagem impressa precisa ser o espelho da que vai ficar na caneca.',
+        },
+        {
+          q: 'Posso vender canecas com essas artes?',
+          a: 'As artes deste artigo são fan-arts de temas populares, feitas para uso pessoal e pequenos lotes. Para vender em escala, prefira artes originais ou licenciadas — e conheça o acervo completo do portal, com milhares de artes organizadas por tema e data comemorativa.',
+        },
+      ],
+    },
+    {
+      type: 'cta',
+      text: 'Gostou das artes grátis? No portal tem milhares de artes prontas para sublimar, organizadas por tema e data comemorativa — e o acesso é vitalício.',
+      label: 'Ver as artes para sublimar',
+      href: '/#preco',
+    },
+  ],
+  related: ['onde-encontrar-artes-para-sublimacao', 'artes-para-sublimacao-de-canecas-guia', 'como-sublimar-canecas-passo-a-passo'],
+}
+
+/* ============================================================
+ * ARTIGO 26 — negócios: "como fotografar canecas personalizadas"
+ * ============================================================ */
+const ART26: BlogArticle = {
+  slug: 'como-fotografar-canecas-personalizadas-vender-mais',
+  title: 'Como fotografar canecas personalizadas para vender mais (só com o celular)',
+  seoTitle: 'Como Fotografar Canecas Personalizadas para Vender Mais (Celular)',
+  description:
+    'Aprenda a fotografar canecas personalizadas com o celular: luz, fundo, ângulo, foto de contexto e edição — e transforme a foto em venda no Instagram e no WhatsApp.',
+  keywords: [
+    'como fotografar caneca',
+    'foto caneca personalizada vender',
+    'fotografia de produto celular',
+    'foto para instagram caneca',
+    'fotos de canecas para vendas',
+  ],
+  category: 'negocios',
+  emoji: '📸',
+  cover: '/uploads/hero-mug.png',
+  coverAlt: 'Canecas sublimadas fotografadas para venda',
+  readTime: '8 min',
+  datePublished: '2026-11-20',
+  dateModified: '2026-11-20',
+  lead:
+    'A foto vende antes da caneca: no Instagram e no WhatsApp, o cliente decide em segundos se vale a pena perguntar o preço — e a decisão é pela foto. A boa notícia é que você não precisa de estúdio nem de câmera cara: com o celular, luz de janela e alguns cuidados, a caneca sai da foto pronta para vender. Este guia mostra o passo a passo da foto que vende.',
+  blocks: [
+    { type: 'h2', text: 'A foto vende antes da caneca', id: 'a-foto-vende' },
+    {
+      type: 'p',
+      text: 'Quem vende caneca personalizada vende pela foto: o cliente não segura a peça, não sente o peso e não vê a cor de verdade — ele vê a foto. Foto escura, torta ou tremida não gera pergunta de preço; foto limpa, com a arte legível e a cor fiel, gera pedido. A diferença não é talento nem equipamento: é método. A foto que vende segue sempre os mesmos cuidados — luz, fundo, ângulo e edição leve — e qualquer celular atual dá conta, desde que você respeite cada um deles.',
+    },
+    { type: 'h2', text: 'Luz: a janela é o seu estúdio', id: 'luz' },
+    {
+      type: 'p',
+      text: 'A luz decide a foto mais que qualquer outra coisa: com luz boa, o celular faz o resto. O estúdio é a janela — fotografe de dia, perto dela, com a luz entrando de lado. A luz lateral mostra a forma da caneca e a textura da estampa, sem estourar as cores. O sol direto é o inimigo: ele cria sombra dura, estoura o branco da caneca e apaga os detalhes da arte. E o flash do celular é pior ainda: o brilho da cerâmica devolve a luz em cheio e cria um reflexo branco no meio da estampa.',
+    },
+    {
+      type: 'ul',
+      items: [
+        'Fotografe de dia, perto da janela, com a luz entrando de lado na caneca.',
+        'Dia nublado é melhor que dia de sol forte: a luz fica macia e uniforme, sem sombra dura.',
+        'Nada de flash: o reflexo no brilho da cerâmica estraga a estampa no meio da foto.',
+        'Evite a lâmpada amarela de casa: ela deixa a caneca branca amarelada e a cor da arte errada.',
+        'Se a sombra de um lado ficar forte demais, coloque uma folha de papel branco do outro lado para rebater a luz.',
+      ],
+    },
+    { type: 'h2', text: 'Fundo limpo, caneca em destaque', id: 'fundo' },
+    {
+      type: 'p',
+      text: 'O fundo precisa sumir para a caneca aparecer: parede branca, mesa de madeira clara ou um pano liso sem estampa já resolvem. O erro é fotografar a caneca no meio da bagunça da mesa de trabalho — o cliente olha para tudo, menos para a arte. Afaste a caneca de objetos que disputem atenção, deixe um espaço vazio ao redor dela e centralize a arte no quadro. Se o fundo for muito escuro, a caneca branca some no contraste errado; se for muito colorido, a cor da arte muda na foto. Fundo neutro e claro é o seguro.',
+    },
+    { type: 'h2', text: 'Ângulos que mostram a arte inteira', id: 'angulos' },
+    {
+      type: 'p',
+      text: 'A caneca é um cilindro: uma foto só não mostra a arte inteira. O catálogo precisa de pelo menos três fotos por peça — de frente, em ângulo e de contexto — e cada uma tem um trabalho diferente. A foto de frente é a principal: caneca na altura da câmera, arte centralizada, sem inclinar o celular. A foto em 45 graus mostra a alça e o volume da peça, e prova que a caneca é de verdade, não um desenho. E o detalhe de perto mostra o nome, a frase ou o desenho que o cliente pediu — é ele que fecha a venda de personalização.',
+    },
+    {
+      type: 'ol',
+      items: [
+        'Foto de frente: caneca na altura da câmera, arte centralizada e legível.',
+        'Foto em 45 graus: mostra a alça, o volume e que a peça é real.',
+        'Detalhe de perto: o nome, a frase ou o desenho que o cliente pediu.',
+        'Foto de contexto: a caneca em uso, no café, na mesa ou na caixa de presente.',
+      ],
+    },
+    { type: 'h2', text: 'Foto de contexto: a caneca em uso', id: 'contexto' },
+    {
+      type: 'p',
+      text: 'A foto de frente mostra o produto; a foto de contexto mostra a vida com o produto — e é ela que vende no feed. O cliente não compra só a caneca: ele compra o café da manhã com a caneca dele, o presente pronto na caixa, a mesa de trabalho com a peça do lado. A foto de contexto é a que o cliente encaminha para alguém e a que para o dedo no feed. Monte a cena com o que você já tem em casa: café fumegando, mãos segurando a caneca, caderno e óculos na mesa, caixa de presente com laço. Não precisa de cenário comprado — precisa de uma cena que o cliente reconheça como a vida dele.',
+    },
+    {
+      type: 'ul',
+      items: [
+        'Café fumegando ao lado da caneca: o clássico que nunca falha.',
+        'Mãos segurando a caneca: mostra o tamanho real e o uso do dia a dia.',
+        'Mesa de trabalho com a caneca: o cliente se vê usando a peça.',
+        'Caixa de presente pronta: vende o presente, não só a caneca.',
+        'Kit com os itens juntos: caneca, chocolate e cartão como presente pronto.',
+      ],
+    },
+    { type: 'h2', text: 'Editar no celular sem exagerar', id: 'edicao' },
+    {
+      type: 'p',
+      text: 'A edição serve para corrigir a foto, não para inventar outra caneca: brilho e contraste em passos pequenos, recorte reto e a mesma edição em todas as fotos do catálogo. O erro é saturar demais — a cor da foto fica linda e a caneca que chega na casa do cliente é outra. A foto precisa parecer com a peça real, porque a primeira reclamação de quem vende caneca é "a cor não era essa". Use o editor do próprio celular ou um aplicativo gratuito de edição, ajuste só o necessário e compare a foto com a caneca na mão antes de postar. E padronize: o catálogo com a mesma luz, o mesmo fundo e a mesma edição parece loja profissional — o catálogo com cada foto de um jeito parece bagunça.',
+    },
+    { type: 'h2', text: 'O erro que mais derruba a venda', id: 'erro' },
+    {
+      type: 'p',
+      text: 'O erro que mais derruba a venda é a foto que não parece com o produto: cor saturada demais, ângulo que esconde defeito, fundo que confunde. O cliente compra a foto e recebe a caneca — se as duas não batem, vem a reclamação, a devolução e a avaliação ruim. A foto honesta vende menos no impulso e mais no longo prazo: o cliente que recebe exatamente o que viu na foto volta e indica. Por isso, antes de postar, compare a foto com a caneca na mão, na luz do dia: se a cor, o tamanho e o detalhe batem, a foto está pronta.',
+    },
+    {
+      type: 'table',
+      caption: 'Checklist da foto que vende',
+      head: ['Etapa', 'Faça', 'Evite'],
+      rows: [
+        ['Luz', 'Luz de janela, de lado, de dia', 'Flash e lâmpada amarela'],
+        ['Fundo', 'Neutro e claro, sem bagunça', 'Fundo colorido ou cheio de objetos'],
+        ['Ângulo', 'De frente, em 45° e detalhe de perto', 'Foto torta ou de cima, que achata a peça'],
+        ['Contexto', 'Café, mãos, mesa, caixa de presente', 'Cena montada demais, que parece propaganda'],
+        ['Edição', 'Brilho e contraste leves, igual em todo o catálogo', 'Saturação alta, que muda a cor da caneca'],
+      ],
+    },
+    {
+      type: 'callout',
+      title: 'Uma foto por caneca não basta',
+      text: 'O catálogo precisa de pelo menos três fotos por caneca: de frente, em ângulo e de contexto. É o conjunto que convence — a primeira chama a atenção, as outras fecham a venda.',
+    },
+    {
+      type: 'faq',
+      items: [
+        {
+          q: 'Preciso de câmera profissional para fotografar canecas?',
+          a: 'Não: o celular atual resolve, desde que a luz seja boa. O que decide a foto é a luz e o fundo, não a câmera — fotografe de dia, perto da janela, com a luz entrando de lado.',
+        },
+        {
+          q: 'Qual o melhor horário para fotografar?',
+          a: 'De manhã ou no fim da tarde, perto da janela, com luz indireta. O sol do meio-dia é forte demais e estoura as cores; o dia nublado é melhor que o dia de sol forte, porque a luz fica macia e uniforme.',
+        },
+        {
+          q: 'Quantas fotos devo fazer por caneca?',
+          a: 'Pelo menos três: de frente, em ângulo e de contexto. No catálogo, a foto de frente é a principal; no feed, a de contexto vende mais — é ela que o cliente encaminha para alguém.',
+        },
+      ],
+    },
+    {
+      type: 'cta',
+      text: 'Foto pronta, catálogo pronto — agora falta a arte que faz o cliente parar o dedo. Milhares de artes prontas para sublimar, organizadas por tema.',
+      label: 'Ver as artes para sublimar',
+      href: '/#preco',
+    },
+  ],
+  related: ['vender-canecas-personalizadas-instagram-whatsapp', 'lucrar-canecas-personalizadas-estrategia', 'como-embalar-caneca-personalizada-envio'],
+}
+
+export const BLOG_ARTICLES: BlogArticle[] = [ART1, ART2, ART3, ART4, ART5, ART6, ART7, ART8, ART9, ART10, ART11, ART12, ART13, ART14, ART15, ART16, ART17, ART18, ART19, ART20, ART21, ART22, ART23, ART24, ART25, ART26]
 
 export function getArticle(slug: string): BlogArticle | undefined {
   return BLOG_ARTICLES.find((a) => a.slug === slug)

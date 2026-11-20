@@ -6,7 +6,7 @@
  * <details>/<summary> para FAQ e <a> com âncoras descritivas.
  */
 import Link from 'next/link'
-import { Check, ChevronDown, ArrowRight, Quote } from 'lucide-react'
+import { Check, ChevronDown, ArrowRight, Quote, Download } from 'lucide-react'
 import type { BlogBlock } from '@/content/blog'
 import { cn } from '@/lib/utils'
 
@@ -155,6 +155,28 @@ function BlockView({ block }: { block: BlogBlock }) {
             <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
           </Link>
         </aside>
+      )
+
+    case 'art':
+      return (
+        <figure className="overflow-hidden rounded-3xl border border-zinc-200 bg-white shadow-sm">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={block.preview} alt={block.name} loading="lazy" className="h-auto w-full" />
+          <figcaption className="flex flex-wrap items-center justify-between gap-3 px-5 py-4">
+            <div>
+              <p className="text-sm font-black text-zinc-900">{block.name}</p>
+              <p className="mt-0.5 text-xs font-semibold text-zinc-500">{block.meta}</p>
+            </div>
+            <a
+              href={block.file}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex h-11 items-center gap-2 rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 px-5 text-sm font-extrabold text-white shadow-lg shadow-orange-600/30 transition-all hover:brightness-105"
+            >
+              <Download className="h-4 w-4" /> Baixar arte grátis
+            </a>
+          </figcaption>
+        </figure>
       )
   }
 }
