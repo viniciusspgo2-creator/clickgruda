@@ -235,7 +235,7 @@ export function AdminView() {
       </aside>
 
       {/* ============ MAIN ============ */}
-      <div className="flex min-h-screen flex-1 flex-col lg:pl-64">
+      <div className="flex min-h-screen min-w-0 flex-1 flex-col lg:pl-64">
         {/* Topbar */}
         <header className="glass-header sticky top-0 z-30 border-b border-zinc-200">
           <div className="flex h-16 items-center justify-between gap-3 px-4 sm:px-6">
@@ -265,7 +265,7 @@ export function AdminView() {
           </div>
         </header>
 
-        <main className="flex-1 p-4 sm:p-6">
+        <main className="min-w-0 flex-1 p-4 sm:p-6">
           <motion.div key={section} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.25 }}>
             {section === 'dashboard' && <DashboardSection onNavigate={setSection} />}
             {section === 'arts' && <AdminArtsSection />}
@@ -703,7 +703,7 @@ function UsersSection() {
                 {u.lastAccessAt ? <>{new Date(u.lastAccessAt).toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo', dateStyle: 'short', timeStyle: 'short' })}<span className="block text-[10px] text-zinc-400">Horário de Brasília</span></> : <span className="text-xs italic text-zinc-400">nunca acessou</span>}
               </TableCell>
               <TableCell>
-                <div className="flex items-center justify-end gap-1.5">
+                <div className="flex flex-wrap items-center justify-end gap-1.5">
                   {!u.isPreview && !u.isStudioOnly && u.role !== 'ADMIN' && <DownloadLimitDialog user={u} />}
                   {!u.isPreview && !u.isStudioOnly && u.role !== 'ADMIN' && <MemberAccessDialog user={u} />}
                   {!u.isPreview && !u.isStudioOnly && !u.isDemo && u.role !== 'ADMIN' && <ManualPaymentDialog user={u} />}
