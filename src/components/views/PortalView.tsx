@@ -33,7 +33,6 @@ import {
   Heart,
   LayoutGrid,
   Images,
-  Lightbulb,
   Loader2,
   LogOut,
   Menu,
@@ -66,7 +65,6 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { Logo } from '@/components/shared/Logo'
 import { ArtCard } from '@/components/shared/ArtCard'
 import { ChipScroller } from '@/components/shared/ChipScroller'
-import { ThemeSuggestionDialog } from '@/components/portal/ThemeSuggestionDialog'
 import { TagFilterPanel } from '@/components/portal/TagFilterPanel'
 import { DiscoveryShelf } from '@/components/portal/DiscoveryShelf'
 import { ArtPreviewDialog } from '@/components/portal/ArtPreviewDialog'
@@ -233,7 +231,6 @@ export function PortalView() {
   const [previewId, setPreviewId] = useState<string | null>(null)
   const [deleteTarget, setDeleteTarget] = useState<ArtItem | null>(null)
   const [downloadStates, setDownloadStates] = useState<DownloadStates>({})
-  const [suggestionOpen, setSuggestionOpen] = useState(false)
   const [enhanceOpen, setEnhanceOpen] = useState(false)
   const [portalTheme, setPortalTheme] = useState<'dark' | 'light'>('dark')
   const [mockupDialogOpen, setMockupDialogOpen] = useState(false)
@@ -612,7 +609,6 @@ export function PortalView() {
           <nav className="cg-sidebar-nav" aria-label="Atalhos da plataforma">
             <button type="button" className="cg-sidebar-link" onClick={() => { setMenuOpen(true) }}><SlidersHorizontal className="h-[18px] w-[18px]"/><span>Categorias e filtros</span><ArrowUpRight className="ml-auto h-3.5 w-3.5 opacity-50"/></button>
             <button type="button" className="cg-sidebar-link" onClick={() => { navigateTab('todas', 'baixadas') }}><TrendingUp className="h-[18px] w-[18px]"/><span>Mais baixadas</span></button>
-            <button type="button" className="cg-sidebar-link" onClick={() => user.isDemo ? toast.info('Sugestões liberadas após a assinatura.') : setSuggestionOpen(true)}><Lightbulb className="h-[18px] w-[18px]"/><span>Sugerir uma arte</span></button>
             <button type="button" className="cg-sidebar-link" onClick={() => user.isDemo ? toast.info('Disponível após a ativação do acesso.') : setEnhanceOpen(true)}><Wand2 className="h-[18px] w-[18px]"/><span>Melhorar minha arte</span></button>
             {user.role === 'ADMIN' && <button type="button" className="cg-sidebar-link" onClick={() => setView('admin')}><Settings2 className="h-[18px] w-[18px]"/><span>Painel Master</span></button>}
           </nav>
@@ -747,9 +743,6 @@ export function PortalView() {
               <DropdownMenuItem onClick={() => setView('hub')}><House className="mr-2 h-4 w-4" /> Minha Central 2.0</DropdownMenuItem>
               <DropdownMenuItem onClick={() => setView('landing')}>
                 <Sparkles className="mr-2 h-4 w-4" /> Ver landing page
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => user.isDemo ? toast.info('Sugestões liberadas após a assinatura.') : setSuggestionOpen(true)} className="font-bold text-orange-600">
-                <Lightbulb className="mr-2 h-4 w-4" /> Sugerir uma nova arte
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => user.isDemo ? toast.info('Disponível após a ativação do acesso.') : setEnhanceOpen(true)}>
                 <Wand2 className="mr-2 h-4 w-4" /> Melhorar minha arte
@@ -1144,12 +1137,6 @@ export function PortalView() {
         <div className="mx-auto flex w-full max-w-[1600px] flex-wrap items-center justify-between gap-2 px-4 text-xs text-zinc-400 sm:px-6">
           <span>© {new Date().getFullYear()} Click &amp; Gruda · Acesso ativo</span>
           <div className="flex items-center gap-4">
-            <button
-              onClick={() => user.isDemo ? toast.info('Sugestões liberadas após a assinatura.') : setSuggestionOpen(true)}
-              className="inline-flex items-center gap-1.5 font-bold text-zinc-400 transition-colors hover:text-orange-600"
-            >
-              <Lightbulb className="h-3.5 w-3.5" /> Sugerir uma nova arte
-            </button>
             <span className="flex items-center gap-1.5">
               <Download className="h-3.5 w-3.5" /> {quota ? `${quota.remaining} downloads restantes` : 'Downloads ilimitados'}
             </span>
@@ -1271,9 +1258,7 @@ export function PortalView() {
 
       {canDeleteFromPortal && deleteTarget && <PortalDeleteArtDialog key={deleteTarget.id} art={deleteTarget} onClose={() => setDeleteTarget(null)} onDeleted={onArtDeleted} />}
 
-      {/* ================= SUGESTÃO DE TEMA (envia ao Admin Master) ================= */}
       <ArtPreviewDialog art={previewArt} open={!!previewArt} onOpenChange={(open) => !open && setPreviewId(null)} demo={protectedPreview} downloadState={previewArt ? downloadStates[previewArt.id] || 'idle' : 'idle'} onDownload={handleDownload} onFavorite={toggleFavorite} onCategory={toggleCategory} onTag={viewTag} onSeasonal={viewSeasonal} />
-      <ThemeSuggestionDialog open={suggestionOpen} onOpenChange={setSuggestionOpen} />
       <EnhanceRequestDialog open={enhanceOpen} onOpenChange={setEnhanceOpen} />
     </div>
   )

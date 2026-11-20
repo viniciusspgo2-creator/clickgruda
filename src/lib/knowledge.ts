@@ -105,10 +105,6 @@ export const FAQ_ITEMS: { q: string; a: string }[] = [
     q: 'Como falo com o suporte?',
     a: 'O suporte oficial é pelo WhatsApp +55 62 9838-7816 — canal mais rápido para dúvidas sobre acesso, downloads e pagamentos (inclusive confirmação de pagamentos pendentes). Também atendemos pelo e-mail ' + SITE.email + '.',
   },
-  {
-    q: 'Posso sugerir uma nova arte?',
-    a: 'Sim! Dentro do portal (menu da sua conta ou botão "Sugerir uma nova arte" no topo e no fim da página) você envia a sua ideia — um tema, uma frase ou um estilo — e ela vai direto para a nossa equipe de criação no painel interno. Os temas mais pedidos entram no cronograma do acervo.',
-  },
   { q: 'Posso conhecer a plataforma antes de comprar?', a: 'Sim. Use Conhecer por dentro na página inicial ou no login. A demonstração dispensa cadastro e permite explorar a busca, as categorias e as datas sazonais. As imagens são prévias protegidas, com nitidez limitada e marca-d’água. Downloads e ações de membro ficam bloqueados.' },
   { q: 'Posso acessar em vários aparelhos ao mesmo tempo?', a: 'Nosso sistema de IA acompanha os acessos da conta e detecta quando o mesmo login é usado ao mesmo tempo em mais de um aparelho ou local. O acesso é individual — um dispositivo por vez — e o compartilhamento em massa é proibido. Quando isso acontece, a sessão é encerrada em um dos aparelhos conectados. Você pode trocar de aparelho quando quiser. Para usar mais dispositivos ao mesmo tempo, fale com o suporte para adicionar um acesso — a equipe informa as condições e habilita o adicional após a confirmação.' },
   { q: 'Como funciona o teste grátis da Biblioteca?', a: 'Ao criar sua conta grátis, você pode fazer até 20 downloads individuais em até 24 horas. O prazo começa no cadastro e o teste da Biblioteca termina ao atingir a cota ou completar as 24 horas, o que acontecer primeiro. Não é necessário cartão para criar a conta.' },
