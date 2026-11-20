@@ -511,7 +511,7 @@ export function AdminArtsSection() {
         </Select>
         <Select value={filterQuality} onValueChange={(v) => changeFilter(setFilterQuality, v)}>
           <SelectTrigger className="h-9 w-[170px] rounded-xl text-xs"><SelectValue /></SelectTrigger>
-          <SelectContent><SelectItem value="all">Ambas bibliotecas</SelectItem><SelectItem value="approved">Biblioteca principal</SelectItem><SelectItem value="rejected">Artes reprovadas</SelectItem><SelectItem value="no-tags">Sem tags</SelectItem></SelectContent>
+          <SelectContent><SelectItem value="all">Ambas bibliotecas</SelectItem><SelectItem value="approved">Biblioteca principal</SelectItem><SelectItem value="rejected">Artes Avulsas</SelectItem><SelectItem value="no-tags">Sem tags</SelectItem></SelectContent>
         </Select>
         {(hasActiveAdminArtFilters(filters) || search) && (
           <Button variant="ghost" size="sm" onClick={() => {
@@ -525,7 +525,7 @@ export function AdminArtsSection() {
       <div className="flex flex-wrap items-center gap-2 rounded-2xl border border-zinc-200 bg-white p-3 shadow-sm">
         <span className="mr-1 inline-flex items-center gap-1.5 text-xs font-extrabold text-zinc-700"><ImageOff className="h-4 w-4 text-orange-500" /> Revisar cadastros</span>
         <button type="button" aria-pressed={filterCategory === 'none'} onClick={() => { changeFilter(setFilterCategory, filterCategory === 'none' ? 'all' : 'none'); setFilterQuality('all') }} className={cn('rounded-lg border px-3 py-2 text-xs font-bold transition-colors', filterCategory === 'none' ? 'border-orange-400 bg-orange-500 text-white' : 'border-zinc-200 bg-zinc-50 text-zinc-600 hover:border-orange-300 hover:text-orange-700')}>Sem categoria</button>
-        <button type="button" aria-pressed={filterQuality === 'rejected'} onClick={() => changeFilter(setFilterQuality, filterQuality === 'rejected' ? 'all' : 'rejected')} className={cn('rounded-lg border px-3 py-2 text-xs font-bold', filterQuality === 'rejected' ? 'bg-orange-500 text-white' : 'border-zinc-200 bg-zinc-50 text-zinc-600')}>Artes reprovadas</button>
+        <button type="button" aria-pressed={filterQuality === 'rejected'} onClick={() => changeFilter(setFilterQuality, filterQuality === 'rejected' ? 'all' : 'rejected')} className={cn('rounded-lg border px-3 py-2 text-xs font-bold', filterQuality === 'rejected' ? 'bg-orange-500 text-white' : 'border-zinc-200 bg-zinc-50 text-zinc-600')}>Artes Avulsas</button>
         <button type="button" aria-pressed={search.toLowerCase() === BOCAO_MARKER} onClick={() => { setSearch(search.toLowerCase() === BOCAO_MARKER ? '' : BOCAO_MARKER); setPage(1) }} className={cn('rounded-lg border px-3 py-2 text-xs font-bold', search.toLowerCase() === BOCAO_MARKER ? 'bg-orange-500 text-white' : 'border-zinc-200 bg-zinc-50 text-zinc-600')}>Bocões cadastrados</button>
         <button type="button" aria-pressed={filterQuality === 'no-tags'} onClick={() => { changeFilter(setFilterQuality, filterQuality === 'no-tags' ? 'all' : 'no-tags'); setFilterCategory('all') }} className={cn('rounded-lg border px-3 py-2 text-xs font-bold transition-colors', filterQuality === 'no-tags' ? 'border-orange-400 bg-orange-500 text-white' : 'border-zinc-200 bg-zinc-50 text-zinc-600 hover:border-orange-300 hover:text-orange-700')}>Sem tags</button>
         <div className="ml-auto inline-flex shrink-0 gap-1 rounded-xl bg-zinc-100 p-1" role="group" aria-label="Visualização das artes">
@@ -610,7 +610,7 @@ export function AdminArtsSection() {
                   {art.category ? <Badge className="bg-orange-50 text-[10px] font-bold text-orange-700">{art.category.emoji} {art.category.name}</Badge> : <Badge className="bg-rose-50 text-[10px] text-rose-600">Sem categoria</Badge>}
                   {art.seasonalEvent && <Badge variant="outline" className="text-[10px] text-zinc-600">{art.seasonalEvent.emoji} {art.seasonalEvent.name}</Badge>}
                   {isBocaoTags(art.tags.map(t => t.name)) && <Badge className="bg-orange-100 text-[9px] font-black text-orange-700">Bocão · Arte {formatArtCode(bocaoParentFromTags(art.tags.map(t => t.name)))}</Badge>}
-                  {art.isRejected && <Badge className="bg-red-100 text-[10px] text-red-700">Design reprovado</Badge>}
+                  {art.isRejected && <Badge className="bg-red-100 text-[10px] text-red-700">Avulsa</Badge>}
                   {art.tags.length === 0 && <Badge className="bg-amber-50 text-[10px] text-amber-700">Sem tags</Badge>}
                 </div>
                 <p className="line-clamp-1 text-[11px] text-zinc-500">{art.tags.map((tag) => `#${tag.name}`).join(' · ') || 'Adicione tags para facilitar a busca'}</p>
@@ -638,7 +638,7 @@ export function AdminArtsSection() {
                 <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm font-bold text-zinc-900">
                   <span className="shrink-0 rounded-md bg-zinc-900 px-1.5 py-0.5 font-mono text-[10px] font-bold text-orange-300">{formatArtCode(art.code)}</span>
                   <span className="min-w-0 truncate">{art.title}</span>
-                  {art.isRejected && <Badge className="bg-red-100 text-[9px] text-red-700">Reprovada</Badge>}
+                  {art.isRejected && <Badge className="bg-red-100 text-[9px] text-red-700">Avulsa</Badge>}
                   {art.isLaunch && <Badge className="bg-orange-100 text-[9px] font-black uppercase text-orange-600">Novo</Badge>}
                   {art.isSelected && <Badge className="bg-amber-100 text-[9px] font-black uppercase text-amber-700">⭐ Selecionada</Badge>}
                   {art.seasonalEvent && <Badge variant="outline" className="text-[9px] font-black text-zinc-500">{art.seasonalEvent.emoji} {art.seasonalEvent.name}</Badge>}
@@ -853,7 +853,7 @@ export function AdminArtsSection() {
             </div>
 
             {!form.isBocao && <div className="flex items-center justify-between rounded-xl border border-red-200 bg-red-50/70 px-3.5 py-3">
-              <div><p className="text-sm font-extrabold text-red-800">Design reprovado · sub-biblioteca</p><p className="text-xs text-zinc-600">Fica disponível apenas na coleção Artes reprovadas. Não aparece na biblioteca principal.</p></div>
+              <div><p className="text-sm font-extrabold text-red-800">Artes avulsas · sub-biblioteca</p><p className="text-xs text-zinc-600">Fica disponível apenas na coleção Artes Avulsas. Não aparece na biblioteca principal.</p></div>
               <Switch checked={form.isRejected} onCheckedChange={(v) => setForm((f) => ({ ...f, isRejected: v }))} />
             </div>}
 

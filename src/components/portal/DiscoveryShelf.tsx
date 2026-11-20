@@ -1,21 +1,18 @@
 'use client'
 
-import { ArrowRight, Flame, Lightbulb, Sparkles, Star, TrendingUp } from 'lucide-react'
+import { ArrowRight, Flame, Sparkles, Star, TrendingUp } from 'lucide-react'
 import type { PortalTab, SortMode } from '@/lib/store'
 
 /** Atalhos reais para filtros existentes. Não cria "coleções" fictícias nem mockups. */
 export function DiscoveryShelf({
   onTab,
-  onSuggest,
 }: {
   onTab: (tab: PortalTab, sort?: SortMode) => void
-  onSuggest: () => void
 }) {
   const shortcuts = [
     { label: 'Lançamentos', detail: 'Artes com selo NOVO', Icon: Flame, onClick: () => onTab('lancamentos') },
     { label: 'Escolhas da equipe', detail: 'Curadoria especial', Icon: Star, onClick: () => onTab('selecionadas') },
     { label: 'Mais baixadas', detail: 'Preferidas da comunidade', Icon: TrendingUp, onClick: () => onTab('todas', 'baixadas') },
-    { label: 'Sugerir uma arte', detail: 'Dê sua sugestão', Icon: Lightbulb, onClick: onSuggest },
   ]
 
   return (
@@ -27,7 +24,7 @@ export function DiscoveryShelf({
         </div>
         <span className="text-xs font-medium text-slate-400">Explore sem sair da biblioteca</span>
       </div>
-      <div className="cg-discovery-grid grid grid-cols-2 gap-3 xl:grid-cols-4">
+      <div className="cg-discovery-grid grid grid-cols-2 gap-3 xl:grid-cols-3">
         {shortcuts.map(({ label, detail, Icon, onClick }) => (
           <button key={label} type="button" onClick={onClick} className="cg-discovery-tile group relative flex min-h-[110px] items-center gap-3 overflow-hidden rounded-2xl p-3 text-left sm:p-4">
             <span className="cg-discovery-icon flex h-11 w-11 shrink-0 items-center justify-center rounded-xl"><Icon className="h-5 w-5" /></span>

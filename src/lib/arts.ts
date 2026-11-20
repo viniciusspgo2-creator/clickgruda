@@ -73,7 +73,7 @@ function toDTO(a: ArtRow, favSet: Set<string>): ArtDTO {
 export function buildArtWhere(o: ArtQuery): Prisma.ArtWhereInput {
   const AND: Prisma.ArtWhereInput[] = []
   const tab = o.tab || 'todas'
-  // Sub-biblioteca separada por padrão; busca e destaques nunca misturam artes reprovadas.
+  // Sub-biblioteca separada por padrão; busca e destaques nunca misturam artes avulsas.
   if (!o.includeRejected) AND.push({ isRejected: tab === 'reprovadas' })
   // Bocões ficam em uma aba própria: não poluem o acervo principal nem lançamentos.
   if (!o.includeRejected) {

@@ -89,8 +89,8 @@ const TABS: { id: PortalTab; label: string; icon: React.ElementType }[] = [
   { id: 'lancamentos', label: 'Lançamentos', icon: Flame },
   { id: 'selecionadas', label: 'Selecionadas', icon: Star },
   { id: 'bocoes', label: 'Arte/Bocão', icon: Layers3 },
-  { id: 'reprovadas', label: 'Artes reprovadas', icon: EyeOff },
   { id: 'sazonal', label: 'Sazonal', icon: CalendarDays },
+  { id: 'reprovadas', label: 'Artes Avulsas', icon: EyeOff },
   { id: 'favoritas', label: 'Favoritas', icon: Heart },
   { id: 'downloads', label: 'Meus downloads', icon: Download },
 ]
@@ -572,7 +572,7 @@ export function PortalView() {
               return (
                 <button key={item.id} type="button" aria-current={active ? 'page' : undefined} aria-disabled={restricted}
                   onClick={() => restricted ? toast.info('Este recurso fica disponível após ativar o acesso.') : setFilter({ tab: item.id, ...(item.id === 'todas' ? { sort: 'recentes' } : {}), ...(item.id !== 'sazonal' ? { seasonalEventId: null } : {}) })}
-                  className={cn('cg-sidebar-link', active && 'cg-sidebar-link-active', item.id === 'bocoes' && 'cg-bocao-nav')}>
+                  className={cn('cg-sidebar-link', active && 'cg-sidebar-link-active', (item.id === 'bocoes' || item.id === 'sazonal') && 'cg-bocao-nav')}>
                   <span className="cg-sidebar-icon" aria-hidden="true"><item.icon className="h-[20px] w-[20px] shrink-0" strokeWidth={2.15} /></span>
                   <span className="min-w-0 flex-1 text-left">{item.label === 'Todas' ? 'Visão geral' : item.label}</span>
                   {restricted && <Lock className="ml-auto h-3.5 w-3.5 opacity-60" />}
@@ -801,7 +801,7 @@ export function PortalView() {
                   onClick={() => restricted ? toast.info('Este recurso fica disponível após ativar o acesso.') : setFilter({ tab: t.id, ...(t.id !== 'sazonal' ? { seasonalEventId: null } : {}) })}
                   className={cn(
                     'relative flex shrink-0 items-center gap-1.5 rounded-full px-4 py-2 text-[13px] font-bold transition-colors',
-                    active ? 'text-white' : t.id === 'bocoes' ? 'text-orange-400 hover:bg-orange-500/10 hover:text-orange-200' : 'text-slate-400 hover:bg-white/10 hover:text-white'
+                    active ? 'text-white' : (t.id === 'bocoes' || t.id === 'sazonal') ? 'text-orange-400 hover:bg-orange-500/10 hover:text-orange-200' : 'text-slate-400 hover:bg-white/10 hover:text-white'
                   )}
                 >
                   {active && (
@@ -992,7 +992,7 @@ export function PortalView() {
         
         {tab === 'todas' && !q && (
           <div className="cg-overview-row mb-7">
-            <DiscoveryShelf onTab={navigateTab} onSuggest={() => user.isDemo ? toast.info('Sugestões liberadas após a assinatura.') : setSuggestionOpen(true)} />
+            <DiscoveryShelf onTab={navigateTab} />
           </div>
         )}
 
@@ -1050,7 +1050,7 @@ export function PortalView() {
                 Lançamentos <span className="rounded-full bg-orange-500 px-2 py-0.5 text-[10px] font-black uppercase text-white">novo</span>
               </span>
             )}
-            {tab === 'reprovadas' && 'Sub-biblioteca · Artes com design reprovado'}
+            {tab === 'reprovadas' && 'Sub-biblioteca · Artes avulsas'}
             {tab === 'selecionadas' && (
               <span className="flex items-center gap-2">
                 Artes selecionadas <Star className="h-4.5 w-4.5 fill-amber-400 text-amber-500" />

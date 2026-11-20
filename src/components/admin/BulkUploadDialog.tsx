@@ -299,7 +299,7 @@ export function BulkUploadDialog({
                   />
                   <span className="text-xs font-bold text-zinc-600">Todas como selecionadas</span>
                 </label>
-                <label className="flex items-center gap-2"><Switch checked={pending.length > 0 && pending.every((i) => i.isRejected)} onCheckedChange={(v) => applyToAll({ isRejected: v })}/><span className="text-xs font-bold text-red-700">Todas reprovadas</span></label>
+                <label className="flex items-center gap-2"><Switch checked={pending.length > 0 && pending.every((i) => i.isRejected)} onCheckedChange={(v) => applyToAll({ isRejected: v })}/><span className="text-xs font-bold text-red-700">Todas avulsas</span></label>
               </div>
             </div>
 
@@ -451,7 +451,7 @@ export function BulkUploadDialog({
                           />
                           <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-500" /> Selecionada
                         </label>
-                        <label className="flex items-center gap-2 text-xs font-bold text-red-600"><Switch checked={it.isRejected} disabled={it.status === 'done' || publishing} onCheckedChange={(v) => patch(it.uid, { isRejected: v })}/>Design reprovado</label>
+                        <label className="flex items-center gap-2 text-xs font-bold text-red-600"><Switch checked={it.isRejected} disabled={it.status === 'done' || publishing} onCheckedChange={(v) => patch(it.uid, { isRejected: v })}/>Avulsa</label>
                         {it.status === 'done' && (
                           <span className="flex items-center gap-1 text-xs font-black text-emerald-600">
                             <Check className="h-3.5 w-3.5" /> Publicada
