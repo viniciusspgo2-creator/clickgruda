@@ -12,7 +12,8 @@ import { SITE } from '@/lib/site'
 import { LIFETIME_PRICE_CENTS } from '@/lib/payments/config'
 import { formatBRL } from '@/lib/types'
 
-export const LANDING_FAQ_INDICES = [18, 19, 2, 3, 9, 17, 23, 24] as const
+// ATENÇÃO: índices em FAQ_ITEMS — ao remover/adicionar pergunta no FAQ, ajuste esta lista (índice fora do ar quebra o build da home).
+export const LANDING_FAQ_INDICES = [17, 18, 2, 3, 9, 16, 22, 23] as const
 
 export const PRICE = formatBRL(LIFETIME_PRICE_CENTS)
 
