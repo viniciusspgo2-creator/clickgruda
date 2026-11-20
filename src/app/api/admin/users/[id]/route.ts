@@ -17,7 +17,7 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
   const body = await req.json().catch(() => ({}))
 
   const data: Record<string, unknown> = {}
-  if (body.extraDevices !== undefined && (!Number.isInteger(body.extraDevices) || body.extraDevices < 0 || body.extraDevices > 20)) return jsonError('Informe de 0 a 20 acessos adicionais.', 400)
+  if (body.extraDevices !== undefined && (!Number.isInteger(body.extraDevices) || body.extraDevices < 0 || body.extraDevices > 500)) return jsonError('Informe de 0 a 500 acessos adicionais.', 400)
   if (body.downloadLimit !== undefined && body.downloadLimit !== null && (!Number.isSafeInteger(body.downloadLimit) || body.downloadLimit < 0 || body.downloadLimit > 100000)) return jsonError('Limite de downloads inválido (0 a 100.000).', 400)
   if (typeof body.blocked === 'boolean') {
     if (admin.id === id && body.blocked) return jsonError('Você não pode bloquear sua própria conta.', 400)

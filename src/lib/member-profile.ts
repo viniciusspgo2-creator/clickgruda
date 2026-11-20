@@ -17,7 +17,7 @@ export function normalizeWhatsapp(value: unknown): string {
 export function parseMemberProfile(value?: string | null): MemberProfile {
   try {
     const data = JSON.parse(value || '{}')
-    return { ...data, whatsapp: typeof data.whatsapp === 'string' ? data.whatsapp : '', extraDevices: Number.isInteger(data.extraDevices) ? Math.max(0, Math.min(20, data.extraDevices)) : 0, downloadLimit: Number.isSafeInteger(data.downloadLimit) && data.downloadLimit >= 0 && data.downloadLimit <= 100000 ? data.downloadLimit : null }
+    return { ...data, whatsapp: typeof data.whatsapp === 'string' ? data.whatsapp : '', extraDevices: Number.isInteger(data.extraDevices) ? Math.max(0, Math.min(500, data.extraDevices)) : 0, downloadLimit: Number.isSafeInteger(data.downloadLimit) && data.downloadLimit >= 0 && data.downloadLimit <= 100000 ? data.downloadLimit : null }
   } catch { return { whatsapp: '', extraDevices: 0, downloadLimit: null } }
 }
 export async function getMemberProfile(id: string, client: Client = db) {
