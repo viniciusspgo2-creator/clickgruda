@@ -2,10 +2,13 @@
 import { CaktoAuditPanel } from '@/components/admin/CaktoAuditPanel'
 import { CaktoReconciliationDialog } from '@/components/admin/CaktoReconciliationDialog'
 
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { motion } from 'framer-motion'
 import {
+  ArrowDown,
+  ArrowUp,
+  ArrowUpDown,
   CalendarHeart,
   Check,
   Clock3,
@@ -563,6 +566,8 @@ type AdminUser = {
   whatsapp?: string
   extraDevices?: number
   createdAt: string
+  /** ISO do maior lastSeenAt das sessões do membro; null = nunca acessou. */
+  lastAccessAt: string | null
   downloadsCount: number
   downloadLimit?: number | null
   favoritesCount: number
@@ -577,6 +582,21 @@ function UsersSection() {
     queryKey: ['admin-users'],
     queryFn: async () => (await fetch('/api/admin/users')).json(),
   })
+
+  // Ordenação por último acesso (clique no cabeçalho da coluna). "Nunca acessou" fica sempre por último.
+  const [lastAccessSort, setLastAccessSort] = useState<'asc' | 'desc' | null>(null)
+  const users = useMemo(() => {
+    const list = data?.users ?? []
+    if (!lastAccessSort) return list
+    return [...list].sort((a, b) => {
+      const ta = a.lastAccessAt ? new Date(a.lastAccessAt).getTime() : null
+      const tb = b.lastAccessAt ? new Date(b.lastAccessAt).getTime() : null
+      if (ta === null && tb === null) return 0
+      if (ta === null) return 1
+      if (tb === null) return -1
+      return lastAccessSort === 'asc' ? ta - tb : tb - ta
+    })
+  }, [data?.users, lastAccessSort])
 
   const patchUser = useMutation({
     mutationFn: async ({ id, body }: { id: string; body: Record<string, unknown> }) => {
@@ -633,11 +653,17 @@ function UsersSection() {
             <TableHead className="font-black text-zinc-500">Acesso</TableHead>
             <TableHead className="hidden font-black text-zinc-500 md:table-cell">Atividade</TableHead>
             <TableHead className="hidden font-black text-zinc-500 lg:table-cell">Cadastro</TableHead>
+            <TableHead className="hidden font-black text-zinc-500 lg:table-cell">
+              <button type="button" title="Ordenar por último acesso" onClick={() => setLastAccessSort((s) => (s === 'desc' ? 'asc' : 'desc'))} className="inline-flex items-center gap-1 font-black text-zinc-500 hover:text-zinc-800">
+                Último acesso
+                {lastAccessSort === 'asc' ? <ArrowUp className="h-3.5 w-3.5" /> : lastAccessSort === 'desc' ? <ArrowDown className="h-3.5 w-3.5" /> : <ArrowUpDown className="h-3.5 w-3.5 opacity-50" />}
+              </button>
+            </TableHead>
             <TableHead className="text-right font-black text-zinc-500">Ações</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          {data?.users.map((u) => (
+          {users.map((u) => (
             <TableRow key={u.id}>
               <TableCell>
                 <div className="flex items-center gap-2.5">
@@ -651,6 +677,7 @@ function UsersSection() {
                     <p className="truncate text-xs text-zinc-400">{u.email}</p>
                     {u.whatsapp && <a href={`https://wa.me/${u.whatsapp}?text=${encodeURIComponent(`Olá, ${u.name.split(' ')[0]}! Sou da equipe Click & Gruda. Vi seu cadastro e posso ajudar com o pagamento e a ativação da sua conta.`)}`} target="_blank" rel="noopener noreferrer" className="mt-1 inline-flex min-h-7 items-center gap-1 text-xs font-bold text-emerald-700 underline underline-offset-2">WhatsApp: +{u.whatsapp}</a>}
                     <p className="mt-1 text-[11px] text-zinc-500 lg:hidden">Cadastro: {new Date(u.createdAt).toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo', dateStyle: 'short', timeStyle: 'short' })}</p>
+                    <p className="mt-1 text-[11px] text-zinc-500 lg:hidden">Último acesso: {u.lastAccessAt ? new Date(u.lastAccessAt).toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo', dateStyle: 'short', timeStyle: 'short' }) : 'nunca acessou'}</p>
                   </div>
                 </div>
               </TableCell>
@@ -671,6 +698,9 @@ function UsersSection() {
               </TableCell>
               <TableCell className="hidden text-sm text-zinc-500 lg:table-cell">
                 {new Date(u.createdAt).toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo', dateStyle: 'short', timeStyle: 'short' })}<span className="block text-[10px] text-zinc-400">Horário de Brasília</span>
+              </TableCell>
+              <TableCell className="hidden text-sm text-zinc-500 lg:table-cell">
+                {u.lastAccessAt ? <>{new Date(u.lastAccessAt).toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo', dateStyle: 'short', timeStyle: 'short' })}<span className="block text-[10px] text-zinc-400">Horário de Brasília</span></> : <span className="text-xs italic text-zinc-400">nunca acessou</span>}
               </TableCell>
               <TableCell>
                 <div className="flex items-center justify-end gap-1.5">

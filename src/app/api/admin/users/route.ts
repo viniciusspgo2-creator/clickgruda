@@ -11,13 +11,16 @@ async function requireAdmin() {
 
 export async function GET() {
   if (!(await requireAdmin())) return jsonError('Não autorizado', 401)
-  const [users, dlCounts, favCounts] = await Promise.all([
+  const [users, dlCounts, favCounts, lastSeen] = await Promise.all([
     db.user.findMany({ orderBy: { createdAt: 'desc' }, take: 500 }),
     db.download.groupBy({ by: ['userId'], _count: true }),
     db.favorite.groupBy({ by: ['userId'], _count: true }),
+    // Último acesso = maior lastSeenAt entre as sessões do membro (gravado a cada acesso, com intervalo de 10 min).
+    db.userSession.groupBy({ by: ['userId'], _max: { lastSeenAt: true } }),
   ])
   const dlMap = new Map(dlCounts.map((d) => [d.userId, d._count]))
   const favMap = new Map(favCounts.map((f) => [f.userId, f._count]))
+  const lastAccessMap = new Map(lastSeen.map((s) => [s.userId, s._max.lastSeenAt?.toISOString() ?? null]))
   const profiles = await db.setting.findMany({ where: { key: { in: users.map(user => MEMBER_PREFIX + user.id) } } })
   const profileMap = new Map(profiles.map(row => [row.key.slice(MEMBER_PREFIX.length), parseMemberProfile(row.value)]))
   return Response.json({
@@ -40,6 +43,7 @@ export async function GET() {
       accessType: u.accessType,
       accessProvider: u.accessProvider,
       createdAt: u.createdAt.toISOString(),
+      lastAccessAt: lastAccessMap.get(u.id) ?? null,
       downloadsCount: dlMap.get(u.id) || 0,
       favoritesCount: favMap.get(u.id) || 0,
     })),
