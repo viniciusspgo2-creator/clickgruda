@@ -13,7 +13,7 @@ import { LIFETIME_PRICE_CENTS } from '@/lib/payments/config'
 import { formatBRL } from '@/lib/types'
 
 // ATENÇÃO: índices em FAQ_ITEMS — ao remover/adicionar pergunta no FAQ, ajuste esta lista (índice fora do ar quebra o build da home).
-export const LANDING_FAQ_INDICES = [17, 18, 2, 3, 9, 16, 22, 23] as const
+export const LANDING_FAQ_INDICES = [17, 18, 2, 3, 9, 16, 22, 23, 24] as const
 
 export const PRICE = formatBRL(LIFETIME_PRICE_CENTS)
 
@@ -115,6 +115,7 @@ export const FAQ_ITEMS: { q: string; a: string }[] = [
   { q: 'O Studio e o Editor são comprados separadamente?', a: 'Não. A Biblioteca é o produto principal. Studio Mockup e Editor são bônus incluídos no pacote de quem ativa o acesso completo à Biblioteca. Você também recebe 3 dias para testá-los ao criar a conta grátis.' },
   { q: 'Meu acesso inclui atualizações e novos produtos?', a: 'Sim. O membro tem acesso às futuras atualizações da plataforma, aos novos lançamentos do acervo e aos novos produtos disponibilizados para membros, conforme forem lançados. As novidades acompanham seu pacote.' },
   { q: 'Vocês fazem edição no serviço Melhorar minha arte?', a: 'Não fazemos edição de conteúdo. O serviço cobre pequenas adaptações, melhoria de nitidez e redução de pixelização, conforme o arquivo permitir. Não inclui troca de nomes ou personagens, criação ou reconstrução da composição.' },
+  { q: 'E se eu não gostar? Posso pedir o reembolso?', a: 'Sim. Você tem 7 dias de garantia a partir da compra. Para pedir o reembolso, fale com o suporte no WhatsApp ou solicite direto na plataforma onde você comprou (Cakto, Hotmart ou Kiwify).' },
 ]
 
 /* ============================================================
