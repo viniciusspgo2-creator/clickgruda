@@ -675,7 +675,17 @@ function UsersSection() {
                       {u.name} {u.isPreview && <Badge className="ml-1 bg-violet-100 text-[9px] font-black text-violet-700">PREVIEW · {u.previewMaxSessions ?? 10} acessos</Badge>} {u.isStudioOnly && <Badge className="ml-1 bg-sky-100 text-[9px] font-black text-sky-700">STUDIO · {u.previewMaxSessions ?? 10} acessos</Badge>} {u.role === 'ADMIN' && <Badge className="ml-1 bg-orange-100 text-[9px] font-black text-orange-600">MASTER</Badge>}
                     </p>
                     <p className="truncate text-xs text-zinc-400">{u.email}</p>
-                    {u.whatsapp && <a href={`https://wa.me/${u.whatsapp}?text=${encodeURIComponent(`Olá, ${u.name.split(' ')[0]}! Sou da equipe Click & Gruda. Vi seu cadastro e posso ajudar com o pagamento e a ativação da sua conta.`)}`} target="_blank" rel="noopener noreferrer" className="mt-1 inline-flex min-h-7 items-center gap-1 text-xs font-bold text-emerald-700 underline underline-offset-2">WhatsApp: +{u.whatsapp}</a>}
+                    {u.whatsapp && <a href={`https://wa.me/${u.whatsapp}?text=${encodeURIComponent(`Oi, ${u.name.split(' ')[0]}! Tudo bem? 👋
+
+Aqui é da equipe Click & Gruda. Vimos que você fez seu cadastro, mas não voltou mais.
+
+Posso te ajudar com:
+✅ Ativação da sua conta
+✅ Dúvidas sobre a plataforma
+
+E pode ficar tranquilo(a) com a compra:
+🔒 Pagamento 100% seguro pela CAKTO PAY
+🛡️ 7 dias de garantia, com reembolso direto na plataforma da Cakto`)}`} target="_blank" rel="noopener noreferrer" className="mt-1 inline-flex min-h-7 items-center gap-1 text-xs font-bold text-emerald-700 underline underline-offset-2">WhatsApp: +{u.whatsapp}</a>}
                     <p className="mt-1 text-[11px] text-zinc-500 lg:hidden">Cadastro: {new Date(u.createdAt).toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo', dateStyle: 'short', timeStyle: 'short' })}</p>
                     <p className="mt-1 text-[11px] text-zinc-500 lg:hidden">Último acesso: {u.lastAccessAt ? new Date(u.lastAccessAt).toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo', dateStyle: 'short', timeStyle: 'short' }) : 'nunca acessou'}</p>
                   </div>
