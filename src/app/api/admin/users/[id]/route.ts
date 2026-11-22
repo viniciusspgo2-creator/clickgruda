@@ -37,7 +37,6 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
   if (body.blocked === true) data.status = 'BLOCKED'
   else if (body.blocked === false && target.status === 'BLOCKED') data.status = 'ACTIVE'
   if ((target?.isPreview || target?.isStudioOnly) && (body.role === 'ADMIN' || body.hasAccess === false || typeof body.password === 'string')) return jsonError('A conta universal só pode ser gerenciada pela opção Preview/Studio.', 403)
-  if(body.downloadLimit!==undefined && target.accessType==='TRIAL')return jsonError('O teste público tem 20 downloads em 24 horas. Use Liberar para conceder acesso completo.',400)
   if (body.downloadLimit !== undefined && (target.isPreview || target.isStudioOnly || target.role === 'ADMIN' || body.role === 'ADMIN')) return jsonError('O limitador só pode ser configurado para usuários comuns.', 400)
   if (body.role === 'USER' || body.role === 'ADMIN') data.role = body.role
   // Redefinição de senha pelo Admin Master (não há recuperação automática por enquanto)
