@@ -34,10 +34,15 @@ export async function POST(req: Request) {
     // Bloqueio por IP: 1 teste grátis por rede. Se este IP já criou uma conta gratuita
     // (mesmo com outro e-mail), bloqueia o novo cadastro e mostra a mensagem.
     // O IP não é guardado em texto — só o hash SHA-256. Contas pagas não bloqueiam.
+    // A lista BlockedSignupIp sobrevive à exclusão da conta: deletar o usuário
+    // não libera o IP para um novo teste.
     const ipHash = hashIp(requestIp(req))
     if (ipHash) {
-      const trialFromThisIp = await db.user.findFirst({ where: { signupIpHash: ipHash, accessType: 'TRIAL' } })
-      if (trialFromThisIp) return jsonError('Já existe uma conta gratuita criada a partir desta conexão. Faça login na sua conta para continuar, ou fale com o suporte se precisar de ajuda.', 403)
+      const [trialFromThisIp, blockedIp] = await Promise.all([
+        db.user.findFirst({ where: { signupIpHash: ipHash, accessType: 'TRIAL' } }),
+        db.blockedSignupIp.findUnique({ where: { ipHash } }),
+      ])
+      if (trialFromThisIp || blockedIp) return jsonError('Já existe uma conta gratuita criada a partir desta conexão. Faça login na sua conta para continuar, ou fale com o suporte se precisar de ajuda.', 403)
     }
 
     const trial = freeSignupEnabled()

@@ -90,6 +90,10 @@ export async function DELETE(_req: Request, { params }: { params: Promise<{ id: 
   if (session.id === id) return jsonError('Você não pode excluir a si mesmo', 400)
   const bonus=await db.setting.findUnique({where:{key:STUDIO_PREFIX+id}})
   if(bonus){const d=JSON.parse(bonus.value);if(d.event.entitlement!=='REVOKED'||d.deliveredVersion<d.event.version)return jsonError('Revogue o acesso e aguarde a sincronização do Studio antes de excluir esta conta.',409)}
+  // Excluir conta de teste não libera o IP: o hash vai para a lista de bloqueio
+  // e um novo cadastro gratuito a partir dessa conexão continua barrado.
+  const target=await db.user.findUnique({where:{id},select:{signupIpHash:true,accessType:true}})
+  if(target?.accessType==='TRIAL'&&target.signupIpHash)await db.blockedSignupIp.upsert({where:{ipHash:target.signupIpHash},update:{},create:{ipHash:target.signupIpHash,reason:'TRIAL_USED'}})
   await db.$transaction([db.user.delete({ where: { id } }), db.setting.deleteMany({ where: { key: MEMBER_PREFIX + id } })])
   return Response.json({ ok: true })
 }

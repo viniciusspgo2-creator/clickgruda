@@ -337,3 +337,12 @@ model SecurityThrottle {
   blockedUntil DateTime?
   updatedAt DateTime @updatedAt
 }
+
+/** Hashes SHA-256 de IPs que já usaram o teste grátis. Vive separado do
+ * usuário e sobrevive à exclusão da conta: deletar o usuário não libera o
+ * IP para um novo teste. Nunca guarda o IP em texto. */
+model BlockedSignupIp {
+  ipHash String @id
+  reason String @default("TRIAL_USED")
+  createdAt DateTime @default(now())
+}
