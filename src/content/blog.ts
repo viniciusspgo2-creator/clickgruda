@@ -2960,7 +2960,316 @@ const ART26: BlogArticle = {
   related: ['vender-canecas-personalizadas-instagram-whatsapp', 'lucrar-canecas-personalizadas-estrategia', 'como-embalar-caneca-personalizada-envio'],
 }
 
-export const BLOG_ARTICLES: BlogArticle[] = [ART1, ART2, ART3, ART4, ART5, ART6, ART7, ART8, ART9, ART10, ART11, ART12, ART13, ART14, ART15, ART16, ART17, ART18, ART19, ART20, ART21, ART22, ART23, ART24, ART25, ART26]
+/* ============================================================
+ * ARTIGO 27 — artes: "artes grátis para canecas" (lote 2)
+ * ============================================================ */
+const ART27: BlogArticle = {
+  slug: 'artes-gratis-canecas-stitch-stranger-things-wednesday',
+  title: 'Artes grátis para canecas: Stitch Pool, Stranger Things, The Mask, Scooby-Doo, Chester e Wandinha',
+  seoTitle: 'Artes Grátis para Canecas: 7 Artes para Sublimação com Download',
+  description:
+    'Baixe 7 artes grátis para canecas: Stitch Pool, Stranger Things, The Mask, Scooby-Doo, Chester Cheetah e Wandinha Addams, prontas para sublimação em 21 × 9,5 cm. Prévia e download direto, sem cadastro.',
+  keywords: [
+    'artes grátis para canecas',
+    'stitch pool caneca',
+    'stranger things caneca',
+    'the mask caneca',
+    'scooby-doo caneca',
+    'chester cheetah caneca',
+    'wandinha addams caneca',
+    'wednesday caneca',
+  ],
+  category: 'artes',
+  emoji: '🎨',
+  cover: '/uploads/artes-gratis-canecas-2.jpg',
+  coverAlt: 'Arte Stitch Pool pronta para sublimação de caneca',
+  readTime: '9 min',
+  datePublished: '2026-11-24',
+  dateModified: '2026-11-24',
+  lead:
+    'O segundo lote de artes grátis chegou — e veio pesado: Stitch vestido de Deadpool, o Dustin de Stranger Things, o Máskara, a Máquina de Mistérios, o Chester Cheetah e a Wandinha Addams em dose dupla. São 7 artes prontas para sublimar, já no tamanho da caneca, 21 × 9,5 cm. O download é direto pelo botão de cada arte, sem cadastro e sem pagar nada. Veja a prévia, escolha as suas e comece a produzir hoje.',
+  blocks: [
+    { type: 'h2', text: 'As 7 artes grátis deste artigo', id: 'as-7-artes' },
+    {
+      type: 'p',
+      text: 'Todas as artes abaixo já estão no formato de caneca, prontas para o papel sublimático: é só baixar, imprimir espelhada e prensar. A prévia mostra a arte como ela vai ficar na caneca, e o botão baixa o arquivo em alta resolução. São temas que o público reconhece na hora — desenho, série, filme e mascote — e que vendem o ano inteiro, porque não dependem de data comemorativa. O lote mistura humor, nostalgia e personagens que todo mundo conhece: é o tipo de arte que o cliente escolhe sem pensar duas vezes.',
+    },
+    {
+      type: 'art',
+      name: 'Stitch Pool — Stitch vestido de Deadpool',
+      preview: 'https://pub-fbf2d6b2212548dba196bb70d9dcae28.r2.dev/blog/artes-gratis-canecas/previa/stitch-pool-deadpool.jpg',
+      file: 'https://pub-fbf2d6b2212548dba196bb70d9dcae28.r2.dev/blog/artes-gratis-canecas/stitch-pool-deadpool.jpg',
+      meta: 'JPG · 21 × 9,5 cm · pronto para sublimar',
+    },
+    {
+      type: 'art',
+      name: 'Stranger Things — Dustin com o boné do Camp 85',
+      preview: 'https://pub-fbf2d6b2212548dba196bb70d9dcae28.r2.dev/blog/artes-gratis-canecas/previa/stranger-things-dustin.jpg',
+      file: 'https://pub-fbf2d6b2212548dba196bb70d9dcae28.r2.dev/blog/artes-gratis-canecas/stranger-things-dustin.jpg',
+      meta: 'JPG · 21 × 9,5 cm · pronto para sublimar',
+    },
+    {
+      type: 'art',
+      name: 'The Mask — o Máskara de terno laranja',
+      preview: 'https://pub-fbf2d6b2212548dba196bb70d9dcae28.r2.dev/blog/artes-gratis-canecas/previa/the-mask.jpg',
+      file: 'https://pub-fbf2d6b2212548dba196bb70d9dcae28.r2.dev/blog/artes-gratis-canecas/the-mask.jpg',
+      meta: 'JPG · 21 × 9,5 cm · pronto para sublimar',
+    },
+    {
+      type: 'art',
+      name: 'Scooby-Doo — a Máquina de Mistérios',
+      preview: 'https://pub-fbf2d6b2212548dba196bb70d9dcae28.r2.dev/blog/artes-gratis-canecas/previa/scooby-doo-mystery-machine.jpg',
+      file: 'https://pub-fbf2d6b2212548dba196bb70d9dcae28.r2.dev/blog/artes-gratis-canecas/scooby-doo-mystery-machine.jpg',
+      meta: 'JPG · 21 × 9,5 cm · pronto para sublimar',
+    },
+    {
+      type: 'art',
+      name: 'Chester Cheetah — o mascote do Cheetos',
+      preview: 'https://pub-fbf2d6b2212548dba196bb70d9dcae28.r2.dev/blog/artes-gratis-canecas/previa/chester-cheetah.jpg',
+      file: 'https://pub-fbf2d6b2212548dba196bb70d9dcae28.r2.dev/blog/artes-gratis-canecas/chester-cheetah.jpg',
+      meta: 'JPG · 21 × 9,5 cm · pronto para sublimar',
+    },
+    {
+      type: 'art',
+      name: 'Wandinha Addams — Not Today',
+      preview: 'https://pub-fbf2d6b2212548dba196bb70d9dcae28.r2.dev/blog/artes-gratis-canecas/previa/wednesday-not-today.jpg',
+      file: 'https://pub-fbf2d6b2212548dba196bb70d9dcae28.r2.dev/blog/artes-gratis-canecas/wednesday-not-today.jpg',
+      meta: 'JPG · 21 × 9,5 cm · pronto para sublimar',
+    },
+    {
+      type: 'art',
+      name: 'Wandinha Addams — I Hate Everything',
+      preview: 'https://pub-fbf2d6b2212548dba196bb70d9dcae28.r2.dev/blog/artes-gratis-canecas/previa/wednesday-i-hate-everything.jpg',
+      file: 'https://pub-fbf2d6b2212548dba196bb70d9dcae28.r2.dev/blog/artes-gratis-canecas/wednesday-i-hate-everything.jpg',
+      meta: 'JPG · 21 × 9,5 cm · pronto para sublimar',
+    },
+    { type: 'h2', text: 'Como usar a arte na sua caneca', id: 'como-usar' },
+    {
+      type: 'p',
+      text: 'A arte já vem no tamanho da caneca, 21 × 9,5 cm, que cobre a circunferência da caneca de 325 ml. O trabalho é o processo normal da sublimação: imprimir a arte espelhada no papel sublimático, envolver a caneca com o papel, fixar com fita térmica e prensar. A referência para a caneca de porcelana é 180 °C por 180 segundos, com pressão média — os valores por material estão na tabela de tempo e temperatura do blog. Depois da prensa, espere a caneca esfriar antes de retirar o papel: a cor termina de fixar enquanto a peça esfria, e puxar o papel quente pode borrar a emenda.',
+    },
+    {
+      type: 'ol',
+      items: [
+        'Baixe a arte pelo botão e confira a prévia: é assim que ela vai ficar na caneca.',
+        'Imprima espelhada no papel sublimático, em tamanho real (21 × 9,5 cm), sem reduzir nem ampliar.',
+        'Envolva a caneca com o papel, com a arte virada para a peça, e fixe bem com fita térmica nas bordas.',
+        'Prense a 180 °C por 180 segundos, com pressão média, sem abrir no meio do ciclo.',
+        'Retire da prensa, espere esfriar e só então retire o papel e a fita térmica.',
+      ],
+    },
+    { type: 'h2', text: 'O que você precisa para sublimar', id: 'o-que-precisa' },
+    {
+      type: 'p',
+      text: 'A lista de material para sublimar caneca cabe em poucos itens — e nenhum deles é caro. Se você já sublima, já tem tudo: a arte deste artigo entra no fluxo que você já usa, sem comprar nada novo.',
+    },
+    {
+      type: 'ul',
+      items: [
+        'Caneca branca com revestimento para sublimação (a de 325 ml é a padrão).',
+        'Papel sublimático e tinta sublimática na impressora.',
+        'Prensa térmica de canecas, com o cilindro limpo.',
+        'Fita térmica para fixar o papel sem deixar marca.',
+        'Uma caneca de sacrifício para o teste, antes de prensar o lote.',
+      ],
+    },
+    { type: 'h2', text: 'As artes em resumo', id: 'resumo' },
+    {
+      type: 'table',
+      caption: 'As 7 artes grátis do artigo',
+      head: ['Arte', 'Tema', 'Combina com'],
+      rows: [
+        ['Stitch Pool', 'Desenho e humor', 'Fãs de Stitch e Deadpool, presente divertido'],
+        ['Stranger Things — Dustin', 'Série e nostalgia', 'Fãs da série, presente para quem cresceu nos anos 80'],
+        ['The Mask', 'Filme e humor', 'Fãs do filme, presente para quem curte comédia dos anos 90'],
+        ['Scooby-Doo — Mystery Machine', 'Desenho clássico', 'Fãs de todas as idades, presente infantil e nostálgico'],
+        ['Chester Cheetah', 'Mascote', 'Fãs de salgadinho, presente divertido e colorido'],
+        ['Wandinha — Not Today', 'Série e humor ácido', 'Fãs de Wandinha, presente com atitude'],
+        ['Wandinha — I Hate Everything', 'Série e humor ácido', 'Fãs de Wandinha, presente para quem se identifica'],
+      ],
+    },
+    { type: 'h2', text: 'Antes de prensar o lote: faça o teste', id: 'teste' },
+    {
+      type: 'p',
+      text: 'Arte grátis não é arte descuidada: antes de prensar o lote, faça uma caneca de teste com a arte do pedido. O teste mostra se a cor ficou viva, se a emenda fechou e se as bordas transferiram por completo — e custa uma caneca, não o pedido inteiro. Se a cor sair apagada, aumente o tempo em 10 segundos antes de mexer na temperatura. E confira a impressão antes de prensar: a arte precisa sair espelhada no papel, senão o texto e a imagem saem ao contrário na caneca.',
+    },
+    {
+      type: 'callout',
+      title: 'O teste antes do lote',
+      text: 'Uma caneca de teste com a arte do pedido mostra se a cor ficou viva, se a emenda fechou e se as bordas transferiram — antes de você comprometer o lote inteiro. É nela que o erro aparece, não no pedido do cliente.',
+    },
+    {
+      type: 'faq',
+      items: [
+        {
+          q: 'Preciso de cadastro para baixar as artes?',
+          a: 'Não: o download é direto pelo botão de cada arte, sem cadastro e sem pagamento. As 7 artes deste artigo são gratuitas.',
+        },
+        {
+          q: 'Em que tamanho eu imprimo a arte?',
+          a: 'As artes já estão no tamanho da caneca, 21 × 9,5 cm. Imprima em tamanho real, sem reduzir nem ampliar, no papel sublimático e espelhada — a imagem impressa precisa ser o espelho da que vai ficar na caneca.',
+        },
+        {
+          q: 'Posso vender canecas com essas artes?',
+          a: 'As artes deste artigo são fan-arts de temas populares, feitas para uso pessoal e pequenos lotes. Para vender em escala, prefira artes originais ou licenciadas — e conheça o acervo completo do portal, com milhares de artes organizadas por tema e data comemorativa.',
+        },
+      ],
+    },
+    {
+      type: 'cta',
+      text: 'Gostou das artes grátis? No portal tem milhares de artes prontas para sublimar, organizadas por tema e data comemorativa — e o acesso é vitalício.',
+      label: 'Ver as artes para sublimar',
+      href: '/#preco',
+    },
+  ],
+  related: ['artes-gratis-para-canecas-sublimacao-download', 'onde-encontrar-artes-para-sublimacao', 'como-sublimar-canecas-passo-a-passo'],
+}
+
+/* ============================================================
+ * ARTIGO 28 — negócios: "canecas para festas e aniversários"
+ * ============================================================ */
+const ART28: BlogArticle = {
+  slug: 'canecas-personalizadas-festas-aniversarios-ideias',
+  title: 'Canecas personalizadas para festas e aniversários: 12 ideias que vendem o ano todo',
+  seoTitle: 'Canecas para Festas e Aniversários: 12 Ideias para Vender Mais',
+  description:
+    'Caneca personalizada é a lembrancinha de festa que o convidado usa — e não joga fora. Veja 12 ideias para festas e aniversários, como montar o kit festa e como divulgar sem depender de data comemorativa.',
+  keywords: [
+    'canecas personalizadas festas',
+    'caneca personalizada aniversário',
+    'lembrancinha caneca personalizada',
+    'caneca festa infantil',
+    'caneca personalizada festa',
+  ],
+  category: 'negocios',
+  emoji: '🎉',
+  cover: '/uploads/art-flork-amigas.png',
+  coverAlt: 'Arte Flork amigas para caneca de festa',
+  readTime: '10 min',
+  datePublished: '2026-11-24',
+  dateModified: '2026-11-24',
+  lead:
+    'Aniversário tem todo mês, festa infantil tem todo fim de semana — e a caneca personalizada é a lembrancinha que o convidado leva para casa e usa. Diferente da lembrancinha que vai para a gaveta, a caneca fica na mesa, no trabalho, na cozinha: é propaganda do seu trabalho todo dia. Neste artigo, 12 ideias de canecas para festas e aniversários, como montar o kit festa e como divulgar sem depender de data comemorativa.',
+  blocks: [
+    { type: 'h2', text: 'Por que a caneca de festa vende o ano todo', id: 'por-que-vende' },
+    {
+      type: 'p',
+      text: 'A festa é o pedido que não depende do calendário do comércio: aniversário, chá de bebê, casamento e formatura acontecem o ano inteiro, e quem organiza quer uma lembrança que o convidado não jogue fora. A caneca resolve isso — é útil, é pessoal e carrega a foto, o nome e a data da festa. Para quem sublima, o pedido de festa tem três vantagens: é em lote, porque ninguém encomenda uma caneca só para a festa; é com antecedência, porque a festa tem data marcada e o cliente não deixa para a última hora; e é recorrente, porque quem gostou da lembrancinha volta no próximo aniversário — e indica para quem também vai fazer festa.',
+    },
+    { type: 'h2', text: '12 ideias de canecas para festas e aniversários', id: 'as-12-ideias' },
+    {
+      type: 'p',
+      text: 'A lista abaixo cobre os pedidos que mais chegam para quem trabalha com caneca personalizada. Não precisa oferecer as 12 de uma vez: escolha as 3 ou 4 que combinam com o seu público, monte a amostra e divulgue — o resto entra no catálogo conforme os pedidos aparecem.',
+    },
+    {
+      type: 'ol',
+      items: [
+        'Aniversário infantil com o tema da festa: o personagem que a criança ama, o nome e a idade na caneca — é a lembrancinha que os pais dos convidados elogiam.',
+        'Aniversário adulto com foto e frase: a foto do aniversariante com uma frase que só os amigos entendem — a caneca vira presente, não só lembrancinha.',
+        '15 anos: caneca com a foto da debutante, a data e as cores da festa — vende em lote para as madrinhas e as amigas.',
+        'Chá de bebê: caneca com o nome do bebê, a data prevista e o tema do chá — a mãe guarda, a avó guarda, e o pedido chega com semanas de antecedência.',
+        'Chá de panela e chá de lingerie: caneca com frase divertida para a noiva e para as convidadas — o lote é pequeno, mas o valor percebido é alto.',
+        'Casamento: caneca dos noivos com a data e as iniciais, para os padrinhos — ou a caneca do convidado com a foto do casal, como lembrança da festa.',
+        'Formatura: caneca com o nome do formando, o curso e o ano — vende para a turma inteira, e o formando encomenda para os professores também.',
+        'Festa de empresa: caneca com a marca da empresa e o tema da confraternização — o pedido é em lote grande e o cliente é recorrente todo ano.',
+        'Aniversário de 50, 60 e 70 anos: caneca com a linha do tempo da vida do aniversariante — foto antiga, ano de nascimento e frase da família.',
+        'Festa junina e festa temática: caneca com o tema da festa — junina, havaiana, anos 80 — que o convidado usa na festa e leva para casa.',
+        'Batizado e primeira comunhão: caneca delicada com o nome da criança e a data — a família encomenda para os padrinhos e os avós.',
+        'Kit padrinhos e madrinhas: caneca com o nome de cada padrinho e a pergunta "aceita ser meu padrinho?" — o casal encomenda o kit completo.',
+      ],
+    },
+    { type: 'h2', text: 'Como montar o kit festa', id: 'kit-festa' },
+    {
+      type: 'p',
+      text: 'A caneca sozinha já vende — mas o kit festa vende mais, porque o cliente compra a experiência pronta. O kit é a caneca, uma embalagem que protege e apresenta, e um detalhe que liga o kit à festa. Não precisa ser caro: o que o cliente percebe é o cuidado, não o custo da embalagem.',
+    },
+    {
+      type: 'ul',
+      items: [
+        'A caneca personalizada com o tema da festa, o nome e a data — é o item principal do kit.',
+        'Uma caixa de presente simples ou um saquinho de celofane com laço nas cores da festa.',
+        'Uma tag com o nome do convidado ou com "obrigado por vir" — o detalhe que personaliza o kit inteiro.',
+        'Um sachê de chocolate, um brigadeiro ou um mini bolo no pote — o doce que o convidado come na hora.',
+        'Um cartão com a data da festa e o seu contato — é o cartão que traz o próximo pedido.',
+      ],
+    },
+    { type: 'h2', text: 'Quanto cobrar: o que entra na conta', id: 'quanto-cobrar' },
+    {
+      type: 'p',
+      text: 'O preço da caneca de festa não é o preço da caneca comum: o cliente paga pela personalização, pelo lote e pela data marcada — e o valor percebido é maior que o de uma caneca avulsa. Antes de fechar o preço, some tudo o que o pedido consome, para não descobrir no fim que o lote grande deu prejuízo. O preço por unidade cai quando o lote cresce, porque a arte é a mesma e a prensa roda sem parar — por isso o desconto por quantidade existe, e o cliente entende.',
+    },
+    {
+      type: 'ul',
+      items: [
+        'A caneca em branco, o papel sublimático, a tinta e a fita térmica — o custo direto de cada peça.',
+        'O tempo de prensa e de embalagem: o lote grande leva horas, e o seu tempo entra na conta.',
+        'A arte: se o cliente pede uma arte nova, o tempo de criação entra no preço — ou você cobra a arte à parte.',
+        'A embalagem do kit: caixa, tag, laço e doce — o que transforma a caneca em presente.',
+        'A entrega: se você entrega na festa ou na casa do cliente, o deslocamento entra no preço.',
+      ],
+    },
+    { type: 'h2', text: 'Como divulgar sem depender de data comemorativa', id: 'como-divulgar' },
+    {
+      type: 'p',
+      text: 'A caneca de festa não precisa de Natal nem de Dia das Mães para vender — o aniversário de alguém é todo dia. A divulgação funciona quando o cliente vê a caneca na festa de outra pessoa: é o convidado que fotografa, marca e pergunta onde comprou. Por isso o pedido de festa é o melhor anúncio que existe — e o seu trabalho é fazer o convidado chegar até você.',
+    },
+    {
+      type: 'ul',
+      items: [
+        'Fotografe o kit festa pronto e poste: a foto do kit vende mais que a foto da caneca sozinha.',
+        'Peça para o cliente marcar você quando postar a festa — é a indicação que chega no público certo.',
+        'Faça parceria com buffets, decoradoras e boleiras: quem organiza a festa indica quem faz a lembrancinha.',
+        'Monte um catálogo com 4 ou 5 modelos de festa e mande no WhatsApp quando alguém perguntar o preço.',
+        'Ofereça a caneca de amostra para a próxima festa da família — quem vê a caneca na mesa, encomenda.',
+      ],
+    },
+    { type: 'h2', text: 'Festa, tema e o que colocar na caneca', id: 'tabela' },
+    {
+      type: 'table',
+      caption: 'O que colocar na caneca por tipo de festa',
+      head: ['Festa', 'Tema', 'O que colocar na caneca'],
+      rows: [
+        ['Aniversário infantil', 'Personagem favorito', 'Nome, idade e o personagem da festa'],
+        ['15 anos', 'Cores da festa', 'Foto da debutante, data e iniciais'],
+        ['Chá de bebê', 'Tema do chá', 'Nome do bebê, data prevista e o tema'],
+        ['Casamento', 'Data e iniciais', 'Foto do casal, data e as iniciais'],
+        ['Formatura', 'Curso e turma', 'Nome do formando, curso e ano'],
+        ['Festa de empresa', 'Marca da empresa', 'Logo, tema da confraternização e ano'],
+      ],
+    },
+    {
+      type: 'callout',
+      title: 'O pedido de festa é o melhor anúncio',
+      text: 'O convidado vê a caneca na festa, fotografa e pergunta onde comprou. Cada festa que você atende é uma vitrine para a próxima — por isso o kit festa bem embalado e o cartão com o seu contato valem tanto quanto a caneca.',
+    },
+    {
+      type: 'faq',
+      items: [
+        {
+          q: 'Com quanto tempo de antecedência devo aceitar o pedido de festa?',
+          a: 'O ideal é fechar o pedido com pelo menos 15 dias antes da festa: dá tempo de criar a arte, fazer o teste, prensar o lote e embalar sem correria. Pedido de última hora só se o lote for pequeno e a arte já existir.',
+        },
+        {
+          q: 'O cliente pode mandar a foto dele para a caneca?',
+          a: 'Pode — e é o pedido mais comum. Peça a foto em boa resolução e avise que foto de celular com pouca luz sai escura na caneca. Se a foto estiver ruim, mostre antes de prensar: o cliente prefere trocar a foto do que receber a caneca escura.',
+        },
+        {
+          q: 'Vale a pena dar desconto no lote grande?',
+          a: 'Vale, porque o custo por unidade cai quando a arte é a mesma e a prensa roda sem parar. O desconto por quantidade é o argumento que fecha o lote grande — e o cliente que fecha o lote grande é o que indica você para a próxima festa.',
+        },
+      ],
+    },
+    {
+      type: 'cta',
+      text: 'Festa marcada é pedido garantido — falta só a arte certa. No portal tem milhares de artes prontas para sublimar, organizadas por tema e data comemorativa, para você montar o kit festa sem começar do zero.',
+      label: 'Ver as artes para sublimar',
+      href: '/#preco',
+    },
+  ],
+  related: ['datas-comemorativas-para-vender-canecas', 'quanto-cobrar-caneca-personalizada-preco', 'vender-canecas-personalizadas-instagram-whatsapp'],
+}
+
+export const BLOG_ARTICLES: BlogArticle[] = [ART1, ART2, ART3, ART4, ART5, ART6, ART7, ART8, ART9, ART10, ART11, ART12, ART13, ART14, ART15, ART16, ART17, ART18, ART19, ART20, ART21, ART22, ART23, ART24, ART25, ART26, ART27, ART28]
 
 export function getArticle(slug: string): BlogArticle | undefined {
   return BLOG_ARTICLES.find((a) => a.slug === slug)
