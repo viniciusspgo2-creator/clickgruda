@@ -3269,7 +3269,251 @@ const ART28: BlogArticle = {
   related: ['datas-comemorativas-para-vender-canecas', 'quanto-cobrar-caneca-personalizada-preco', 'vender-canecas-personalizadas-instagram-whatsapp'],
 }
 
-export const BLOG_ARTICLES: BlogArticle[] = [ART1, ART2, ART3, ART4, ART5, ART6, ART7, ART8, ART9, ART10, ART11, ART12, ART13, ART14, ART15, ART16, ART17, ART18, ART19, ART20, ART21, ART22, ART23, ART24, ART25, ART26, ART27, ART28]
+const ART29: BlogArticle = {
+  slug: 'black-friday-canecas-personalizadas-vender-mais',
+  title: 'Black Friday para sublimadores: como vender mais canecas sem queimar a margem',
+  seoTitle: 'Black Friday para Sublimadores: Vender Mais Canecas sem Perder Margem',
+  description:
+    'A Black Friday 2026 cai na sexta, 27 de novembro — e quem sublima pode transformar a semana na maior venda do ano. Veja o que oferecer, como montar kits e combos, quando fechar os pedidos e como divulgar sem virar refém de desconto.',
+  keywords: [
+    'black friday canecas personalizadas',
+    'vender canecas black friday',
+    'kit caneca personalizada black friday',
+    'promoção sublimação black friday',
+    'caneca personalizada desconto',
+  ],
+  category: 'sazonal',
+  emoji: '🏷️',
+  cover: '/uploads/hero-mug.png',
+  coverAlt: 'Caneca personalizada pronta para a Black Friday',
+  readTime: '9 min',
+  datePublished: '2026-11-24',
+  dateModified: '2026-11-24',
+  lead:
+    'A Black Friday 2026 é na sexta-feira, 27 de novembro — e para quem trabalha com caneca personalizada ela não é só um dia de desconto: é a semana em que o cliente já está com o cartão na mão procurando presente. Quem se prepara vende o lote da semana inteira; quem improvisa na véspera vira refém do desconto e trabalha no prejuízo. Neste artigo, o que oferecer, como montar kits e combos, quando fechar os pedidos e como divulgar.',
+  blocks: [
+    { type: 'h2', text: 'Por que a Black Friday é a semana mais forte do ano para quem sublima', id: 'por-que-a-semana-mais-forte' },
+    {
+      type: 'p',
+      text: 'Na Black Friday o cliente não precisa ser convencido a comprar — ele já decidiu que vai comprar alguma coisa, só não decidiu o quê. A caneca personalizada entra exatamente nesse momento: é presente pronto, é barato perto de eletrônico e roupa, e é pessoal, o que nenhum produto de prateleira consegue ser. Para quem sublima, a semana tem três vantagens que nenhuma outra data tem: o cliente compra em lote, porque aproveita o desconto para resolver vários presentes de uma vez; o cliente aceita pagar antes, porque sabe que o pedido personalizado precisa de prazo; e o cliente volta depois, porque quem recebe uma caneca de presente no fim do ano lembra de você quando chega o aniversário de alguém.',
+    },
+    { type: 'h2', text: 'O que vender na Black Friday: kits e combos que o cliente entende', id: 'kits-e-combos' },
+    {
+      type: 'p',
+      text: 'Caneca avulsa com desconto vende pouco na Black Friday, porque o cliente compara preço com preço — e sempre tem alguém mais barato. O que vende na semana é o kit: o cliente entende o valor do conjunto e não fica caçando caneca avulsa em outro lugar. Monte 3 ou 4 ofertas no máximo, porque oferta demais confunde e o cliente desiste.',
+    },
+    {
+      type: 'ul',
+      items: [
+        'Kit presente com 2 canecas: a caneca do presenteado e a caneca de quem dá o presente — o cliente compra o par e resolve dois presentes de uma vez.',
+        'Kit casal ou kit família: canecas combinando com o nome de cada um — é o presente que o cliente fotografa e posta, e o post vende o próximo kit.',
+        'Kit café: caneca + pacote de café ou chocolate — o cliente paga pelo conjunto e você agrega um item barato que ele percebe como presente.',
+        'Combo leve 3, pague 2: três canecas pelo preço de duas, com artes à escolha do cliente — o lote grande compensa o desconto porque a arte é a mesma e a prensa roda sem parar.',
+        'Caneca + caixa de presente: a mesma caneca, já embalada para presentear — o cliente paga a mais pela embalagem e você não precisa dar desconto no produto.',
+      ],
+    },
+    { type: 'h2', text: 'Como montar a oferta sem queimar a margem', id: 'sem-queimar-a-margem' },
+    {
+      type: 'p',
+      text: 'Desconto na Black Friday não é dar o produto de graça: é trocar margem por volume, e a conta precisa fechar antes de você divulgar. Antes de anunciar qualquer preço, some o custo real do pedido — caneca em branco, papel, tinta, fita, embalagem, entrega e o seu tempo — e só então decida o desconto. Se a conta não fechar com desconto, não dê desconto no produto: dê brinde, dê frete, dê a embalagem — o cliente sente que ganhou alguma coisa e a sua margem fica inteira.',
+    },
+    {
+      type: 'ul',
+      items: [
+        'Desconto só no kit e no lote, nunca na caneca avulsa: é o volume que paga o desconto.',
+        'Limite a oferta por quantidade ou por prazo — "só 20 kits" ou "só até quinta" — porque oferta sem limite vira preço novo.',
+        'Não prometa entrega para a sexta se o pedido fecha na quinta: pedido personalizado precisa de prazo, e atraso na Black Friday vira reclamação pública.',
+        'Separe um modelo de pronta-entrega para a sexta: quem chega na última hora compra o que está pronto, e você não para a prensa para um pedido avulso.',
+        'Anote o preço cheio ao lado do preço da Black Friday: o cliente precisa ver o desconto, e você precisa lembrar qual é o preço de verdade na segunda-feira.',
+      ],
+    },
+    { type: 'h2', text: 'Prazo: o que fazer em cada dia da semana', id: 'prazo-dia-a-dia' },
+    {
+      type: 'p',
+      text: 'A Black Friday 2026 é sexta, 27 de novembro — e o trabalho começa na terça, não na sexta. Quem deixa tudo para a véspera não consegue nem divulgar nem produzir: a semana tem um ritmo, e cada dia tem uma tarefa.',
+    },
+    {
+      type: 'table',
+      caption: 'Plano da semana da Black Friday 2026',
+      head: ['Dia', 'O que fazer'],
+      rows: [
+        ['Terça, 24 de novembro', 'Anuncie as ofertas e abra a pré-venda: poste os kits, o preço e o prazo de fechamento dos pedidos.'],
+        ['Quarta, 25 de novembro', 'Confirme os pedidos da pré-venda e comece a prensar: o lote da quarta é o que entrega na sexta.'],
+        ['Quinta, 26 de novembro', 'Último dia para pedidos personalizados: avise que depois disso só pronta-entrega.'],
+        ['Sexta, 27 de novembro', 'Venda só pronta-entrega e os kits já prontos: não pare a produção para pedido novo.'],
+        ['Sábado, 28 de novembro', 'Entregue, poste as fotos dos kits e agradeça: o pós-venda da sexta é a propaganda da próxima data.'],
+      ],
+    },
+    { type: 'h2', text: 'Como divulgar na semana sem gastar com anúncio', id: 'como-divulgar' },
+    {
+      type: 'p',
+      text: 'A divulgação da Black Friday não precisa de anúncio pago: o cliente já está procurando oferta, e o que ele precisa é ver a sua. O erro é postar só o preço — preço sozinho não vende caneca personalizada, porque o cliente não compra preço, compra o presente pronto. Mostre o kit montado, mostre a caneca na mão, mostre para quem é o presente.',
+    },
+    {
+      type: 'ul',
+      items: [
+        'Fotografe os kits prontos e poste um por dia: a foto do kit vende mais que qualquer arte de desconto.',
+        'Use o status do WhatsApp e a lista de transmissão: quem já comprou de você é o primeiro a comprar na Black Friday.',
+        'Coloque o prazo em todo post — "pedidos até quinta" — porque urgência de verdade é o prazo, não o desconto.',
+        'Mostre os pedidos saindo: foto da mesa com as canecas prontas, da caixa fechada, da entrega — é a prova de que a oferta é real.',
+        'Responda rápido: na semana da Black Friday o cliente pergunta em três lugares ao mesmo tempo e compra de quem responde primeiro.',
+      ],
+    },
+    {
+      type: 'callout',
+      title: 'Desconto sem prazo vira preço novo',
+      text: 'Se a oferta não tem data para acabar, o cliente nunca mais paga o preço cheio — e você passa o ano inteiro trabalhando com a margem da Black Friday. Anuncie o fim da oferta junto com o começo: "só até quinta" é o que protege o seu preço na segunda-feira.',
+    },
+    {
+      type: 'faq',
+      items: [
+        {
+          q: 'Preciso dar um desconto grande para vender na Black Friday?',
+          a: 'Não. O que vende na Black Friday é o kit e a urgência, não o tamanho do desconto. Um kit com brinde ou com frete grátis vende tanto quanto uma caneca com desconto grande — e a sua margem fica inteira. Desconto grande só vale quando o volume paga a conta.',
+        },
+        {
+          q: 'Vale a pena vender caneca avulsa na Black Friday ou só kit?',
+          a: 'A caneca avulsa vende, mas é nela que o cliente compara preço com todo mundo — e sempre tem alguém mais barato. O kit é onde a sua margem se protege, porque o cliente compra o conjunto e não fica caçando peça por peça. Deixe a avulsa para a pronta-entrega da sexta.',
+        },
+        {
+          q: 'E se o cliente pedir na sexta para entregar no sábado?',
+          a: 'Só aceite se a arte já existir e a caneca já estiver pronta — ou se o lote for pequeno e você tiver a sexta livre. Pedido personalizado de última hora na semana mais cheia do ano é o pedido que atrasa, e atraso na Black Friday vira reclamação pública. O prazo é parte da oferta.',
+        },
+      ],
+    },
+    {
+      type: 'cta',
+      text: 'Black Friday é semana de lote — e lote precisa de arte pronta. No portal tem milhares de artes para sublimar, organizadas por tema e data comemorativa, para você montar os kits da semana sem começar do zero.',
+      label: 'Ver as artes para sublimar',
+      href: '/#preco',
+    },
+  ],
+  related: ['datas-comemorativas-para-vender-canecas', 'quanto-cobrar-caneca-personalizada-preco', 'vender-canecas-personalizadas-instagram-whatsapp'],
+}
+
+const ART30: BlogArticle = {
+  slug: 'garrafas-termicas-tumblers-sublimacao-como-fazer',
+  title: 'Garrafas térmicas e tumblers na sublimação: como começar e o que muda em relação à caneca',
+  seoTitle: 'Sublimar Garrafas Térmicas e Tumblers: Guia para Começar',
+  description:
+    'A garrafa térmica personalizada virou o produto queridinho de 2026 — e sublima no mesmo equipamento da caneca. Veja o que muda no processo, os tempos e temperaturas por modelo, quais modelos vender primeiro e os erros que estragam a peça.',
+  keywords: [
+    'sublimar garrafa térmica',
+    'tumbler sublimação',
+    'garrafa personalizada sublimação',
+    'como sublimar garrafa inox',
+    'tumbler personalizado vender',
+  ],
+  category: 'tendencias',
+  emoji: '🥤',
+  cover: '/uploads/hero-press.png',
+  coverAlt: 'Prensa cilíndrica pronta para sublimar garrafa térmica',
+  readTime: '10 min',
+  datePublished: '2026-11-24',
+  dateModified: '2026-11-24',
+  lead:
+    'Quem só vende caneca está deixando dinheiro na mesa: a garrafa térmica e o tumbler de inox personalizado viraram o presente queridinho de 2026 — academia, trabalho, escola, brinde de empresa. E o melhor: sublima no mesmo equipamento que você já tem, com o mesmo papel e a mesma tinta. O que muda é o tempo, a temperatura e o cuidado com a peça. Neste artigo, o passo a passo, os parâmetros por modelo e os erros que estragam a garrafa.',
+  blocks: [
+    { type: 'h2', text: 'Por que a garrafa térmica virou o novo produto queridinho', id: 'por-que-virou-queridinha' },
+    {
+      type: 'p',
+      text: 'A caneca é o clássico da sublimação, mas a garrafa térmica resolve um problema que a caneca não resolve: ela vai junto — para a academia, para o trabalho, para a escola, para o treino. O cliente usa todo dia, o colega vê todo dia, e a peça vira propaganda ambulante do seu trabalho. Para quem sublima, a garrafa tem três vantagens sobre a caneca: o ticket é maior, porque é um produto que o cliente já percebe como mais caro; o público é mais amplo, porque não é só presente — é uso pessoal, brinde de empresa e lembrança de evento; e a concorrência ainda é menor, porque muita gente que sublima caneca nunca tentou a garrafa.',
+    },
+    { type: 'h2', text: 'O que muda em relação à caneca', id: 'o-que-muda' },
+    {
+      type: 'p',
+      text: 'O processo é o mesmo — impressão espelhada, papel sublimático, tinta sublimática, prensa cilíndrica — mas a peça pede quatro cuidados que a caneca não pede. Ignorar qualquer um deles é o que estraga a garrafa: a tinta não fixa, a arte sai torta ou a peça amassa na prensa.',
+    },
+    {
+      type: 'ul',
+      items: [
+        'A peça precisa ter revestimento próprio para sublimação: inox comum não aceita a tinta. Compre o blank certo, com coating — o fornecedor informa na ficha do produto.',
+        'A tampa sai sempre: sublime a garrafa sem a tampa, com a boca livre, e só recoloque depois que a peça esfriar.',
+        'O formato é cilíndrico ou levemente cônico: a arte precisa acompanhar a curva sem dobrar, e a prensa precisa da resistência certa ou da manta de silicone para distribuir o calor.',
+        'A área de estampa é menor que a da caneca: a arte tem que caber no corpo da garrafa, sem invadir a rosca nem a base — meça o gabarito antes de imprimir.',
+        'O inox conduz calor diferente da cerâmica: o tempo de prensa muda, e o tempo certo depende do modelo — não use o tempo da caneca na garrafa.',
+      ],
+    },
+    { type: 'h2', text: 'Tempo e temperatura: não existe um número único', id: 'tempo-e-temperatura' },
+    {
+      type: 'p',
+      text: 'A pergunta mais feita por quem começa a sublimar garrafa é "qual o tempo e a temperatura?" — e a resposta honesta é que depende do modelo e do fornecedor. A tabela abaixo traz os parâmetros da ficha de fornecedores brasileiros e de guias de referência, para você ter um ponto de partida. Mas o ponto de partida não é a resposta final: faça o teste com uma peça antes de prensar o lote, porque o seu equipamento, a sua tinta e o seu papel mudam o resultado.',
+    },
+    {
+      type: 'table',
+      caption: 'Parâmetros de referência por modelo (sempre confirme a ficha do seu fornecedor)',
+      head: ['Modelo', 'Temperatura', 'Tempo', 'Pressão'],
+      rows: [
+        ['Garrafa inox 900 ml', '180 °C', '180 segundos', 'Média / forte'],
+        ['Garrafa inox 500 ml fosca', '200 °C', '60 segundos', 'Média / forte'],
+        ['Garrafa inox 500 ml', '150–160 °C', '70–80 segundos', 'Fraca'],
+        ['Tumbler inox 20 oz', '177–193 °C', '45 segundos por lado', 'Firme'],
+        ['Garrafa no forno 3D', 'cerca de 200 °C', 'cerca de 6 minutos', 'Com filme termoencolhível'],
+      ],
+    },
+    { type: 'h2', text: 'Quais modelos vender primeiro', id: 'quais-modelos' },
+    {
+      type: 'p',
+      text: 'Não precisa comprar dez modelos de uma vez: comece com dois ou três, aprenda o tempo de cada um e amplie conforme os pedidos aparecem. Os modelos abaixo são os que mais giram — e cada um atende um público diferente.',
+    },
+    {
+      type: 'ul',
+      items: [
+        'Tumbler skinny 20 oz: o mais vendido lá fora e o mais pedido aqui — cabe no porta-copo do carro, vai para a academia e é o preferido do público jovem.',
+        'Garrafa inox 500 ml: o modelo coringa — presente, brinde de empresa, lembrança de evento. É o que vende em lote.',
+        'Garrafa inox 300 ml com copo: o modelo de presente para quem gosta de chimarrão e café — o copo na tampa vira o detalhe que vende.',
+        'Garrafa inox 900 ml: o modelo da academia — quem treina quer volume, e o preço maior compensa o blank mais caro.',
+      ],
+    },
+    { type: 'h2', text: 'Quanto cobrar: o ticket é maior que o da caneca', id: 'quanto-cobrar' },
+    {
+      type: 'p',
+      text: 'A garrafa custa mais para você e vale mais para o cliente — e o preço tem que refletir os dois lados. O blank de inox é mais caro que a caneca em branco, a peça demora mais na prensa e o cliente percebe a garrafa como um produto premium. Por isso não precifique a garrafa como se fosse uma caneca grande: some o blank, o papel, a tinta, a fita, a manta quando usar, a embalagem e o seu tempo — e lembre que a arte nova, criada do zero para o cliente, entra no preço ou é cobrada à parte. O cliente que encomenda garrafa personalizada não está comparando com caneca: está comparando com o presente que ele daria se não fosse a garrafa.',
+    },
+    { type: 'h2', text: 'Os 5 erros que estragam a garrafa', id: 'os-5-erros' },
+    {
+      type: 'ol',
+      items: [
+        'Sublimar com a tampa colocada: o calor deforma a tampa, a vedação estraga e a garrafa perde a função térmica.',
+        'Usar inox sem revestimento: a tinta não fixa, a arte sai apagada ou some na primeira lavagem.',
+        'Deixar o papel dobrado na curva: a dobra vira falha branca na arte — estique o papel e fixe bem com a fita térmica.',
+        'Pressão forte demais: o inox amassa e a peça fica com marca — pressão média, e manta de silicone quando o modelo pedir.',
+        'Pular o teste e prensar o lote: cada modelo e cada fornecedor pede um ajuste — uma peça de teste salva o lote inteiro.',
+      ],
+    },
+    {
+      type: 'callout',
+      title: 'O teste é a regra, não a exceção',
+      text: 'Na caneca você já sabe o tempo de cor; na garrafa, cada modelo é um aprendizado novo. Uma peça de teste por modelo novo custa menos que um lote estragado — e o tempo que você anota no teste é o tempo que você usa no pedido.',
+    },
+    {
+      type: 'faq',
+      items: [
+        {
+          q: 'Posso sublimar garrafa térmica na mesma prensa da caneca?',
+          a: 'Pode, se a sua prensa for cilíndrica e aceitar o diâmetro da garrafa — a maioria das prensas de caneca aceita garrafa com a resistência certa ou com a manta de silicone. O que muda é o tempo e a temperatura, que seguem a ficha do modelo, não o tempo da caneca.',
+        },
+        {
+          q: 'A garrafa precisa de tinta ou papel diferente?',
+          a: 'Não: é a mesma tinta sublimática e o mesmo papel sublimático da caneca. O que precisa ser específico para sublimação é a peça — o blank de inox com revestimento próprio. Tinta e papel são os mesmos.',
+        },
+        {
+          q: 'Dá para sublimar uma garrafa que já foi usada?',
+          a: 'Não vale a pena: a peça usada já tem desgaste no revestimento, pode ter gordura ou resíduo, e a tinta não fixa direito. Sublimação é para blank novo, com o coating intacto — é o que garante a cor e a durabilidade.',
+        },
+      ],
+    },
+    {
+      type: 'cta',
+      text: 'Garrafa pede arte que acompanhe a curva — e arte pronta é o que não falta no portal. São milhares de artes para sublimar, organizadas por tema, para você testar o primeiro modelo sem começar do zero.',
+      label: 'Ver as artes para sublimar',
+      href: '/#preco',
+    },
+  ],
+  related: ['como-sublimar-canecas-passo-a-passo', 'tempo-temperatura-sublimar-caneca-tabela', 'tendencias-artes-para-canecas-2026'],
+}
+
+export const BLOG_ARTICLES: BlogArticle[] = [ART1, ART2, ART3, ART4, ART5, ART6, ART7, ART8, ART9, ART10, ART11, ART12, ART13, ART14, ART15, ART16, ART17, ART18, ART19, ART20, ART21, ART22, ART23, ART24, ART25, ART26, ART27, ART28, ART29, ART30]
 
 export function getArticle(slug: string): BlogArticle | undefined {
   return BLOG_ARTICLES.find((a) => a.slug === slug)
