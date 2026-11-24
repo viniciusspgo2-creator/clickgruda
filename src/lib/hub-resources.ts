@@ -116,7 +116,7 @@ export const BONUS_GROUPS:BonusGroup[]=[
  ]},
  {id:'receitas',title:'Receitas Batidas na Garrafa',description:'Receitas de batidas na garrafa para vender ou presentear.',icon:'chef-hat',items:[
    {id:'receitas-1',name:'Receitas Batidas na Garrafa',description:'Pasta com receitas de batidas na garrafa.',url:drive('17Hg37YO8-eCrzZ7NfeJzkRcSKBa002Ii'),icon:DRIVE_ICON},
-   {id:'receitas-2',name:'Receitas — Pacote (Terabox)',description:'Pacote de receitas em arquivo .rar.',url:'https://www.terabox.com/sharing/link?surl=sZYfRi3iCSrbTIUHrkZudw'isNew:true,},
+   {id:'receitas-2',name:'Receitas — Pacote (Terabox)',description:'Pacote de receitas em arquivo .rar.',url:'https://www.terabox.com/sharing/link?surl=sZYfRi3iCSrbTIUHrkZudw',isNew:true},
  ]},
  {id:'editor-drives',title:'Recursos do Studio Editor',description:'Fundos, PNGs, personagens, frases e materiais criativos em pastas organizadas por tema.',icon:'palette',items:[
    // --- Fundos ---
@@ -146,7 +146,7 @@ export const BONUS_GROUPS:BonusGroup[]=[
    {id:'flork-frases-1',name:'Flork Frases Coloridas — Signos e Canecas',description:'Frases Flork coloridas com signos e canecas.',url:drive('1TZ7_jMBsB5BfvkYJz0R1sVsd5gp7QwLl'),theme:'Flork',icon:DRIVE_ICON},
    {id:'flork-frases-2',name:'Flork Frases Preto — Signos e Canecas',description:'Frases Flork em preto com signos e canecas.',url:drive('1KdQLmADZXath_z__4dXt9DwntQdi94sM'),theme:'Flork',icon:DRIVE_ICON},
    {id:'flork-frases-3',name:'Flork — Artes Prontas para Caneca',description:'Artes Flork prontas para estampar em canecas.',url:drive('1jvc6Cre9Lqspqj6BKkuOgdt7sVkxiVww'),theme:'Flork',icon:DRIVE_ICON},
-   {id:'flork-pasta',name:'Flork — Pasta',description:'Pasta Flork com elementos para suas artes.',url:drive('1bReJEVPJSz2LsVXD9AfNd_4UFcOrJCjr'),theme:'Flork',icon:DRIVE_ICONisNew:true,},
+   {id:'flork-pasta',name:'Flork — Pasta',description:'Pasta Flork com elementos para suas artes.',url:drive('1bReJEVPJSz2LsVXD9AfNd_4UFcOrJCjr'),theme:'Flork',icon:DRIVE_ICON,isNew:true},
    // --- Alfabetos ---
    {id:'alfabeto-pandoca',name:'Alfabeto Pandoca',description:'Alfabeto temático Pandoca.',url:drive('1sxp-yeLa8TkJRB9LNuq4QiHIWPbCN1fR'),theme:'Alfabetos'},
    {id:'alfabeto-geral',name:'Alfabeto geral',description:'Alfabeto para montar nomes e frases.',url:drive('1tTxC3vaMrKrml8siQvHKCtTDEuJHzTQ5'),theme:'Alfabetos'},
@@ -156,7 +156,7 @@ export const BONUS_GROUPS:BonusGroup[]=[
    {id:'alfabeto-4',name:'Letras A–Z em PNG',description:'Letras de A a Z em PNG de alta qualidade.',url:drive('1KQtJGIm3-VSdG3XW70M9cpuH80svC5nJ'),theme:'Alfabetos',icon:DRIVE_ICON},
    {id:'alfabeto-5',name:'Alfabeto Glamour',description:'Alfabeto glamour de A a Z, com mockup.',url:drive('1qapejhIxPH4MqO2mnQp3fVAvRh3x-Sd8'),theme:'Alfabetos',icon:DRIVE_ICON},
    {id:'alfabeto-mickey',name:'Alfabeto Mickey e Minnie',description:'Alfabeto temático Mickey e Minnie.',url:drive('14LpJHI4FAfBXiFdTJseIVJbVhxhWR9x1'),theme:'Alfabetos'},
-   {id:'fontes-festas',name:'Fontes Temas de Festas — Kit Festas Personalizadas',description:'Fontes temáticas de festas para personalizados.',url:drive('18NHPtokeyOOgNSQgZYkmB4qmcv3Qh9ib'),theme:'Alfabetos',icon:DRIVE_ICONisNew:true,},
+   {id:'fontes-festas',name:'Fontes Temas de Festas — Kit Festas Personalizadas',description:'Fontes temáticas de festas para personalizados.',url:drive('18NHPtokeyOOgNSQgZYkmB4qmcv3Qh9ib'),theme:'Alfabetos',icon:DRIVE_ICON,isNew:true},
    // --- Natal ---
    {id:'natal-elementos',name:'Elementos de Natal',description:'24 coleções de Natal com quase 1.000 arquivos: Grinch, Disney, Bluey, Papai Noel, frases e mais.',url:drive('1eRddMBmDz8Vk8LuvrN3BKnuO7PPegkoU'),theme:'Natal'},
    {id:'alfabeto-natalino',name:'Alfabeto Natalino',description:'Alfabeto temático de Natal.',url:drive('1cuae3rTpleCUzO8xHHOaqkmrai2ZN-gd'),theme:'Natal'},
@@ -164,21 +164,21 @@ export const BONUS_GROUPS:BonusGroup[]=[
    {id:'festa',name:'Festa — 650 arquivos',description:'Arquivos de festa para suas artes.',url:drive('1kJ7QVU_j69AvI9UfFjh0RGRCxCGD1NDy'),theme:'Datas comemorativas'},
    {id:'frases-pascoa',name:'Frases de Páscoa',description:'Frases de Páscoa para canecas.',url:drive('1f6yjA021lXn0zb9SVNcyz35UFiyBgAQc'),theme:'Datas comemorativas'},
    {id:'figurinhas-pais',name:'Figurinhas avulsas — Pais',description:'Figurinhas para o Dia dos Pais e homenagens.',url:drive('1MV6-KFrVDAzO3IuzdCNAm7_h5lVN95OV'),theme:'Datas comemorativas'},
-   {id:'moldes-festas',name:'Moldes — Kit Festas Personalizadas',description:'Moldes para festas personalizadas.',url:drive('1gZu-gbJ45ovtg-7v2g5Tv9i3jk5CZmtF'),theme:'Datas comemorativas',icon:DRIVE_ICONisNew:true,},
-   {id:'kit-festas-silhouette',name:'Kit Festas para Silhouette — Kit Festas Personalizadas',description:'Kit de festas para Silhouette.',url:drive('1nAkybJdx51esqrffbdR8H5RTAPFTf4cg'),theme:'Datas comemorativas',icon:DRIVE_ICONisNew:true,},
+   {id:'moldes-festas',name:'Moldes — Kit Festas Personalizadas',description:'Moldes para festas personalizadas.',url:drive('1gZu-gbJ45ovtg-7v2g5Tv9i3jk5CZmtF'),theme:'Datas comemorativas',icon:DRIVE_ICON,isNew:true},
+   {id:'kit-festas-silhouette',name:'Kit Festas para Silhouette — Kit Festas Personalizadas',description:'Kit de festas para Silhouette.',url:drive('1nAkybJdx51esqrffbdR8H5RTAPFTf4cg'),theme:'Datas comemorativas',icon:DRIVE_ICON,isNew:true},
    // --- Diversos ---
    {id:'complementos-gerais',name:'Complementos gerais',description:'Complementos e extras para suas artes.',url:drive('1Zb_zGwut_sp7wYEWQB9GNr4E5KyblWPW'),theme:'Diversos'},
    {id:'escudos-times',name:'Escudos de times de futebol',description:'Escudos dos times para artes de torcedor.',url:'https://drive.google.com/file/d/170fRytBLsEUQ1p7Q-VsxgVB_PZS1ZLyI/view',theme:'Diversos'},
    {id:'logomarcas',name:'Logomarcas famosas',description:'Logomarcas de marcas famosas.',url:drive('1mCzyXm9XeH3Jbjof4X3BrwgBNRQSzcTs'),theme:'Diversos'},
    {id:'fontes',name:'11 mil fontes',description:'Pacote com 11 mil fontes para baixar.',url:drive('1TdQbyrP9Q1r2xoBq7ehyNTW1CrUvWXpd'),theme:'Diversos'},
-   {id:'bases-produtos',name:'Bases para Produtos (Pódios)',description:'Bases e pódios para apresentar produtos nas suas artes.',url:drive('1pSWWuyxZKybxmjFa5GfnBfoeUvY1Kf4M'),theme:'Diversos',icon:DRIVE_ICONisNew:true,},
-   {id:'icones-copa',name:'Ícones da Copa',description:'Ícones da Copa para suas artes.',url:drive('1Eceaz-AmuClVgWxklBbUL8auUezLNHc6'),theme:'Diversos',icon:DRIVE_ICONisNew:true,},
+   {id:'bases-produtos',name:'Bases para Produtos (Pódios)',description:'Bases e pódios para apresentar produtos nas suas artes.',url:drive('1pSWWuyxZKybxmjFa5GfnBfoeUvY1Kf4M'),theme:'Diversos',icon:DRIVE_ICON,isNew:true},
+   {id:'icones-copa',name:'Ícones da Copa',description:'Ícones da Copa para suas artes.',url:drive('1Eceaz-AmuClVgWxklBbUL8auUezLNHc6'),theme:'Diversos',icon:DRIVE_ICON,isNew:true},
    // --- Volta às aulas ---
    {id:'volta-aulas',name:'Volta às aulas + agenda',description:'Materiais de volta às aulas e agenda.',url:drive('1xfxgRjH__wh2zvRPuUjOS0oarN6XIGTE'),theme:'Volta às aulas'},
    {id:'kit-professores',name:'Kit professores',description:'Kit com materiais para professores.',url:drive('1vS8KA3JI2hs1rfH1dwBI1c-D4N3q7C59'),theme:'Volta às aulas'},
    // --- Pack do Editor ---
    {id:'pack-editor',name:'Pack do Editor para Designers e Editores de Vídeo',description:'Pack para designers e editores de vídeo.',url:'https://drive.google.com/file/d/14WusAgczt7PT6jiv6D6qTozOZT8VKjUy/view',theme:'Pack do Editor',icon:DRIVE_ICON},
-   {id:'photoshop-alto-nivel',name:'Photoshop Alto Nível',description:'Material de Photoshop alto nível para designers.',url:drive('1ZoXXs8o37mefSr_1UCZJUCXnsS6vnQ72'),theme:'Pack do Editor',icon:DRIVE_ICONisNew:true,},
+   {id:'photoshop-alto-nivel',name:'Photoshop Alto Nível',description:'Material de Photoshop alto nível para designers.',url:drive('1ZoXXs8o37mefSr_1UCZJUCXnsS6vnQ72'),theme:'Pack do Editor',icon:DRIVE_ICON,isNew:true},
    {id:'pack-pngs-hd',name:'Pack Imagens HD — 34 mil PNGs',description:'Pack com 34 mil arquivos PNG em alta definição, mais imagens de comida e hambúrguer.',url:drive('1zvUK7oBzboR273Sqx9uj8KdE8og5z1Bx'),theme:'Diversos',icon:DRIVE_ICON},
  ]},
  {id:'ferramentas',title:'Ferramentas & Links úteis',description:'Os recursos de edição e inspiração já presentes no Studio Editor.',icon:'wand-sparkles',items:[
