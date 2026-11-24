@@ -133,6 +133,10 @@ export const BONUS_GROUPS:BonusGroup[]=[
    {id:'moana-baby',name:'Moana Baby — elementos',description:'Elementos do tema Moana Baby.',url:drive('1_swsUq9vr2yzkEb1h1VaXaNPt50RbVDF'),theme:'Personagens'},
    {id:'mundo-bita-1',name:'Mundo Bita — Kit 04 (Menino)',description:'Kit Mundo Bita menino: elementos, fonte e arquivos Studio.',url:drive('1Clr1Q1HsjgiYhBtmdWJuDzGs3t5NVyFb'),theme:'Personagens',icon:DRIVE_ICON},
    {id:'mundo-bita-2',name:'Mundo Bita Rosa — Kit 24 (Festa)',description:'Kit Mundo Bita rosa para festa: elementos, fotos e arquivos Studio.',url:drive('11KWNPDrkM_XNEZvx5d6pJ3qJhjSzk8bQ'),theme:'Personagens',icon:DRIVE_ICON},
+   {id:'capivaras',name:'CAPIVARAS',description:'Capivaras em PNG para compor artes.',url:drive('1-P0LtHvQgm6tKPPQP12sC_aHSKetZrUW'),theme:'Personagens',icon:DRIVE_ICON,isNew:true},
+   {id:'mascotes-encantadoras',name:'MASCOTES ENCANTADORAS',description:'Mascotes encantadoras em PNG para suas artes.',url:drive('1FI2Uxm8UKHiL2or25wlig7Kglzc-V5NB'),theme:'Personagens',icon:DRIVE_ICON,isNew:true},
+   {id:'hello-kitty',name:'HELLO KITTY',description:'Hello Kitty em PNG para suas artes.',url:drive('1c6gi3Kn6_wE44aIScSGTlDPcMXy2jgYi'),theme:'Personagens',icon:DRIVE_ICON,isNew:true},
+   {id:'roblox',name:'ROBLOX',description:'Roblox em PNG para compor artes.',url:drive('1MBl50DcStKUfImUfvjo3Xst4pw4SI-x9'),theme:'Personagens',icon:DRIVE_ICON,isNew:true},
    // --- Frases ---
    {id:'frases',name:'Frases para canecas',description:'Frases prontas para estampar.',url:drive('1ufPqoSwqaO0zosxf58ZDexHgfA-PcG2P'),theme:'Frases'},
    {id:'frases-pacote',name:'Pacote de frases',description:'Pacote com várias frases em PNG.',url:drive('1xr2aPs4UJa5OHEC_nLPtDemVHwHetMOl'),theme:'Frases'},
@@ -141,6 +145,7 @@ export const BONUS_GROUPS:BonusGroup[]=[
    {id:'figuras-romanticas',name:'Figuras românticas e namorados',description:'Figuras românticas para presentear.',url:drive('14Q8_zRSliWKoyFay6QV29tTgxuNsJqPB'),theme:'Romântico'},
    {id:'frases-namorados',name:'Frases de namorados',description:'Frases românticas para presentear.',url:drive('1YL7fLAJ9IPjqEexzTgJoqrNA1JB34k8H'),theme:'Romântico'},
    {id:'frases-romanticas-2',name:'Frases românticas — namorados 2',description:'Mais frases românticas para canecas.',url:drive('1vTWVQEM3BYYfkwKGAQj2BEFDri01YPVJ'),theme:'Romântico'},
+   {id:'delicados',name:'DELICADOS',description:'Elementos delicados para suas artes.',url:drive('1mxpFSTjz0EvYuQGymA--ZNDdFAr1Juex'),theme:'Romântico',icon:DRIVE_ICON,isNew:true},
    // --- Flork ---
    {id:'flork-elementos',name:'Elementos Flork',description:'Elementos e bonequinhos Flork para suas artes.',url:drive('1ux8BEl9xp8L8vNeGMm1UDn-puA0gfqwT'),theme:'Flork'},
    {id:'flork-frases-1',name:'Flork Frases Coloridas — Signos e Canecas',description:'Frases Flork coloridas com signos e canecas.',url:drive('1TZ7_jMBsB5BfvkYJz0R1sVsd5gp7QwLl'),theme:'Flork',icon:DRIVE_ICON},
@@ -160,6 +165,7 @@ export const BONUS_GROUPS:BonusGroup[]=[
    // --- Natal ---
    {id:'natal-elementos',name:'Elementos de Natal',description:'24 coleções de Natal com quase 1.000 arquivos: Grinch, Disney, Bluey, Papai Noel, frases e mais.',url:drive('1eRddMBmDz8Vk8LuvrN3BKnuO7PPegkoU'),theme:'Natal'},
    {id:'alfabeto-natalino',name:'Alfabeto Natalino',description:'Alfabeto temático de Natal.',url:drive('1cuae3rTpleCUzO8xHHOaqkmrai2ZN-gd'),theme:'Natal'},
+   {id:'natal-2024',name:'NATAL 2024',description:'Coleção de Natal 2024 para suas artes.',url:drive('1_PLtn_WC7cyAbsQHZ2nANkVVISLnPODX'),theme:'Natal',icon:DRIVE_ICON,isNew:true},
    // --- Datas comemorativas ---
    {id:'festa',name:'Festa — 650 arquivos',description:'Arquivos de festa para suas artes.',url:drive('1kJ7QVU_j69AvI9UfFjh0RGRCxCGD1NDy'),theme:'Datas comemorativas'},
    {id:'frases-pascoa',name:'Frases de Páscoa',description:'Frases de Páscoa para canecas.',url:drive('1f6yjA021lXn0zb9SVNcyz35UFiyBgAQc'),theme:'Datas comemorativas'},
@@ -173,12 +179,16 @@ export const BONUS_GROUPS:BonusGroup[]=[
    {id:'fontes',name:'11 mil fontes',description:'Pacote com 11 mil fontes para baixar.',url:drive('1TdQbyrP9Q1r2xoBq7ehyNTW1CrUvWXpd'),theme:'Diversos'},
    {id:'bases-produtos',name:'Bases para Produtos (Pódios)',description:'Bases e pódios para apresentar produtos nas suas artes.',url:drive('1pSWWuyxZKybxmjFa5GfnBfoeUvY1Kf4M'),theme:'Diversos',icon:DRIVE_ICON,isNew:true},
    {id:'icones-copa',name:'Ícones da Copa',description:'Ícones da Copa para suas artes.',url:drive('1Eceaz-AmuClVgWxklBbUL8auUezLNHc6'),theme:'Diversos',icon:DRIVE_ICON,isNew:true},
+   {id:'colecao-sonhos',name:'COLEÇÃO SONHOS',description:'Coleção Sonhos para suas artes.',url:drive('1cQMA-vVy29XkRYjs_GQdXi2BMhiL6ctT'),theme:'Diversos',icon:DRIVE_ICON,isNew:true},
+   {id:'png-geral',name:'PNG',description:'Pasta de PNGs para compor artes.',url:drive('1O2iAap9zQ3WazGDRs5keWlX_M64IxPy8'),theme:'Diversos',icon:DRIVE_ICON,isNew:true},
+   {id:'colecao-2024-2025',name:'2024 E 2025',description:'Coleção 2024 e 2025 para suas artes.',url:drive('1Yt9raMtnDnaYGD-pCBL7vLmC1HA2u6RC'),theme:'Diversos',icon:DRIVE_ICON,isNew:true},
    // --- Volta às aulas ---
    {id:'volta-aulas',name:'Volta às aulas + agenda',description:'Materiais de volta às aulas e agenda.',url:drive('1xfxgRjH__wh2zvRPuUjOS0oarN6XIGTE'),theme:'Volta às aulas'},
    {id:'kit-professores',name:'Kit professores',description:'Kit com materiais para professores.',url:drive('1vS8KA3JI2hs1rfH1dwBI1c-D4N3q7C59'),theme:'Volta às aulas'},
    // --- Pack do Editor ---
    {id:'pack-editor',name:'Pack do Editor para Designers e Editores de Vídeo',description:'Pack para designers e editores de vídeo.',url:'https://drive.google.com/file/d/14WusAgczt7PT6jiv6D6qTozOZT8VKjUy/view',theme:'Pack do Editor',icon:DRIVE_ICON},
    {id:'photoshop-alto-nivel',name:'Photoshop Alto Nível',description:'Material de Photoshop alto nível para designers.',url:drive('1ZoXXs8o37mefSr_1UCZJUCXnsS6vnQ72'),theme:'Pack do Editor',icon:DRIVE_ICON,isNew:true},
+   {id:'hotmart-clubepan',name:'HOTMART CLUBEPAN',description:'Pack Hotmart ClubePan para suas artes.',url:drive('1a2h2JvfDn4tgfCjeIgf82sE5yKJQ8tgs'),theme:'Pack do Editor',icon:DRIVE_ICON,isNew:true},
    {id:'pack-pngs-hd',name:'Pack Imagens HD — 34 mil PNGs',description:'Pack com 34 mil arquivos PNG em alta definição, mais imagens de comida e hambúrguer.',url:drive('1zvUK7oBzboR273Sqx9uj8KdE8og5z1Bx'),theme:'Diversos',icon:DRIVE_ICON},
  ]},
  {id:'ferramentas',title:'Ferramentas & Links úteis',description:'Os recursos de edição e inspiração já presentes no Studio Editor.',icon:'wand-sparkles',items:[
