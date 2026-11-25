@@ -3,6 +3,7 @@ import { NextResponse } from 'next/server'
 import { getSessionUser } from '@/lib/auth'
 import { db } from '@/lib/db'
 import { SSO_TICKET_PREFIX, userStudioDecision } from '@/lib/unified-studio-access'
+import { SITE_URL } from '@/lib/site'
 
 export const runtime='nodejs'
 const tools = new Set(['3d','2d','editor'])
@@ -19,7 +20,7 @@ export async function GET(req:Request){
  const next=new URL(req.url).searchParams.get('next')||''
  const bonusNext=BONUS_NEXT.test(next)?next:null
  const session=await getSessionUser()
- if(!session||session.isDemo||session.isPreview)return NextResponse.redirect(new URL('/',req.url))
+ if(!session||session.isDemo||session.isPreview)return NextResponse.redirect(new URL('/',SITE_URL))
  // Acesso só-Studio: só o Studio 3D e o 2D; o Editor de Artes fica fora.
  if(session.isStudioOnly&&tool==='editor')return Response.json({error:'Este acesso é só para o Studio 3D e 2D.'},{status:403,headers:{'Cache-Control':'no-store'}})
  const user=await db.user.findUnique({where:{id:session.id},select:{id:true,role:true,hasAccess:true,status:true,isDemo:true,isPreview:true,isStudioOnly:true,previewMaxSessions:true,accessType:true,createdAt:true}})
