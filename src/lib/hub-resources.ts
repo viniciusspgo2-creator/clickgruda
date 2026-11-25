@@ -1,15 +1,18 @@
 /** Links de recursos: importado apenas pela API server-side, nunca pelo bundle do cliente. */
+import { SITE_URL } from './site'
 export type BonusItem = {id:string;name:string;description:string;url:string|null;theme?:string;icon?:string;isNew?:boolean}
 export type BonusGroup = {id:string;title:string;description:string;icon:string;items:BonusItem[];notice?:string;isNew?:boolean}
 const drive=(folder:string)=>`https://drive.google.com/drive/folders/${folder}`
+/** Ferramenta do Studio via SSO: entra com a conta do portal e cai direto na ferramenta. */
+const studioTool=(tool:string)=>`${SITE_URL}/api/sso/studio/start?tool=3d&next=${encodeURIComponent('/bonus/'+tool)}`
 const DRIVE_ICON='/bonus-icons/drive.svg'
 export const BONUS_GROUPS:BonusGroup[]=[
- {id:'bonus-studio',title:'Ferramentas da Plataforma',description:'Utilitários preservados do Studio original. Necessário também estar conectado ao Studio.',icon:'wrench',items:[
-   {id:'tool-qr',name:'Gerador de QR Code',description:'QR Codes personalizados',url:(process.env.NEXT_PUBLIC_STUDIO_URL || 'https://studio.clickgruda.com.br').replace(/\/$/,'')+'/bonus/qr'},
-   {id:'tool-whatsapp',name:'Links para WhatsApp',description:'Gere links para atendimento',url:(process.env.NEXT_PUBLIC_STUDIO_URL || 'https://studio.clickgruda.com.br').replace(/\/$/,'')+'/bonus/whatsapp'},
-   {id:'tool-orcamento',name:'Gerador de Orçamento',description:'Propostas e orçamentos',url:(process.env.NEXT_PUBLIC_STUDIO_URL || 'https://studio.clickgruda.com.br').replace(/\/$/,'')+'/bonus/orcamento'},
-   {id:'tool-pdf',name:'Editor PDF',description:'Documentos PDF',url:(process.env.NEXT_PUBLIC_STUDIO_URL || 'https://studio.clickgruda.com.br').replace(/\/$/,'')+'/bonus/pdf'},
-   {id:'tool-excel',name:'Leitor de Excel',description:'Consultar planilhas',url:(process.env.NEXT_PUBLIC_STUDIO_URL || 'https://studio.clickgruda.com.br').replace(/\/$/,'')+'/bonus/excel'},
+ {id:'bonus-studio',title:'Ferramentas da Plataforma',description:'Utilitários preservados do Studio original. Abrem direto com a sua conta.',icon:'wrench',items:[
+   {id:'tool-qr',name:'Gerador de QR Code',description:'QR Codes personalizados',url:studioTool('qr')},
+   {id:'tool-whatsapp',name:'Links para WhatsApp',description:'Gere links para atendimento',url:studioTool('whatsapp')},
+   {id:'tool-orcamento',name:'Gerador de Orçamento',description:'Propostas e orçamentos',url:studioTool('orcamento')},
+   {id:'tool-pdf',name:'Editor PDF',description:'Documentos PDF',url:studioTool('pdf')},
+   {id:'tool-excel',name:'Leitor de Excel',description:'Consultar planilhas',url:studioTool('excel')},
  ]},
  {id:'artes-200mil',title:'+ de 200 mil artes para canecas',description:'Acervos externos com mais de 200 mil artes para canecas.',icon:'library',notice:'Atenção: não garantimos qualidade, integridade etc. São layouts avulsos coletados de packs na internet — você terá que garimpar e pegar o que for útil para você. Recomendamos acompanhar a Biblioteca de Artes, onde subimos apenas artes selecionadas.',items:[
    {id:'artes-200mil-1',name:'Drive 1 — Full',description:'Acervo completo com mais de 200 mil artes.',url:drive('1K3m9XhBrrWHIHsu4QSoHCpaF22-qFi5a'),icon:DRIVE_ICON},
