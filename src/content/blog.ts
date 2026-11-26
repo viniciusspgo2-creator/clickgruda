@@ -3513,7 +3513,272 @@ const ART30: BlogArticle = {
   related: ['como-sublimar-canecas-passo-a-passo', 'tempo-temperatura-sublimar-caneca-tabela', 'tendencias-artes-para-canecas-2026'],
 }
 
-export const BLOG_ARTICLES: BlogArticle[] = [ART1, ART2, ART3, ART4, ART5, ART6, ART7, ART8, ART9, ART10, ART11, ART12, ART13, ART14, ART15, ART16, ART17, ART18, ART19, ART20, ART21, ART22, ART23, ART24, ART25, ART26, ART27, ART28, ART29, ART30]
+const ART31: BlogArticle = {
+  slug: 'canecas-personalizadas-brindes-corporativos',
+  title: 'Canecas personalizadas como brinde corporativo: como vender para empresas no fim do ano',
+  seoTitle: 'Brinde Corporativo: Caneca Personalizada para Empresas',
+  description:
+    'O fim do ano é a melhor época para vender caneca personalizada para empresas: kits de fim de ano, brindes de eventos e presentes para funcionários. Veja como abordar, precificar e entregar pedidos em lote sem dor de cabeça.',
+  keywords: [
+    'caneca personalizada brinde corporativo',
+    'brinde empresa caneca',
+    'caneca personalizada empresa',
+    'vender canecas para empresas',
+    'kit fim de ano empresa',
+  ],
+  category: 'negocios',
+  emoji: '🎁',
+  cover: '/uploads/blog-capa-31.jpg',
+  coverAlt: 'Canecas personalizadas em caixas de presente kraft prontas para brinde corporativo',
+  readTime: '9 min',
+  datePublished: '2026-11-26',
+  dateModified: '2026-11-26',
+  lead:
+    'Enquanto o varejo disputa cliente por cliente, existe um comprador que pede 50, 100, 200 canecas de uma vez: a empresa. Todo fim de ano, escritórios, lojas, clínicas e comércios compram brindes para funcionários, clientes e parceiros — e a caneca personalizada é o brinde que cabe no orçamento, carrega a marca e ainda é útil no dia a dia. Neste artigo, como abordar uma empresa, como precificar pedido em lote e como entregar sem transformar o pedido grande em dor de cabeça.',
+  blocks: [
+    { type: 'h2', text: 'Por que o fim do ano é a melhor época', id: 'por-que-fim-do-ano' },
+    {
+      type: 'p',
+      text: 'Novembro e dezembro concentram a maior parte das compras corporativas de brindes do ano. A empresa quer fechar o ano agradecendo quem trabalhou com ela — funcionário, cliente, fornecedor — e precisa de algo que chegue a tempo, que caiba no orçamento por pessoa e que não pareça um objeto genérico comprado em cima da hora. A caneca personalizada resolve os três problemas: o prazo de produção é curto, o custo por unidade cai no lote e a peça leva a marca, a mensagem e a identidade visual da empresa.',
+    },
+    {
+      type: 'p',
+      text: 'E tem um detalhe que pesa a favor de quem sublima: a empresa não está comprando uma caneca, está comprando um gesto. O responsável pela compra precisa justificar o gasto para o chefe e precisa que o presente não envergonhe a marca. Quando você entrega uma peça bem acabada, com embalagem caprichada e arte que respeita a identidade visual da empresa, você não está vendendo caneca — está resolvendo o problema de fim de ano de alguém. E quem resolve problema de fim de ano em novembro é lembrado em março, quando a empresa faz evento, e em junho, quando faz campanha interna.',
+    },
+    { type: 'h2', text: 'O que as empresas realmente querem', id: 'o-que-as-empresas-querem' },
+    {
+      type: 'p',
+      text: 'Antes de oferecer qualquer coisa, entenda o que o comprador corporativo avalia. Ele não escolhe a arte mais bonita do seu catálogo: ele escolhe a peça que não vai dar problema. Os critérios são sempre os mesmos, e valem para um pedido de 20 ou de 500 canecas.',
+    },
+    {
+      type: 'ul',
+      items: [
+        'Prazo garantido: a empresa tem uma data — festa de fim de ano, entrega de kits, evento. Pergunte a data primeiro e só prometa o que cabe nela, com folga.',
+        'A marca certa: a arte precisa usar o logo e as cores da empresa, não uma arte genérica com o nome escrito embaixo. Peça o arquivo do logo em boa qualidade antes de fechar o pedido.',
+        'Padronização: as 200 canecas precisam parecer as mesmas 200 canecas. Cor, posição da arte e acabamento iguais do primeiro ao último exemplar.',
+        'Embalagem pronta para entregar: a empresa não quer receber caneca solta numa caixa de papelão. Caixinha individual, papel de seda ou saquinho já entram no valor percebido do brinde.',
+        'Nota e pagamento organizado: empresa paga por transferência ou boleto e precisa de nota fiscal ou recibo. Combine forma de pagamento e prazo antes de começar a produção.',
+      ],
+    },
+    { type: 'h2', text: 'Como abordar uma empresa sem parecer vendedor chato', id: 'como-abordar' },
+    {
+      type: 'p',
+      text: 'A abordagem que funciona é a mais simples: mostre o produto pronto, não o catálogo. Leve uma caneca de amostra — uma peça real, com embalagem — e deixe na recepção, no escritório, na mesa do responsável. A caneca na mão vende mais que dez fotos no WhatsApp, porque o comprador vê o acabamento, sente o peso e imagina o funcionário recebendo.',
+    },
+    {
+      type: 'p',
+      text: 'Comece pelos comércios e empresas perto de você: a loja onde você já compra, a clínica do bairro, o escritório de contabilidade, a academia. Quem já te conhece como cliente ou vizinho escuta a proposta com menos resistência. E não ofereça "canecas personalizadas" no geral — ofereça o kit de fim de ano: caneca com a marca da empresa, numa caixinha, pronta para entregar. A proposta concreta fecha; a proposta genérica vira "depois eu vejo".',
+    },
+    {
+      type: 'callout',
+      title: 'O primeiro pedido é a porta de entrada',
+      text: 'A empresa que compra 30 canecas em novembro é a mesma que encomenda 200 em março para um evento. Trate o primeiro pedido pequeno como se fosse o grande: é ele que define se você vira fornecedor fixo ou só mais um contato que ficou no WhatsApp.',
+    },
+    { type: 'h2', text: 'Como precificar pedido em lote', id: 'como-precificar' },
+    {
+      type: 'p',
+      text: 'O erro mais comum é precificar o lote como se fossem 100 vendas avulsas. Pedido em lote tem outra lógica: você produz a mesma arte 100 vezes, compra o blank em quantidade e embala em série. O preço por unidade cai — e é justamente essa queda que faz a empresa fechar com você em vez de comprar brinde pronto no atacado. Mas a queda tem limite: ela não pode comer o seu lucro nem o valor do seu trabalho.',
+    },
+    {
+      type: 'table',
+      caption: 'Como o pedido em lote muda o seu trabalho (e o que cobrar por isso)',
+      head: ['Quantidade', 'O que muda para você', 'O que vale no preço'],
+      rows: [
+        ['Até 20 unidades', 'Produção igual à avulsa, uma arte só', 'Preço normal de varejo, sem desconto'],
+        ['De 21 a 50 unidades', 'Mesma arte repetida, compra de blank em lote', 'Pequeno desconto por unidade, se couber'],
+        ['De 51 a 100 unidades', 'Produção em série, embalagem em série', 'Desconto maior, mas com valor mínimo por unidade'],
+        ['Acima de 100 unidades', 'Dia inteiro de produção, prazo e logística', 'Preço de lote com sinal de entrada'],
+      ],
+    },
+    {
+      type: 'p',
+      text: 'Duas regras protegem o seu bolso em pedido grande: peça sinal de entrada antes de começar — pelo menos o valor dos blanks — e nunca prometa desconto sem calcular o custo real do lote. O cálculo é o mesmo do varejo, só que multiplicado: blank, papel, tinta, fita, embalagem, energia e o seu tempo por peça. Se o número final não cobre o custo mais o seu lucro, o desconto é prejuízo com volume. E pedido grande sem sinal é o pedido que a empresa cancela na véspera e deixa você com 100 canecas com o logo dela.',
+    },
+    { type: 'h2', text: 'O que oferecer além da caneca', id: 'alem-da-caneca' },
+    {
+      type: 'p',
+      text: 'A caneca abre a porta, mas o kit fecha a venda. Quando a empresa pergunta o que mais você faz, tenha a resposta pronta: caneca com chocolate, caneca com café, caneca com um cartão impresso com a mensagem da empresa. O kit aumenta o ticket sem aumentar a complexidade da produção — é a mesma caneca, com um ou dois itens a mais dentro da caixa.',
+    },
+    {
+      type: 'p',
+      text: 'E não subestime o cartão: uma mensagem curta da empresa — "Obrigado por fazer parte do nosso ano" — impressa num cartãozinho dentro da caixa transforma um brinde em presente. É o detalhe que o funcionário guarda e fotografa, e é o detalhe que faz a empresa dizer que o brinde "ficou lindo" em vez de "chegou". Para quem quer ampliar o catálogo de produtos personalizados, vale estudar também as garrafas térmicas e tumblers, que atendem o mesmo público corporativo com ticket maior.',
+    },
+    { type: 'h2', text: 'Como organizar a produção em lote sem errar', id: 'producao-em-lote' },
+    {
+      type: 'p',
+      text: 'Pedido em lote não é pedido avulso multiplicado: é produção em série, e produção em série pede rotina. Separe o trabalho em etapas e não misture: primeiro todas as impressões, depois todas as prensagens, depois todas as embalagens. Trocar de etapa no meio do lote é o que gera erro — arte torta numa peça, tempo errado na outra, embalagem faltando no fim.',
+    },
+    {
+      type: 'ul',
+      items: [
+        'Faça uma peça de teste com a arte da empresa e mostre ao comprador antes de prensar o lote — a aprovação da amostra evita refazer 100 canecas.',
+        'Imprima todas as artes do lote de uma vez, na mesma impressora e no mesmo papel: variação de impressão entre dias aparece na peça final.',
+        'Confira as primeiras 5 peças prensadas com calma: se a arte está centralizada, se a cor está certa, se o logo não cortou. O erro que aparece na peça 5 aparece nas 95 seguintes.',
+        'Conte e embale por caixa fechada: 20 por caixa, por exemplo, com a quantidade marcada fora. A contagem na entrega é o que evita a ligação da empresa dizendo que faltou peça.',
+        'Guarde uma peça do lote como referência: se a empresa pedir reposição ou repetir o pedido, você tem o padrão exato para reproduzir.',
+      ],
+    },
+    {
+      type: 'p',
+      text: 'E sobre o prazo: prometa o prazo que você cumpre com folga, não o prazo que você consegue correndo. Empresa que recebe um dia antes elogia; empresa que recebe um dia depois não compra de novo. Se o pedido é para o dia 15, combine a entrega para o dia 13 e use os dois dias de folga para imprevisto — prensa que quebra, blank que vem com defeito, arte que precisa de ajuste.',
+    },
+    {
+      type: 'faq',
+      items: [
+        {
+          q: 'Quantas canecas no mínimo para fechar um pedido corporativo?',
+          a: 'Não existe mínimo universal: você define. Para começar, 20 unidades é um bom piso — abaixo disso, o trabalho de preparar a arte da empresa não se paga. Avise o mínimo já na primeira conversa, para não perder tempo com pedido de 5 peças que não cobre o custo.',
+        },
+        {
+          q: 'A empresa não tem o logo em boa qualidade. E agora?',
+          a: 'Peça o arquivo original — de preferência em vetor ou em imagem grande. Se a empresa só tiver o logo numa foto de WhatsApp, avise antes que a qualidade da impressão vai ficar limitada e ofereça redesenhar o logo por um valor à parte. Nunca prometa nitidez que o arquivo não permite.',
+        },
+        {
+          q: 'Vale dar desconto grande para fechar o primeiro pedido corporativo?',
+          a: 'Vale dar um desconto pequeno de entrada, não um desconto que zera o lucro. O primeiro pedido serve para a empresa conhecer o seu trabalho; se o preço for inviável, ela não volta quando você subir — ela volta para o concorrente mais barato. Preço justo desde o primeiro pedido.',
+        },
+        {
+          q: 'Como cobrar: à vista ou parcelado?',
+          a: 'Para pedido em lote, o padrão é sinal na confirmação e o restante na entrega. O sinal cobre os blanks e o material; o restante é o seu lucro e o seu tempo. Evite começar produção grande sem sinal — o risco fica todo com você.',
+        },
+      ],
+    },
+    {
+      type: 'cta',
+      text: 'Brinde corporativo pede arte que respeite a marca da empresa — e arte pronta é o que não falta no portal. São milhares de artes para sublimar, organizadas por tema, para você montar a amostra e fechar o primeiro pedido.',
+      label: 'Ver as artes para sublimar',
+      href: '/#preco',
+    },
+  ],
+  related: ['vender-canecas-personalizadas-instagram-whatsapp', 'quanto-cobrar-caneca-personalizada-preco', 'como-embalar-caneca-personalizada-envio'],
+}
+
+/* ============================================================
+ * ARTIGO 32 — "7 erros de iniciante na sublimação de canecas"
+ * ============================================================ */
+const ART32: BlogArticle = {
+  slug: 'sublimacao-canecas-erros-iniciantes-evitar',
+  title: '7 erros de iniciante na sublimação de canecas (e como evitar cada um)',
+  seoTitle: '7 Erros de Iniciante na Sublimação de Canecas',
+  description:
+    'Começando a sublimar canecas? Estes 7 erros custam peças, tinta e tempo para quase todo iniciante — e todos têm conserto simples. Veja o que evitar antes de prensar o próximo lote.',
+  keywords: [
+    'erros sublimação canecas',
+    'erros iniciante sublimação',
+    'caneca desbotada por quê',
+    'sublimação dando errado',
+    'dicas sublimação iniciante',
+  ],
+  category: 'dicas',
+  emoji: '⚠️',
+  cover: '/uploads/blog-capa-32.jpg',
+  coverAlt: 'Prensa térmica de canecas em oficina caseira com canecas ao lado',
+  readTime: '9 min',
+  datePublished: '2026-11-26',
+  dateModified: '2026-11-26',
+  lead:
+    'Todo mundo que sublima caneca já perdeu peça por um erro bobo — e a maioria desses erros acontece nas primeiras semanas, quando ainda não existe rotina. A boa notícia: os 7 erros mais comuns de iniciante têm conserto simples e, depois de corrigidos uma vez, quase nunca voltam. Este artigo é o atalho: o que dá errado, por que dá errado e o que fazer diferente a partir da próxima prensagem.',
+  blocks: [
+    { type: 'h2', text: 'Erro 1: imprimir a arte sem espelhar', id: 'erro-1-espelhar' },
+    {
+      type: 'p',
+      text: 'É o erro mais clássico da sublimação e o mais frustrante, porque só aparece quando a peça já está pronta: a arte sai ao contrário, com o texto invertido. Na sublimação, a impressão vai virada para a peça, então a imagem precisa ser espelhada antes de imprimir — o que está na tela aparece invertido na caneca. Quem imprime direto, sem espelhar, descobre o erro no momento em que tira o papel.',
+    },
+    {
+      type: 'p',
+      text: 'O conserto é configurar o espelhamento uma vez e nunca mais tocar: na maioria dos programas de impressão, a opção aparece como "espelhar horizontalmente" ou "mirror" nas configurações da impressora. Deixe marcado como padrão no perfil de sublimação e confira sempre a primeira impressão do dia — uma folha de teste antes do lote custa centavos e salva o blank.',
+    },
+    { type: 'h2', text: 'Erro 2: usar qualquer papel, de qualquer jeito', id: 'erro-2-papel' },
+    {
+      type: 'p',
+      text: 'O papel sublimático não é papel comum: ele segura a tinta na superfície e solta tudo na prensa, no calor. Papel errado — ou papel certo guardado errado — transfere pouco, transfere manchado ou transfere com a tinta espalhada. E o culpado mais silencioso é a umidade: papel que absorveu umidade do ambiente enruga na prensa, solta a tinta antes da hora e deixa a arte com falhas.',
+    },
+    {
+      type: 'p',
+      text: 'Guarde o papel fechado, longe de umidade e de calor, e não deixe a pilha aberta na mesa de um dia para o outro. Se o papel parecer ondulado ou úmido ao toque, não use — passe para a próxima folha. E nunca imprima no lado errado: o lado de impressão é o lado mais liso e mais branco. A dúvida entre os lados se resolve com um teste: uma gota de água no lado certo forma bolinha e demora para absorver.',
+    },
+    { type: 'h2', text: 'Erro 3: tempo e temperatura no chute', id: 'erro-3-tempo-temperatura' },
+    {
+      type: 'p',
+      text: 'Cada combinação de caneca, papel, tinta e prensa tem um ponto certo — e o ponto certo não se adivinha. Quem chuta o tempo e a temperatura vive no sorteio: num dia a arte sai perfeita, no outro sai desbotada, e ninguém sabe o que mudou. O tempo curto demais não fixa a tinta; o tempo longo demais queima a cor; a temperatura errada faz os dois.',
+    },
+    {
+      type: 'p',
+      text: 'A saída é ter uma tabela de referência e fazer o teste com a sua combinação antes do lote. A tabela de tempo e temperatura para sublimar caneca traz os parâmetros por material para começar — e o teste é uma peça só, com a arte do pedido, prensada com os números da tabela. Se sair certo, o lote inteiro segue os mesmos números. Se sair errado, você ajusta uma peça, não cinquenta.',
+    },
+    {
+      type: 'callout',
+      title: 'Anote o que funcionou',
+      text: 'O iniciante que anota os parâmetros de cada peça que deu certo — tempo, temperatura, pressão, papel e tinta — vira profissional em semanas. O que não anota repete o mesmo erro meses depois, sem saber que já tinha resolvido.',
+    },
+    { type: 'h2', text: 'Erro 4: pressão errada na prensa', id: 'erro-4-pressao' },
+    {
+      type: 'p',
+      text: 'A pressão é o terceiro parâmetro da sublimação, junto com tempo e temperatura — e é o que mais gente ignora. Pressão fraca demais deixa a arte falhada, com partes sem transferir, principalmente nas bordas. Pressão forte demais amassa a caneca, marca o papel na peça e pode até trincar a alça. E como cada prensa regula pressão de um jeito, o "aperto" de um vídeo não serve para a sua prensa.',
+    },
+    {
+      type: 'p',
+      text: 'O ajuste certo se encontra com a caneca fechada na prensa, sem ligar o calor: a resistência precisa encostar na peça por inteiro, sem folga e sem forçar. Se a caneca gira solta dentro da prensa, falta pressão. Se você precisa de força para fechar a alavanca, sobra pressão. Ajuste um pouco por vez e teste com uma peça antes do lote — a marca do papel na caneca é o sinal de que passou do ponto.',
+    },
+    { type: 'h2', text: 'Erro 5: blank errado — caneca sem coating', id: 'erro-5-blank' },
+    {
+      type: 'p',
+      text: 'Nem toda caneca branca aceita sublimação. A tinta sublimática só fixa em superfície com revestimento próprio — o coating. Caneca comum, sem coating, até recebe a arte na prensa, mas a tinta não fixa: sai lavando, desbota em dias e mancha a mão. É o erro que faz o iniciante achar que a prensa, a tinta ou o papel estão com defeito, quando o problema é a peça.',
+    },
+    {
+      type: 'p',
+      text: 'Compre o blank certo, de fornecedor que informa que a caneca é própria para sublimação. Desconfie de preço muito abaixo do mercado: blank barato demais costuma ser caneca comum pintada de branco. E guarde a nota do fornecedor e o lote da compra — se um lote inteiro vier com defeito de coating, você precisa saber de onde veio para reclamar e para não repetir a compra.',
+    },
+    { type: 'h2', text: 'Erro 6: tirar o papel na hora errada', id: 'erro-6-tirar-papel' },
+    {
+      type: 'p',
+      text: 'A prensa apitou, a alavanca abriu — e a pressa faz o resto. Tirar o papel com a peça ainda quente demais pode puxar a tinta junto e borrar a arte; esperar demais com o papel grudado na peça quente pode deixar marca e manchar as bordas. O ponto certo é tirar o papel com a peça quente, mas com calma: abra a prensa, segure a caneca pela alça e puxe o papel num movimento só, sem parar no meio.',
+    },
+    {
+      type: 'p',
+      text: 'E tem o detalhe que ninguém conta no começo: a caneca continua quente depois que o papel sai, e a tinta continua fixando enquanto esfria. Não jogue água fria na peça recém-prensada e não empilhe as canecas quentes uma na outra — deixe esfriar em pé, com espaço, antes de embalar. A pressa na última etapa estraga a peça que estava perfeita na prensa.',
+    },
+    { type: 'h2', text: 'Erro 7: prensar o lote sem fazer uma peça de teste', id: 'erro-7-teste' },
+    {
+      type: 'p',
+      text: 'Este é o erro que resume todos os outros: começar o lote sem testar. A arte é nova, o blank é de um fornecedor diferente, o papel é outro — e mesmo assim o iniciante prensa as 20 canecas de uma vez. Se alguma coisa estiver errada, o erro se multiplica por 20. Uma peça de teste antes do lote custa um blank e cinco minutos; um lote errado custa o dia inteiro e o material todo.',
+    },
+    {
+      type: 'p',
+      text: 'A rotina que resolve: antes de qualquer lote, prense uma peça com a arte do pedido, nos parâmetros que você vai usar, e avalie com calma — cor, centralização, bordas, verso da alça. Só depois dessa peça aprovada é que o lote começa. E se a peça de teste sair com defeito, o defeito vira diagnóstico: a lista de defeitos mais comuns e o que causa cada um está no artigo sobre caneca desbotada e defeitos.',
+    },
+    {
+      type: 'faq',
+      items: [
+        {
+          q: 'A arte saiu desbotada. Foi tempo, temperatura ou pressão?',
+          a: 'Pode ser qualquer um dos três — e a forma de descobrir é testar um por vez. Comece conferindo se o tempo e a temperatura estão dentro da tabela para o material da sua caneca; depois ajuste a pressão. Se nada mudar, o problema pode ser o blank sem coating ou o papel úmido. Anote cada ajuste para não repetir o teste.',
+        },
+        {
+          q: 'Posso reaproveitar uma caneca que saiu com defeito?',
+          a: 'Depende do defeito. Caneca com arte falhada não volta a ser branca — a tinta já fixou onde fixou. Dá para cobrir com uma arte maior e mais escura em alguns casos, mas o resultado raramente fica perfeito. O melhor uso da peça com defeito é como peça de teste para ajustar a prensa.',
+        },
+        {
+          q: 'Quantas peças de teste preciso fazer por lote?',
+          a: 'Uma, se nada mudou desde o último lote — mesma arte, mesmo blank, mesmo papel, mesmos parâmetros. Se qualquer coisa mudou — fornecedor, papel, arte nova — faça uma nova peça de teste. O custo de uma peça é sempre menor que o custo do lote errado.',
+        },
+        {
+          q: 'A prensa nova precisa de calibragem?',
+          a: 'Sim: prensa nova, termômetro novo e resistência nova merecem uma peça de teste antes do primeiro pedido. O display da prensa mostra a temperatura do sensor, não necessariamente a temperatura real na peça — o teste revela a diferença entre o que o painel diz e o que a caneca recebe.',
+        },
+      ],
+    },
+    {
+      type: 'cta',
+      text: 'Evitar erro é bom; começar com a arte certa é melhor ainda. São milhares de artes prontas para sublimar, organizadas por tema, para você testar a prensa sem começar do zero.',
+      label: 'Ver as artes para sublimar',
+      href: '/#preco',
+    },
+  ],
+  related: ['como-sublimar-canecas-passo-a-passo', 'tempo-temperatura-sublimar-caneca-tabela', 'caneca-sublimada-desbotada-defeitos-como-resolver'],
+}
+
+export const BLOG_ARTICLES: BlogArticle[] = [ART1, ART2, ART3, ART4, ART5, ART6, ART7, ART8, ART9, ART10, ART11, ART12, ART13, ART14, ART15, ART16, ART17, ART18, ART19, ART20, ART21, ART22, ART23, ART24, ART25, ART26, ART27, ART28, ART29, ART30, ART31, ART32]
 
 export function getArticle(slug: string): BlogArticle | undefined {
   return BLOG_ARTICLES.find((a) => a.slug === slug)
