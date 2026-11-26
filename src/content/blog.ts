@@ -4037,7 +4037,268 @@ const ART34: BlogArticle = {
   related: ['canecas-personalizadas-festas-aniversarios-ideias', 'canecas-personalizadas-brindes-corporativos', 'como-embalar-caneca-personalizada-envio'],
 }
 
-export const BLOG_ARTICLES: BlogArticle[] = [ART1, ART2, ART3, ART4, ART5, ART6, ART7, ART8, ART9, ART10, ART11, ART12, ART13, ART14, ART15, ART16, ART17, ART18, ART19, ART20, ART21, ART22, ART23, ART24, ART25, ART26, ART27, ART28, ART29, ART30, ART31, ART32, ART33, ART34]
+const ART35: BlogArticle = {
+  slug: 'vender-canecas-marketplace-shopee-mercado-livre',
+  title: 'Vender canecas personalizadas no Shopee e no Mercado Livre: por onde começar',
+  seoTitle: 'Vender Canecas no Shopee e Mercado Livre: Guia para Começar em 2026',
+  description:
+    'Shopee ou Mercado Livre para vender caneca personalizada? Veja quanto custa vender em cada um em 2026, como montar o anúncio, precificar sem furar a margem e embalar para a peça chegar inteira.',
+  keywords: [
+    'vender canecas shopee',
+    'vender canecas mercado livre',
+    'caneca personalizada marketplace',
+    'taxas shopee 2026',
+    'taxas mercado livre 2026',
+    'vender caneca personalizada online',
+  ],
+  category: 'negocios',
+  emoji: '🛒',
+  cover: '/uploads/blog-capa-35.jpg',
+  coverAlt: 'Celular mostrando uma loja online com canecas personalizadas coloridas, ao lado de pacotes e uma caneca de cerâmica sobre a mesa',
+  readTime: '9 min',
+  datePublished: '2026-11-26',
+  dateModified: '2026-11-26',
+  lead:
+    'O marketplace é a vitrine que nunca fecha: enquanto você dorme, alguém procura por caneca personalizada no Shopee ou no Mercado Livre e encontra o seu anúncio. Para quem sublima, os dois canais são a forma mais rápida de vender além do bairro — sem montar loja própria, sem anúncio pago e sem depender só do Instagram. Mas cada plataforma cobra de um jeito, exige um cuidado diferente com o anúncio e pune quem erra na logística. Neste artigo, como começar em cada uma, quanto custa vender em 2026 e como montar o anúncio e o preço sem furar a margem.',
+  blocks: [
+    { type: 'h2', text: 'Shopee ou Mercado Livre: qual combina com a sua caneca', id: 'shopee-ou-mercado-livre' },
+    {
+      type: 'p',
+      text: 'A primeira decisão não é técnica, é de público. O Mercado Livre tem a maior audiência do comércio eletrônico brasileiro e um comprador que busca o produto específico: ele digita o tema da caneca, compara poucos anúncios e compra. A Shopee tem o segundo maior público, mas um comportamento diferente: o cliente navega por ofertas, compara muito preço, caça cupom e compra por impulso nas datas de promoção. A caneca personalizada vende nos dois, mas o caminho até a venda muda.',
+    },
+    {
+      type: 'p',
+      text: 'Na prática, a maioria de quem sublima começa por um canal e depois replica o anúncio no outro, com o mesmo estoque e as mesmas fotos. Não existe canal certo para todo mundo: quem vende caneca de tema específico, como time, profissão ou data comemorativa, costuma se dar bem no Mercado Livre, onde a busca é direta. Quem trabalha com preço de entrada e kits — duas canecas, caneca com caixa, caneca mais colher — aproveita melhor a Shopee, onde o volume e a promoção pesam mais. O importante é começar por um e aprender a rotina dele antes de abrir o segundo.',
+    },
+    { type: 'h2', text: 'Quanto custa vender em cada plataforma em 2026', id: 'quanto-custa-2026' },
+    {
+      type: 'p',
+      text: 'As taxas dos marketplaces mudam com frequência, então trate os valores abaixo como as faixas vigentes em novembro de 2026, conferidas nas centrais de ajuda das plataformas e em guias de tarifas atualizados no mês. Antes de precificar qualquer anúncio, confira o valor exato da sua categoria dentro da plataforma, porque uma mudança de faixa muda a sua margem — e a margem é o que paga o seu trabalho.',
+    },
+    {
+      type: 'table',
+      caption: 'Taxas de venda vigentes em novembro de 2026 — conferir na plataforma antes de precificar',
+      head: ['Plataforma', 'Comissão por venda', 'Taxa fixa por item', 'O que observar'],
+      rows: [
+        ['Mercado Livre Clássico', '10% a 14%, por categoria', 'Sem taxa fixa; custo de envio variável por peso e preço', 'Sem parcelamento sem juros; exposição intermediária'],
+        ['Mercado Livre Premium', '15% a 19%, por categoria', 'Sem taxa fixa; custo de envio variável', 'Até 12x sem juros; exposição prioritária na busca'],
+        ['Shopee, até R$ 79,99', '20%', 'R$ 4,50 por item', 'Frete grátis com coparticipação obrigatória do vendedor'],
+        ['Shopee, R$ 80 ou mais', '14%', 'R$ 16 a R$ 26 por faixa de preço', 'CPF com mais de 450 pedidos em 90 dias paga R$ 3 a mais por item'],
+      ],
+    },
+    {
+      type: 'p',
+      text: 'Repare no detalhe que mais pega quem está começando: no Mercado Livre, além da comissão, o envio é um custo à parte e varia por peso e faixa de preço — abaixo de R$ 79 ele virou um custo operacional variável, e acima de R$ 79 o vendedor é quem oferece o frete grátis e arca com o envio. Na Shopee, a comissão já inclui a taxa de transação, mas a taxa fixa por item pesa no preço baixo: numa caneca barata, R$ 4,50 fixos mais 20% comem uma fatia grande do preço. É por isso que tanta gente vende caneca em kit na Shopee — duas peças diluem a taxa fixa e o frete por unidade.',
+    },
+    {
+      type: 'callout',
+      title: 'A conta que decide o canal',
+      text: 'Antes de anunciar, some tudo: blank, tinta, papel, energia, embalagem, comissão, taxa fixa e envio. O que sobrar precisa pagar o seu tempo e ainda deixar lucro. No marketplace, o desconto que você dá no anúncio sai do seu bolso, não do da plataforma — então nenhum cupom ou promoção entra no preço sem essa conta feita.',
+    },
+    { type: 'h2', text: 'O que o marketplace exige de quem vende caneca', id: 'o-que-o-marketplace-exige' },
+    {
+      type: 'p',
+      text: 'Marketplace não é rede social: não basta postar bonito. A plataforma mede o vendedor por números — tempo de resposta, prazo de postagem, avaliação do comprador e taxa de reclamação — e quem fica abaixo do esperado perde exposição ou leva punição. A caneca personalizada tem dois pontos de atenção que o vendedor de produto pronto não tem: o prazo de produção e a personalização, que precisa ser combinada com o comprador depois da compra.',
+    },
+    {
+      type: 'ul',
+      items: [
+        'Foto real da peça pronta: nada de mockup genérico como foto principal. O comprador precisa ver a caneca de verdade, de frente, de lado e em uso.',
+        'Título com o que o cliente procura: tema, ocasião e material. "Caneca personalizada" sozinho compete com milhares de anúncios; "caneca personalizada dia das mães" compete com poucos.',
+        'Prazo de produção dentro do anúncio: se você precisa de dois dias para sublimar, o prazo de postagem precisa incluir esses dois dias. Atraso derruba a reputação.',
+        'Personalização combinada por mensagem: nome, foto ou frase que o cliente quer na peça são acertados no chat após a compra — responda rápido, porque a plataforma mede o tempo de resposta.',
+        'Embalagem que protege de verdade: caneca quebrada no transporte vira devolução, avaliação ruim e prejuízo duplo. A embalagem é parte da reputação.',
+      ],
+    },
+    { type: 'h2', text: 'Como montar o anúncio que vende', id: 'montar-o-anuncio' },
+    {
+      type: 'p',
+      text: 'O anúncio da caneca personalizada vende por confiança: o comprador não pode tocar na peça, então a foto e a descrição precisam responder tudo o que ele perguntaria numa loja. Capriche nas fotos — fundo limpo, luz do dia, a caneca sozinha, a caneca em uso com café, e um detalhe da estampa de perto — e escreva a descrição como se fosse um vendedor falando: medidas, material, capacidade, prazo de produção, o que vai na embalagem e como funciona a personalização. Para fotografar a peça como ela merece, vale revisar o guia de como fotografar canecas personalizadas para vender mais.',
+    },
+    {
+      type: 'ul',
+      items: [
+        'Primeira foto é a caneca inteira, de frente, sem bagunça ao redor — é ela que aparece na busca.',
+        'Inclua uma foto da caneca em uso, com bebida, para o cliente imaginar a peça na rotina dele.',
+        'Mostre o verso ou o detalhe da estampa em close: é o que prova a qualidade da sublimação.',
+        'Use as variações do anúncio para os temas: a mesma caneca, um anúncio por tema, em vez de um anúncio só com tudo misturado.',
+        'Na descrição, diga o prazo real de produção e envio — promessa furada vira reclamação.',
+      ],
+    },
+    { type: 'h2', text: 'O preço: a conta que não pode furar', id: 'o-preco' },
+    {
+      type: 'p',
+      text: 'O erro mais comum de quem entra no marketplace é copiar o preço da loja física ou do Instagram e colar no anúncio. No marketplace, o preço precisa carregar a comissão, a taxa fixa e o envio — e ainda sobrar margem. Faça a conta de trás para frente: parta do valor que você precisa receber por caneca e some os custos da plataforma até chegar ao preço de anúncio. Se o preço final ficar alto demais para o canal, a saída não é vender no prejuízo: é mudar o produto, como vender em kit de duas canecas, que dilui a taxa fixa, ou subir para o Premium, onde o parcelamento sem juros justifica o preço maior. Para montar a base dessa conta, o guia de quanto cobrar por caneca personalizada mostra como chegar ao preço com margem.',
+    },
+    { type: 'h2', text: 'Logística: embalar bem é parte da reputação', id: 'logistica' },
+    {
+      type: 'p',
+      text: 'No marketplace, a logística é o ponto onde o sublimador mais perde dinheiro sem perceber: caneca quebrada, atraso na postagem e embalagem fraca viram devolução e nota baixa, e nota baixa tira o anúncio da primeira página. Poste no prazo prometido, use caixa com proteção — plástico bolha, divisória ou caixa própria para caneca — e confira o peso e as medidas no anúncio, porque o custo de envio é calculado sobre eles. O passo a passo completo está no guia de como embalar caneca personalizada para envio, que vale para os dois marketplaces.',
+    },
+    { type: 'h2', text: 'Comece por um canal e escale para os dois', id: 'comecar-por-um' },
+    {
+      type: 'p',
+      text: 'Não tente abrir os dois canais no mesmo dia. Escolha um, cadastre dez anúncios com os seus temas que mais vendem, aprenda a rotina de responder, postar e embalar, e ajuste o preço com as primeiras vendas. Quando o primeiro canal estiver rodando sem susto, replique os anúncios no segundo — as fotos, as descrições e a conta de preço já estarão prontas. E lembre que o marketplace é um canal, não o negócio inteiro: o cliente que compra a caneca hoje pode virar cliente do Instagram e do WhatsApp amanhã, onde a venda não paga comissão. Para isso, o guia de vender canecas personalizadas no Instagram e no WhatsApp mostra como transformar o comprador do marketplace em cliente direto.',
+    },
+    {
+      type: 'faq',
+      items: [
+        {
+          q: 'Preciso de CNPJ para vender no Shopee e no Mercado Livre?',
+          a: 'Não para começar: dá para vender como pessoa física nos dois. O CNPJ muda a faixa de comissão na Shopee e permite emitir nota fiscal, o que passa a ser necessário quando o volume cresce — e vale a pena formalizar antes de o volume virar problema.',
+        },
+        {
+          q: 'Como funciona a personalização no marketplace?',
+          a: 'O anúncio vende a caneca com o tema escolhido, e os dados da personalização — nome, foto ou frase — são combinados com o comprador pelo chat da plataforma logo após a compra. Deixe isso claro na descrição e responda rápido: a demora trava a produção e o prazo de postagem.',
+        },
+        {
+          q: 'Vale a pena vender caneca barata no marketplace?',
+          a: 'Só se a conta fechar: a taxa fixa por item pesa mais no preço baixo, principalmente na Shopee. Caneca avulsa barata costuma valer mais em kit de duas ou com um item junto, que dilui a taxa fixa e o envio por unidade.',
+        },
+        {
+          q: 'Posso vender a mesma caneca nos dois marketplaces?',
+          a: 'Pode e deve, desde que o estoque seja controlado: a mesma caneca vendida nos dois canais ao mesmo tempo precisa de controle para não vender o que não existe. Comece por um canal e replique os anúncios no segundo quando a rotina já estiver redonda.',
+        },
+      ],
+    },
+    {
+      type: 'cta',
+      text: 'Marketplace pede catálogo: quanto mais temas prontos você tiver, mais anúncios você publica — e são milhares de artes para sublimar, organizadas por tema, para abastecer a sua loja nos dois canais.',
+      label: 'Ver as artes para sublimar',
+      href: '/#preco',
+    },
+  ],
+  related: ['vender-canecas-personalizadas-instagram-whatsapp', 'quanto-cobrar-caneca-personalizada-preco', 'como-embalar-caneca-personalizada-envio'],
+}
+
+const ART36: BlogArticle = {
+  slug: 'como-limpar-cuidar-caneca-sublimada',
+  title: 'Como cuidar da caneca sublimada para a estampa durar anos',
+  seoTitle: 'Como Cuidar da Caneca Sublimada: Guia para a Estampa Durar Anos',
+  description:
+    'A estampa da caneca sublimada dura anos quando a lavagem respeita alguns cuidados simples. Veja como lavar, o que evitar, como tirar mancha de café e como orientar o cliente final.',
+  keywords: [
+    'como cuidar caneca sublimada',
+    'lavar caneca sublimada',
+    'caneca sublimada desbota',
+    'caneca personalizada durabilidade',
+    'limpar caneca sublimada',
+    'caneca sublimada lava-louças',
+  ],
+  category: 'dicas',
+  emoji: '🧼',
+  cover: '/uploads/blog-capa-36.jpg',
+  coverAlt: 'Mãos lavando com esponja macia uma caneca de cerâmica com estampa floral colorida sob água corrente na pia da cozinha',
+  readTime: '7 min',
+  datePublished: '2026-11-26',
+  dateModified: '2026-11-26',
+  lead:
+    'A caneca sublimada não é uma caneca com adesivo: na sublimação, a tinta penetra no esmalte e vira parte da peça. É por isso que a estampa aguenta anos de uso diário — desde que a lavagem respeite alguns cuidados simples. O problema é que o cliente final não sabe disso: ele lava a caneca como lava qualquer outra, e quando a estampa desbota antes da hora, a culpa cai na sua arte. Neste artigo, os cuidados que mantêm a estampa viva por anos, o que evitar na lavagem e como orientar o cliente para ele cuidar da peça como ela merece.',
+  blocks: [
+    { type: 'h2', text: 'Por que a estampa sublimada dura tanto', id: 'por-que-a-estampa-dura' },
+    {
+      type: 'p',
+      text: 'Na sublimação, a tinta é aquecida até virar gás e penetra na camada de polímero da caneca, tingindo o esmalte por dentro — não é uma camada colada por cima, como um adesivo ou um decalque. Por isso a estampa não descasca, não levanta nas bordas e não sai com a unha. Ela foi feita para durar tanto quanto a própria caneca. Mas durar não significa ser indestrutível: abrasão repetida, calor extremo e química agressiva desgastam a tinta aos poucos, e o desgaste aparece como desbotamento, perda de brilho e cores apagadas. Quem sublima conhece esse limite; quem recebe a caneca, não.',
+    },
+    { type: 'h2', text: 'A lavagem certa, passo a passo', id: 'a-lavagem-certa' },
+    {
+      type: 'p',
+      text: 'A lavagem ideal da caneca sublimada é simples e não exige nada que o cliente já não tenha em casa. O segredo está no que não fazer: nada de esponja abrasiva, nada de produto forte, nada de água fervendo. Seguindo estes passos, a estampa passa anos sem mudar de cor.',
+    },
+    {
+      type: 'ol',
+      items: [
+        'Deixe a caneca esfriar antes de lavar: jogar água fria na caneca ainda quente do café provoca choque térmico e, com o tempo, microfissuras no esmalte.',
+        'Use água morna e detergente neutro: é o suficiente para tirar café, chá e gordura sem atacar a tinta.',
+        'Lave com a parte macia da esponja: o lado amarelo limpa sem riscar; o lado verde é o inimigo número um da estampa.',
+        'Enxágue bem para não deixar resíduo de detergente, que mancha a peça quando seca.',
+        'Seque com um pano macio ou deixe a caneca de boca para baixo no escorredor: secar ao ar evita as marcas de água no esmalte.',
+      ],
+    },
+    { type: 'h2', text: 'Pode ir à lava-louças? E ao micro-ondas?', id: 'lava-loucas-e-micro-ondas' },
+    {
+      type: 'p',
+      text: 'Essa é a pergunta que todo cliente faz — e a resposta honesta é que pode, mas cobra um preço. A lava-louças não estraga a estampa numa lavagem só: o problema é o uso repetido, com detergente agressivo e jato de água quente, que desgasta a tinta lavagem após lavagem. O micro-ondas é mais tranquilo, porque aquece a bebida e não a peça, mas ferver a caneca vazia ou aquecer por muito tempo força o esmalte. A regra prática é: o que puder ser lavado à mão, lave à mão.',
+    },
+    {
+      type: 'table',
+      caption: 'O que a caneca sublimada aguenta no dia a dia',
+      head: ['Situação', 'Pode?', 'Por quê'],
+      rows: [
+        ['Lava-louças', 'Evite', 'Detergente agressivo e jato quente desgastam a estampa com o uso repetido'],
+        ['Micro-ondas', 'Sim, com moderação', 'Aquece a bebida sem agredir a peça, mas evite ferver a caneca vazia'],
+        ['Água sanitária e cloro', 'Não', 'Atacam a tinta e o esmalte e apagam as cores'],
+        ['Esponja de aço', 'Nunca', 'Risca a estampa e o esmalte de forma permanente'],
+        ['Molho prolongado', 'Evite', 'Horas de molho enfraquecem a aderência da tinta ao esmalte'],
+      ],
+    },
+    { type: 'h2', text: 'O que estraga a estampa — e o cliente precisa saber', id: 'o-que-estraga-a-estampa' },
+    {
+      type: 'p',
+      text: 'Quase todo desbotamento que volta como reclamação tem uma dessas causas — e quase nenhuma delas é defeito da sublimação. Quando a peça foi prensada com tempo e temperatura certos, a estampa aguenta a rotina; o que ela não aguenta é o mau uso repetido. Vale conhecer a lista para explicar ao cliente antes que ele descubra sozinho.',
+    },
+    {
+      type: 'ul',
+      items: [
+        'Esponja abrasiva e palha de aço: riscam a tinta a cada lavagem e o estrago é cumulativo — a primeira lavagem não mostra nada, a trigésima mostra tudo.',
+        'Produtos com cloro, água sanitária e desinfetante: desbotam as cores e atacam o esmalte, mesmo diluídos.',
+        'Choque térmico: água fervendo na caneca gelada, ou a caneca quente direto para a água fria, estressa o esmalte com o tempo.',
+        'Empilhar canecas sem proteção: a base de uma risca a estampa da outra, principalmente quando as peças são guardadas uma dentro da outra.',
+        'Deixar café ou chá secar por dias: a mancha seca gruda e o cliente esfrega com força para tirar — e a força vai para a estampa junto.',
+        'Secar com pano áspero ou papel toalha seco: o atrito diário tira o brilho da peça aos poucos.',
+      ],
+    },
+    { type: 'h2', text: 'Manchas de café e chá: como tirar sem riscar', id: 'manchas-de-cafe-e-cha' },
+    {
+      type: 'p',
+      text: 'A mancha de café é o teste de paciência do dono da caneca: ela parece grudada, mas sai sem esfregar. Coloque uma colher de bicarbonato de sódio na caneca, complete com água morna e deixe agir por meia hora. Depois, lave normalmente com a parte macia da esponja — a mancha sai sozinha. Para manchas mais antigas, repita o processo ou deixe o bicarbonato agir por mais tempo, nunca parta para a esponja abrasiva. Vinagre branco diluído em água morna também funciona para manchas de chá, com o mesmo cuidado: deixar agir, depois lavar suave. Se a mancha não sair com o método suave, é sinal de que a peça precisa de uma limpeza com mais tempo de molho, não com mais força.',
+    },
+    { type: 'h2', text: 'Como orientar o cliente final', id: 'como-orientar-o-cliente' },
+    {
+      type: 'p',
+      text: 'O cuidado com a caneca é parte do produto — e orientar o cliente é parte da venda. Quem compra uma caneca personalizada não quer um manual de dez páginas, quer três linhas claras no momento da entrega. O cartão de cuidados resolve isso: ele protege a estampa, evita a reclamação de desbotamento e ainda passa uma imagem de capricho profissional, que é o que faz o cliente voltar e indicar.',
+    },
+    {
+      type: 'callout',
+      title: 'O cartão de cuidados',
+      text: 'Entregue cada caneca com um cartãozinho: "Lave com esponja macia e detergente neutro. Evite lava-louças, esponja de aço e produtos com cloro. Assim a sua estampa dura anos." São três linhas que evitam a reclamação e mostram o capricho de quem fez a peça.',
+    },
+    {
+      type: 'p',
+      text: 'E quando o cliente voltar dizendo que a estampa desbotou, pergunte como ele lava a caneca antes de prometer refazer a peça: na maioria das vezes, a resposta revela lava-louças diária, esponja de aço ou água sanitária — e a conversa vira orientação, não prejuízo. Se a peça desbotou mesmo com a lavagem certa, o problema pode estar na prensagem, e o guia de caneca sublimada desbotada e defeitos mostra como identificar a causa e resolver.',
+    },
+    {
+      type: 'faq',
+      items: [
+        {
+          q: 'A caneca sublimada pode ir ao micro-ondas?',
+          a: 'Pode, com moderação: o micro-ondas aquece a bebida e não agride a peça no uso normal. Evite ferver a caneca vazia ou aquecer por muito tempo seguido, porque o calor excessivo força o esmalte.',
+        },
+        {
+          q: 'Lavar na lava-louças estraga mesmo a estampa?',
+          a: 'Uma lavagem não estraga, mas o uso repetido sim: o detergente agressivo e o jato de água quente desgastam a tinta lavagem após lavagem. Quem lava à mão mantém a estampa viva por muito mais tempo.',
+        },
+        {
+          q: 'A estampa desbota com o tempo mesmo com o cuidado certo?',
+          a: 'Com a lavagem certa, a estampa mantém as cores por anos — a sublimação tinge o esmalte por dentro, não é uma camada por cima. O desbotamento aparece quando a peça sofre abrasão, cloro ou calor extremo de forma repetida.',
+        },
+        {
+          q: 'Como tirar mancha de café da caneca sem danificar a arte?',
+          a: 'Bicarbonato de sódio com água morna, deixando agir por meia hora, e depois a lavagem normal com a parte macia da esponja. Nunca use esponja de aço ou esfregue com força: a mancha sai com tempo de molho, não com força.',
+        },
+      ],
+    },
+    {
+      type: 'cta',
+      text: 'Caneca bem cuidada dura anos — e caneca bonita se vende todo dia. São milhares de artes para sublimar, organizadas por tema, para renovar o catálogo e vender mais.',
+      label: 'Ver as artes para sublimar',
+      href: '/#preco',
+    },
+  ],
+  related: ['caneca-sublimada-desbotada-defeitos-como-resolver', 'como-sublimar-canecas-passo-a-passo', 'como-embalar-caneca-personalizada-envio'],
+}
+
+export const BLOG_ARTICLES: BlogArticle[] = [ART1, ART2, ART3, ART4, ART5, ART6, ART7, ART8, ART9, ART10, ART11, ART12, ART13, ART14, ART15, ART16, ART17, ART18, ART19, ART20, ART21, ART22, ART23, ART24, ART25, ART26, ART27, ART28, ART29, ART30, ART31, ART32, ART33, ART34, ART35, ART36]
 
 export function getArticle(slug: string): BlogArticle | undefined {
   return BLOG_ARTICLES.find((a) => a.slug === slug)
