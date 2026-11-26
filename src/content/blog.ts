@@ -3778,7 +3778,266 @@ const ART32: BlogArticle = {
   related: ['como-sublimar-canecas-passo-a-passo', 'tempo-temperatura-sublimar-caneca-tabela', 'caneca-sublimada-desbotada-defeitos-como-resolver'],
 }
 
-export const BLOG_ARTICLES: BlogArticle[] = [ART1, ART2, ART3, ART4, ART5, ART6, ART7, ART8, ART9, ART10, ART11, ART12, ART13, ART14, ART15, ART16, ART17, ART18, ART19, ART20, ART21, ART22, ART23, ART24, ART25, ART26, ART27, ART28, ART29, ART30, ART31, ART32]
+/* ============================================================
+ * ARTIGO 33 — "Papel sublimático: como escolher o certo"
+ * ============================================================ */
+const ART33: BlogArticle = {
+  slug: 'papel-sublimatico-como-escolher',
+  title: 'Papel sublimático: como escolher o certo e parar de desperdiçar tinta e peça',
+  seoTitle: 'Papel Sublimático: Como Escolher o Certo (Gramaturas e Tipos)',
+  description:
+    'O papel sublimático errado desbota a cor, mancha a peça e desperdiça tinta. Entenda as gramaturas 90g, 100g e 120g, os tipos quick-dry e tack, e como identificar o lado certo de impressão antes de prensar.',
+  keywords: [
+    'papel sublimático como escolher',
+    'papel sublimático gramatura',
+    'papel sublimático 90g 100g 120g',
+    'lado de impressão papel sublimático',
+    'papel sublimático para caneca',
+  ],
+  category: 'equipamentos',
+  emoji: '📄',
+  cover: '/uploads/blog-capa-33.jpg',
+  coverAlt: 'Folhas de papel sublimático com arte floral impressa ao lado de uma caneca branca em bancada de trabalho',
+  readTime: '9 min',
+  datePublished: '2026-11-26',
+  dateModified: '2026-11-26',
+  lead:
+    'A caneca sai da prensa com a cor apagada, a imagem borrada ou uma sombra duplicada ao lado do desenho — e a primeira suspeita é sempre a tinta, a prensa ou a temperatura. Na maioria das vezes, o culpado é o papel. O papel sublimático é o veículo que carrega a tinta até a peça: ele segura a tinta na superfície, libera quase tudo na hora do calor e não pode absorver nada. Papel errado, ou papel certo usado do lado errado, transforma tinta, tempo e blank em lixo. Neste artigo, como funcionam as gramaturas, os tipos de papel e o teste simples que evita o desperdício.',
+  blocks: [
+    { type: 'h2', text: 'O que o papel sublimático faz (e por que o papel comum não serve)', id: 'o-que-o-papel-faz' },
+    {
+      type: 'p',
+      text: 'O papel sublimático tem um revestimento microporoso que segura a tinta de sublimação na superfície, sem deixar que ela afunde nas fibras. Na prensa, o calor transforma a tinta em gás e o papel libera quase toda ela para a peça — é essa liberação que dá a cor viva e o acabamento que não desbota. O papel comum faz o oposto: ele absorve a tinta para dentro da fibra, como uma esponja. O que fica na superfície é pouco, a transferência sai lavada, sem definição, e parte da tinta fica presa no papel para sempre. Não é uma questão de qualidade da impressão: é física. Papel sem revestimento não transfere.',
+    },
+    {
+      type: 'p',
+      text: 'Também não confunda o papel sublimático com o papel de transferência térmica comum, aquele usado para estampar camiseta com ferro de passar. O papel de transferência deixa uma película sobre a peça; a sublimação tinge a fibra ou o revestimento da peça, sem deixar camada nenhuma. São produtos diferentes, para processos diferentes, e usar um no lugar do outro é prejuízo garantido. Se a embalagem não diz "sublimação" ou "sublimation", não é o papel certo.',
+    },
+    { type: 'h2', text: 'Gramatura: o número que decide o resultado', id: 'gramatura' },
+    {
+      type: 'p',
+      text: 'Gramatura é o peso do papel em gramas por metro quadrado (g/m²) e indica quanto ele é grosso e quanta tinta ele aguenta. Papel mais pesado segura mais tinta e dá resultado mais saturado; papel mais leve libera a tinta mais rápido e funciona melhor em superfícies rígidas. A escolha certa depende de duas coisas: o que você vai sublimar e quanta tinta o desenho carrega. A tabela abaixo resume a decisão que o mercado usa.',
+    },
+    {
+      type: 'table',
+      caption: 'Gramatura do papel sublimático por uso',
+      head: ['Gramatura', 'Melhor para', 'Quando usar'],
+      rows: [
+        ['90 g/m²', 'Têxtil e uso geral', 'Camisetas de poliéster, logos e artes com bastante área branca; o mais versátil e econômico'],
+        ['100 g/m²', 'Rígidos e alta cobertura', 'Canecas, alumínio e MDF; fotos e fundos sólidos, com menos ondulação'],
+        ['120 g/m²', 'Cobertura máxima', 'Artes com muita tinta, fundos escuros e trabalhos longos; transferência mais uniforme'],
+        ['Quick-dry', 'Produção em série', 'Secagem muito rápida, reduz mancha ao manusear folhas recém-impressas'],
+        ['Tack', 'Têxtil elástico', 'Levemente adesivo, evita microdeslizamento e o efeito fantasma em tecido que estica'],
+      ],
+    },
+    {
+      type: 'p',
+      text: 'A regra prática é simples: desenho leve, com muito branco e pouca tinta, vai bem com 90 g/m². Desenho pesado, com foto, fundo sólido ou degradê grande, pede 100 g/m² ou 120 g/m². E para caneca, a preferência do mercado é o papel mais encorpado: o rígido não absorve tinta nenhuma, então o papel precisa liberar tudo de forma rápida e uniforme — e o papel mais pesado ainda segura a forma na prensa, sem ondular com o calor. Quem imprime arte de caneca no papel mais fino costuma ver a mesma queixa: cor sem força e borda marcada.',
+    },
+    { type: 'h2', text: 'Como identificar o lado certo de impressão', id: 'lado-de-impressao' },
+    {
+      type: 'p',
+      text: 'Imprimir no lado errado é o erro mais comum de quem começa — e o mais frustrante, porque a folha parece normal e a impressão sai bonita na folha. O problema aparece só na prensa: no lado sem revestimento, a tinta afunda na fibra e não sai como gás, então a transferência fica desbotada e borrada. O lado certo é sempre o lado revestido: mais branco, mais liso e com um brilho suave. O verso costuma ser mais fosco, com textura de papel comum, e muitas marcas imprimem o logo, uma marca d\'água ou uma grade no verso — ou colorem o verso de rosa claro, justamente para você não errar.',
+    },
+    {
+      type: 'ul',
+      items: [
+        'Teste do toque: passe o polegar nos dois lados da folha. O lado revestido é visivelmente mais liso e escorregadio; o verso parece papel comum.',
+        'Teste da luz: segure a folha contra a luz. O lado de impressão é mais branco e puro; o verso fica levemente amarelado ou com textura aparente.',
+        'Teste da marca: se o verso tem logo, texto ou grade impressa, é o verso. Imprima sempre no lado em branco, sem marca nenhuma.',
+        'Teste da caneta: marque um cantinho do lado que você acha que é o verso, carregue a folha e imprima um quadradinho de teste. Se o quadrado sair no lado sem a marca, o carregamento está certo.',
+      ],
+    },
+    {
+      type: 'callout',
+      title: 'Guarde uma folha de referência',
+      text: 'Quando abrir um pacote novo, marque o lado de impressão com um X leve a lápis num canto da primeira folha e deixe essa folha por cima do pacote. Toda vez que for imprimir, é só conferir o X — e nunca mais imprimir um lote inteiro do lado errado.',
+    },
+    { type: 'h2', text: 'Os 5 erros que desperdiçam tinta e peça', id: 'erros-comuns' },
+    {
+      type: 'p',
+      text: 'A maioria do desperdício com papel sublimático não vem do preço do papel: vem de folha impressa que vira lixo. Os erros se repetem tanto que viraram uma lista conhecida de quem produz em volume — e todos têm conserto barato.',
+    },
+    {
+      type: 'ul',
+      items: [
+        'Imprimir sem espelhar a arte: o papel vai virado para baixo na prensa, então a imagem precisa sair espelhada da impressora. Sem espelhar, o texto sai ao contrário na peça.',
+        'Não esperar secar: a tinta precisa de 2 a 3 minutos para secar na folha. Pegar a folha molhada mancha a arte e transfere a mancha para a peça.',
+        'Usar papel úmido: papel guardado em lugar úmido absorve umidade e a umidade vira vapor na prensa, manchando a transferência. Guarde o pacote fechado, longe do chão e da janela.',
+        'Escolher a gramatura pelo preço: o papel mais barato por folha sai caro quando cada erro custa uma caneca. Compre a gramatura certa para o seu trabalho, não a mais barata da prateleira.',
+        'Imprimir em papel comum "só para testar": o teste no papel errado não testa nada — a cor, a secagem e a liberação são diferentes. Teste sempre no papel que você usa na produção.',
+      ],
+    },
+    {
+      type: 'p',
+      text: 'Um hábito que economiza muito material é o teste comparativo: quando trocar de marca ou de gramatura, imprima a mesma arte nos dois papéis e prense em duas peças iguais, com os mesmos parâmetros de tempo e temperatura. Compare a saturação, a definição das bordas e a uniformidade da cor. O papel que vence o teste vira o seu padrão — e você para de comprar no escuro. Para entender o que cada defeito da peça prensada está dizendo, vale ler também o guia dos erros de iniciante na sublimação de canecas, que explica como identificar se o problema é papel, temperatura ou tempo.',
+    },
+    { type: 'h2', text: 'Como armazenar e quanto comprar', id: 'armazenamento' },
+    {
+      type: 'p',
+      text: 'Papel sublimático é sensível a umidade e a poeira. Guarde o pacote fechado, na horizontal, em lugar seco e sem sol direto — nunca em pé, encostado na parede, porque ele curva. Folha curvada alimenta torto na impressora e borra a impressão. Se o pacote ficou aberto por muito tempo, feche com um elástico ou guarde num saco plástico com um sachê de sílica. E não compre estoque para o ano inteiro: papel parado absorve umidade e envelhece. Compre para um ou dois meses de produção e reponha com frequência.',
+    },
+    {
+      type: 'faq',
+      items: [
+        {
+          q: 'Posso usar papel fotográfico ou papel sulfite para sublimar?',
+          a: 'Não. O papel fotográfico tem revestimento para tinta comum, não para sublimação, e o sulfite absorve a tinta para dentro da fibra. Nos dois casos a transferência sai lavada e sem definição. Só o papel próprio para sublimação tem o revestimento que segura a tinta na superfície e libera na prensa.',
+        },
+        {
+          q: 'Qual gramatura devo comprar se só faço canecas?',
+          a: 'Comece com 100 g/m²: é o meio-termo que atende a maioria das artes de caneca, com boa liberação e pouca ondulação. Se as suas artes têm foto ou fundo sólido escuro, suba para 120 g/m². O 90 g/m² funciona para artes leves, mas costuma dar cor mais fraca em caneca.',
+        },
+        {
+          q: 'O verso do meu papel é rosa. Isso é normal?',
+          a: 'Sim. Várias marcas colorem o verso de rosa claro justamente para você identificar o lado certo de impressão de longe: imprime-se no lado branco. Se o verso tem logo ou marca d\'água, vale a mesma regra — o lado impresso é o verso.',
+        },
+        {
+          q: 'A folha impressa pode esperar até o dia seguinte para prensar?',
+          a: 'Pode, se ficar guardada em lugar seco e sem nada por cima. Mas o ideal é prensar no mesmo dia: folha impressa parada absorve umidade do ar e a umidade atrapalha a transferência. Em produção em série, imprima o lote do dia e prense no mesmo dia.',
+        },
+      ],
+    },
+    {
+      type: 'cta',
+      text: 'Com o papel certo, a arte pronta faz o resto: são milhares de artes para sublimar, organizadas por tema, para você imprimir no papel certo e prensar sem desperdício.',
+      label: 'Ver as artes para sublimar',
+      href: '/#preco',
+    },
+  ],
+  related: ['tempo-temperatura-sublimar-caneca-tabela', 'sublimacao-canecas-erros-iniciantes-evitar', 'como-sublimar-canecas-passo-a-passo'],
+}
+
+/* ============================================================
+ * ARTIGO 34 — "Caneca personalizada para casamento"
+ * ============================================================ */
+const ART34: BlogArticle = {
+  slug: 'caneca-personalizada-casamento-lembrancinha',
+  title: 'Caneca personalizada para casamento: lembrancinha que os convidados realmente usam',
+  seoTitle: 'Caneca Personalizada para Casamento: Lembrancinha que Vale a Pena',
+  description:
+    'A caneca personalizada é a lembrancinha de casamento que não vai para a gaveta: vai para a mesa do café da manhã. Veja como vender para noivos, montar kits de padrinhos e precificar o pedido.',
+  keywords: [
+    'caneca personalizada casamento',
+    'lembrancinha casamento caneca',
+    'caneca padrinhos madrinhas',
+    'lembrancinha casamento útil',
+    'caneca casamento convidados',
+  ],
+  category: 'sazonal',
+  emoji: '💍',
+  cover: '/uploads/blog-capa-34.jpg',
+  coverAlt: 'Canecas brancas com estampa floral delicada sobre mesa de casamento com flores e velas acesas',
+  readTime: '9 min',
+  datePublished: '2026-11-26',
+  dateModified: '2026-11-26',
+  lead:
+    'Todo casamento tem a mesma cena na saída: o convidado recebe a lembrancinha, sorri, agradece — e semanas depois ela está no fundo de uma gaveta. A caneca personalizada quebra esse destino porque não é um objeto para guardar: é um objeto para usar. Ela vai para a mesa do café da manhã, para o escritório, para a foto do dia seguinte, e cada uso lembra o casal. Para quem sublima, é um dos pedidos mais certeiros do segmento de festas: pedido grande, data marcada, noiva decidida e arte que se repete. Neste artigo, como vender a caneca de casamento, o que oferecer além da peça e como montar o pedido sem dor de cabeça.',
+  blocks: [
+    { type: 'h2', text: 'Por que a caneca funciona como lembrancinha', id: 'por-que-funciona' },
+    {
+      type: 'p',
+      text: 'A lembrancinha de casamento precisa passar em três testes: ser bonita na mesa, ser útil depois da festa e caber no orçamento por convidado. A caneca passa nos três. Na mesa, ela vira parte da decoração — alinhada no lugar de cada convidado, com a arte do casamento, ela fotografa bem e compõe a mesa sem precisar de suporte, embalagem especial ou montagem na hora. Depois da festa, ela vira a caneca do café da manhã, do chá da tarde, do escritório. E no orçamento, o lote derruba o custo por unidade: a mesma arte repetida dezenas de vezes, com produção em série, custa menos por peça do que qualquer lembrancinha artesanal feita uma a uma.',
+    },
+    {
+      type: 'p',
+      text: 'E tem um detalhe que os noivos percebem na hora: a caneca é a lembrancinha que aparece nas fotos do dia seguinte. O convidado acorda, faz o café, fotografa a caneca com o nome do casal e marca os noivos. Nenhuma outra lembrancinha de casamento gera esse retorno — é o presente que continua divulgando a festa depois que a festa acabou. Quando você explica isso para a noiva, você não está vendendo caneca: está vendendo a lembrança que continua viva.',
+    },
+    { type: 'h2', text: 'O que a noiva quer ver antes de fechar', id: 'o-que-a-noiva-quer' },
+    {
+      type: 'p',
+      text: 'A noiva não compra lembrancinha no escuro: ela precisa ver a peça pronta, com a cara do casamento dela. A amostra é o que fecha a venda — uma caneca real, com as cores da festa, o nome do casal e a data, numa caixinha simples. Leve a amostra para a primeira conversa e deixe a noiva segurar: o peso, o acabamento e a cor na peça real valem mais que qualquer foto no celular.',
+    },
+    {
+      type: 'ul',
+      items: [
+        'A identidade do casamento: a arte precisa seguir a paleta e o estilo da festa — rústico, clássico, moderno, boho. Peça o convite ou a paleta de cores antes de montar a arte.',
+        'Nomes e data legíveis: o nome do casal e a data são o coração da peça. Teste a leitura a um metro de distância — se não dá para ler, a fonte está pequena demais.',
+        'A foto da mesa: mostre como a caneca fica na mesa de convidados, ao lado do prato ou do guardanapo. A noiva compra a cena, não só a peça.',
+        'O prazo com folga: casamento tem data que não muda. Combine a entrega para pelo menos uma semana antes da festa, para imprevisto não virar pânico.',
+        'A quantidade certa: confirme a lista de convidados e some uma margem de 5 a 10 peças para quebras, esquecimentos e convidados de última hora.',
+      ],
+    },
+    { type: 'h2', text: 'Artes que mais funcionam para casamento', id: 'artes-que-funcionam' },
+    {
+      type: 'p',
+      text: 'A arte de casamento tem uma regra: menos é mais. A peça precisa ser elegante na mesa e agradável no uso diário — ninguém quer tomar café numa caneca gritando. Os estilos que mais vendem são os que combinam com a decoração da festa sem brigar com ela: floral delicado, monograma do casal, frase curta e romântica, e a combinação de nome e data em tipografia limpa. A arte pode cobrir a caneca inteira ou ocupar só um lado, com o outro lado livre para uma foto do casal ou uma mensagem curta.',
+    },
+    {
+      type: 'p',
+      text: 'Evite o excesso: foto grande dos noivos em toda a volta da caneca, texto longo e muitos elementos juntos costumam pesar na peça e datar rápido. A caneca que o convidado usa por anos é a discreta — e é a discreta que a noiva aprova sem pedir dez revisões. Para montar as opções, vale buscar artes de festa e de aniversário como ponto de partida: o raciocínio é o mesmo, só muda o tema e a paleta.',
+    },
+    { type: 'h2', text: 'Kits de padrinhos e madrinhas: o pedido que paga mais', id: 'kits-padrinhos' },
+    {
+      type: 'p',
+      text: 'Se a lembrancinha para os convidados é o pedido em volume, o kit de padrinhos e madrinhas é o pedido em valor. O casal quer agradecer quem está ao lado deles no altar, e o kit é o presente especial: caneca com o nome do padrinho ou da madrinha, numa caixa com mais um ou dois itens — um chocolate, uma mini garrafa, um cartão escrito à mão. O preço por kit é maior que o da lembrancinha avulsa, e o casal aceita pagar porque é um presente para poucas pessoas, com nome individual.',
+    },
+    {
+      type: 'table',
+      caption: 'O que entra no kit de padrinhos e madrinhas',
+      head: ['Item do kit', 'O que personalizar', 'Por que vale'],
+      rows: [
+        ['Caneca', 'Nome do padrinho ou madrinha + data', 'É o item principal, o que fica em uso'],
+        ['Cartão', 'Mensagem curta do casal', 'Dá o tom pessoal que a caixa pronta não tem'],
+        ['Chocolate ou doce', 'Embalagem com as cores da festa', 'Completa a caixa sem complicar a produção'],
+        ['Caixa', 'Tag com nome e fita da paleta', 'Transforma itens soltos em presente'],
+      ],
+    },
+    {
+      type: 'p',
+      text: 'O segredo do kit é a individualização: cada caixa leva o nome de quem vai receber. Isso muda a produção — em vez de uma arte repetida 100 vezes, são 10 ou 12 artes com nomes diferentes — então precifique o kit por unidade, não como lote. E faça uma caixa de amostra completa antes de fechar: o casal precisa ver o kit montado, não os itens separados. A caixa pronta na mão é o que transforma "vamos pensar" em "fecha com você".',
+    },
+    { type: 'h2', text: 'Como precificar e organizar o pedido', id: 'precificar-e-organizar' },
+    {
+      type: 'p',
+      text: 'O pedido de casamento tem duas partes no preço: a lembrancinha em lote e o kit de padrinhos. Precifique separado e mostre separado — o casal entende o valor de cada parte e não tenta negociar o kit como se fosse lembrancinha. Na lembrancinha, o desconto por volume vale porque a arte é uma só e a produção é em série. No kit, o preço é por unidade, porque cada nome é uma arte e cada caixa é uma montagem. Peça sinal de entrada antes de começar: o sinal cobre os blanks do lote e protege você se o casal mudar de ideia na véspera.',
+    },
+    {
+      type: 'ul',
+      items: [
+        'Feche a arte com a noiva por escrito — print da conversa ou e-mail — antes de imprimir o lote. Arte aprovada no "acho que era assim" é o pedido que volta.',
+        'Faça uma peça de teste com a arte final e fotografe na mesa montada: a foto da amostra vira a referência do casal e a sua prova de aprovação.',
+        'Produza em série: primeiro todas as impressões, depois todas as prensagens, depois todas as embalagens. Trocar de etapa no meio do lote é o que gera erro.',
+        'Conte por caixa fechada, com a quantidade marcada fora — 20 por caixa, por exemplo — e confira a contagem na entrega com o casal ou o cerimonial.',
+        'Entregue com uma semana de folga: se faltar peça ou quebrar alguma na montagem da mesa, ainda dá tempo de repor sem correria.',
+      ],
+    },
+    {
+      type: 'p',
+      text: 'E não esqueça da embalagem: a caneca da mesa de convidados não precisa de caixa individual luxuosa — um saquinho de organza, um papel de seda e uma tag com o nome do casal bastam, e entram no valor percebido da lembrancinha. O que não pode é entregar caneca solta numa caixa de papelão na véspera da festa: a primeira impressão do convidado é a embalagem, não a peça. Para acertar a embalagem e o envio quando o pedido vai para outra cidade, vale revisar o guia de como embalar caneca personalizada para envio.',
+    },
+    {
+      type: 'faq',
+      items: [
+        {
+          q: 'Com quanto tempo de antecedência o casal deve encomendar?',
+          a: 'O ideal é fechar o pedido com 30 a 45 dias de antecedência: dá tempo de aprovar a arte, produzir o lote com calma e entregar com folga. Abaixo de 15 dias, só aceite se o lote couber na sua agenda — e avise que o prazo é apertado antes de fechar.',
+        },
+        {
+          q: 'A caneca de casamento precisa ter a foto dos noivos?',
+          a: 'Não — e na maioria das vezes é melhor sem. Nome do casal, data e um elemento floral ou monograma são mais elegantes e envelhecem melhor. Foto funciona quando o casal pede explicitamente; fora isso, ofereça a versão sem foto como primeira opção.',
+        },
+        {
+          q: 'Quantos kits de padrinhos devo oferecer?',
+          a: 'Pergunte quantos padrinhos e madrinhas o casal terá — geralmente entre 4 e 12 de cada lado. Monte o preço por kit e deixe o casal decidir se quer o kit igual para todos ou um modelo para padrinhos e outro para madrinhas.',
+        },
+        {
+          q: 'Vale oferecer a caneca de casamento para outros eventos?',
+          a: 'Vale: o mesmo raciocínio serve para chá de panela, bodas e noivado — só muda a arte e a frase. Quem fecha o casamento com você volta para os outros eventos da família, e a indicação da noiva vale mais que qualquer anúncio.',
+        },
+      ],
+    },
+    {
+      type: 'cta',
+      text: 'Casamento pede arte elegante e pronta para a mesa — e são milhares de artes para sublimar, organizadas por tema, para você montar a amostra e fechar o pedido com a noiva.',
+      label: 'Ver as artes para sublimar',
+      href: '/#preco',
+    },
+  ],
+  related: ['canecas-personalizadas-festas-aniversarios-ideias', 'canecas-personalizadas-brindes-corporativos', 'como-embalar-caneca-personalizada-envio'],
+}
+
+export const BLOG_ARTICLES: BlogArticle[] = [ART1, ART2, ART3, ART4, ART5, ART6, ART7, ART8, ART9, ART10, ART11, ART12, ART13, ART14, ART15, ART16, ART17, ART18, ART19, ART20, ART21, ART22, ART23, ART24, ART25, ART26, ART27, ART28, ART29, ART30, ART31, ART32, ART33, ART34]
 
 export function getArticle(slug: string): BlogArticle | undefined {
   return BLOG_ARTICLES.find((a) => a.slug === slug)
