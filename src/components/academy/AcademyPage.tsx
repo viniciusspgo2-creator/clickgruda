@@ -6,7 +6,7 @@ import GuidesSection from './GuidesSection'
 import {
  AlertCircle, ArrowLeft, ArrowRight, BadgeCheck, BookOpen, Check, CheckCircle2,
  ChevronRight, ClipboardCheck, Clock3, Download, FlaskConical, Globe, GraduationCap,
- Instagram, Layers, LockKeyhole, MapPin, MessageCircle, Phone, RotateCcw, Search, ShieldCheck, Sparkles, Store, Target, Thermometer,
+ Instagram, Layers, LockKeyhole, MapPin, MessageCircle, Palette, Phone, RotateCcw, Search, ShieldCheck, Sparkles, Store, Target, Thermometer,
  TrendingUp, Wrench, X, type LucideIcon,
 } from 'lucide-react'
 
@@ -113,6 +113,30 @@ export default function AcademyPage({userId,onSubscribe}:{userId:string;onSubscr
     <div className="mt-6 flex flex-wrap gap-2 text-[11px] font-bold"><span className="rounded-xl border border-white/20 bg-black/45 px-3 py-2">8 trilhas</span><span className="rounded-xl border border-white/20 bg-black/45 px-3 py-2">{allLessons.length} aulas práticas</span><span className="rounded-xl border border-white/20 bg-black/45 px-3 py-2">{Math.ceil(totalMinutes/60)}h de leitura orientada</span></div>
    </div>
    <div className="absolute bottom-0 h-1 w-full bg-gradient-to-r from-orange-500 via-orange-400/50 to-transparent"/>
+  </section>
+  {/* Perfil de cores — espaço dedicado ao serviço parceiro recomendado pela equipe */}
+  <section id="perfil-de-cores" className="relative overflow-hidden rounded-[28px] border border-orange-500/30 bg-gradient-to-br from-[#221a12] via-[#17131a] to-[#14161e] p-6 sm:p-8 lg:p-10">
+   <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_320px] lg:items-center">
+    <div>
+     <span className="inline-flex items-center gap-2 rounded-full border border-orange-400/35 bg-orange-500/10 px-3 py-2 text-[10px] font-black tracking-[.2em] text-orange-300"><BadgeCheck size={14}/> RECOMENDAÇÃO DA EQUIPE CLICK&amp;GRUDA</span>
+     <h2 className="mt-4 text-2xl font-black leading-tight tracking-tight sm:text-3xl">Perfil de cores instalado do jeito certo, <span className="text-orange-400">pra cor sair perfeita na caneca.</span></h2>
+     <p className="mt-4 max-w-2xl text-sm leading-7 text-zinc-300">Quem trabalha com sublimação sabe: sem o perfil de cores da sua tinta instalado e configurado no computador, a impressão sai errada — o preto vira marrom, o rosa vira vermelho e a cor da tela nunca é a cor da caneca. O perfil é o que faz impressora, tinta e papel falarem a mesma língua. E ele precisa estar certo antes de imprimir, não depois de perder peça, tinta e tempo.</p>
+     <ul className="mt-5 space-y-2.5 text-sm text-zinc-200">
+      <li className="flex items-start gap-2.5"><Palette size={17} className="mt-0.5 shrink-0 text-orange-400"/><span><strong>Instalação e configuração de perfil de cores</strong> para sublimação, no seu computador, do jeito certo.</span></li>
+      <li className="flex items-start gap-2.5"><Wrench size={17} className="mt-0.5 shrink-0 text-orange-400"/><span><strong>Instalação de programas:</strong> CorelDraw, Photoshop e outros programas que você usa no dia a dia.</span></li>
+      <li className="flex items-start gap-2.5"><Globe size={17} className="mt-0.5 shrink-0 text-orange-400"/><span><strong>Atendimento 100% remoto, para todo o Brasil</strong> — você não precisa sair de casa nem mandar nada pelo correio.</span></li>
+     </ul>
+     <p className="mt-5 max-w-2xl text-[13px] leading-6 text-zinc-400">Impressão com a cor fiel é o que separa a caneca amadora da caneca profissional — a que o cliente olha, aprova na hora e volta para comprar de novo.</p>
+    </div>
+    <div className="rounded-[22px] border border-white/10 bg-black/40 p-5 sm:p-6">
+     <p className="text-[10px] font-black uppercase tracking-[.2em] text-zinc-400">Quem atende você</p>
+     <p className="mt-2 text-xl font-black">Everton Artes</p>
+     <p className="mt-1 text-sm leading-6 text-zinc-400">Especialista em perfil de cores e instalação de programas para sublimação.</p>
+     <a href="https://wa.me/558199622387?text=Ol%C3%A1%2C%20Everton!%20Vim%20pela%20indica%C3%A7%C3%A3o%20da%20Click%26Gruda%20e%20quero%20instalar%20e%20configurar%20o%20perfil%20de%20cores%20da%20minha%20impressora%20de%20sublima%C3%A7%C3%A3o." target="_blank" rel="noreferrer" className="mt-5 flex items-center justify-center gap-2 rounded-xl bg-emerald-500 px-5 py-3.5 text-sm font-black text-black transition hover:bg-emerald-400"><MessageCircle size={18}/> Chamar no WhatsApp</a>
+     <p className="mt-3 text-center text-xs font-bold text-zinc-300">+55 81 9962-2387</p>
+     <p className="mt-3 border-t border-white/10 pt-3 text-[11px] leading-5 text-zinc-500">Serviço prestado pelo parceiro indicado pela nossa equipe. Valores, prazos e agendamento você combina direto com o Everton no WhatsApp.</p>
+    </div>
+   </div>
   </section>
   {!allowed&&<section className="flex flex-col justify-between gap-4 rounded-2xl border border-amber-400/25 bg-amber-400/[.07] p-5 sm:flex-row sm:items-center"><div className="flex gap-3"><LockKeyhole className="mt-0.5 shrink-0 text-amber-300" size={22}/><div><strong className="text-sm font-black">Explore o programa de aulas.</strong><p className="mt-1 text-xs leading-5 text-zinc-300">No modo visitante, a grade do curso é visível, mas aulas, diagnósticos, checklists, calculadoras, comparador e fornecedores pedem uma conta gratuita.</p></div></div><button type="button" onClick={onSubscribe} className="shrink-0 rounded-xl bg-orange-500 px-5 py-3 text-xs font-black text-black hover:bg-orange-400">Criar conta grátis</button></section>}
   <div className="grid grid-cols-2 gap-3 md:grid-cols-4">{metric(`${progress}%`,'Trilha concluída',allowed?`${complete} de ${allLessons.length} aulas`:'Prévia do conteúdo',Target)}{metric(allowed?`${minutes} min`:'—','Tempo de estudo','Progresso registrado neste dispositivo',Clock3)}{metric(allowed?`${results}/8`:'—','Acertos na revisão','8 perguntas de fixação',BadgeCheck)}{metric(`${allLessons.length}`,'Aulas disponíveis',`Divididas em ${data.tracks.length} trilhas`,BookOpen)}</div>
