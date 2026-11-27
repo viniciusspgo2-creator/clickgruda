@@ -57,13 +57,17 @@ export function resolveMarketingConfig(values: Record<string, string>, env: Reco
     try { return normalizeMarketingValue(key, values[key] ?? (envKey ? env[envKey] : undefined) ?? '') }
     catch { return '' }
   }
+  // Pixel da conta "Click & Gruda" (Gerenciador de Eventos, ID 29173088312342620).
+  // Valor padrão quando não há ID no Admin (SEO e Integrações) nem na variável
+  // NEXT_PUBLIC_META_PIXEL_ID. O Admin e a variável de ambiente têm precedência.
+  const DEFAULT_META_PIXEL_ID = '29173088312342620'
   return {
     gscVerification: get('gsc_verification', 'NEXT_PUBLIC_GSC_VERIFICATION'),
     bingVerification: get('bing_verification', 'NEXT_PUBLIC_BING_VERIFICATION'),
     metaDomainVerification: get('meta_domain_verification', 'NEXT_PUBLIC_META_DOMAIN_VERIFICATION'),
     ga4Id: get('ga4_id', 'NEXT_PUBLIC_GA4_ID'),
     gtmId: get('gtm_id', 'NEXT_PUBLIC_GTM_ID'),
-    metaPixelId: get('meta_pixel_id', 'NEXT_PUBLIC_META_PIXEL_ID'),
+    metaPixelId: get('meta_pixel_id', 'NEXT_PUBLIC_META_PIXEL_ID') || DEFAULT_META_PIXEL_ID,
     consentRequired: values.marketing_consent_required !== 'false',
     socialUrls: get('official_social_urls').split('\n').filter(Boolean),
   }
